@@ -17,12 +17,13 @@ namespace Level_Editor
             XElement xmlFile = XElement.Load("assets.xml");
             IEnumerable<XElement> xmlBrickData = from q in xmlFile.Elements("brick") select q;
 
-            string tempFilename;
-            string tempID;
+            //string tempFilename;
+            //string tempID;
             foreach (var node in xmlBrickData)
             {
-                tempFilename = (string)node.Attribute("filename");
-                tempID = (string)node.Attribute("id");
+                string tempFilename = (string)node.Attribute("filename");
+                string tempID = (string)node.Attribute("id");
+                string tempPaletteLabel = (string)node.Attribute("label");
 
                 List<string> tempAttributeList = new List<string>();
                 foreach (var attribute in node.Elements("attribute"))
@@ -35,7 +36,8 @@ namespace Level_Editor
 
                 string tempDescription = (string)node.Element("description");
 
-                parsedBrickData.Add(new BrickData(tempFilename, tempID, tempAttributeList.ToArray(), tempDescription));
+                parsedBrickData.Add(new BrickData(tempFilename, tempPaletteLabel, tempID, 
+                    tempAttributeList.ToArray(), tempDescription));
 
                 tempAttributeList.Clear();
             }

@@ -27,7 +27,7 @@ namespace Level_Editor
                 Image brickImage = Image.FromFile(brick.Filename);
                 imageList.Images.Add(brick.ID, brickImage);
 
-                ListViewItem item = new ListViewItem(brick.Filename, brick.ID);
+                ListViewItem item = new ListViewItem(brick.Label, brick.ID);
                 StringBuilder stringBuilder = new StringBuilder();
                 foreach(string s in brick.GetAttributes())
                 {

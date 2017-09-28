@@ -10,10 +10,11 @@ namespace Level_Editor
     {
         string description;
         string filename;
+        string label;
         string id;
         string[] attributes;
 
-        public BrickData(string filename, string id, string[] attributes, string description)
+        public BrickData(string filename, string paletteLabel, string id, string[] attributes, string description)
         {
             if (String.IsNullOrEmpty(filename))
             {
@@ -22,6 +23,10 @@ namespace Level_Editor
             else if (String.IsNullOrEmpty(id))
             {
                 throw new ArgumentNullException("id");
+            }
+            else if (String.IsNullOrEmpty(paletteLabel))
+            {
+                throw new ArgumentNullException("paletteLabel");
             }
             else if (attributes == null)
             {
@@ -33,6 +38,7 @@ namespace Level_Editor
             }
 
             this.filename = filename;
+            this.label = paletteLabel;
             this.id = id;
             this.description = description;
             this.attributes = attributes;
@@ -42,6 +48,12 @@ namespace Level_Editor
         {
             get { return filename; }
             set { filename = value; }
+        }
+
+        public string Label
+        {
+            get { return label; }
+            set { label = value; }
         }
 
         public string ID
