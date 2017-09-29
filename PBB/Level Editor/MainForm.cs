@@ -10,6 +10,20 @@ using System.Windows.Forms;
 
 namespace Level_Editor
 {
+    public struct TileCoordID
+    {
+        public ushort x;
+        public ushort y;
+        public short index;
+
+        public TileCoordID(ushort x, ushort y, short index)
+        {
+            this.x = x;
+            this.y = y;
+            this.index = index;
+        }
+    }
+
     public partial class MainForm : Form
     {
         bool isPainting = false;
@@ -18,6 +32,10 @@ namespace Level_Editor
         short[,] map = new short[25, 23];
         short selectedBrick = -1;
 
+        Stack<TileCoordID[]> undoStack = new Stack<TileCoordID[]>();
+        List<TileCoordID> paintBuffer = new List<TileCoordID>();
+
+        Stack<TileCoordID[]> redoStack = new Stack<TileCoordID[]>();
         public MainForm()
         {
             InitializeComponent();
@@ -34,10 +52,95 @@ namespace Level_Editor
             }
         }
 
-        void PaintBrick(ushort x, ushort y, short index)
+        private void Undo()
         {
-            pictureBoxGraphicsHandle.DrawImage(imageList.Images[index], x, y);
+            TileCoordID[] bricks = undoStack.Pop();
+            List<TileCoordID> temp = new List<TileCoordID>();
+
+            foreach (TileCoordID brick in bricks)
+            {
+                ushort tileCoordX = (ushort)(brick.x / 41);
+                ushort tileCoordY = (ushort)(brick.y / 20);
+
+                // take each brick we're about the paint over and stick them in a buffer 
+                // which will be passed to the redo stack once painting is finished. 
+                short brickIndex = map[tileCoordX, tileCoordY];
+                temp.Add(new TileCoordID(brick.x, brick.y, brickIndex));
+
+                // brick.x and brick.y contain screen coordinates. If you don't
+                // convert to tile coordinates, you'll get a buffer overflow (and they'll be wrong regardless).
+                map[tileCoordX, tileCoordY] = brick.index;
+
+                // disabling the refresh because otherwise each brick is drawn and then displayed.
+                // It results in a domino-like effect; we want to see all the bricks appear at once. 
+                PaintBrick((ushort)brick.x, (ushort)brick.y, brick.index, false);
+            }
+
+            redoStack.Push(temp.ToArray());
             pictureBox.Refresh();
+
+            if (undoStack.Count == 0)
+            {
+                undoToolStripMenuItem.Enabled = undoStripButton.Enabled = false;
+            }
+
+            redoToolStripMenuItem.Enabled = redoStripButton.Enabled = true;
+        }
+
+        private void Redo()
+        {
+            TileCoordID[] bricks = redoStack.Pop();
+            List<TileCoordID> temp = new List<TileCoordID>();
+
+            foreach (TileCoordID brick in bricks)
+            {
+                ushort tileCoordX = (ushort)(brick.x / 41);
+                ushort tileCoordY = (ushort)(brick.y / 20);
+
+                // take each brick we're about the paint over and stick them in a buffer 
+                // which will be passed to the redo stack once painting is finished. 
+                short brickIndex = map[tileCoordX, tileCoordY];
+                temp.Add(new TileCoordID(brick.x, brick.y, brickIndex));
+
+                // brick.x and brick.y contain screen coordinates. If you don't
+                // convert to tile coordinates, you'll get a buffer overflow (and they'll be wrong regardless).
+                map[tileCoordX, tileCoordY] = brick.index;
+
+                // disabling the refresh because otherwise each brick is drawn and then displayed.
+                // It results in a domino-like effect; we want to see all the bricks appear at once. 
+                PaintBrick((ushort)brick.x, (ushort)brick.y, brick.index, false);
+            }
+
+            undoStack.Push(temp.ToArray());
+            pictureBox.Refresh();
+
+            if (redoStack.Count == 0)
+            {
+                redoToolStripMenuItem.Enabled = redoStripButton.Enabled = false;
+            }
+
+            undoToolStripMenuItem.Enabled = undoStripButton.Enabled = true;
+        }
+
+        void PaintBrick(uint x, uint y, short index, bool refresh)
+        {
+            if (index == -1)
+            {
+                using (SolidBrush brush = new SolidBrush(Color.Black))
+                {
+                    //pictureBoxGraphicsHandle.DrawRectangle(p, x, y, 41, 20);
+                    pictureBoxGraphicsHandle.FillRectangle(brush, x, y, 41, 20);
+                }
+            }
+            else
+            {
+                pictureBoxGraphicsHandle.DrawImage(imageList.Images[index], x, y);
+            }
+
+            if (refresh)
+            {
+                pictureBox.Refresh();
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -67,15 +170,28 @@ namespace Level_Editor
             if (listView.SelectedItems.Count == 1)
             {
                 isPainting = true;
+
                 ushort tileCoordX = (ushort)(e.X / 41);
                 ushort tileCoordY = (ushort)(e.Y / 20);
 
-                ushort mouseX = (ushort)(tileCoordX * 41);
-                ushort mouseY = (ushort)(tileCoordY * 20);
+                if (tileCoordX < 25 && tileCoordY < 23)
+                {
+                    if (map[tileCoordX, tileCoordY] != selectedBrick)
+                    {
+                        redoStack.Clear();
+                        redoStripButton.Enabled = redoToolStripMenuItem.Enabled = false;
 
-                map[tileCoordX, tileCoordY] = selectedBrick;
+                        ushort screenX = (ushort)(tileCoordX * 41);
+                        ushort screenY = (ushort)(tileCoordY * 20);
 
-                PaintBrick(mouseX, mouseY, selectedBrick);
+                        short oldBrick = map[tileCoordX, tileCoordY];
+                        paintBuffer.Add(new TileCoordID(screenX, screenY, oldBrick));
+                    
+                        map[tileCoordX, tileCoordY] = selectedBrick;
+
+                        PaintBrick(screenX, screenY, selectedBrick, true);
+                    }
+                }
             }
         }
 
@@ -98,12 +214,15 @@ namespace Level_Editor
                 {
                     if (map[tileCoordX, tileCoordY] != selectedBrick)
                     {
-                        ushort mouseX = (ushort)(tileCoordX * 41);
-                        ushort mouseY = (ushort)(tileCoordY * 20);
+                        ushort screenX = (ushort)(tileCoordX * 41);
+                        ushort screenY = (ushort)(tileCoordY * 20);
 
+                        short oldBrick = map[tileCoordX, tileCoordY];
+                        //paintBuffer.AddCoordinate(mouseX, mouseY);
+                        paintBuffer.Add(new TileCoordID(screenX, screenY, oldBrick));
                         map[tileCoordX, tileCoordY] = selectedBrick;
 
-                        PaintBrick(mouseX, mouseY, selectedBrick);
+                        PaintBrick(screenX, screenY, selectedBrick, true);
                     }
                 }
             }
@@ -112,6 +231,32 @@ namespace Level_Editor
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
             isPainting = false;
+            if (paintBuffer.Count > 0)
+            {
+                undoStack.Push(paintBuffer.ToArray());
+                paintBuffer.Clear();
+                undoToolStripMenuItem.Enabled = undoStripButton.Enabled = true;
+            }
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Undo();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Redo();
+        }
+
+        private void redoStripButton_Click(object sender, EventArgs e)
+        {
+            Redo();
+        }
+
+        private void undoStripButton_Click(object sender, EventArgs e)
+        {
+            Undo();
         }
     }
 }

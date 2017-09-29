@@ -12,9 +12,9 @@ namespace Level_Editor
         List<Point> brickLocations = new List<Point>();
 
         // index of the brick in the palette listview. 
-        ushort brickIndex;
+        short brickIndex = -1;
 
-        public PaintedBricks(Point[] brickLocations, ushort index)
+        public PaintedBricks(Point[] brickLocations, short index)
         {
             if (brickLocations == null)
             {
@@ -25,7 +25,7 @@ namespace Level_Editor
             brickIndex = index;
         }
 
-        public PaintedBricks(ushort x, ushort y, ushort index)
+        public PaintedBricks(ushort x, ushort y, short index)
         {
             Point p = new Point(x, y);
 
@@ -43,6 +43,18 @@ namespace Level_Editor
             Point p = new Point(x, y);
 
             brickLocations.Add(p);
+        }
+
+        public short Index
+        {
+            get { return brickIndex; }
+            set { brickIndex = value; }
+        }
+
+        public void Clear()
+        {
+            brickLocations.Clear();
+            brickIndex = -1;
         }
     }
 }

@@ -159,16 +159,18 @@
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.undoToolStripMenuItem.Text = "&Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.redoToolStripMenuItem.Text = "&Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // viewToolStripMenuItem
             // 
@@ -299,6 +301,7 @@
             this.undoStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.undoStripButton.Name = "undoStripButton";
             this.undoStripButton.Size = new System.Drawing.Size(23, 22);
+            this.undoStripButton.Click += new System.EventHandler(this.undoStripButton_Click);
             // 
             // redoStripButton
             // 
@@ -308,6 +311,7 @@
             this.redoStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.redoStripButton.Name = "redoStripButton";
             this.redoStripButton.Size = new System.Drawing.Size(23, 22);
+            this.redoStripButton.Click += new System.EventHandler(this.redoStripButton_Click);
             // 
             // splitContainer
             // 
