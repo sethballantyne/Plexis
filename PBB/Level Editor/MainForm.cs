@@ -14,9 +14,9 @@ namespace Level_Editor
     {
         public ushort x;
         public ushort y;
-        public short index;
+        public int index;
 
-        public TileCoordID(ushort x, ushort y, short index)
+        public TileCoordID(ushort x, ushort y, int index)
         {
             this.x = x;
             this.y = y;
@@ -29,13 +29,17 @@ namespace Level_Editor
         bool isPainting = false;
         Graphics pictureBoxGraphicsHandle;
         Bitmap bufferBitmap = new Bitmap(1024, 768);
-        short[,] map = new short[25, 23];
+       // short[,] map = new short[25, 23];
         short selectedBrick = -1;
+        bool workSaved = true;
+        string filename = null;
 
         Stack<TileCoordID[]> undoStack = new Stack<TileCoordID[]>();
         List<TileCoordID> paintBuffer = new List<TileCoordID>();
 
         Stack<TileCoordID[]> redoStack = new Stack<TileCoordID[]>();
+
+        Level level = new Level(25, 23);
         public MainForm()
         {
             InitializeComponent();
@@ -43,13 +47,107 @@ namespace Level_Editor
 
             pictureBoxGraphicsHandle = Graphics.FromImage(bufferBitmap);
             pictureBox.Image = bufferBitmap;
-            for (int i = 0; i < 25; i++)
+            //for (int i = 0; i < 25; i++)
+            //{
+            //    for (int j = 0; j < 23; j++)
+            //    {
+            //        map[i, j] = -1;
+            //    }
+            //}
+        }
+        private void ResetState()
+        {
+            bufferBitmap.Dispose();
+            bufferBitmap = new Bitmap(1024, 768);
+            pictureBoxGraphicsHandle = Graphics.FromImage(bufferBitmap);
+            pictureBox.Image = bufferBitmap;
+            this.Text = "Level Editor";
+            workSaved = true;
+            filename = null;
+        }
+
+        private void NewLevel()
+        {
+            if (!workSaved)
             {
-                for (int j = 0; j < 23; j++)
+                DialogResult dr = MessageBox.Show("Do you want to save the changes?",
+                    "Confirmation needed",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                if (dr == System.Windows.Forms.DialogResult.Yes)
                 {
-                    map[i, j] = -1;
+                    // save-as code.
+                    if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        if (filename != saveFileDialog.FileName)
+                        {
+                            filename = saveFileDialog.FileName;
+                        }
+
+                        level.Save(filename);
+                        workSaved = true;
+
+                        Text = "Map Editor - " + filename;
+                    }
+                }
+                else if (dr == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    return;
                 }
             }
+
+            ResetState();
+
+            pictureBox.Refresh();
+        }
+
+        private void OpenLevel()
+        {
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                level.Read(openFileDialog.FileName);
+
+                ResetState();
+
+                for (uint i = 0; i < 25; i++)
+                {
+                    for (uint j = 0; j < 23; j++)
+                    {
+                        int value = level.GetElement((ushort)i, (ushort)j);
+                        PaintBrick(i * 41, j * 20, value, false);
+                    }
+                }
+
+                pictureBox.Refresh();
+
+                this.Text = "Level Editor - " + openFileDialog.FileName;
+                filename = openFileDialog.FileName;
+
+                saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled =
+                    saveStripButton.Enabled = true;
+
+            }
+        }
+
+        private void SaveLevel()
+        {
+            if (filename == null)
+            {
+                if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (filename != saveFileDialog.FileName)
+                    {
+                        filename = saveFileDialog.FileName;
+
+                    }
+
+                }
+            }
+
+            level.Save(filename);
+            workSaved = true;
+
+            Text = "Map Editor - " + filename;
         }
 
         private void Undo()
@@ -64,13 +162,14 @@ namespace Level_Editor
 
                 // take each brick we're about the paint over and stick them in a buffer 
                 // which will be passed to the redo stack once painting is finished. 
-                short brickIndex = map[tileCoordX, tileCoordY];
+                //short brickIndex = map[tileCoordX, tileCoordY];
+                int brickIndex = level.GetElement(tileCoordX, tileCoordY);
                 temp.Add(new TileCoordID(brick.x, brick.y, brickIndex));
 
                 // brick.x and brick.y contain screen coordinates. If you don't
                 // convert to tile coordinates, you'll get a buffer overflow (and they'll be wrong regardless).
-                map[tileCoordX, tileCoordY] = brick.index;
-
+                //map[tileCoordX, tileCoordY] = brick.index;
+                level.SetElement(tileCoordX, tileCoordY, brick.index);
                 // disabling the refresh because otherwise each brick is drawn and then displayed.
                 // It results in a domino-like effect; we want to see all the bricks appear at once. 
                 PaintBrick((ushort)brick.x, (ushort)brick.y, brick.index, false);
@@ -99,12 +198,14 @@ namespace Level_Editor
 
                 // take each brick we're about the paint over and stick them in a buffer 
                 // which will be passed to the redo stack once painting is finished. 
-                short brickIndex = map[tileCoordX, tileCoordY];
+                //short brickIndex = map[tileCoordX, tileCoordY];
+                int brickIndex = level.GetElement(tileCoordX, tileCoordY);
                 temp.Add(new TileCoordID(brick.x, brick.y, brickIndex));
 
                 // brick.x and brick.y contain screen coordinates. If you don't
                 // convert to tile coordinates, you'll get a buffer overflow (and they'll be wrong regardless).
-                map[tileCoordX, tileCoordY] = brick.index;
+                //map[tileCoordX, tileCoordY] = brick.index;
+                level.SetElement(tileCoordX, tileCoordY, brick.index);
 
                 // disabling the refresh because otherwise each brick is drawn and then displayed.
                 // It results in a domino-like effect; we want to see all the bricks appear at once. 
@@ -122,7 +223,7 @@ namespace Level_Editor
             undoToolStripMenuItem.Enabled = undoStripButton.Enabled = true;
         }
 
-        void PaintBrick(uint x, uint y, short index, bool refresh)
+        void PaintBrick(uint x, uint y, int index, bool refresh)
         {
             if (index == -1)
             {
@@ -176,7 +277,8 @@ namespace Level_Editor
 
                 if (tileCoordX < 25 && tileCoordY < 23)
                 {
-                    if (map[tileCoordX, tileCoordY] != selectedBrick)
+                    //if (map[tileCoordX, tileCoordY] != selectedBrick)
+                    if(level.GetElement(tileCoordX, tileCoordY) != selectedBrick)
                     {
                         redoStack.Clear();
                         redoStripButton.Enabled = redoToolStripMenuItem.Enabled = false;
@@ -184,12 +286,19 @@ namespace Level_Editor
                         ushort screenX = (ushort)(tileCoordX * 41);
                         ushort screenY = (ushort)(tileCoordY * 20);
 
-                        short oldBrick = map[tileCoordX, tileCoordY];
+                        //short oldBrick = map[tileCoordX, tileCoordY];
+                        int oldBrick = level.GetElement(tileCoordX, tileCoordY);
                         paintBuffer.Add(new TileCoordID(screenX, screenY, oldBrick));
                     
-                        map[tileCoordX, tileCoordY] = selectedBrick;
-
+                        //map[tileCoordX, tileCoordY] = selectedBrick;
+                        level.SetElement(tileCoordX, tileCoordY, selectedBrick);
                         PaintBrick(screenX, screenY, selectedBrick, true);
+
+                        if (workSaved)
+                        {
+                            workSaved = false;
+                            this.Text += "*";
+                        }
                     }
                 }
             }
@@ -212,16 +321,18 @@ namespace Level_Editor
 
                 if (tileCoordX < 25 && tileCoordY < 23)
                 {
-                    if (map[tileCoordX, tileCoordY] != selectedBrick)
+                    //if (map[tileCoordX, tileCoordY] != selectedBrick)
+                    if(level.GetElement(tileCoordX, tileCoordY) != selectedBrick)
                     {
                         ushort screenX = (ushort)(tileCoordX * 41);
                         ushort screenY = (ushort)(tileCoordY * 20);
 
-                        short oldBrick = map[tileCoordX, tileCoordY];
+                        //short oldBrick = map[tileCoordX, tileCoordY];
+                        int oldBrick = level.GetElement(tileCoordX, tileCoordY);
                         //paintBuffer.AddCoordinate(mouseX, mouseY);
                         paintBuffer.Add(new TileCoordID(screenX, screenY, oldBrick));
-                        map[tileCoordX, tileCoordY] = selectedBrick;
-
+                        //map[tileCoordX, tileCoordY] = selectedBrick;
+                        level.SetElement(tileCoordX, tileCoordY, selectedBrick);
                         PaintBrick(screenX, screenY, selectedBrick, true);
                     }
                 }
@@ -257,6 +368,93 @@ namespace Level_Editor
         private void undoStripButton_Click(object sender, EventArgs e)
         {
             Undo();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveLevel();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (filename != saveFileDialog.FileName)
+                {
+                    filename = saveFileDialog.FileName;
+                }
+                
+                level.Save(filename);
+                workSaved = true;
+
+                Text = "Map Editor - " + filename;
+            }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenLevel();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!workSaved)
+            {
+                DialogResult dr = MessageBox.Show("Do you want to save the changes?", 
+                    "Confirmation needed",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                if (dr == System.Windows.Forms.DialogResult.Yes)
+                {
+                    // save-as code.
+                    if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        if (filename != saveFileDialog.FileName)
+                        {
+                            filename = saveFileDialog.FileName;
+                        }
+
+                        level.Save(filename);
+                        workSaved = true;
+
+                        Text = "Map Editor - " + filename;
+                    }
+                    else
+                    {
+                        // user has pressed cancel on the save file dialog.
+                        e.Cancel = true;
+                    }
+                }
+                else if (dr == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewLevel();
+        }
+
+        private void newStripButton_Click(object sender, EventArgs e)
+        {
+            NewLevel();
+        }
+
+        private void openStripButton_Click(object sender, EventArgs e)
+        {
+            OpenLevel();
+        }
+
+        private void saveStripButton_Click(object sender, EventArgs e)
+        {
+            SaveLevel();
         }
     }
 }
