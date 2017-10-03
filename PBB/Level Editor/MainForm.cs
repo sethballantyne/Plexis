@@ -27,7 +27,7 @@ namespace Level_Editor
     public partial class MainForm : Form
     {
         bool isPainting = false;
-        Graphics pictureBoxGraphicsHandle;
+        Graphics bufferBMPGraphicsHandle;
         Bitmap bufferBitmap = new Bitmap(1024, 768);
        // short[,] map = new short[25, 23];
         short selectedBrick = -1;
@@ -45,7 +45,7 @@ namespace Level_Editor
             InitializeComponent();
             listView.ShowItemToolTips = true;
 
-            pictureBoxGraphicsHandle = Graphics.FromImage(bufferBitmap);
+            bufferBMPGraphicsHandle = Graphics.FromImage(bufferBitmap);
             pictureBox.Image = bufferBitmap;
             //for (int i = 0; i < 25; i++)
             //{
@@ -59,7 +59,7 @@ namespace Level_Editor
         {
             bufferBitmap.Dispose();
             bufferBitmap = new Bitmap(1024, 768);
-            pictureBoxGraphicsHandle = Graphics.FromImage(bufferBitmap);
+            bufferBMPGraphicsHandle = Graphics.FromImage(bufferBitmap);
             pictureBox.Image = bufferBitmap;
             this.Text = "Level Editor";
             workSaved = true;
@@ -230,12 +230,12 @@ namespace Level_Editor
                 using (SolidBrush brush = new SolidBrush(Color.Black))
                 {
                     //pictureBoxGraphicsHandle.DrawRectangle(p, x, y, 41, 20);
-                    pictureBoxGraphicsHandle.FillRectangle(brush, x, y, 41, 20);
+                    bufferBMPGraphicsHandle.FillRectangle(brush, x, y, 41, 20);
                 }
             }
             else
             {
-                pictureBoxGraphicsHandle.DrawImage(imageList.Images[index], x, y);
+                bufferBMPGraphicsHandle.DrawImage(imageList.Images[index], x, y);
             }
 
             if (refresh)
