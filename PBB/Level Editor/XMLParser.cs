@@ -28,10 +28,20 @@ namespace Level_Editor
                 List<string> tempAttributeList = new List<string>();
                 foreach (var attribute in node.Elements("attribute"))
                 {
+                    string attributeName = (string) attribute.Attribute("name");
                     string attributeLabel = (string)attribute.Attribute("label");
                     string attributeValue = (string)attribute.Attribute("value");
 
-                    tempAttributeList.Add(String.Format("{0}: {1}", attributeLabel, attributeValue));
+                    string format;
+                    if (attributeName == "powerupSpawnChance")
+                    {
+                        format = "{0}: {1}%";
+                    }
+                    else
+                    {
+                        format = "{0}: {1}";
+                    }
+                    tempAttributeList.Add(String.Format(format, attributeLabel, attributeValue));
                 }
 
                 string tempDescription = (string)node.Element("description");
