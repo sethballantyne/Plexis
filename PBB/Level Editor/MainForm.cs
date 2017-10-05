@@ -40,6 +40,9 @@ namespace Level_Editor
         Stack<TileCoordID[]> redoStack = new Stack<TileCoordID[]>();
 
         Level level = new Level(25, 23);
+
+        About about = new About();
+
         public MainForm()
         {
             InitializeComponent();
@@ -455,6 +458,11 @@ namespace Level_Editor
         private void saveStripButton_Click(object sender, EventArgs e)
         {
             SaveLevel();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            about.Show();
         }
     }
 }
