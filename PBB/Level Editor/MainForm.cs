@@ -67,6 +67,16 @@ namespace Level_Editor
             this.Text = "Level Editor";
             workSaved = true;
             filename = null;
+
+            level.Clear();
+            undoStack.Clear();
+            redoStack.Clear();
+
+            // don't allow the saving of blank levels
+            saveStripButton.Enabled = saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = 
+                undoStripButton.Enabled = undoToolStripMenuItem.Enabled = redoStripButton.Enabled =
+                redoToolStripMenuItem.Enabled = false;
+            
         }
 
         private void NewLevel()
@@ -351,6 +361,8 @@ namespace Level_Editor
                 paintBuffer.Clear();
                 undoToolStripMenuItem.Enabled = undoStripButton.Enabled = true;
             }
+
+            saveAsToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = saveStripButton.Enabled = true;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
