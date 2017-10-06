@@ -154,13 +154,12 @@ namespace Level_Editor
 
                     }
 
+                    level.Save(filename);
+                    workSaved = true;
+
+                    Text = "Map Editor - " + filename;
                 }
             }
-
-            level.Save(filename);
-            workSaved = true;
-
-            Text = "Map Editor - " + filename;
         }
 
         private void Undo()
