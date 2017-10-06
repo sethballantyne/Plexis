@@ -79,48 +79,63 @@ namespace Level_Editor
             
         }
 
+        private DialogResult PromptToSave()
+        {
+            return MessageBox.Show("Do you want to save the changes?",
+                "Confirmation needed",
+                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+        }
+
         private void NewLevel()
         {
             if (!workSaved)
             {
-                DialogResult dr = MessageBox.Show("Do you want to save the changes?",
-                    "Confirmation needed",
-                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
-                if (dr == System.Windows.Forms.DialogResult.Yes)
+                switch (PromptToSave())
                 {
-                    // save-as code.
-                    if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        if (filename != saveFileDialog.FileName)
-                        {
-                            filename = saveFileDialog.FileName;
-                        }
-
-                        level.Save(filename);
-                        workSaved = true;
-
-                        Text = "Map Editor - " + filename;
-                    }
-                }
-                else if (dr == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    return;
+                    case DialogResult.Yes:
+                        // check to see if the user clicked Cancel on the save file dialog.
+                        // if they did, abort creating a new level. 
+                        if(SaveLevel() == System.Windows.Forms.DialogResult.Cancel)
+                            return;
+                        break;
+                    case DialogResult.Cancel:
+                        return;
                 }
             }
 
             ResetState();
-
             pictureBox.Refresh();
         }
 
         private void OpenLevel()
         {
+            if (!workSaved)
+            {
+                // work hasn't been saved; prompt to see if the user wishes to save
+                // before opening a level.
+                switch (PromptToSave())
+                {
+                    case DialogResult.Yes:
+                        if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            level.Save(saveFileDialog.FileName);
+                            Text = "Map Editor - " + filename;
+                        }
+                        else
+                        {
+                            // user has clicked Cancel on the save file dialog
+                            return;
+                        }
+                        break;
+                    case DialogResult.Cancel:
+                        return;
+                }
+            }
+
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                level.Read(openFileDialog.FileName);
-
                 ResetState();
+                level.Read(openFileDialog.FileName);
 
                 for (uint i = 0; i < 25; i++)
                 {
@@ -142,24 +157,32 @@ namespace Level_Editor
             }
         }
 
-        private void SaveLevel()
+        private DialogResult SaveLevel()
         {
+            DialogResult dr = System.Windows.Forms.DialogResult.Cancel;
+
             if (filename == null)
             {
-                if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                dr = saveFileDialog.ShowDialog();
+                if (dr == System.Windows.Forms.DialogResult.OK)
                 {
                     if (filename != saveFileDialog.FileName)
                     {
                         filename = saveFileDialog.FileName;
-
                     }
-
-                    level.Save(filename);
-                    workSaved = true;
-
-                    Text = "Map Editor - " + filename;
+                }
+                else
+                {
+                    return dr;
                 }
             }
+
+            level.Save(filename);
+            workSaved = true;
+
+            Text = "Map Editor - " + filename;
+
+            return dr;
         }
 
         private void Undo()
