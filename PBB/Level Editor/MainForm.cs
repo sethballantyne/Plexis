@@ -79,6 +79,20 @@ namespace Level_Editor
             
         }
 
+        private void DrawLevel()
+        {
+            for (uint i = 0; i < 25; i++)
+            {
+                for (uint j = 0; j < 23; j++)
+                {
+                    int value = level.GetElement((ushort)i, (ushort)j);
+                    PaintBrick(i * 41, j * 20, value, false);
+                }
+            }
+
+            pictureBox.Refresh();
+        }
+
         private DialogResult PromptToSave()
         {
             return MessageBox.Show("Do you want to save the changes?",
@@ -137,16 +151,7 @@ namespace Level_Editor
                 ResetState();
                 level.Read(openFileDialog.FileName);
 
-                for (uint i = 0; i < 25; i++)
-                {
-                    for (uint j = 0; j < 23; j++)
-                    {
-                        int value = level.GetElement((ushort)i, (ushort)j);
-                        PaintBrick(i * 41, j * 20, value, false);
-                    }
-                }
-
-                pictureBox.Refresh();
+                DrawLevel();
 
                 this.Text = "Level Editor - " + openFileDialog.FileName;
                 filename = openFileDialog.FileName;
