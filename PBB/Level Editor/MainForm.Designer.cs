@@ -252,7 +252,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -372,6 +372,14 @@
             this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imageList.ImageSize = new System.Drawing.Size(41, 20);
             this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.Filter = "PBB levels (*.lvl)|*.lvl";
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.Filter = "PBB levels (*.lvl)|*.lvl";
             // 
             // MainForm
             // 
