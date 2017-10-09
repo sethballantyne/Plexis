@@ -43,6 +43,8 @@ namespace Level_Editor
 
         About about = new About();
 
+        Grid grid = new Grid();
+
         public MainForm()
         {
             InitializeComponent();
@@ -81,6 +83,8 @@ namespace Level_Editor
 
         private void DrawLevel()
         {
+            bufferBMPGraphicsHandle.Clear(Color.Black);
+
             for (uint i = 0; i < 25; i++)
             {
                 for (uint j = 0; j < 23; j++)
@@ -90,6 +94,8 @@ namespace Level_Editor
                 }
             }
 
+            grid.Draw(bufferBMPGraphicsHandle);
+            
             pictureBox.Refresh();
         }
 
@@ -118,6 +124,9 @@ namespace Level_Editor
             }
 
             ResetState();
+
+            grid.Draw(bufferBMPGraphicsHandle);
+
             pictureBox.Refresh();
         }
 
@@ -130,14 +139,8 @@ namespace Level_Editor
                 switch (PromptToSave())
                 {
                     case DialogResult.Yes:
-                        if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        if (SaveAs() == System.Windows.Forms.DialogResult.Cancel)
                         {
-                            level.Save(saveFileDialog.FileName);
-                            Text = "Map Editor - " + filename;
-                        }
-                        else
-                        {
-                            // user has clicked Cancel on the save file dialog
                             return;
                         }
                         break;
@@ -160,6 +163,25 @@ namespace Level_Editor
                     saveStripButton.Enabled = true;
 
             }
+        }
+
+        private DialogResult SaveAs()
+        {
+            DialogResult dr = saveFileDialog.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                if (filename != saveFileDialog.FileName)
+                {
+                    filename = saveFileDialog.FileName;
+                }
+
+                level.Save(filename);
+                workSaved = true;
+
+                Text = "Map Editor - " + filename;
+            }
+
+            return dr;
         }
 
         private DialogResult SaveLevel()
@@ -190,6 +212,19 @@ namespace Level_Editor
             return dr;
         }
 
+        private void ToggleGrid(bool state)
+        {
+            enableGridStripButton.Checked = enableGridToolStripMenuItem.Checked = state;
+            disableGridStripButton.Checked = disableGridToolStripMenuItem.Checked = !state;
+
+            grid.Visible = state;
+
+            Settings.Default.EnableGrid = state;
+            Settings.Default.Save();
+
+            DrawLevel();
+        }
+
         private void Undo()
         {
             TileCoordID[] bricks = undoStack.Pop();
@@ -216,6 +251,9 @@ namespace Level_Editor
             }
 
             redoStack.Push(temp.ToArray());
+
+            grid.Draw(bufferBMPGraphicsHandle);
+           
             pictureBox.Refresh();
 
             if (undoStack.Count == 0)
@@ -253,6 +291,9 @@ namespace Level_Editor
             }
 
             undoStack.Push(temp.ToArray());
+
+            grid.Draw(bufferBMPGraphicsHandle);
+
             pictureBox.Refresh();
 
             if (redoStack.Count == 0)
@@ -284,6 +325,7 @@ namespace Level_Editor
             }
         }
 
+        
         private void MainForm_Load(object sender, EventArgs e)
         {
             BrickData[] parsedXMLData = XMLParser.Load("assets.xml");
@@ -304,6 +346,11 @@ namespace Level_Editor
                 listView.Items.Add(item);
                 
             }
+
+            grid.Colour = Settings.Default.GridColour;
+            grid.Visible = Settings.Default.EnableGrid;
+
+            ToggleGrid(grid.Visible);
         }
 
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
@@ -419,18 +466,7 @@ namespace Level_Editor
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                if (filename != saveFileDialog.FileName)
-                {
-                    filename = saveFileDialog.FileName;
-                }
-                
-                level.Save(filename);
-                workSaved = true;
-
-                Text = "Map Editor - " + filename;
-            }
+            SaveAs();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -502,6 +538,42 @@ namespace Level_Editor
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             about.Show();
+        }
+
+        private void disabledToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToggleGrid(false);
+        }
+
+        private void enabledToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToggleGrid(true);
+        }
+
+        private void gridColourToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                grid.Colour = colorDialog.Color;
+                Settings.Default.GridColour = grid.Colour;
+                Settings.Default.Save();
+
+                if (grid.Visible)
+                {
+                    grid.Draw(bufferBMPGraphicsHandle);
+                    pictureBox.Refresh();
+                }
+            }
+        }
+
+        private void enableGridStripButton_Click(object sender, EventArgs e)
+        {
+            ToggleGrid(true);
+        }
+
+        private void disableGridStripButton_Click(object sender, EventArgs e)
+        {
+            ToggleGrid(false);
         }
     }
 }

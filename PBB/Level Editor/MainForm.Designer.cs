@@ -47,6 +47,8 @@
             this.zoomOutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.enableGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disableGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gridOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gridColourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,12 +61,16 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.undoStripButton = new System.Windows.Forms.ToolStripButton();
             this.redoStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.enableGridStripButton = new System.Windows.Forms.ToolStripButton();
+            this.disableGridStripButton = new System.Windows.Forms.ToolStripButton();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.listView = new System.Windows.Forms.ListView();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -213,10 +219,28 @@
             // 
             // gridToolStripMenuItem
             // 
-            this.gridToolStripMenuItem.Enabled = false;
+            this.gridToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.enableGridToolStripMenuItem,
+            this.disableGridToolStripMenuItem});
             this.gridToolStripMenuItem.Name = "gridToolStripMenuItem";
             this.gridToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
             this.gridToolStripMenuItem.Text = "Grid";
+            // 
+            // enableGridToolStripMenuItem
+            // 
+            this.enableGridToolStripMenuItem.CheckOnClick = true;
+            this.enableGridToolStripMenuItem.Name = "enableGridToolStripMenuItem";
+            this.enableGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.enableGridToolStripMenuItem.Text = "Enabled";
+            this.enableGridToolStripMenuItem.Click += new System.EventHandler(this.enabledToolStripMenuItem_Click);
+            // 
+            // disableGridToolStripMenuItem
+            // 
+            this.disableGridToolStripMenuItem.CheckOnClick = true;
+            this.disableGridToolStripMenuItem.Name = "disableGridToolStripMenuItem";
+            this.disableGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.disableGridToolStripMenuItem.Text = "Disabled";
+            this.disableGridToolStripMenuItem.Click += new System.EventHandler(this.disabledToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -230,9 +254,8 @@
             // 
             this.gridOptionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gridColourToolStripMenuItem});
-            this.gridOptionsToolStripMenuItem.Enabled = false;
             this.gridOptionsToolStripMenuItem.Name = "gridOptionsToolStripMenuItem";
-            this.gridOptionsToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.gridOptionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.gridOptionsToolStripMenuItem.Text = "Grid Options";
             // 
             // gridColourToolStripMenuItem
@@ -240,6 +263,7 @@
             this.gridColourToolStripMenuItem.Name = "gridColourToolStripMenuItem";
             this.gridColourToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.gridColourToolStripMenuItem.Text = "Grid Colour";
+            this.gridColourToolStripMenuItem.Click += new System.EventHandler(this.gridColourToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -264,7 +288,10 @@
             this.saveStripButton,
             this.toolStripSeparator1,
             this.undoStripButton,
-            this.redoStripButton});
+            this.redoStripButton,
+            this.toolStripSeparator2,
+            this.enableGridStripButton,
+            this.disableGridStripButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(776, 25);
@@ -324,6 +351,30 @@
             this.redoStripButton.Size = new System.Drawing.Size(23, 22);
             this.redoStripButton.Click += new System.EventHandler(this.redoStripButton_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // enableGridStripButton
+            // 
+            this.enableGridStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.enableGridStripButton.Image = ((System.Drawing.Image)(resources.GetObject("enableGridStripButton.Image")));
+            this.enableGridStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.enableGridStripButton.Name = "enableGridStripButton";
+            this.enableGridStripButton.Size = new System.Drawing.Size(23, 22);
+            this.enableGridStripButton.Click += new System.EventHandler(this.enableGridStripButton_Click);
+            // 
+            // disableGridStripButton
+            // 
+            this.disableGridStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.disableGridStripButton.Image = ((System.Drawing.Image)(resources.GetObject("disableGridStripButton.Image")));
+            this.disableGridStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.disableGridStripButton.Name = "disableGridStripButton";
+            this.disableGridStripButton.Size = new System.Drawing.Size(23, 22);
+            this.disableGridStripButton.Text = "toolStripButton2";
+            this.disableGridStripButton.Click += new System.EventHandler(this.disableGridStripButton_Click);
+            // 
             // splitContainer
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -380,6 +431,10 @@
             // openFileDialog
             // 
             this.openFileDialog.Filter = "PBB levels (*.lvl)|*.lvl";
+            // 
+            // colorDialog
+            // 
+            this.colorDialog.Color = System.Drawing.Color.Green;
             // 
             // MainForm
             // 
@@ -446,6 +501,12 @@
         private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.ToolStripMenuItem enableGridToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem disableGridToolStripMenuItem;
+        private System.Windows.Forms.ColorDialog colorDialog;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton enableGridStripButton;
+        private System.Windows.Forms.ToolStripButton disableGridStripButton;
     }
 }
 

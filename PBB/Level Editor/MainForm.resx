@@ -195,6 +195,33 @@
         K4Yq+mzJ47+WTPYGxTcHtykTmrAAAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="enableGridStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFYSURBVDhPY6AqyJt9/z+UyZA1/TacHd93Cc4OaTwJZ2MA
+        ZAPSJt+Es2M6z8PZAbVHMQ0AaQTh7Bn3/mcAbU6fcuN/ysSr/xOBNsd2nfsf0Xr6P8hmkGafyoP/PUr3
+        /ncp3I5pUNZUhLNBmqFMhpDm43C2R+luTI0wALIZykRxdmDtETjbpXAnpgEgZ2cgORukOaId5OzjQGcf
+        BjvbDeTsgu3/7XK3/rfJ3PjfMm0dpkEozgZqhjJRnA3SDGViAlCAQZnA0D4MZzshOdsifS2mAfE9VyDO
+        Boc2wtkgm0F+dsje+t86c9N/89R1/02TVv03jF/x3yB6KaZByKEN8jOUieJskGYoExMEITkbObSRA0wv
+        BpvNcGfvBycSkJ8doKFtDtRskrQa7Gy96GX/daIW/9eKWAjGUO0IgBLa2QhnG8Uvh7OxaoQBZGdbpCJC
+        G9nZeA0gHTAwAACOffGU2o3WzAAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="disableGridStripButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAH3SURBVDhPY6AqyJt9/z+UyZA1/TacHd93Cc4OaTwJZ2MA
+        ZAPSJt+Es2M6z8PZAbVHMQ0AaQThqw21/99Xpfxv7Dv4P2Xi1f+JQJtju879j2g9/R9kM0izT+XB/x6l
+        e/+7FG7HNOhcQ+P/v+Xh/4D4T3PHNriCkObj//+VReT9Lw8/4FG6G1MjDKRPufH/X3l4PsgAIA3UFBr/
+        PzSU+Wl5+v+/eQGf/mW427oU7sQ0IAMYYBlAzTBnT2xe/v9PecT/X+VR/18Wxv3/mu7zP7po7X+Xgu3/
+        7XK3/rfJ3PjfMm0dpkEgzVAmQ1PNsv//M9z//4+z+V+RMx0uDtIMZWICUICB6P9ZXgY/4uz///XX+/vX
+        Qf7vHx+d//8sZDhBchbpazENiO+58h8UVaDQzqjd9v9voP7/f07y/5dHZPyvj2/9/0GF+f/HcLv/5qnr
+        /psmrfpvGL/iv0H0UkyDQKH910X+219jgb+/1Nn+/zMT4gOJz3EN/39ElOH/W3mGKSDNYMXYQELF1v9/
+        VZh+f1Dn+H8lwBGuEBRgd6QYDi4TYPinF4PN5sbjwERyGJhI9v9viGv5f0OZ639q3ERwaJsDNZskrQY7
+        O98t979O1OL/WhELwRiqHQGQE4lNNiK0jeKXw9lYNcIAciKxSEWENrKz8RpAOmBgAABwUicTJ1R32wAA
+        AABJRU5ErkJggg==
+</value>
+  </data>
   <metadata name="imageList.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>230, 17</value>
   </metadata>
@@ -203,5 +230,8 @@
   </metadata>
   <metadata name="openFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>462, 17</value>
+  </metadata>
+  <metadata name="colorDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>595, 17</value>
   </metadata>
 </root>
