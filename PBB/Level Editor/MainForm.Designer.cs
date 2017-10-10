@@ -230,7 +230,7 @@
             // 
             this.enableGridToolStripMenuItem.CheckOnClick = true;
             this.enableGridToolStripMenuItem.Name = "enableGridToolStripMenuItem";
-            this.enableGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.enableGridToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.enableGridToolStripMenuItem.Text = "Enabled";
             this.enableGridToolStripMenuItem.Click += new System.EventHandler(this.enabledToolStripMenuItem_Click);
             // 
@@ -238,7 +238,7 @@
             // 
             this.disableGridToolStripMenuItem.CheckOnClick = true;
             this.disableGridToolStripMenuItem.Name = "disableGridToolStripMenuItem";
-            this.disableGridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.disableGridToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.disableGridToolStripMenuItem.Text = "Disabled";
             this.disableGridToolStripMenuItem.Click += new System.EventHandler(this.disabledToolStripMenuItem_Click);
             // 
@@ -255,7 +255,7 @@
             this.gridOptionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gridColourToolStripMenuItem});
             this.gridOptionsToolStripMenuItem.Name = "gridOptionsToolStripMenuItem";
-            this.gridOptionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gridOptionsToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.gridOptionsToolStripMenuItem.Text = "Grid Options";
             // 
             // gridColourToolStripMenuItem
@@ -305,6 +305,7 @@
             this.newStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.newStripButton.Name = "newStripButton";
             this.newStripButton.Size = new System.Drawing.Size(23, 22);
+            this.newStripButton.Text = "New Level (CTRL+N)";
             this.newStripButton.Click += new System.EventHandler(this.newStripButton_Click);
             // 
             // openStripButton
@@ -314,6 +315,7 @@
             this.openStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.openStripButton.Name = "openStripButton";
             this.openStripButton.Size = new System.Drawing.Size(23, 22);
+            this.openStripButton.Text = "Open Level (CTRL+O)";
             this.openStripButton.Click += new System.EventHandler(this.openStripButton_Click);
             // 
             // saveStripButton
@@ -324,6 +326,7 @@
             this.saveStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.saveStripButton.Name = "saveStripButton";
             this.saveStripButton.Size = new System.Drawing.Size(23, 22);
+            this.saveStripButton.Text = "Save Level (CTRL+S)";
             this.saveStripButton.Click += new System.EventHandler(this.saveStripButton_Click);
             // 
             // toolStripSeparator1
@@ -339,6 +342,7 @@
             this.undoStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.undoStripButton.Name = "undoStripButton";
             this.undoStripButton.Size = new System.Drawing.Size(23, 22);
+            this.undoStripButton.Text = "Undo (CTRL+Z)";
             this.undoStripButton.Click += new System.EventHandler(this.undoStripButton_Click);
             // 
             // redoStripButton
@@ -349,6 +353,7 @@
             this.redoStripButton.ImageTransparentColor = System.Drawing.Color.Black;
             this.redoStripButton.Name = "redoStripButton";
             this.redoStripButton.Size = new System.Drawing.Size(23, 22);
+            this.redoStripButton.Text = "Redo (CTRL+Y)";
             this.redoStripButton.Click += new System.EventHandler(this.redoStripButton_Click);
             // 
             // toolStripSeparator2
