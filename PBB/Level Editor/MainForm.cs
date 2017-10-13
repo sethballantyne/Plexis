@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace Level_Editor
 {
@@ -45,6 +46,9 @@ namespace Level_Editor
 
         Grid grid = new Grid();
 
+        bool eraserMode = false;
+
+        Cursor eraserCursor;
         public MainForm()
         {
             InitializeComponent();
@@ -52,13 +56,8 @@ namespace Level_Editor
 
             bufferBMPGraphicsHandle = Graphics.FromImage(bufferBitmap);
             pictureBox.Image = bufferBitmap;
-            //for (int i = 0; i < 25; i++)
-            //{
-            //    for (int j = 0; j < 23; j++)
-            //    {
-            //        map[i, j] = -1;
-            //    }
-            //}
+
+            
         }
         private void ResetState()
         {
@@ -321,6 +320,10 @@ namespace Level_Editor
 
             if (refresh)
             {
+                if (grid.Visible)
+                {
+                    grid.Draw(bufferBMPGraphicsHandle);
+                }
                 pictureBox.Refresh();
             }
         }
@@ -328,6 +331,8 @@ namespace Level_Editor
         
         private void MainForm_Load(object sender, EventArgs e)
         {
+            eraserCursor = new Cursor(GetType(), "Resources.Eraser.cur");
+
             BrickData[] parsedXMLData = XMLParser.Load("assets.xml");
 
             foreach (BrickData brick in parsedXMLData)
@@ -344,18 +349,35 @@ namespace Level_Editor
 
                 item.ToolTipText = String.Format("{0}\n{1}", stringBuilder.ToString(), brick.Description);
                 listView.Items.Add(item);
-                
             }
 
             grid.Colour = Settings.Default.GridColour;
             grid.Visible = Settings.Default.EnableGrid;
 
             ToggleGrid(grid.Visible);
+
+            //Cursor = new Cursor(GetType(), "Resources.Eraser.cur");
+        }
+
+        private void listView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView.SelectedItems.Count > 0)
+            {
+                // Clicking on a brick in the palette causes the program to automatically
+                // switch from the eraser tool if it's enabled to "paint mode".
+                if (eraserMode)
+                {
+                    eraserMode = eraserToolStripButton.Checked = false;
+                    this.Cursor = Cursors.Default;
+                }
+               
+                selectedBrick = (short)listView.Items.IndexOf(listView.SelectedItems[0]);
+            }
         }
 
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (listView.SelectedItems.Count == 1)
+            if (listView.SelectedItems.Count == 1 || eraserMode)
             {
                 isPainting = true;
 
@@ -388,14 +410,6 @@ namespace Level_Editor
                         }
                     }
                 }
-            }
-        }
-
-        private void listView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listView.SelectedItems.Count > 0)
-            {
-                selectedBrick = (short)listView.Items.IndexOf(listView.SelectedItems[0]);
             }
         }
 
@@ -574,6 +588,22 @@ namespace Level_Editor
         private void disableGridStripButton_Click(object sender, EventArgs e)
         {
             ToggleGrid(false);
+        }
+
+        private void eraserToolStripButton_Click(object sender, EventArgs e)
+        {
+            eraserMode = !eraserMode;
+
+            if (eraserMode)
+            {
+                this.Cursor = eraserCursor;
+            }
+            else
+            {
+                this.Cursor = Cursors.Default;
+            }
+
+            selectedBrick = -1;
         }
     }
 }

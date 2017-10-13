@@ -62,6 +62,8 @@
             this.undoStripButton = new System.Windows.Forms.ToolStripButton();
             this.redoStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.eraserToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.enableGridStripButton = new System.Windows.Forms.ToolStripButton();
             this.disableGridStripButton = new System.Windows.Forms.ToolStripButton();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
@@ -290,6 +292,8 @@
             this.undoStripButton,
             this.redoStripButton,
             this.toolStripSeparator2,
+            this.eraserToolStripButton,
+            this.toolStripSeparator3,
             this.enableGridStripButton,
             this.disableGridStripButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
@@ -360,6 +364,22 @@
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // eraserToolStripButton
+            // 
+            this.eraserToolStripButton.CheckOnClick = true;
+            this.eraserToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.eraserToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("eraserToolStripButton.Image")));
+            this.eraserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.eraserToolStripButton.Name = "eraserToolStripButton";
+            this.eraserToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.eraserToolStripButton.Text = "Eraser";
+            this.eraserToolStripButton.Click += new System.EventHandler(this.eraserToolStripButton_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // enableGridStripButton
             // 
@@ -512,6 +532,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton enableGridStripButton;
         private System.Windows.Forms.ToolStripButton disableGridStripButton;
+        private System.Windows.Forms.ToolStripButton eraserToolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 
