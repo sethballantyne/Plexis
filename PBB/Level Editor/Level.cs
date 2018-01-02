@@ -28,13 +28,25 @@ using System.IO;
 
 namespace Level_Editor
 {
+    /// <summary>
+    /// Class used to manipulate levels, including reading and writing to disk. Unless specified
+    /// otherwise, all coordinates are in bricks; a level is defined by the number of bricks wide it is
+    /// and the number of bricks high it is. 
+    /// </summary>
     class Level
     {
+        // width and height in bricks.
         ushort width;
         ushort height;
 
+        // each brick type is represented by an integer ID.
         int[,] level;
 
+        /// <summary>
+        /// Createa a blank level of the specified width and height, in bricks.
+        /// </summary>
+        /// <param name="x">The number of bricks wide the level is.</param>
+        /// <param name="y">The number of bricks high the level is.</param>
         public Level(ushort x, ushort y)
         {
             level = new int[x, y];
@@ -45,16 +57,31 @@ namespace Level_Editor
             Clear();
         }
 
+        /// <summary>
+        /// Retrieves the tile at the specified coordinate, or returns -1 if there is no tile.
+        /// </summary>
+        /// <param name="x">The bricks X coordinate, translating to the desired column on the map.</param>
+        /// <param name="y">The bricks Y coordinate, translating to the desired row on the map.</param>
+        /// <returns></returns>
         public int GetElement(ushort x, ushort y)
         {
             return level[x, y];
         }
 
+        /// <summary>
+        /// Sets the specified index to the specified value; used for placing bricks within the map.
+        /// </summary>
+        /// <param name="x">The bricks X coordinate, translating to the desired column on the map.</param>
+        /// <param name="y">The bricks Y coordinate, translating to the desired row on the map.</param>
+        /// <param name="value">The number representing the brick to place.</param>
         public void SetElement(ushort x, ushort y, int value)
         {
             level[x, y] = value;
         }
 
+        /// <summary>
+        /// Clears the level of all bricks.
+        /// </summary>
         public void Clear()
         {
             for (int i = 0; i < width; i++)
@@ -66,6 +93,11 @@ namespace Level_Editor
             }
         }
 
+        /// <summary>
+        /// Reads the specified level file into memory.
+        /// </summary>
+        /// <param name="path">Path of the level file.</param>
+        /// <exception cref="System.ArgumentNullException">path is either null or an empty string.</exception>
         public void Read(string path)
         {
             if (String.IsNullOrEmpty(path))
@@ -105,6 +137,11 @@ namespace Level_Editor
             }
         }
 
+        /// <summary>
+        /// Writes the level to the specified file.
+        /// </summary>
+        /// <param name="path">The path (including filename) of the level file to write to.</param>
+        /// <exception cref="System.ArgumentNullException">path is null or an empty string.</exception>
         public void Save(string path)
         {
             if (String.IsNullOrEmpty(path))
