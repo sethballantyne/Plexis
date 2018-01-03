@@ -27,6 +27,9 @@ using System.Threading.Tasks;
 
 namespace Level_Editor
 {
+    /// <summary>
+    /// Represents a single parsed &lt;brick&gt; element in assets.xml and its associated &lt;attribute&gt; child element(s). 
+    /// </summary>
     public class BrickData
     {
         string description;
@@ -35,6 +38,15 @@ namespace Level_Editor
         string id;
         string[] attributes;
 
+        /// <summary>
+        /// Creates a new instance of BrickData using the parsed settings from assets.xml
+        /// </summary>
+        /// <param name="filename">The sprites filename, including extension.</param>
+        /// <param name="paletteLabel">The text to use as the images caption when copied to the ListView on the main form.</param>
+        /// <param name="id"></param>
+        /// <param name="attributes">Array of parsed &lt;attribute&gt;'s belonging to the brick.</param>
+        /// <param name="description">The bricks tooltip text when it's made in to a ListView item.</param>
+        /// <exception cref="System.ArgumentNullException">The specified variable is either null or an empty string.</exception>
         public BrickData(string filename, string paletteLabel, string id, string[] attributes, string description)
         {
             if (String.IsNullOrEmpty(filename))
@@ -65,30 +77,46 @@ namespace Level_Editor
             this.attributes = attributes;
         }
 
+        /// <summary>
+        /// Gets or sets the filename of the bricks sprite. 
+        /// </summary>
         public string Filename
         {
             get { return filename; }
             set { filename = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the label to be used by the ListView when the brick is converted into a ListViewItem.
+        /// </summary>
         public string Label
         {
             get { return label; }
             set { label = value; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ID
         {
             get { return id; }
             set { id = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the text to be used as the items tooltip when it's made into a ListViewItem. 
+        /// </summary>
         public string Description
         {
             get { return description; }
             set { description = value; }
         }
 
+        /// <summary>
+        /// Returns an array of the bricks attributes.
+        /// </summary>
+        /// <returns></returns>
         public string[] GetAttributes()
         {
             return attributes;
