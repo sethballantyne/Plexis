@@ -28,23 +28,42 @@ using System.Drawing;
 
 namespace Level_Editor
 {
+    /// <summary>
+    /// Represents the editors grid and its properties.
+    /// </summary>
     class Grid
     {
+        // represents whether the grid is visible to the user or not. 
         bool visible = false;
+
         Color gridColor = Color.Green;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the grid is visible or not. 
+        /// </summary>
+        /// <remarks>
+        /// This property doesn't toggle rendering of the grid itself. It's meant to be a way of determining elsewhere
+        /// in the program wether the grid is visible or not. 
+        /// </remarks>
         public bool Visible
         {
             get { return visible; }
             set { visible = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the colour of the grid in the form of a Color struct. 
+        /// </summary>
         public Color Colour
         {
             get { return gridColor; }
             set { gridColor = value; }
         }
 
+        /// <summary>
+        /// Renders the grid to the specified surface.
+        /// </summary>
+        /// <param name="renderTo">The GDI+ surface to draw to.</param>
         public void Draw(Graphics renderTo)
         {
             if (!visible)
