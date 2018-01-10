@@ -1,0 +1,194 @@
+class Video
+Private
+    LPDIRECTDRAW7 lpDD := NULL;
+    LPDIRECTDRAWSURFACE7 lpDDSPrimarySurface := NULL;
+    LPDIRECTDRAWSURFACE7 lpDDSSecondarySurface := NULL;
+
+    function void CreateFullscreenWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel)
+
+        result := lpDD->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT)
+        if(result != DD_OK)
+            switch(result)    
+                DDERR_EXCLUSIVEMODEALREADYSET:
+                    throw DirectDrawExclusiveModeAlreadySetException("SetCooperativeLevel: an attempt was made to set the cooperative level when it was already set to exclusive.")
+                DDERR_HWNDALREADYSET:
+                    throw DirectDrawHWNDAlreadySetException("SetCooperativeLevel: the window handle has already been set. It cannot be reset while the process has surfaces or palettes created.")
+                DDERR_HWNDSUBCLASSED:
+                    throw DirectDrawHWNDSubclassedException("SetCooperativeLevel: the window handle has been subclassed.")
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("SetCooperativelevel: DirectDraw received a pointer that was an invalid DirectDraw object. ")
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("SetCooperativeLevel: one or more of the parameters passed to the method are incorrect.")
+                DDERR_OUTOFMEMORY:
+                    throw new System::OutOfMemoryException("SetCooperativeLevel: Not enough memory available to complete the operation.")
+                default:
+                    break
+            end switch
+        end if
+
+        result := lpDD->SetDisplayMode(width, height, bitsPerPixel, 0, 0);
+        if(result != DD_OK)
+            switch(result)
+                DDERR_GENERIC:
+                    throw DirectDrawGenericException("SetDisplayMode: undefined error condition, so that's cool.")
+
+                DDERR_INVALIDMODE:
+                    throw DirectDrawInvalidModeException("SetDisplayMode: the requested mode is unsupported.")
+
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("SetDisplayMode: DirectDraw received a pointer that was an invalid DirectDraw object.")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("SetDisplayMode: one or more of the parameters passed to the method are incorrect.")
+
+                DDERR_LOCKEDSURFACES:
+                    throw DirectDrawLockedSurfaceException("SetDisplayMode: one or more surfaces are locked, causing the failure of the requested operation.")
+
+                DDERR_NOEXCLUSIVEMODE:
+                    throw DirectDrawNoExclusiveModeException("SetDisplayMode: exclusive mode required to complete the operation.")
+
+                DDERR_SURFACEBUSY:
+                    throw DirectDrawSurfaceBusyException("SetDisplayMode: access to the surface is refused because the surface is locked by another thread.")
+
+                DDERR_UNSUPPORTED:
+                    throw DirectDrawUnsupportedException("SetDisplayMode: the operation is not supported.")
+
+                DDERR_UNSUPPORTEDMODE:
+                    throw DirectDrawUnsupportedModeException("SetDisplayMode: the display is currently in an unsupported mode.")
+
+                DDERR_WASSTILLDRAWING:
+                    throw DirectDrawWasStillDrawingException("SetDisplayMode: the previous blit operation that is transferring information to or from this surface is incomplete.")
+
+                default:
+                    break;
+            end switch
+        end if
+
+        DDSURFACEDESC2 ddSD
+        SecureZeroMemory(ddSD, sizeof(ddSD))
+
+        ddSD.dwFlags := DDSD_CAPS | DDSD_BACKBUFFERCOUNT
+        ddSD.ddsCaps.dwCaps := DDSDCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP
+        ddSD.dwBackBufferCount := 1
+
+        result = lpDD->CreateSurface()
+        if (result != DD_OK)
+            switch(result)
+                DDERR_INCOMPATIBLEPRIMARY:
+                    throw DirectDrawIncompatiblePrimarySurfaceException("CreateSurface: ")
+
+                DDERR_INVALIDCAPS:
+                    throw DirectDrawInvalidCapsException("CreateSurface: ")
+
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectExeption("CreateSurface: ")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("CreateSurface: ")
+
+                DDERR_INVALIDPIXELFORMAT:
+                    throw DirectDrawInvalidPixelFormatException("CreateSurface: ")
+
+                DDERR_NOALPHAHW:
+                    throw DirectDrawNoAlphaHardwareException("CreateSurface: ")
+
+                DDERR_NOCOOPERATIVELEVELSET:
+                    throw DirectDrawNoCooperativeLevelSetException("CreateSurface: ")
+
+                DDERR_NODIRECTDRAWHW:
+                    throw DirectDrawNoDirectDrawHardwareException("CreateSurface: ")
+
+                DDERR_NOEMULATION:
+                    throw DirectDrawNoEmulationException("CreateSurface: ")
+
+                DDERR_NOEXCLUSIVEMODE:
+                    throw DirectDrawNoExclusiveModeException("CreateSurface: ")
+
+                DDERR_NOFLIPHW:
+                    throw DirectDrawNoFlipHardwareException("CreateSurface: ")
+
+                DDERR_NOMIPMAPHW:
+                    throw DirectDrawNoMipMapHardwareException("CreateSurface: ")
+
+                DDERR_NOOVERLAYHW:
+                    throw DirectDrawNoOverlayHardwareException("CreateSurface: ")
+
+                DDERR_NOZBUFFERHW:
+                    throw DirectDrawNoZBufferHardwareException("CreateSurface: ")
+
+                DDERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("CreateSurface: ")
+
+                DDERR_OUTOFVIDEOMEMORY:
+                    throw DirectDrawOutOfVideoMemoryException("CreateSurface: ")
+
+                DDERR_PRIMARYSURFACEALREADYEXISTS:
+                    throw DirectDrawPrimarySurfaceAlreadyExistsException("CreateSurface: ")
+
+                DDERR_UNSUPPORTEDMODE:
+                    throw DirectDrawUnsupportedModeException("CreateSurface: ")
+
+                default:
+                    break;
+            end switch
+        end if
+    end function
+
+Public
+    function void Initialise() : static
+        result := DirectDrawCreateEx()
+        if(result != DD_OK) 
+            switch(result)
+                DDER_INVALIDDIRECTDRAWGUID:
+                    throw DirectDrawInvalidGUIDException("Invalid GUID passed to DirectDrawCreateEx")
+
+                DDER_DIRECTDRAWALREADYCREATED:
+                    throw DirectDrawAlreadyCreatedException("Direct Draw has already been initialised.")
+
+                DDER_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("Invalid parameters passed to DirectDrawCreateEx")
+
+                DDER_GENERIC:
+                    throw DirectDrawGenericException("Undefined error condition returned by DirectDrawCreateEx. Consult your local psychic.")
+            
+                DDERR_NODIRECTDRAWHW:
+                    throw DirectDrawNoHardwareException("The specified driver doesn't support DirectDraw hardware acceleration.")
+
+                DDERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("Not enough memory available to initialise DirectDraw.")
+            
+                default:
+                    break
+            end switch
+        end if
+    end function
+
+    function void SetDisplayMode(HWND hWnd, uint width, uint height, uchar bitsPerPixel, bool fullscreen) : static
+        try
+            if fullscreen = true
+                CreateFullscreenWindow(hWnd, width, height, bitsPerPixel)
+            else
+                CreateDesktopWindow(hWnd, width, height, bitsPerPixel)
+            end if
+        catch
+            throw;
+        end try-catch
+    end function
+
+    function void Shutdown() : static
+        if(lpDDSPrimarySurface != NULL)
+            lpDDSPrimarySurface->Release();
+            lpDDSPrimarySurface := NULL;
+        end if
+
+        if(lpDDSSecondarySurface != NULL)
+            lpDDSSecondarySurface->Release();
+            lpDDSSecondarySurface := NULL;
+
+        if(lpDD != NULL)
+            lpDD->Release();
+            lpDD := NULL;
+        end if
+    end function
+
+end class
