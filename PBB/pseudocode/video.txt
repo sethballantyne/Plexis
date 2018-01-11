@@ -3,6 +3,15 @@ Private
     LPDIRECTDRAW7 lpDD := NULL;
     LPDIRECTDRAWSURFACE7 lpDDSPrimarySurface := NULL;
     LPDIRECTDRAWSURFACE7 lpDDSSecondarySurface := NULL;
+    
+    function void AttachDirectDrawClipper(array System::Drawing::Rectangle)
+        result := lpDD->CreateClipper()
+        if (result != DD_OK)
+            switch(result)
+                
+            end switch
+        end if
+    end function
 
     function void CreateFullscreenWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel)
 
@@ -60,7 +69,7 @@ Private
                     throw DirectDrawWasStillDrawingException("SetDisplayMode: the previous blit operation that is transferring information to or from this surface is incomplete.")
 
                 default:
-                    break;
+                    break
             end switch
         end if
 
@@ -71,67 +80,97 @@ Private
         ddSD.ddsCaps.dwCaps := DDSDCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP
         ddSD.dwBackBufferCount := 1
 
-        result = lpDD->CreateSurface()
+        result := lpDD->CreateSurface()
         if (result != DD_OK)
             switch(result)
                 DDERR_INCOMPATIBLEPRIMARY:
-                    throw DirectDrawIncompatiblePrimarySurfaceException("CreateSurface: ")
+                    throw DirectDrawIncompatiblePrimarySurfaceException("CreateSurface: the primary surface creation request does not match the existing primary surface. ")
 
                 DDERR_INVALIDCAPS:
-                    throw DirectDrawInvalidCapsException("CreateSurface: ")
+                    throw DirectDrawInvalidCapsException("CreateSurface: one or more of the capability bits is incorrect.")
 
                 DDERR_INVALIDOBJECT:
-                    throw DirectDrawInvalidObjectExeption("CreateSurface: ")
+                    throw DirectDrawInvalidObjectExeption("CreateSurface: DirectDraw received a pointer that was an invalid DirectDraw object.")
 
                 DDERR_INVALIDPARAMS:
-                    throw DirectDrawInvalidParametersException("CreateSurface: ")
+                    throw DirectDrawInvalidParametersException("CreateSurface: one or more of the parameters passed to the method are incorrect.")
 
                 DDERR_INVALIDPIXELFORMAT:
-                    throw DirectDrawInvalidPixelFormatException("CreateSurface: ")
+                    throw DirectDrawInvalidPixelFormatException("CreateSurface: an invalid pixel format was specified.")
 
                 DDERR_NOALPHAHW:
-                    throw DirectDrawNoAlphaHardwareException("CreateSurface: ")
+                    throw DirectDrawNoAlphaHardwareException("CreateSurface: the video device doesn't support alpha hardware acceleration or it's unavailable.")
 
                 DDERR_NOCOOPERATIVELEVELSET:
-                    throw DirectDrawNoCooperativeLevelSetException("CreateSurface: ")
+                    throw DirectDrawNoCooperativeLevelSetException("CreateSurface: attempting to create a surface without first setting the cooperative level.")
 
                 DDERR_NODIRECTDRAWHW:
-                    throw DirectDrawNoDirectDrawHardwareException("CreateSurface: ")
+                    throw DirectDrawNoDirectDrawHardwareException("CreateSurface: the current device doesn't support hardware-only DirectDraw acceleration.")
 
                 DDERR_NOEMULATION:
-                    throw DirectDrawNoEmulationException("CreateSurface: ")
+                    throw DirectDrawNoEmulationException("CreateSurface: software emulation isn't available.")
 
                 DDERR_NOEXCLUSIVEMODE:
-                    throw DirectDrawNoExclusiveModeException("CreateSurface: ")
+                    throw DirectDrawNoExclusiveModeException("CreateSurface: exclusive mode required to complete the operation.")
 
                 DDERR_NOFLIPHW:
-                    throw DirectDrawNoFlipHardwareException("CreateSurface: ")
+                    throw DirectDrawNoFlipHardwareException("CreateSurface: flipping visible surfaces is not supported by the video hardware.")
 
                 DDERR_NOMIPMAPHW:
-                    throw DirectDrawNoMipMapHardwareException("CreateSurface: ")
+                    throw DirectDrawNoMipMapHardwareException("CreateSurface: unable to complete the operation because mipmapping isn't supported by the hardware or is not available.")
 
                 DDERR_NOOVERLAYHW:
-                    throw DirectDrawNoOverlayHardwareException("CreateSurface: ")
+                    throw DirectDrawNoOverlayHardwareException("CreateSurface: unable to complete the operation because no hardware support for overlay is available.")
 
                 DDERR_NOZBUFFERHW:
-                    throw DirectDrawNoZBufferHardwareException("CreateSurface: ")
+                    throw DirectDrawNoZBufferHardwareException("CreateSurface: unable to complete the operation because no hardware support for Z-ordering overlays is available")
 
                 DDERR_OUTOFMEMORY:
-                    throw System::OutOfMemoryException("CreateSurface: ")
+                    throw System::OutOfMemoryException("CreateSurface: DirectDraw does not have enough memory to perform the operation.")
 
                 DDERR_OUTOFVIDEOMEMORY:
-                    throw DirectDrawOutOfVideoMemoryException("CreateSurface: ")
+                    throw DirectDrawOutOfVideoMemoryException("CreateSurface: DirectDraw does not have enough display memory to perform the operation.")
 
                 DDERR_PRIMARYSURFACEALREADYEXISTS:
-                    throw DirectDrawPrimarySurfaceAlreadyExistsException("CreateSurface: ")
+                    throw DirectDrawPrimarySurfaceAlreadyExistsException("CreateSurface: a primary surface already exists.")
 
                 DDERR_UNSUPPORTEDMODE:
-                    throw DirectDrawUnsupportedModeException("CreateSurface: ")
+                    throw DirectDrawUnsupportedModeException("CreateSurface: unable to create a surface for the current display mode, it's unsupported.")
 
                 default:
-                    break;
+                    break
             end switch
         end if
+
+        ddSD.ddSDCaps.dwCaps := DDSCAPS_BACKBUFFER
+
+        result := lpDDSPrimarySurface->GetAttachedSurface(&ddSD.ddSCaps, &lpDDSBack)
+        if(result != DD_OK)
+            switch(result)
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("GetAttachedSurface: DirectDraw received a pointer that was an invalid DirectDraw object.")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("GetAttachedSurface: one or more of the parameters passed to the method are incorrect.")
+
+                DDERR_NOTFOUND:
+                    throw DirectDrawNotFoundException("GetAttachedSurface: the requested item was not found.")
+
+                DDERR_SURFACELOST:
+                    throw DirectDrawSurfaceLostExeption("GetAttachedSurface: access to the surface is refused because the surface memory is gone. Call IDirectDrawSurfacce7::Restore() on this surface to restore the memory associated with it.")
+
+                default:
+                    break
+            end switch
+        end if
+
+        System::Rectangle screenRect := ( x => 0,  y => 0, Width => width - 1, Height => height - 1)
+
+        try
+            AttachClipper(screenRect)
+        catch
+            throw
+        end try-catch
     end function
 
 Public
