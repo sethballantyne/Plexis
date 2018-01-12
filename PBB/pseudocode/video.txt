@@ -1,14 +1,66 @@
 class Video
 Private
-    LPDIRECTDRAW7 lpDD := NULL;
-    LPDIRECTDRAWSURFACE7 lpDDSPrimarySurface := NULL;
-    LPDIRECTDRAWSURFACE7 lpDDSSecondarySurface := NULL;
-    
-    function void AttachDirectDrawClipper(array System::Drawing::Rectangle)
+    LPDIRECTDRAW7 lpDD := NULL
+    LPDIRECTDRAWSURFACE7 lpDDSPrimarySurface := NULL
+    LPDIRECTDRAWSURFACE7 lpDDSSecondarySurface := NULL
+    LPDIRECTDRAWCLIPPER lpDDClipper := NULL
+
+    function void AttachClipper(HWND hWnd)
+        
         result := lpDD->CreateClipper()
         if (result != DD_OK)
             switch(result)
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("CreateClipper: DirectDraw received a pointer that was an invalid DirectDraw object.")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("CreateClipper: one or more of the parameters passed to the method are incorrect.")
+
+                DDERR_NOCOOPERATIVELEVELSET:
+                    throw DirectDrawNoCooperativeLevelSetException("CreateClipper: attempting to attach a clipper without first setting the cooperative level.")
+
+                DDERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("CreateClipper: not enough memory available to complete the operation.")
+
+                default:
+                    break
+            end switch
+        end if
+
+        result := lpDDClipper->SetHWnd(0, hWnd)
+        if(result != DD_OK)
+            switch(result)
+                DDERR_INVALIDCLIPLIST:
+                    throw DirectDrawInvalidClipListException("SetHWnd: DirectDraw doesn't support the provided clip list.")
+
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("SetHWnd: DirectDraw received a pointer that was an invalid DirectDraw object.")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("SetHWnd: One or more of the parameters passed to the method are incorrect.")
+
+                DDERR_OUTOFMEMORY:
+                    throw System::OutOfMemory("SetHWnd: not enough memory to complete the operation.")
+
+            end switch
                 
+        end if
+
+        result := lpDDSSecondarySurface->SetClipper(lpDDClipper)
+        if(result != DD_OK)
+            switch(result)
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("SetClipper: DirectDraw doesn't support the provided clip list.")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("SetClipper: DirectDraw received a pointer that was an invalid DirectDraw object.")
+
+                DDERR_INVALIDSURFACETYPE:
+                    throw DirectDrawInvalidSurfaceTypeException("SetClipper: the requested operation could not be performed because the surface was of the wrong type.")
+
+                DDERR_NOCLIPPERATTACHED
+                    throw DirectDrawNoClipperAttachedException("SetClipper: No DirectDrawClipper object is attached to the surface object.")
+
             end switch
         end if
     end function
@@ -25,7 +77,7 @@ Private
                 DDERR_HWNDSUBCLASSED:
                     throw DirectDrawHWNDSubclassedException("SetCooperativeLevel: the window handle has been subclassed.")
                 DDERR_INVALIDOBJECT:
-                    throw DirectDrawInvalidObjectException("SetCooperativelevel: DirectDraw received a pointer that was an invalid DirectDraw object. ")
+                    throw DirectDrawInvalidObjectException("SetCooperativelevel: DirectDraw received a pointer that was an invalid DirectDraw object.")
                 DDERR_INVALIDPARAMS:
                     throw DirectDrawInvalidParametersException("SetCooperativeLevel: one or more of the parameters passed to the method are incorrect.")
                 DDERR_OUTOFMEMORY:
@@ -164,10 +216,8 @@ Private
             end switch
         end if
 
-        System::Rectangle screenRect := ( x => 0,  y => 0, Width => width - 1, Height => height - 1)
-
         try
-            AttachClipper(screenRect)
+            AttachClipper(hWnd)
         catch
             throw
         end try-catch
@@ -216,17 +266,22 @@ Public
 
     function void Shutdown() : static
         if(lpDDSPrimarySurface != NULL)
-            lpDDSPrimarySurface->Release();
-            lpDDSPrimarySurface := NULL;
+            lpDDSPrimarySurface->Release()
+            lpDDSPrimarySurface := NULL
         end if
 
         if(lpDDSSecondarySurface != NULL)
-            lpDDSSecondarySurface->Release();
-            lpDDSSecondarySurface := NULL;
+            lpDDSSecondarySurface->Release()
+            lpDDSSecondarySurface := NULL
+
+        if(lpDDClipper != NULL)
+            lpDDClipper->Release()
+            lpDDClipper := NULL
+        end if
 
         if(lpDD != NULL)
-            lpDD->Release();
-            lpDD := NULL;
+            lpDD->Release()
+            lpDD := NULL
         end if
     end function
 
