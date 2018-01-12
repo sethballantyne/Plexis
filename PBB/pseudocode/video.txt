@@ -223,6 +223,171 @@ Private
         end try-catch
     end function
 
+    function CreateDesktopWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel)
+        result := lpDD->SetCooperativeLevel(hWnd, DDSCL_NORMAL)
+        if(result != DD_OK)
+            switch(result)    
+                DDERR_EXCLUSIVEMODEALREADYSET:
+                    throw DirectDrawExclusiveModeAlreadySetException("SetCooperativeLevel: an attempt was made to set the cooperative level when it was already set to exclusive.")
+                DDERR_HWNDALREADYSET:
+                    throw DirectDrawHWNDAlreadySetException("SetCooperativeLevel: the window handle has already been set. It cannot be reset while the process has surfaces or palettes created.")
+                DDERR_HWNDSUBCLASSED:
+                    throw DirectDrawHWNDSubclassedException("SetCooperativeLevel: the window handle has been subclassed.")
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("SetCooperativelevel: DirectDraw received a pointer that was an invalid DirectDraw object.")
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("SetCooperativeLevel: one or more of the parameters passed to the method are incorrect.")
+                DDERR_OUTOFMEMORY:
+                    throw new System::OutOfMemoryException("SetCooperativeLevel: Not enough memory available to complete the operation.")
+                default:
+                    break
+            end switch
+        end if
+
+        DDSURFACEDESC2 ddSD
+        SecureZeroMemory(ddSD, sizeof(ddSD))
+
+        ddSD.dwFlags := DDSD_CAPS
+        ddSD.ddsCaps.dwCaps := DDSDCAPS_PRIMARYSURFACE | DDSCAPS_LOCALVIDMEM | DDSCAPS_VIDEOMEMORY
+
+        result := lpDD->CreateSurface(&ddSD, &lpDDSPrimarySurface, NULL)
+        if (result != DD_OK)
+            switch(result)
+                DDERR_INCOMPATIBLEPRIMARY:
+                    throw DirectDrawIncompatiblePrimarySurfaceException("CreateSurface: the primary surface creation request does not match the existing primary surface. ")
+
+                DDERR_INVALIDCAPS:
+                    throw DirectDrawInvalidCapsException("CreateSurface: one or more of the capability bits is incorrect.")
+
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectExeption("CreateSurface: DirectDraw received a pointer that was an invalid DirectDraw object.")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("CreateSurface: one or more of the parameters passed to the method are incorrect.")
+
+                DDERR_INVALIDPIXELFORMAT:
+                    throw DirectDrawInvalidPixelFormatException("CreateSurface: an invalid pixel format was specified.")
+
+                DDERR_NOALPHAHW:
+                    throw DirectDrawNoAlphaHardwareException("CreateSurface: the video device doesn't support alpha hardware acceleration or it's unavailable.")
+
+                DDERR_NOCOOPERATIVELEVELSET:
+                    throw DirectDrawNoCooperativeLevelSetException("CreateSurface: attempting to create a surface without first setting the cooperative level.")
+
+                DDERR_NODIRECTDRAWHW:
+                    throw DirectDrawNoDirectDrawHardwareException("CreateSurface: the current device doesn't support hardware-only DirectDraw acceleration.")
+
+                DDERR_NOEMULATION:
+                    throw DirectDrawNoEmulationException("CreateSurface: software emulation isn't available.")
+
+                DDERR_NOEXCLUSIVEMODE:
+                    throw DirectDrawNoExclusiveModeException("CreateSurface: exclusive mode required to complete the operation.")
+
+                DDERR_NOFLIPHW:
+                    throw DirectDrawNoFlipHardwareException("CreateSurface: flipping visible surfaces is not supported by the video hardware.")
+
+                DDERR_NOMIPMAPHW:
+                    throw DirectDrawNoMipMapHardwareException("CreateSurface: unable to complete the operation because mipmapping isn't supported by the hardware or is not available.")
+
+                DDERR_NOOVERLAYHW:
+                    throw DirectDrawNoOverlayHardwareException("CreateSurface: unable to complete the operation because no hardware support for overlay is available.")
+
+                DDERR_NOZBUFFERHW:
+                    throw DirectDrawNoZBufferHardwareException("CreateSurface: unable to complete the operation because no hardware support for Z-ordering overlays is available")
+
+                DDERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("CreateSurface: DirectDraw does not have enough memory to perform the operation.")
+
+                DDERR_OUTOFVIDEOMEMORY:
+                    throw DirectDrawOutOfVideoMemoryException("CreateSurface: DirectDraw does not have enough display memory to perform the operation.")
+
+                DDERR_PRIMARYSURFACEALREADYEXISTS:
+                    throw DirectDrawPrimarySurfaceAlreadyExistsException("CreateSurface: a primary surface already exists.")
+
+                DDERR_UNSUPPORTEDMODE:
+                    throw DirectDrawUnsupportedModeException("CreateSurface: unable to create a surface for the current display mode, it's unsupported.")
+
+                default:
+                    break
+            end switch
+        end if
+
+        SecureZeroMemory(&ddSD, sizeof(ddSD))
+        ddSD.dwSize := sizeof(ddSD)
+        ddSD.dwFlags := DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT
+        ddSD.dwWidth := SCREEN_WIDTH
+        ddSD.dwHeight := SCREEN_HEIGHT
+        ddSD.ddsCaps.dwCaps := DDSCAPS_OFFSCREENPLAIN | DDSCAPS_LOCALVIDMEM | DDSCAPS_VIDEOMEMORY
+
+        result := lpDD->CreateSurface(&ddSD, &lpDDSSecondarySurface, NULL)
+        if (result != DD_OK)
+            switch(result)
+                DDERR_INCOMPATIBLEPRIMARY:
+                    throw DirectDrawIncompatiblePrimarySurfaceException("CreateSurface: the primary surface creation request does not match the existing primary surface. ")
+
+                DDERR_INVALIDCAPS:
+                    throw DirectDrawInvalidCapsException("CreateSurface: one or more of the capability bits is incorrect.")
+
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectExeption("CreateSurface: DirectDraw received a pointer that was an invalid DirectDraw object.")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("CreateSurface: one or more of the parameters passed to the method are incorrect.")
+
+                DDERR_INVALIDPIXELFORMAT:
+                    throw DirectDrawInvalidPixelFormatException("CreateSurface: an invalid pixel format was specified.")
+
+                DDERR_NOALPHAHW:
+                    throw DirectDrawNoAlphaHardwareException("CreateSurface: the video device doesn't support alpha hardware acceleration or it's unavailable.")
+
+                DDERR_NOCOOPERATIVELEVELSET:
+                    throw DirectDrawNoCooperativeLevelSetException("CreateSurface: attempting to create a surface without first setting the cooperative level.")
+
+                DDERR_NODIRECTDRAWHW:
+                    throw DirectDrawNoDirectDrawHardwareException("CreateSurface: the current device doesn't support hardware-only DirectDraw acceleration.")
+
+                DDERR_NOEMULATION:
+                    throw DirectDrawNoEmulationException("CreateSurface: software emulation isn't available.")
+
+                DDERR_NOEXCLUSIVEMODE:
+                    throw DirectDrawNoExclusiveModeException("CreateSurface: exclusive mode required to complete the operation.")
+
+                DDERR_NOFLIPHW:
+                    throw DirectDrawNoFlipHardwareException("CreateSurface: flipping visible surfaces is not supported by the video hardware.")
+
+                DDERR_NOMIPMAPHW:
+                    throw DirectDrawNoMipMapHardwareException("CreateSurface: unable to complete the operation because mipmapping isn't supported by the hardware or is not available.")
+
+                DDERR_NOOVERLAYHW:
+                    throw DirectDrawNoOverlayHardwareException("CreateSurface: unable to complete the operation because no hardware support for overlay is available.")
+
+                DDERR_NOZBUFFERHW:
+                    throw DirectDrawNoZBufferHardwareException("CreateSurface: unable to complete the operation because no hardware support for Z-ordering overlays is available")
+
+                DDERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("CreateSurface: DirectDraw does not have enough memory to perform the operation.")
+
+                DDERR_OUTOFVIDEOMEMORY:
+                    throw DirectDrawOutOfVideoMemoryException("CreateSurface: DirectDraw does not have enough display memory to perform the operation.")
+
+                DDERR_PRIMARYSURFACEALREADYEXISTS:
+                    throw DirectDrawPrimarySurfaceAlreadyExistsException("CreateSurface: a primary surface already exists.")
+
+                DDERR_UNSUPPORTEDMODE:
+                    throw DirectDrawUnsupportedModeException("CreateSurface: unable to create a surface for the current display mode, it's unsupported.")
+
+                default:
+                    break
+            end switch
+        end if
+
+        try
+            AttachClipper(hWnd)
+        catch
+            throw
+        end try-catch
+
+    end function
 Public
     function void Initialise() : static
         result := DirectDrawCreateEx()
