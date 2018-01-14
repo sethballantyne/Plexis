@@ -5,7 +5,7 @@ Private
     LPDIRECTDRAWSURFACE7 lpDDSSecondarySurface := NULL
     LPDIRECTDRAWCLIPPER lpDDClipper := NULL
 
-    function void AttachClipper(HWND hWnd)
+    function void AttachClipper(HWND hWnd) : static
         
         result := lpDD->CreateClipper()
         if (result != DD_OK)
@@ -65,7 +65,7 @@ Private
         end if
     end function
 
-    function void CreateFullscreenWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel)
+    function void CreateFullscreenWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel) : static 
 
         result := lpDD->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT)
         if(result != DD_OK)
@@ -223,7 +223,7 @@ Private
         end try-catch
     end function
 
-    function CreateDesktopWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel)
+    function CreateDesktopWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel) : static
         result := lpDD->SetCooperativeLevel(hWnd, DDSCL_NORMAL)
         if(result != DD_OK)
             switch(result)    
@@ -427,6 +427,13 @@ Public
         catch
             throw;
         end try-catch
+    end function
+
+    function void ToggleFullscreenMode() : static
+        if(isFullscreen)
+            
+        else
+        end if
     end function
 
     function void Shutdown() : static
