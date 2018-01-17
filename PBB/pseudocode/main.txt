@@ -1,0 +1,60 @@
+function HRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+end function
+
+function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance)
+    
+    WNDCLASSEX windowClass
+    MSG msg
+    LPCWSTR windowClassName
+
+    windowClass.cbClsExtra := 0
+    windowClass.cbWndExtra := 0
+    windowClass.hbrBackground := (HBRUSH) GetStockObject(BLACK_BRUSH)
+    windowClass.hCursor := LoadCursor(NULL, IDC_ARROW)
+    windowClass.hIcon := LoadIcon(NULL, IDI_APPLICATION)
+    windowClass.hInstance := hInstance
+    windowClass.lpfnWndProc := WindowProc
+    windowClass.lpszClassName := windowClassName
+    windowClass.lpszMenuName := NULL
+    windowClass.hIconSm := NULL
+    windowClass.style := CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW
+    windowClass.cbSize := sizeof(WNDCLASSEX)
+
+    if(RegisterClassEx(&windowClass) = 0)
+        -- TODO: something is really fucked, call GetLastError and handle the error properly.
+    end if
+
+    hWnd := CreateWindowEx(
+        NULL,                               -- extended window style
+        windowClassName,                   
+        "PBB ",                             -- window title
+        WS_POPUP | WS_VISIBLE               -- window style flags
+        0,                                  -- x pos
+        0,                                  -- y pos
+        400,                                -- window width
+        400,                                -- width height
+        NULL,                               -- handle to parent window,
+        NULL,                               -- menu handle,
+        hInstance,                          -- handle to the windows module instance,
+        NULL                                -- pointer to extras if needed
+    )
+
+    if(!hWnd)
+        -- TODO: CreateWindowEx failed, call GetLastError
+    end if
+
+    ShowWindow(hWnd, SW_SHOWNORMAL)
+
+    while(!quit)
+        if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+            if(msg.message != WM_QUIT)
+                TranslateMessage(&msg)
+                DispatchMessage(&msg)
+            else
+                quit = true
+            end if
+        end if
+    end while
+
+    return msg.wParam
+end function
