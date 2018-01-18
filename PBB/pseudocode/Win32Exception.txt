@@ -40,7 +40,7 @@ Public
                         unmanagedFailedCall, 
                         lpMessageBuffer)
         
-        String ^formattedMessage = gcnew String((wchar_t *) lpDisplayBuffer)
+        String ^formattedMessage := gcnew String((wchar_t *) lpDisplayBuffer)
         
         LocalFree(lpMessageBuffer)
         LocalFree(lpDisplayBuffer)
