@@ -1,0 +1,50 @@
+class Win32Exception inherits System::Exception
+Private
+
+Public
+    constructor Win32Exception() call System::Exception()
+    end constructor
+
+    constructor Win32Exception(string message) call Exception(message)    
+    end constructor
+
+    function string FormatMessage(string failedCall) : static
+    -- works fine if an empty string is supplied, hence no exception handling that case.
+
+        if(failedCall = nullptr)
+            throw System::ArgumentNullException("the argument failedCall is a null string when it shouldn't be.")
+        end if
+
+        LPVOID lpMessageBuffer 
+        LPVOID lpDisplayBuffer
+
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+                      FORMAT_MESSAGE_FROM_SYSTEM     |
+                      FORMAT_MESSAGE_IGNORE_INSERTS,
+                      NULL,
+                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                      (LPTSTR) &lpMessageBuffer,
+                      0,
+                      NULL
+        )
+
+        pin_ptr<const wchar_t> unmanagedFailedCall := PtrToStringChars(failedCall)
+
+        SIZE_T allocationSize := lstrlen((LPCTSTR) lpMessageBuffer) + failedCall->Length + 40) * sizeof(TCHAR)
+        lpDisplayBuffer := (LPVOID) LocalAlloc(LMEM_ZEROINIT, allocationSize)
+
+        StringCchPrintf((LPTSTR) lpDisplayBuffer, 
+                        LocalSize(lpDisplayBuffer) / sizeof(TCHAR), 
+                        TEXT("%s failed with the error %d: %s"), 
+                        unmanagedFailedCall, 
+                        unmanagedFailedCall, 
+                        lpMessageBuffer)
+        
+        String ^formattedMessage = gcnew String((wchar_t *) lpDisplayBuffer)
+        
+        LocalFree(lpMessageBuffer)
+        LocalFree(lpDisplayBuffer)
+
+        return formattedMessage
+    end function
+end class
