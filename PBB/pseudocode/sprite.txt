@@ -10,7 +10,7 @@ Public
 
         hBitmap := LoadImage(NULL, filename, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE)
         if(NULL = hBitmap)
-            // error
+            throw Win32Exception(Win32Exception::FormatMessage("LoadImage"))
         end if
 
        try
