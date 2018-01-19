@@ -340,7 +340,7 @@ Private
         SelectObject(hDCImage, hBitmap)
 
         if(BitBlt(hDC, 0, 0, bitmap.Width, bitmap.Height, hDCImage, 0, 0, SRCCOPY) == 0)
-            -- error; call GetLastError, free hDCImage
+            throw Win32Exception(Win32Exception::FormatMessage("BitBlt"))
         end if
         lpDDSurface->ReleaseDC(hDC)
 
