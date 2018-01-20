@@ -386,8 +386,6 @@ Public
         try
             if fullscreen = true
                 CreateFullscreenWindow(hWnd, width, height, bitsPerPixel)
-            else
-                CreateDesktopWindow(hWnd, width, height, bitsPerPixel)
             end if
         catch
             throw;
