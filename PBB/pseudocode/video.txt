@@ -394,13 +394,6 @@ Public
         end try-catch
     end function
 
-    function void ToggleFullscreenMode() : static
-        if(isFullscreen)
-            
-        else
-        end if
-    end function
-
     function void Shutdown() : static
         if(lpDDSPrimarySurface != NULL)
             lpDDSPrimarySurface->Release()
