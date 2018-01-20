@@ -49,10 +49,11 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance)
         -- TODO: something is really fucked, call GetLastError and handle the error properly.
     end if
 
+    -- VER_PRODUCTNAME_STR will live in version.h
     hWnd := CreateWindowEx(
         NULL,                               -- extended window style
         windowClassName,                   
-        "PBB ",                             -- window title
+        VER_PRODUCTNAME_STR,                -- window title
         WS_POPUP | WS_VISIBLE               -- window style flags
         0,                                  -- x pos
         0,                                  -- y pos
