@@ -337,6 +337,10 @@ Private
             end switch
         end if
         hDCImage := CreateCompatibleDC(NULL)
+        if(hDCImage == NULL)
+            throw Win32Exception(Win32Exception::Format("CreateCompatibleDC"))
+        end if
+
         SelectObject(hDCImage, hBitmap)
 
         if(BitBlt(hDC, 0, 0, bitmap.Width, bitmap.Height, hDCImage, 0, 0, SRCCOPY) == 0)
