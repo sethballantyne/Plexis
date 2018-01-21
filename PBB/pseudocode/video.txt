@@ -382,7 +382,64 @@ Public
         end if
     end function
 
+    function void Restore()
+
+        -- the return values mentioned on MSDN for RestoreAllSurfaces() are wrong.
+        HRESULT result := lpDD->RestoreAllSurfaces()
+        if(result != DD_OK)
+            switch(result)
+                    DDERR_GENERIC:
+                        throw DirectDrawGenericException("RestoreAllSurfaces: ")
+
+                    DDERR_IMPLICITLYCREATED:
+                        throw DirectDrawImplicitlyCreatedException("RestoreAllSurfaces: ")
+
+                    DDERR_INCOMPATIBLEPRIMARY:
+                        throw DirectDrawIncompatiblePrimarySurfaceException("RestoreAllSurfaces: ")
+
+                    DDERR_INVALIDOBJECT:
+                        throw DirectDrawInvalidObjectException("RestoreAllSurface: ")
+
+                    DDERR_INVALIDPARAMS:
+                        throw DirectDrawInvalidParametersException("RestoreAllSurfaces: ")
+
+                    DDERR_NOEXCLUSIVEMODE:
+                        throw DirectDrawNoExclusiveModeException("RestoreAllSurfaces: ")
+
+                    DDERR_OUTOFMEMORY:
+                        throw System::OutOfMemoryException("RestoreAllSurfaces: ")
+
+                    DDERR_UNSUPPORTED:
+                        throw DirectDrawUnsupportedException("RestoreAllSurfaces: ")
+
+                    DDERR_WRONGMODE:
+                        throw DirectDrawWrongModeException("RestoreAllSurfaces: ")
+
+                default:
+                    break
+            end switch
+        end if
+    end function
+
     function void SetDisplayMode(HWND hWnd, uint width, uint height, uchar bitsPerPixel, bool fullscreen) : static
+
+        -- Frees the surfaces on the off chance that the function is called by the user due to DirectDrawWrongModeException being 
+        -- thrown (they have to be recreated if that's the case).
+
+        if(lpDDSPrimarySurface != NULL)
+            lpDDSPrimarySurface->Release()
+            lpDDSPrimarySurface := NULL
+        end if
+
+        if(lpDDSSecondarySurface != NULL)
+            lpDDSSecondarySurface->Release()
+            lpDDSSecondarySurface := NULL
+
+        if(lpDDClipper != NULL)
+            lpDDClipper->Release()
+            lpDDClipper := NULL
+        end if
+
         try
             if fullscreen = true
                 CreateFullscreenWindow(hWnd, width, height, bitsPerPixel)
