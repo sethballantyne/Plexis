@@ -3,9 +3,9 @@ function HRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
     switch(umsg)
         WM_SIZE:
             if(wParam = SIZE_MAXHIDE || wParam == SIZE_MINIMIZED)
-                -- set isWindowActive var to false
+                Game::IsWindowActive(false)
             else
-                -- set isWindowActive var to false
+                Game::IsWindowActive(true)
             end if
 
         WM_SYSCOMMAND:
@@ -80,6 +80,8 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance)
                 quit = true
             end if
         end if
+
+        --NOTE: only update the game when the window is active.
     end while
 
     return msg.wParam
