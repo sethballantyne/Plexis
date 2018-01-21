@@ -22,4 +22,13 @@ Public
        end try-catch
 
     end function
+
+    function void Release()
+       
+       if(lpDDSpriteSurface != NULL) 
+            lpDDSpriteSurface->Release();
+       end if
+
+    end function
+
 end class
