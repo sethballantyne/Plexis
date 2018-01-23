@@ -1,0 +1,130 @@
+class Audio : static
+Private
+    LPDIRECTSOUND8 lpDS := NULL
+Public
+    function LPDIRECTSOUNDBUFFER8 CreateSoundBuffer(bufferSize : uint) : static
+        
+        WAVEFORMATEX waveFormat
+        DSBUFFERDESC dsBD
+
+        SecureZeroMemory(&waveFormat, sizeof(waveFormat))
+        -- TODO: add accessors and private variables so the magic numbers aren't needed.
+        waveFormat.wFormatTag := WAVE_FORMAT_PCM
+        waveFormat.nChannels := 1 -- mono
+        waveFormat.nSamplesPerSec := 11025
+        waveFormat.nBlockAlign := 1
+        waveFormat.nAvgBytesPerSec := pcmwf.nSamplesPerSec * pcmwf.nBlockAlign
+        waveFormat.wBitsPerSample := 8
+        waveFormat.cbSize := 0              -- always set to zero
+
+        SecureZeroMemory(&dsBD, sizeof(dsBD))
+        dsBD.dwSize := sizeof(dsBD)
+        dsBD.dwFlags := DSBCAPS_CTRLVOLUME | DSBCAPS_STATIC | DSBCAPS_LOCSOFTWARE
+        dsBD.dwBufferBytes := bufferSize
+        dsBD.lpwfxFormat := &waveFormat
+
+        LPDIRECTSOUNDBUFFER lpDSTempBuffer := NULL
+        LPDIRECTSOUNDBUFFER lpDSSoundBuffer8 := NULL
+
+        HRESULT result := lpDS->CreateSoundBuffer(&dsBD, &lpDSTempBuffer, NULL)
+        if(result != DS_OK)
+            switch(result)
+                DSERR_ALLOCATED:
+                    throw DirectSoundAllocatedException("")
+
+                DSERR_BADFORMAT:
+                    throw DirectSoundBadFormatException("")
+
+                DSERR_BUFFERTOOSMALL:
+                    throw DirectSoundBufferTooSmallException("")
+
+                DSERR_CONTROLUNAVAIL:
+                    throw DirectSoundControlUnavailableException("")
+
+                DSERR_DS8_REQUIRED:
+                    throw DirectSoundVersion8RequiredException("")
+
+                DSERR_INVALIDCALL:
+                    throw DirectSoundInvalidCallException("")
+
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("")
+
+                DSERR_NOAGGREGATION:
+                    throw DirectSoundNoAggregationException("")
+
+                DSERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("")
+
+                DSERR_UNINITIALIZED:
+                    throw DirectSoundUninitializedException("")
+
+                DSERR_UNSUPPORTED:
+                    throw DirectSoundUnsupportedException("")
+
+            end switch
+        end if
+
+        result := lpDSTempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpDSSoundBuffer8)
+        if(result != S_OK) -- S_OK, not DS_OK. 
+            lpDSTempBuffer->Release()
+            throw System.Runtime.InteropServices.COMException("lpDSTempBuffer->QueryInterface failed.", result)
+        end if
+
+        return lpDSSoundBuffer8
+
+    end function
+
+    function Initialise(HWND hWnd) : static 
+        
+        HRESULT result := DirectSoundCreate8(NULL, &lpDS, NULL)
+        if(result != DS_OK)
+            switch(result)
+                DSERR_ALLOCATED:
+                    throw DirectSoundAllocatedException("")
+
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("")
+
+                DSERR_NOAGGREGATION:
+                    throw DirectSoundNoAggregationException("")
+
+                DSERR_NODRIVER:
+                    throw DirectSoundNoDriverException("")
+
+                DSERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("")
+
+                default:
+                    break
+            end switch
+        end if
+
+        result := lpDS->SetCooperativeLevel(hWnd, DSSCL_NORMAL)
+        if(result != DS_OK)
+            switch(result)
+                DSERR_ALLOCATED:
+                    throw DirectSoundAllocatedException("")
+
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("")
+
+                DSERR_UNINITIALIZED:
+                    throw DirectSoundUninitializedException("")
+
+                DSERR_UNSUPPORTED:
+                    throw DirectSoundUnsupportedException("")
+            end switch
+        end if
+
+    end function
+
+    function Shutdown() : static
+
+        if(lpDS != NULL)
+            lpDS->Release()
+            lpDS := NULL
+        end if
+
+    end function
+end class
