@@ -30,37 +30,37 @@ Public
         if(result != DS_OK)
             switch(result)
                 DSERR_ALLOCATED:
-                    throw DirectSoundAllocatedException("")
+                    throw DirectSoundAllocatedException("CreateSoundBuffer: the request failed because resources, such as a priority level, were already in use by another caller.")
 
                 DSERR_BADFORMAT:
-                    throw DirectSoundBadFormatException("")
+                    throw DirectSoundBadFormatException("CreateSoundBuffer: the specified wave format is not supported.")
 
                 DSERR_BUFFERTOOSMALL:
-                    throw DirectSoundBufferTooSmallException("")
+                    throw DirectSoundBufferTooSmallException("CreateSoundBuffer: the buffer size is not great enough to enable effects processing.")
 
                 DSERR_CONTROLUNAVAIL:
-                    throw DirectSoundControlUnavailableException("")
+                    throw DirectSoundControlUnavailableException("CreateSoundBuffer: the buffer control requested by the caller is not available.")
 
                 DSERR_DS8_REQUIRED:
-                    throw DirectSoundVersion8RequiredException("")
+                    throw DirectSoundVersion8RequiredException("CreateSoundBuffer: a DirectSound object of class CLSID_DirectSound8 or later is required for the requested functionality. ")
 
                 DSERR_INVALIDCALL:
-                    throw DirectSoundInvalidCallException("")
+                    throw DirectSoundInvalidCallException("CreateSoundBuffer: This function is not valid for the current state of this object.")
 
                 DSERR_INVALIDPARAM:
-                    throw DirectSoundInvalidParameterException("")
+                    throw DirectSoundInvalidParameterException("CreateSoundBuffer: an invalid parameter was passed to the returning function.")
 
                 DSERR_NOAGGREGATION:
-                    throw DirectSoundNoAggregationException("")
+                    throw DirectSoundNoAggregationException("CreateSoundBuffer: the object does not support aggregation.")
 
                 DSERR_OUTOFMEMORY:
-                    throw System::OutOfMemoryException("")
+                    throw System::OutOfMemoryException("CreateSoundBuffer: the DirectSound subsystem could not allocate sufficient memory to complete the caller's request.")
 
                 DSERR_UNINITIALIZED:
-                    throw DirectSoundUninitializedException("")
+                    throw DirectSoundUninitializedException("CreateSoundBuffer: the IDirectSound8::Initialize method has not been called or has not been called successfully before other methods were called.")
 
                 DSERR_UNSUPPORTED:
-                    throw DirectSoundUnsupportedException("")
+                    throw DirectSoundUnsupportedException("CreateSoundBuffer: the function called is not supported.")
 
             end switch
         end if
@@ -81,19 +81,19 @@ Public
         if(result != DS_OK)
             switch(result)
                 DSERR_ALLOCATED:
-                    throw DirectSoundAllocatedException("")
+                    throw DirectSoundAllocatedException("DirectSoundCreate8: the request failed because resources, such as a priority level, were already in use by another caller.")
 
                 DSERR_INVALIDPARAM:
-                    throw DirectSoundInvalidParameterException("")
+                    throw DirectSoundInvalidParameterException("DirectSoundCreate8: an invalid parameter was passed to the returning function.")
 
                 DSERR_NOAGGREGATION:
-                    throw DirectSoundNoAggregationException("")
+                    throw DirectSoundNoAggregationException("DirectSoundCreate8: the object does not support aggregation.")
 
                 DSERR_NODRIVER:
-                    throw DirectSoundNoDriverException("")
+                    throw DirectSoundNoDriverException("DirectSoundCreate8: no sound driver is available for use, or the given GUID is not a valid DirectSound device ID.")
 
                 DSERR_OUTOFMEMORY:
-                    throw System::OutOfMemoryException("")
+                    throw System::OutOfMemoryException("DirectSoundCreate8: the DirectSound subsystem could not allocate sufficient memory to complete the caller's request. ")
 
                 default:
                     break
@@ -104,16 +104,16 @@ Public
         if(result != DS_OK)
             switch(result)
                 DSERR_ALLOCATED:
-                    throw DirectSoundAllocatedException("")
+                    throw DirectSoundAllocatedException("SetCooperativeLevel: the request failed because resources, such as a priority level, were already in use by another caller.")
 
                 DSERR_INVALIDPARAM:
-                    throw DirectSoundInvalidParameterException("")
+                    throw DirectSoundInvalidParameterException("SetCooperativeLevel: an invalid parameter was passed to the returning function.")
 
                 DSERR_UNINITIALIZED:
-                    throw DirectSoundUninitializedException("")
+                    throw DirectSoundUninitializedException("SetCooperativeLevel: the IDirectSound8::Initialize method has not been called or has not been called successfully before other methods were called.")
 
                 DSERR_UNSUPPORTED:
-                    throw DirectSoundUnsupportedException("")
+                    throw DirectSoundUnsupportedException("SetCooperativeLevel: the function called is not supported.")
             end switch
         end if
 
