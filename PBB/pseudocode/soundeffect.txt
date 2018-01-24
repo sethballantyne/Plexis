@@ -36,64 +36,95 @@ Public
 
         childChunk := parentChunk
 
+        -- You'll need to do string conversion here obviously, since you're using 
+        -- a managed string as the functions argurment.
+
         hWav := mmioOpen(filename, NULL, MMIO_READ | MMIO_ALLOCBUF)
-        if (!hWav)
-            -- TODO: handle error
+        if (!hWav)  
+            -- not using FileNotFoundException because it may have failed because of another 
+            -- reason, such as permissions. 
+            throw System::IO::IOException("Failed to open " + filename)
         end if
 
-        parentChunk.fccType := mmioFOURCC('W', 'A', 'V', 'E')
-        if (mmioDescend(hWav, &parentChunk, NULL, MMIO_FINDRIFF))
+        parentChunk.fccType := mmioFOURCC('W', 'A', 'V', 'E') -- mmioFOURCC is a macro
+        MMRESULT mmIOResult := mmioDescend(hWav, &parentChunk, NULL, MMIO_FINDRIFF)
+        if(mmIOResult != MMSYSERR_NOERROR) -- returns MMIOERR_CHUNKNOTFOUND on error
+        end if
             mmioClose(hWav, 0)
             
-            -- TODO: handle error
+            throw System::IO::IOException(filename + " is either corrupt or isn't a valid WAV file.")
         end if
 
-        childChunk.ckid := mmioFOURCC('f', 'm', 't', ' ')
-        if (mmioDescend(hWav, &childChunk, &parentChunk, 0))
+        childChunk.ckid := mmioFOURCC('f', 'm', 't', ' ') 
+        mmIOResult := mmioDescend(hWav, &childChunk, &parentChunk, 0))
+        if(mmIOResult != MMSYSERR_NOERROR)
             mmioClose(hWav, 0)
 
-           -- TODO: handle error
+           throw System::IO::IOException(filename + " is either corrupt or isn't a valid WAV file.")
         end if
 
         -- read the wave format information
-        if (mmioRead(hWav, (char *)&waveFormat, sizeof(waveFormat)) != sizeof(waveFormat))
+        LONG bytesRead := mmioRead(hWav, (char *)&waveFormat, sizeof(waveFormat))
+        if(bytesRead != sizeof(waveFormat))
             mmioClose(hWav, 0)
 
-            -- TODO: handle error
+            if(bytesRead = 0) -- reached the end of the file while reading.
+                throw System::IO::EndOfStreamException("mmioRead: reached the end of " + filename + " while attempting to read in the format data.")
+            else              -- -1 returned; error reading from the file. 
+                throw System::IO::IOException("mmioRead: failed to read from " + filename)
+            end if
         end if
 
         if (waveFormat.wFormatTag != WAVE_FORMAT_PCM)
         
             mmioClose(hWav, 0);
 
-            -- TODO: handle error
+            System::IO::FileFormatException(filename + " is not a valid WAV file.")
         end if
 
-        if (mmioAscend(hWav, &childChunk, 0))
-        
+        mmioResult := mmioAscend(hWav, &childChunk, 0)
+        if(mmioResult != MMSYSERR_NOERROR)
             mmioClose(hWav, 0)
 
-            -- TODO: handle error
+            -- MMIOERR_CANNOTSEEK returned. mmioAscend also returns MMIOERR_CANNOTWRITE but
+            -- it's not handled here because it's not relevant; we're not writing to the file.
+            System::IO::IOException("mmioAscend: failed to seek while processing " + filename)
         end if
 
         childChunk.ckid := mmioFOURCC('d', 'a', 't', 'a')
-        if (mmioDescend(hWav, &childChunk, &parentChunk, MMIO_FINDCHUNK))
-    
+        mmioResult := mmioDescend(hWav, &childChunk, &parentChunk, MMIO_FINDCHUNK)
+        if(mmioResult != MMSYSERR_NOERROR)
             mmioClose(hWav, 0)
 
-           -- TODO: handle error
+            throw System::IO::IOException("mmioDescend: the end of the file or parent chunk was reached before the desired chunk was found.")
         end if
 
         -- TODO: check for failure
         soundBuffer := (UCHAR *)malloc(childChunk.cksize)
+        if(soundBuffer = NULL)
+            mmioClose(hWav, 0)
+            throw System::OutOfMemoryException("Not enough memory available to load the WAV file.")
+        end if
 
         mmioRead(hWav, (char*)soundBuffer, childChunk.cksize)
+        if(bytesRead != childChunk.cksize)
+            mmioClose(hWav, 0)
+
+            if(bytesRead = 0) -- reached the end of the file while reading.
+                -- TODO: considering changing this to IOException as well just to simplify it.
+                throw System::IO::EndOfStreamException("mmioRead: reached the end of " + filename + " while attempting to read in the format data.")
+            else              -- -1 returned; error reading from the file. 
+                throw System::IO::IOException("mmioRead: failed to read from " + filename)
+            end if
+        end if
+
         mmioClose(hWav, 0)
 
         LPDIRECTSOUNDBUFFER8 lpDSBuffer := NULL
         try
             lpDSBuffer := Audio::CreateSoundBuffer(childChunk.cksize) 
         catch
+            free(soundBuffer)
             throw
         end try-catch
 
@@ -108,6 +139,7 @@ Public
          )
 
          if(result != DS_OK)
+            free(soundBuffer)
             switch(result)
                 DSERR_BUFFERLOST:
                     throw DirectSoundBufferLostException("IDirectSoundBuffer8::Lock: ")
@@ -121,7 +153,7 @@ Public
                 DSERR_PRIOLEVELNEEDED:
                     throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Lock: ")
 
-                default
+                default:
                     break -- TODO: should be throwing a COMException
             end switch
          end if
@@ -132,6 +164,7 @@ Public
 
          result := lpDSBuffer->Unlock(audioPtr1, audioLength1, audioPtr2, audioLength2)
          if(result != DS_OK)
+            free(soundBuffer)
             switch(result)
                 DSERR_INVALIDCALL:
                     throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Unlock: ")
