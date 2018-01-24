@@ -1,0 +1,176 @@
+class SoundEffect
+Private
+    LPDIRECTSOUNDBUFFER8 lpDSBuffer := NULL
+Public
+    constructor SoundEffect(string filename)
+
+        try
+            LoadWAV(filename)
+        catch
+            -- TODO: handle exceptions
+        end try-catch
+     
+    end constructor
+
+    function LoadWAV(string filename)
+
+        HMMIO hWav  -- handle to the wave file
+        MMCKINFO parentChunk
+        MMCKINFO childChunk
+
+        WAVEFORMATEX waveFormat
+
+        UCHAR *soundBuffer
+        UCHAR *audioPtr1 := NULL
+        UCHAR *audioPtr2 := NULL
+
+        DWORD audioLength1 := 0
+        DWORD audioLength2 := 0
+
+
+        parentChunk.ckid := (FOURCC)0
+        parentChunk.cksize := 0
+        parentChunk.fccType := (FOURCC)0
+        parentChunk.dwDataOffset := 0
+        parentChunk.dwFlags := 0
+
+        childChunk := parentChunk
+
+        hWav := mmioOpen(filename, NULL, MMIO_READ | MMIO_ALLOCBUF)
+        if (!hWav)
+            -- TODO: handle error
+        end if
+
+        parentChunk.fccType := mmioFOURCC('W', 'A', 'V', 'E')
+        if (mmioDescend(hWav, &parentChunk, NULL, MMIO_FINDRIFF))
+            mmioClose(hWav, 0)
+            
+            -- TODO: handle error
+        end if
+
+        childChunk.ckid := mmioFOURCC('f', 'm', 't', ' ')
+        if (mmioDescend(hWav, &childChunk, &parentChunk, 0))
+            mmioClose(hWav, 0)
+
+           -- TODO: handle error
+        end if
+
+        -- read the wave format information
+        if (mmioRead(hWav, (char *)&waveFormat, sizeof(waveFormat)) != sizeof(waveFormat))
+            mmioClose(hWav, 0)
+
+            -- TODO: handle error
+        end if
+
+        if (waveFormat.wFormatTag != WAVE_FORMAT_PCM)
+        
+            mmioClose(hWav, 0);
+
+            -- TODO: handle error
+        end if
+
+        if (mmioAscend(hWav, &childChunk, 0))
+        
+            mmioClose(hWav, 0)
+
+            -- TODO: handle error
+        end if
+
+        childChunk.ckid := mmioFOURCC('d', 'a', 't', 'a')
+        if (mmioDescend(hWav, &childChunk, &parentChunk, MMIO_FINDCHUNK))
+    
+            mmioClose(hWav, 0)
+
+           -- TODO: handle error
+        end if
+
+        -- TODO: check for failure
+        soundBuffer := (UCHAR *)malloc(childChunk.cksize)
+
+        mmioRead(hWav, (char*)soundBuffer, childChunk.cksize)
+        mmioClose(hWav, 0)
+
+        LPDIRECTSOUNDBUFFER8 lpDSBuffer := NULL
+        try
+            lpDSBuffer := Audio::CreateSoundBuffer(childChunk.cksize) 
+        catch
+            throw
+        end try-catch
+
+        HRESULT result := lpDSBuffer->Lock(
+            0,
+            childChunk.cksize, 
+            (void **)&audioPtr1, 
+            &audioLength1, 
+            (void **)&audioPtr2, 
+            &audioLength2, 
+            DSBLOCK_FROMWRITECURSOR
+         )
+
+         if(result != DS_OK)
+            switch(result)
+                DSERR_BUFFERLOST:
+                    throw DirectSoundBufferLostException("IDirectSoundBuffer8::Lock: ")
+
+                DSERR_INVALIDCALL:
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Lock: ")
+
+                DSERR_INVALIDPARAM:
+                    throw  DirectSoundInvalidParameterException("IDirectSoundBuffer8::Lock: ")
+
+                DSERR_PRIOLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Lock: ")
+
+                default
+                    break -- TODO: should be throwing a COMException
+            end switch
+         end if
+
+         -- TODO: change these to secure versions
+         memcpy(audioPtr1, soundBuffer, audioLength1)
+         memcpy(audioPtr2, (soundBuffer + audioLength1), audioLength2)
+
+         result := lpDSBuffer->Unlock(audioPtr1, audioLength1, audioPtr2, audioLength2)
+         if(result != DS_OK)
+            switch(result)
+                DSERR_INVALIDCALL:
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Unlock: ")
+
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::Unlock: ")
+
+                DSERR_PRIORITYLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Unlock: ")
+
+                 default:
+                    break -- TODO: throw COMException
+            end switch
+         end if
+
+         free(soundBuffer)
+
+         return lpDSBuffer
+    end function
+
+    function Play()
+    end function
+
+    function Release()
+    end function
+
+    function Stop()
+    end function
+
+    property uint Volume
+        get
+        end get
+
+        set
+        end set
+
+    end property
+
+    destructor 
+        
+    end destructor
+end class
