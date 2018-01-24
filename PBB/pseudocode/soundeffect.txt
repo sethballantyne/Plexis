@@ -186,24 +186,93 @@ Public
     end function
 
     function Play()
+        HRESULT result := lpDSBuffer->Play(0, 0, 0)
+        if(result != DS_OK)
+            switch(result)
+                DSERR_BUFFERLOST:
+                    throw DirectSoundBufferLostException("IDirectSoundBuffer8::Play: the buffer memory has been lost and must be restored.")
+                
+                DSERR_INVALIDCALL:
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Play: this function is not valid for the current state of this object.")
+
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::Play: an invalid parameter was passed to the returning function.")
+                
+                DSERR_PRIOLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Play: a cooperative level of DSSCL_PRIORITY or higher is required.")
+                
+                default
+                    break
+            end switch
+        end if
     end function
 
     function Release()
+        if(lpDSBuffer != NULL)
+            lpDSBuffer->Release()
+            lpDSBuffer := NULL
+        end if
     end function
 
     function Stop()
+        HRESULT result := lpDSBuffer->Stop()
+        if(result != DS_OK)
+            switch(result)
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::Stop: an invalid parameter was passed to the returning function.")
+            
+                DSERR_PRIORITYLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Stop: a cooperative level of DSSCL_PRIORITY or higher is required.")
+            end switch
+        end if
     end function
 
+    -- NOTE: use macro in the game to convert from the 0-100 range that the game will use to the value directsound expects. 
     property uint Volume
         get
+            uint volume
+            HRESULT result := lpDSBuffer->GetVolume(&volume)
+            if(result != DS_OK)
+                switch(result)
+                    DSERR_CONTROLUNAVAIL:
+                        throw DirectSoundControlUnavailableException("IDirectSoundBuffer8::GetVolume: the volume buffer control requested by the caller is unavailable.")
+
+                    DSERR_INVALIDPARAM:
+                        throw DirectSoundInvalidParameterException("IDirectSoundBuffer8:GetVolume: an invalid parameter was passed to the returning function.")
+
+                    DSERR_PRIORITYLEVELNEEDED:
+                        throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8:GetVolume: A cooperative level of DSSCL_PRIORITY or higher is required.")
+
+                    default
+                        break
+                end switch
+            else
+                return volume
+            end if
         end get
 
         set
+            HRESULT result := lpDSBuffer->SetVolume(value)
+            if(result != DS_OK)
+                switch(result)
+                    DSERR_CONTROLUNAVAIL:
+                        throw DirectSoundControlUnvailableException("IDirectSoundBuffer8::SetVolume: the volume buffer control requested by the caller is unavailable.")
+
+                    DSERR_GENERIC:
+                        throw DirectSoundGenericException("IDirectSoundBuffer8::SetVolume: an undetermined error occurred inside the DirectSound subsystem. Call a psychic, fucked if I know.")
+
+                    DSERR_INVALIDPARAM:
+                        throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::SetVolume: an invalid parameter was passed to the returning function.")
+
+                    DSERR_PRIOLEVELNEEDED:
+                        throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::SetVolume: a cooperative level of DSSCL_PRIORITY or higher is required.")
+                end switch
+            end if
         end set
 
     end property
 
     destructor 
-        
+        Release()
     end destructor
 end class
