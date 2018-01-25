@@ -225,7 +225,45 @@ Public
                     throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Stop: a cooperative level of DSSCL_PRIORITY or higher is required.")
             end switch
         end if
+
+        result := lpDSBuffer->SetCurrentPosition(0)
+        if(result != DS_OK)
+            switch(result)
+                DSERR_INVALIDCALL:
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::SetCurrentPosition: this function is not valid for the current state of this object.")
+
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::SetCurrentPosition: an invalid parameter was passed to the returning function.")
+
+                DSERR_PRIOLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::SetCurrentPosition: a cooperative level of DSSCL_PRIORITY or higher is required.")
+                
+                default:
+                    break
+            end switch
+        end if
     end function
+
+    property bool IsPlaying
+        get
+            DWORD status := 0
+
+            HRESULT result := lpDSBuffer->GetStatus(&status)
+            if(result != DS_OK)
+                switch(result)
+                    DSERR_INVALIDPARAM:
+                        throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::GetStatus: an invalid parameter was passed to the returning function.")
+
+                    default
+                        -- the documentation mentions "If the method fails, the return value may be DSERR_INVALIDPARAM." which is really
+                        -- helpful, Microsoft. Some DirectSound exceptions will probably be caught here. 
+                        break
+                end switch
+            end if
+
+            return (status & DSBSTATUS_PLAYING)
+        end get
+    end property
 
     -- NOTE: use macro in the game to convert from the 0-100 range that the game will use to the value directsound expects. 
     property uint Volume
