@@ -3,9 +3,9 @@ function HRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
     switch(umsg)
         WM_SIZE:
             if(wParam = SIZE_MAXHIDE || wParam == SIZE_MINIMIZED)
-                Game::IsWindowActive(false)
+                Game::IsWindowActive := false
             else
-                Game::IsWindowActive(true)
+                Game::IsWindowActive := true
             end if
 
         WM_SYSCOMMAND:
