@@ -1,0 +1,80 @@
+class LogManager : static
+Private
+    List<ILog> errorSubscribers := new List<ILog>()
+    List<ILog> logSubscribers := new List<ILog>() 
+    List<ILog> debugSubscribers := new List<ILog>()
+
+Public
+    function Add(LogType flags, ILog subscriber)
+        if(subscriber = NULL)
+            return
+        end if
+
+        if(flags & LogType::Debug)
+            debugSubscribers->Add(subscriber)
+        end if
+
+        if(flags & LogType::Log)
+            logSubscribers->Add(subscriber)
+        end if
+
+        if(flags & LogType::Error)
+            errorSubscribers->Add(subscriber)
+        end if
+    end
+
+    function Remove(LogType flags, ILog subscriber)
+        if(subscriber = NULL)
+            return
+        end if
+
+        if(flags & LogType::Debug)
+            debugSubscribers->Remove(subscriber)
+        end if
+
+        if(flags & LogType::Log)
+            logSubscribers->Remove(subscriber)
+        end if
+
+        if(flags & LogType::Error)
+            errorSubscribers->Remove(subscriber)
+        end if
+    end function
+
+    function WriteMessage(LogType flags, string message...)
+        if(message = NULL)
+            return
+        end if
+
+        string formattedMessage := String->Format(message, arglist)
+
+        if(flags & LogType::Debug)
+            foreach(subscriber in debugSubcribers)
+                try
+                    subscribers->WriteMessage(formattedMessage)
+                catch
+                end try-catch
+            end foreach
+        end if
+
+        if(flags & LogType::Log)
+            foreach(subscriber in logSubscribers)
+                try
+                    subscribers->WriteMessage(formattedMessage)
+                catch
+                end try-catch
+            end foreach
+        end if
+
+        if(flags & LogType::Error)
+            foreach(subscriber in errorSubscribers)
+                try
+                    subscribers->WriteMessage(formattedMessage)
+                catch
+                end try-catch
+            end foreach
+        end if
+
+    end function
+end class
+   
