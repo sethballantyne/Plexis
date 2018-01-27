@@ -1,0 +1,45 @@
+class TextFileLogger inherits ILog
+Private
+    StreamWriter sw := NULL
+
+Public
+    constructor ApplicationLog(string path)
+    
+        try
+            sw := new StreamWriter(filename, true)
+            sw->AutoFlush := true
+        catch
+            throw
+        end try-catch
+
+    end constructor
+
+    function Close()
+
+        if(sw != NULL)
+            sw->Close()
+            sw := NULL
+        end if
+
+    end function
+
+    virtual void WriteMessage(string message)
+    {
+        try
+            sw->Write(message)
+        catch
+            throw
+        end try-catch
+    }
+
+
+    ~ApplicationLog()
+    {
+        Close()
+    }
+
+    !ApplicationLog()
+    {
+        Close()
+    }
+};
