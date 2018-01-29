@@ -1,0 +1,19 @@
+-- do this in C#; easier using linq.
+class GameOptionsXMLReader
+    function KeyValuePair<string, string>[] Read(string path)
+
+        XElement xmlFile := XElement::Load(path)
+
+        IEnumerable<XElement> xmlOptionsData := from q in xmlFile->Elements("option") select q
+
+        new List<KeyViewPair<string, string>> parsedOptions
+        foreach(element in xmlOptionsData)
+            string id := element.Attribute("id") as string
+            string value := element.Attribute("value") as string
+
+            parsedOptions->Add(new ListKeyViewPair<string, string>(id, value))
+        end foreach
+
+        parsedOptions->ToArray()
+    end function
+end class
