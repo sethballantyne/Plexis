@@ -1,0 +1,25 @@
+-- implement in C#, easier.
+class GameOptionsXMLWriter
+Public
+    function Write(string path, KeyValuePair<string, string>[] options)
+        new XmlWriterSettings settings
+        settings->Indent := true
+        settings->CloseOutput := true
+        settings->WriteEndDocumentOnClose := true
+        
+        using(XmlWriter xmlWriter := XmlWriter.Create(path, settings))
+            xmlWriter->WriteStartDocument()
+            xmlWriter->WriteStartElement("options")
+
+            foreach(option in options)
+                xmlWriter->WriteStartElement("option")
+                xmlWriter->WriteAttributeString("id", option->Key)
+                xmlWriter->WriteAttributeString("value", option->Value)
+                xmlWriter->WriteEndElement()
+            end foreach
+
+            xmlWriter->WriteEndElement()
+            xmlWriter->WriteEndDocument()
+        end using 
+    end function
+end class
