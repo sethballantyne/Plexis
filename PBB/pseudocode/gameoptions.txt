@@ -1,0 +1,63 @@
+class GameOptions
+Private
+    new Dictionary<string, string> gameOptions
+    string path := NULL
+Public
+    constructor GameOptions(string path)
+        KeyValuePair<string, string>[] results := (new GameOptionsXMLReader()).Read(path)
+        foreach(result in results)
+            gameOptions->Add(result->Key, result->Value)
+        end foreach
+
+        this->path := path
+    end constructor
+
+    function string GetValue(string id, string default)
+
+        -- an exception will be generated if id doesn't exist
+        string value = NULL
+        try
+            value := gameOptions[id]
+        catch
+            value := default
+        end try-catch
+
+        return value
+
+    end function
+
+    function int GetValue(string id, int default)
+
+        int value
+        try
+            value := Convert.ToInt32(gameOptions[id])
+        catch
+            value := default
+        end try-catch
+
+        return value
+
+    end function 
+
+    function Save()
+
+        new GameOptionsXMLWriter xmlWriter
+
+        try
+            xmlWriter.Write(path, gameOptions.ToArray())
+        catch
+            throw
+        end try-catch
+
+    end function
+
+    function SetValue(string id, string value)
+        -- key and value is added to the dictionary if the id doesn't exist.
+        -- KeyNotFoundException is only thrown by the properties get operation. 
+        gameOptions[id] := value
+    end function
+
+    function SetValue(string id, int value)
+        gameOptions[id] := Convert.ToString(value)
+    end function
+end class
