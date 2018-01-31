@@ -1,16 +1,16 @@
 class Keys
 Private
-    UCHAR *keys = NULL
+    UCHAR *keys := NULL
 Public
     constructor Keys(UCHAR *keys)
         if(keys = NULL)
             throw System::ArgumentNullException("keys")
         end if
 
-        this->keys = keys;
+        this->keys := keys
     end constructor
 
     function bool KeyDown(UCHAR key) : inline
-        return keys[key] & 0x80;
+        return keys[key] & 0x80
     end function
 end class
