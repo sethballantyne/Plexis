@@ -34,7 +34,7 @@ Private
                         throw System::OutOfMemoryException("IDirectInput8::CreateDevice: ")
 
                     default:
-                        System::Runtime::COMException("IDirectInput8::CreateDevice: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInput8::CreateDevice: ", result)
                 end switch
             end if
 
@@ -48,7 +48,7 @@ Private
                         throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: ")
 
                     default:
-                        throw System::Runtime::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
 
                 end switch
             end if
@@ -66,7 +66,7 @@ Private
                         throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: ")
 
                     default:
-                        throw System::Runtime::COMException("IDirectInputDevice8::SetDataFormat: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetDataFormat: ", result)
                 end switch
             end if
 
@@ -83,8 +83,7 @@ Private
                         throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
 
                     default:
-
-                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire failed", result)
                 end switch
             end if
     end function
@@ -116,7 +115,7 @@ Private
                         throw System::OutOfMemoryException("IDirectInput8::CreateDevice: ")
 
                     default:
-                        System::Runtime::COMException("IDirectInput8::CreateDevice: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInput8::CreateDevice: ", result)
                 end switch
             end if
 
@@ -130,7 +129,7 @@ Private
                         throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: ")
 
                     default:
-                        throw System::Runtime::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
 
                 end switch
             end if
@@ -148,7 +147,7 @@ Private
                         throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: ")
 
                     default:
-                        throw System::Runtime::COMException("IDirectInputDevice8::SetDataFormat: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetDataFormat: ", result)
                 end switch
             end if
 
@@ -165,7 +164,7 @@ Private
                         throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
 
                     default:
-                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire", result)
                 end switch
             end if
     end function
@@ -193,7 +192,7 @@ Public
                         throw System::OutOfMemoryException("DirectInput8Create: ")
 
                     default:
-                        System::Runtime::COMException("DirectInput8Create: ", result)
+                        throw System::Runtime::InteropServices::COMException("DirectInput8Create: ", result)
                 end switch
             end if
                 
@@ -251,7 +250,7 @@ Public
                         throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
 
                     default:
-                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire", result)
                 end switch
             end if
         end if
@@ -270,7 +269,7 @@ Public
                         throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
 
                     default:
-                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire", result)
                 end switch
             end if
         end if

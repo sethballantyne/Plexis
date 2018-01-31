@@ -27,7 +27,7 @@ Private
                     throw System::OutOfMemoryException("CreateClipper: not enough memory available to complete the operation.")
 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectDraw7::CreateClipper failed.", result)
             end switch
         end if
 
@@ -45,7 +45,8 @@ Private
 
                 DDERR_OUTOFMEMORY:
                     throw System::OutOfMemory("SetHWnd: not enough memory to complete the operation.")
-
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectDrawClipper::SetHWnd failed.", result)
             end switch
                 
         end if
@@ -64,7 +65,9 @@ Private
 
                 DDERR_NOCLIPPERATTACHED
                     throw DirectDrawNoClipperAttachedException("SetClipper: No DirectDrawClipper object is attached to the surface object.")
-
+                
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::SetClipper failed.", result)
             end switch
         end if
     end function
@@ -87,7 +90,7 @@ Private
                 DDERR_OUTOFMEMORY:
                     throw new System::OutOfMemoryException("SetCooperativeLevel: Not enough memory available to complete the operation.")
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectDraw7::SetCooperativeLevel failed.", result)
             end switch
         end if
 
@@ -125,7 +128,7 @@ Private
                     throw DirectDrawWasStillDrawingException("SetDisplayMode: the previous blit operation that is transferring information to or from this surface is incomplete.")
 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectDraw7::SetDisplayMode failed.\n", result)
             end switch
         end if
 
@@ -194,7 +197,7 @@ Private
                     throw DirectDrawUnsupportedModeException("CreateSurface: unable to create a surface for the current display mode, it's unsupported.")
 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectDraw7::CreateSurface failed.", result)
             end switch
         end if
 
@@ -216,7 +219,7 @@ Private
                     throw DirectDrawSurfaceLostExeption("GetAttachedSurface: access to the surface is refused because the surface memory is gone. Call IDirectDrawSurfacce7::Restore() on this surface to restore the memory associated with it.")
 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::GetAttachedSurface failed.", result)
             end switch
         end if
 
@@ -306,6 +309,9 @@ Private
 
                 DDERR_UNSUPPORTEDMODE:
                     throw DirectDrawUnsupportedModeException("CreateSurface: unable to create a surface for the current display mode, it's unsupported.")
+
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectDraw7::CreateSurface failed.", result)
             end switch
         end if
 
@@ -337,9 +343,10 @@ Private
                     throw DirectDrawWasStillDrawingException("GetDC: the previous blit operation is incomplete.")
 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::GetDC failed.", result)
             end switch
         end if
+
         hDCImage := CreateCompatibleDC(NULL)
         if(hDCImage == NULL)
             throw Win32Exception(Win32Exception::Format("CreateCompatibleDC"))
@@ -366,22 +373,22 @@ Public
                     throw DirectDrawInvalidGUIDException("Invalid GUID passed to DirectDrawCreateEx")
 
                 DDER_DIRECTDRAWALREADYCREATED:
-                    throw DirectDrawAlreadyCreatedException("Direct Draw has already been initialised.")
+                    throw DirectDrawAlreadyCreatedException("DirectDrawCreateEx: Direct Draw has already been initialised.")
 
                 DDER_INVALIDPARAMS:
-                    throw DirectDrawInvalidParametersException("Invalid parameters passed to DirectDrawCreateEx")
+                    throw DirectDrawInvalidParametersException("DirectDrawCreateEx: Invalid parameters passed to DirectDrawCreateEx")
 
                 DDER_GENERIC:
-                    throw DirectDrawGenericException("Undefined error condition returned by DirectDrawCreateEx. Consult your local psychic.")
+                    throw DirectDrawGenericException("DirectDrawCreateEx: Undefined error condition returned by DirectDrawCreateEx. Consult your local psychic.")
             
                 DDERR_NODIRECTDRAWHW:
-                    throw DirectDrawNoHardwareException("The specified driver doesn't support DirectDraw hardware acceleration.")
+                    throw DirectDrawNoHardwareException("DirectDrawCreateEx: The specified driver doesn't support DirectDraw hardware acceleration.")
 
                 DDERR_OUTOFMEMORY:
-                    throw System::OutOfMemoryException("Not enough memory available to initialise DirectDraw.")
+                    throw System::OutOfMemoryException("DirectDrawCreateEx: Not enough memory available to initialise DirectDraw.")
             
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("DirectDrawCreateEx failed.", result)
             end switch
         end if
     end function
@@ -461,7 +468,7 @@ Public
                     throw DirectDrawWasStillDrawingException("IDirectDrawSurface7::Blt: the previous blit operation that is transferring information to or from this surface is incomplete. ")
 
                 default:
-                    break
+                   throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::Blt failed.", result)
 
             end switch
         end if
@@ -501,7 +508,7 @@ Public
                         throw DirectDrawWrongModeException("RestoreAllSurfaces: ")
 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectDraw7::RestoreAllSurfaces failed.", result)
             end switch
         end if
     end function

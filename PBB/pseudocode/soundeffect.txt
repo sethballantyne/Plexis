@@ -7,7 +7,7 @@ Public
         try
             LoadWAV(filename)
         catch
-            -- TODO: handle exceptions
+            throw
         end try-catch
      
     end constructor
@@ -154,7 +154,7 @@ Public
                     throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Lock: ")
 
                 default:
-                    break -- TODO: should be throwing a COMException
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Lock failed.", result)
             end switch
          end if
 
@@ -176,7 +176,7 @@ Public
                     throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Unlock: ")
 
                  default:
-                    break -- TODO: throw COMException
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer::Unlock failed.", result)
             end switch
          end if
 
@@ -202,7 +202,7 @@ Public
                     throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Play: a cooperative level of DSSCL_PRIORITY or higher is required.")
                 
                 default
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Play failed.", result)
             end switch
         end if
     end function
@@ -223,6 +223,9 @@ Public
             
                 DSERR_PRIORITYLEVELNEEDED:
                     throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Stop: a cooperative level of DSSCL_PRIORITY or higher is required.")
+                
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Stop failed.\n", result)
             end switch
         end if
 
@@ -239,7 +242,7 @@ Public
                     throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::SetCurrentPosition: a cooperative level of DSSCL_PRIORITY or higher is required.")
                 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::SetCurrentPosition failed.")
             end switch
         end if
     end function
@@ -255,9 +258,9 @@ Public
                         throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::GetStatus: an invalid parameter was passed to the returning function.")
 
                     default
-                        -- the documentation mentions "If the method fails, the return value may be DSERR_INVALIDPARAM." which is really
+                        -- the documentation mentions "If the method fails, the return value may be DSERR_INVALIDPARAM". *may be*. Really
                         -- helpful, Microsoft. Some DirectSound exceptions will probably be caught here. 
-                        break
+                        throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::GetStatus failed.", result)
                 end switch
             end if
 
@@ -282,7 +285,7 @@ Public
                         throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8:GetVolume: A cooperative level of DSSCL_PRIORITY or higher is required.")
 
                     default
-                        break
+                        throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::GetVolume failed", result)
                 end switch
             else
                 return volume
@@ -304,6 +307,8 @@ Public
 
                     DSERR_PRIOLEVELNEEDED:
                         throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::SetVolume: a cooperative level of DSSCL_PRIORITY or higher is required.")
+                    default:
+                        throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::SetVolume failed\n", result)
                 end switch
             end if
         end set

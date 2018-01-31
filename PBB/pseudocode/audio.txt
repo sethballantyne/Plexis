@@ -61,14 +61,15 @@ Public
 
                 DSERR_UNSUPPORTED:
                     throw DirectSoundUnsupportedException("CreateSoundBuffer: the function called is not supported.")
-
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectSound8::CreateSoundBuffer failed.\n")
             end switch
         end if
 
         result := lpDSTempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpDSSoundBuffer8)
         if(result != S_OK) -- S_OK, not DS_OK. 
             lpDSTempBuffer->Release()
-            throw System.Runtime.InteropServices.COMException("lpDSTempBuffer->QueryInterface failed.", result)
+            throw System::Runtime::InteropServices::COMException("lpDSTempBuffer->QueryInterface failed.", result)
         end if
 
         return lpDSSoundBuffer8
@@ -96,7 +97,7 @@ Public
                     throw System::OutOfMemoryException("DirectSoundCreate8: the DirectSound subsystem could not allocate sufficient memory to complete the caller's request. ")
 
                 default:
-                    break
+                    throw System::Runtime::InteropServices::COMException("DirectSoundCreate8 failed.\n", result)
             end switch
         end if
 
@@ -114,6 +115,9 @@ Public
 
                 DSERR_UNSUPPORTED:
                     throw DirectSoundUnsupportedException("SetCooperativeLevel: the function called is not supported.")
+
+                default:
+                    System::Runtime::InteropServices::COMException("IDirectSound8::SetCooperativeLevel failed.", result)
             end switch
         end if
 
