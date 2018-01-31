@@ -1,0 +1,282 @@
+class Input : static
+Private
+    LPDIRECTINPUT8 lpDI := NULL
+    LPDIRECTINPUTDEVICE8 lpDIKeyboard := NULL
+    LPDIRECTINPUTDEVICE8 lpDIMouse := NULL
+    UCHAR keys[256]
+    DIMOUSESTATE2 mouseState
+
+    function InitKeyboard(HWND hWnd)
+
+            if(lpDIKeyboard != NULL)
+                lpDIKeyboard->Unacquire()
+                lpDIKeyboard->Release()
+                lpDIKeyboard := NULL
+            end if
+
+
+            result := lpDI->CreateDevice(GUID_SysKeyboard, &lpDIKeyboard, NULL)
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_DEVICENOTREG:
+                        throw DirectInputDeviceNotRegisteredException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_NOINTERFACE:
+                        throw DirectInputNoInterfaceException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_OUTOFMEMORY:
+                        throw System::OutOfMemoryException("IDirectInput8::CreateDevice: ")
+
+                    default:
+                        System::Runtime::COMException("IDirectInput8::CreateDevice: ", result)
+                end switch
+            end if
+
+            result := lpDIKeyboard->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetCooperativeLevel: ")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: ")
+
+                    default:
+                        throw System::Runtime::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
+
+                end switch
+            end if
+
+            result := lpDIKeyboard->SetDataFormat(&c_dfDIKeyboard)
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_ACQUIRED: 
+                        throw DirectInputAcquiredException("IDirectInputDevice8::SetDataFormat: ")
+
+                    DIERR_INVALIDPARAM: 
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetDataFormat: ")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: ")
+
+                    default:
+                        throw System::Runtime::COMException("IDirectInputDevice8::SetDataFormat: ", result)
+                end switch
+            end if
+
+            result := lpDIKeyboard->Acquire()
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+
+                    DIERR_OTHERAPPHASPRIO:
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+
+                    default:
+
+                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                end switch
+            end if
+    end function
+
+    function InitMouse(HWND hWnd)
+
+            if(lpDIMouse != NULL)
+                lpDIMouse->Unacquire()
+                lpDIMouse->Release()
+                lpDIMouse := NULL
+            end if
+
+            result := lpDI->CreateDevice(GUID_SysMouse, &lpDIMouse, NULL)
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_DEVICENOTREG:
+                        throw DirectInputDeviceNotRegisteredException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_NOINTERFACE:
+                        throw DirectInputNoInterfaceException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInput8::CreateDevice: ")
+
+                    DIERR_OUTOFMEMORY:
+                        throw System::OutOfMemoryException("IDirectInput8::CreateDevice: ")
+
+                    default:
+                        System::Runtime::COMException("IDirectInput8::CreateDevice: ", result)
+                end switch
+            end if
+
+            result := lpDIMouse->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetCooperativeLevel: ")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: ")
+
+                    default:
+                        throw System::Runtime::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
+
+                end switch
+            end if
+
+            result := lpDIMouse->SetDataFormat(&c_dfDIMouse2)
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_ACQUIRED: 
+                        throw DirectInputAcquiredException("IDirectInputDevice8::SetDataFormat: ")
+
+                    DIERR_INVALIDPARAM: 
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetDataFormat: ")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: ")
+
+                    default:
+                        throw System::Runtime::COMException("IDirectInputDevice8::SetDataFormat: ", result)
+                end switch
+            end if
+
+            result := lpDIMouse->Acquire()
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+
+                    DIERR_OTHERAPPHASPRIO:
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+
+                    default:
+                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                end switch
+            end if
+    end function
+
+    function ReleaseDevice(LPDIRECTINPUTDEVICE8 lpDevice) : inline
+        if(lpDevice != NULL)
+            lpDevice->Unacquire()
+            lpDevice->Release()
+            lpDevice := NULL
+    end function
+Public
+    function Initialise(HINSTANCE hInstance, HWND hWnd)
+            SecureZeroMemory(&keys[0], sizeof(keys))
+
+            HRESULT result := DirectInput8Create(hInstance, DIRECT_INPUTVERSION, IID_IDirectInput8, (void **)&lpDI, NULL)
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("DirectInput8Create: ")
+
+                    DIERR_OLDDIRECTINPUTVERSION:
+                        throw DirectInputOldVersionException("DirectInput8Create: ")
+
+                    DIERR_OUTOFMEMORY:
+                        throw System::OutOfMemoryException("DirectInput8Create: ")
+
+                    default:
+                        System::Runtime::COMException("DirectInput8Create: ", result)
+                end switch
+            end if
+                
+            try
+                InitKeyboard(hWnd)
+                InitMouse(hWnd)
+            catch
+                Release()
+                throw
+            end catch
+
+    end function
+
+    function Keys* ReadKeyboard()
+
+        lpDIKeyboard->GetDeviceState(sizeof(keys), (LPVOID) keys)
+        return new Keys(&keys[0])
+
+    end function
+
+    function Mouse* ReadMouse()
+        
+        lpDIMoue->GetDeviceState(sizeof(mouseState), (LPVOID) mouseState)
+        return new Mouse(&mouseState)
+
+    end function
+
+    function Release()
+
+        ReleaseDevice(lpDIKeyboard)
+        ReleaseDevice(lpDIMouse)
+        
+        if(lpDI != NULL)
+            lpDI->Release()
+            lpDI := NULL
+        end if
+
+    end function
+
+    function Restore()
+
+        HRESULT result
+
+        if(lpDIKeyboard != NULL)
+            result := lpDIKeyboard->Acquire()
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+
+                    DIERR_OTHERAPPHASPRIO:
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+
+                    default:
+                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                end switch
+            end if
+        end if
+
+        if(lpDIMouse != NULL)
+            result := lpDIMouse->Acquire()
+            if(result != DI_OK)
+                switch(result)
+                    DIERR_INVALIDPARAM:
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+
+                    DIERR_NOTINITIALIZED:
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+
+                    DIERR_OTHERAPPHASPRIO:
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+
+                    default:
+                        throw System::Runtime::COMException("IDirectInputDevice8::Acquire", result)
+                end switch
+            end if
+        end if
+    end function
+
+    function Shutdown()
+        Release()
+    end function
+end class
