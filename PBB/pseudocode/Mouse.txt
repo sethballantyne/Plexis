@@ -1,0 +1,28 @@
+class Mouse
+Private
+    LPDIMOUSESTATE2 mouseState := NULL
+Public
+    constructor Mouse(LPDIMOUSESTATE2 mouseState)
+        if(mouseState = NULL)
+            throw System::ArgumentNullException("mouseState")
+        end if
+
+        this->mouseState := mouseState
+    end constructor
+
+    function bool ButtonDown(BYTE button) : inline
+        return mouseState->rgbButtons[button] & 0x80
+    end function
+
+    property int X
+        get
+            return mouseState->lX
+        end get
+    end property
+
+    property int Y
+        get
+            return mouseState->lY
+        end get
+    end property
+end class
