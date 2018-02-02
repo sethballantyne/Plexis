@@ -26,11 +26,12 @@ function HRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
     return DefWindowProc(hWnd, msg, wParam, lParam)
 end function
 
-function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance)
-    
+function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+
     WNDCLASSEX windowClass
     MSG msg
     LPCWSTR windowClassName
+    HWND hWnd
 
     windowClass.cbClsExtra := 0
     windowClass.cbWndExtra := 0
@@ -46,7 +47,14 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance)
     windowClass.cbSize := sizeof(WNDCLASSEX)
 
     if(RegisterClassEx(&windowClass) = 0)
-        -- TODO: something is really fucked, call GetLastError and handle the error properly.
+        MessageBox(
+            NULL, 
+            L"Failed to register the window class.", 
+            L"Unholy Error", 
+            MB_OK | MB_ICONEXCLAMATION
+        )
+
+        return -1;
     end if
 
     -- VER_PRODUCTNAME_STR will live in version.h
@@ -66,11 +74,17 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance)
     )
 
     if(!hWnd)
-        -- TODO: CreateWindowEx failed, call GetLastError
+        MessageBox(
+            NULL, 
+            L"CreateWindowEx failed.", 
+            L"Unholy Errooooooor.", 
+            MB_OK | MB_ICONEXCLAMATION
+        )
+
+        return -1;
     end if
 
     ShowWindow(hWnd, SW_SHOWNORMAL)
-
     while(!quit)
         if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
             if(msg.message != WM_QUIT)
@@ -84,5 +98,6 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance)
         --NOTE: only update the game when the window is active.
     end while
 
+    -- windows doesn't actually make use of the return code, make it whatever you like.
     return msg.wParam
 end function
