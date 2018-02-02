@@ -222,6 +222,7 @@ Public
         DWORD status
         HRESULT result
 
+        VerifyNotNull(lpDSBuffer)
         result := lpDSBuffer->GetStatus(&status)
         if(result != DS_OK)
             switch(result)
