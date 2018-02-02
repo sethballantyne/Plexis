@@ -85,7 +85,12 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR 
     end if
 
     ShowWindow(hWnd, SW_SHOWNORMAL)
-    while(!quit)
+    
+    try
+    
+        Game::Initialise()
+
+        while(!quit)
         if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
             if(msg.message != WM_QUIT)
                 TranslateMessage(&msg)
@@ -96,7 +101,15 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR 
         end if
 
         --NOTE: only update the game when the window is active.
-    end while
+        end while
+    catch(Exception e)
+        LogManager::WriteMessage(
+        LogType->Error | LogType->Debug, 
+        "Fatal error: {0}\n\nStack trace: {1}", e->Message, e->StackTrace)
+    finally
+    
+        Game::Shutdown()
+    end try
 
     -- windows doesn't actually make use of the return code, make it whatever you like.
     return msg.wParam
