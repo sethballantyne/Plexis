@@ -14,6 +14,9 @@ Public
 
     function LoadWAV(string filename)
 
+        -- incase we're restoring the buffer
+        Release()
+
         HMMIO hWav  -- handle to the wave file
         MMCKINFO parentChunk
         MMCKINFO childChunk
@@ -206,12 +209,56 @@ Public
             end switch
         end if
     end function
-
+    
     function Release()
         if(lpDSBuffer != NULL)
             lpDSBuffer->Release()
             lpDSBuffer := NULL
         end if
+    end function
+
+    function Restore()
+
+        DWORD status
+        HRESULT result
+
+        result := lpDSBuffer->GetStatus(&status)
+        if(result != DS_OK)
+            switch(result)
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::GetStatus: an invalid parameter was passed to the returning function.")
+
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::GetStatus failed.\n", result)
+            end switch
+        end if
+
+        if(status & DSBSTATUS_BUFFERLOST)
+            
+            result := lpDSBuffer->Restore()
+            if(result != DS_OK)
+                if(result = DSERR_BUFFERLOST)
+                    try
+                        LoadWav(filename)
+                    catch
+                        throw
+                    end try
+                else
+                    switch(result)
+                        DSERR_INVALIDCALL:
+                            throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Restore: this function is not valid for the current state of this object.")
+
+                        DSERR_PRIOLEVELNEEDED:
+                            throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Restore: a cooperative level of DSSCL_PRIORITY or higher is required.")
+
+                        default:
+                            throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Restore failed.", result)
+                    end switch
+                end if
+            end if
+        end if
+
+        -- Buffer hasn't been lost so we don't give a shit.
     end function
 
     function Stop()
