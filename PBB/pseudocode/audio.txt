@@ -26,6 +26,7 @@ Public
         LPDIRECTSOUNDBUFFER lpDSTempBuffer := NULL
         LPDIRECTSOUNDBUFFER lpDSSoundBuffer8 := NULL
 
+        VerifyNotNull(lpDS)
         HRESULT result := lpDS->CreateSoundBuffer(&dsBD, &lpDSTempBuffer, NULL)
         if(result != DS_OK)
             switch(result)

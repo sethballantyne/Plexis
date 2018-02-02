@@ -74,6 +74,7 @@ Private
 
     function void CreateFullscreenWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel) : static 
 
+        VerifyNotNull(lpDD)
         result := lpDD->SetCooperativeLevel(hWnd, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT)
         if(result != DD_OK)
             switch(result)    
@@ -253,6 +254,7 @@ Private
         ddSD.dwWidth := bitmap.Width
         ddSD.dwHeight := bitmap.Height
 
+        VerifyNotNull(lpDD)
         result := lpDD->CreateSurface(&ddSD, &lpDDSurface, NULL)
         if(result != DD_OK)
             switch(result)
@@ -410,6 +412,7 @@ Public
         SecureZeroMemory(&ddBltFX, sizeof(DDBLTFX))
         ddBltFX.dwFillColor := RGBTo32Bit(255, r, g, b)
         
+        VerifyNotNull(lpDDSSecondarySurface)
         HRESULT result := lpDDSSecondarySurface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddBltFX)
         if(result != DD_OK)
             switch(result)
@@ -476,6 +479,7 @@ Public
 
     function void Restore()
 
+        VerifyNotNull(lpDD)
         -- the return values mentioned on MSDN for RestoreAllSurfaces() are wrong.
         HRESULT result := lpDD->RestoreAllSurfaces()
         if(result != DD_OK)

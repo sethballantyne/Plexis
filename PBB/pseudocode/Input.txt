@@ -14,7 +14,7 @@ Private
                 lpDIKeyboard := NULL
             end if
 
-
+            VerifyNotNull(lpDI)
             result := lpDI->CreateDevice(GUID_SysKeyboard, &lpDIKeyboard, NULL)
             if(result != DI_OK)
                 switch(result)
@@ -96,6 +96,7 @@ Private
                 lpDIMouse := NULL
             end if
 
+            VerifyNotNull(lpDI)
             result := lpDI->CreateDevice(GUID_SysMouse, &lpDIMouse, NULL)
             if(result != DI_OK)
                 switch(result)
@@ -208,6 +209,7 @@ Public
 
     function Keys* ReadKeyboard()
 
+        VerifyNotNull(lpDIKeyboard)
         lpDIKeyboard->GetDeviceState(sizeof(keys), (LPVOID) keys)
         return new Keys(&keys[0])
 
@@ -215,6 +217,7 @@ Public
 
     function Mouse* ReadMouse()
         
+        VerifyNotNull(lpDIMouse)
         lpDIMoue->GetDeviceState(sizeof(mouseState), (LPVOID) mouseState)
         return new Mouse(&mouseState)
 
