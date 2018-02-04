@@ -1,0 +1,77 @@
+class Game : static
+Private
+    bool isWindowActive := false
+
+    MessageBoxLogger messageBoxOutput := NULL
+    TextFileLogger textFileOutput := NULL
+    $ifdef DEBUG
+    new VSOutputLogger vsOutput 
+    $endif
+
+    KeyValuePair<string, string>[] optionDefaults := {
+        { "mouseMovesPaddle", "false" }
+        { "mouseSpeed",       "5"     }
+        { "soundVolume"       "50"    }
+        { "fireKey"           "3"     }
+        { "movePaddleLeft"    "4"     }
+        { "movePaddleRight"   "5"     }
+        { "screenshot"        "6"     }
+        { "console"           "7"     }
+        { "pause"             "8"     }
+        { "windowWidth"       "1024"  }
+        { "windowHeight"      "768"   }
+        { "bitsPerPixel"      "32"    }
+    }
+
+Public
+    function Initialise(HINSTANCE hInstance, HWND hWnd)
+        try
+            new messageBoxOutput(hWnd)
+            new textFileOutput("log.txt")
+
+            $ifdef DEBUG
+            LogManager::Add(LogType->Error | LogType->Debug, vsOutput)
+            $endif
+            LogManager::Add(LogType->Error | LogType->Debug | LogType->Log, textFileOutput)
+            LogManager::Add(LogType->Error, messageBoxOutput)
+
+            LogManager::WriteMessage(LogType->Log, "Initialising Video\n")
+            Video::Initialise()
+
+            LogManager::WriteMessage(LogType->Log, "Initialising Audio\n")
+            Audio::Initialise()
+
+            LogManager::WriteMessage(LogType->Log, "Initialising Input\n")
+            Input::Initialise(hInstance, hWnd)
+
+            GameOptions::Open("options.xml")
+            int windowWidth := GameOptions::GetValue("windowWidth", 1024)
+            int windowHeight := GameOptions::GetValue("windowHeight", 768)
+            int bpp := GameOptions::GetValue("bitsPerPixel", 32)
+
+            LogManager::WriteMessage(LogType->Log, 
+            "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bpp)
+            Video::SetDisplayMode(windowWidth, windowHeight, bpp)
+
+
+        catch
+        
+    end function
+
+    function Shutdown()
+        
+
+        LogManager::Remove(LogType->Error | LogType->Debug | LogType->Log, textFileOutput)
+        textFileOutput->Close()
+    end function
+
+    property bool IsWindowActive
+        get
+            return isWindowActive
+        end get
+
+        set
+            isActiveWindow := value
+        end set
+    end property
+end class
