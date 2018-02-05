@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menus>
+    <menu id="0"> <!-- default main menu -->
+	    <controls>
+		    <control="label" x="0" y="0" font="green" text="M A I N M E N U" />
+		    <control="menuOption" x="0" y="0" font="white" text="NEW GAME" selectedindex=0 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="white" text="OPTIONS" selectedindex=1 onSubmit="2" />
+		    <control="menuOption" x="0" y="0" font="white" text="HIGHSCORES" selectedindex=2 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="white" text="CREDITS" selectedindex=3 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="white" text="EXIT" selectedindex=4 onSubmit="1" />
+	    </controls>
+    </menu>
+
+    <menu id="1"> <!-- main menu when game is in progress -->
+	    <controls>
+		    <control="label" x="0" y="0" font="green" text="M A I N M E N U" />
+		    <control="menuOption" x="0" y="0" font="white" text="NEW GAME" selectedindex=0 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="white" text="CONTINUE GAME" selectedindex=1 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="white" text="OPTIONS" selectedindex=2 onSubmit="2" />
+		    <control="menuOption" x="0" y="0" font="white" text="HIGHSCORES" selectedindex=3 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="white" text="CREDITS" selectedindex=4 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="white" text="EXIT" selectedindex=5 onSubmit="1" />
+	    </controls>
+    </menu>
+
+    <menu id="2"> <!-- new game prompt when a game is already in progress -->
+	    <controls>
+		    <control="label" x="0" y="0" font="white" text="Are you sure you want to start a new game?" />
+		    <control="label" x="0" y="0" font="white" text="All current progress will be lost!" />
+		    <control="menuOption" x="0" y="0" font="green" text="YES" selectedindex=0 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="green" text="NO" selectedindex=1 onSubmit="1" />
+	    </controls>
+    </menu>
+
+    <menu id="3"> <!-- exit prompt -->
+	    <controls>
+		    <control="label" x="0" y="0" font="white" text="Are you sure you want to quit?" />
+		    <control="menuOption" x="0" y="0" font="green" text="YES" selectedindex=0 onSubmit="1" />
+		    <control="menuOption" x="0" y="0" font="green" text="NO" selectedindex=1 onSubmit="1" />
+	    </controls>
+    </menu>
+
+    <menu id="4"> <!-- new high score -->
+	    <controls>
+		    <control="table" x="0", y="0", data_source="highscores">
+			    <-- the x attribute signifies where to start rendering the text -->
+			    <column x="0", font="green" length="3"  />
+			    <column x="0", font="white" length="12" />
+			    <column x="0", font="green" length="7" />
+		    </control>
+		    <control="menuOption" x="0", y="0", font="white", text="BACK", visible="false", selectedindex="0", onSubmit="0"/>
+	    </controls>
+    </menu>
+</menus>
+
