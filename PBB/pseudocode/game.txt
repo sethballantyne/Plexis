@@ -8,21 +8,6 @@ Private
     new VSOutputLogger vsOutput 
     $endif
 
-    KeyValuePair<string, string>[] optionDefaults := {
-        { "mouseMovesPaddle", "false" }
-        { "mouseSpeed",       "5"     }
-        { "soundVolume"       "50"    }
-        { "fireKey"           "3"     }
-        { "movePaddleLeft"    "4"     }
-        { "movePaddleRight"   "5"     }
-        { "screenshot"        "6"     }
-        { "console"           "7"     }
-        { "pause"             "8"     }
-        { "windowWidth"       "1024"  }
-        { "windowHeight"      "768"   }
-        { "bitsPerPixel"      "32"    }
-    }
-
 Public
     function Initialise(HINSTANCE hInstance, HWND hWnd)
         try
@@ -44,6 +29,10 @@ Public
             LogManager::WriteMessage(LogType->Log, "Initialising Input\n")
             Input::Initialise(hInstance, hWnd)
 
+            LogManager::WriteMessage(LogType->Log, "Initialising the resource manager\n")
+            ResourceManager::Intialise("paths.xml")
+
+            LogManager::WriteMessage(LogType->Log, "Reading options.xml")
             GameOptions::Open("options.xml")
             int windowWidth := GameOptions::GetValue("windowWidth", 1024)
             int windowHeight := GameOptions::GetValue("windowHeight", 768)
@@ -52,6 +41,18 @@ Public
             LogManager::WriteMessage(LogType->Log, 
             "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bpp)
             Video::SetDisplayMode(windowWidth, windowHeight, bpp)
+
+            LogManager::WriteMessage(LogType->Log, "Loading bitmaps\n")
+            ResourceManager::LoadBitmaps()
+            
+            LogManager::WriteMessage(LogType->Log, "Loading sound effects\n")
+            ResourceManager::LoadSounds()
+
+	       LogManager::WriteMessage(LogType->Log, "Generating fonts\n")
+            ResourceManager::CreateFonts()
+
+            LogManager::WriteMessage(LogType->Log, "Parsing entities.xml\n")
+            TheCloneABrick5000TM::LoadEntities(ResourceManager::GetXML("entities"))
 
 
         catch
