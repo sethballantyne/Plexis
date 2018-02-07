@@ -1,55 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menus>
-    <menu id="0"> <!-- default main menu -->
-	    <controls>
-		    <control="label" x="0" y="0" font="green" text="M A I N M E N U" />
-		    <control="menuOption" x="0" y="0" font="white" text="NEW GAME" selectedindex=0 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="white" text="OPTIONS" selectedindex=1 onSubmit="2" />
-		    <control="menuOption" x="0" y="0" font="white" text="HIGHSCORES" selectedindex=2 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="white" text="CREDITS" selectedindex=3 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="white" text="EXIT" selectedindex=4 onSubmit="1" />
-	    </controls>
-    </menu>
+<scenes>
+    <scene id="default_main_menu">
+        <controls>
+            <control="label" x="0" y="0" font="green" text="M A I N M E N U" />
+            <control="menuItemContainer">
+                <containerItem="menuOption" x="0" y="0" font="white" text="NEW GAME" selectedIndex=0 navigateTo="game" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="OPTIONS" selectedIndex=1 navigateTo="options" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="HIGHSCORES" selectedIndex=2 navigateTo="view_highscores" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="CREDITS" selectedIndex=3 navigateTo="credits" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="EXIT" selectedIndex=4 navigateTo="exit_game_prompt" navigationArgs="self"/>
+            </control>
+        </controls>
+    </scene>
 
-    <menu id="1"> <!-- main menu when game is in progress -->
-	    <controls>
-		    <control="label" x="0" y="0" font="green" text="M A I N M E N U" />
-		    <control="menuOption" x="0" y="0" font="white" text="NEW GAME" selectedindex=0 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="white" text="CONTINUE GAME" selectedindex=1 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="white" text="OPTIONS" selectedindex=2 onSubmit="2" />
-		    <control="menuOption" x="0" y="0" font="white" text="HIGHSCORES" selectedindex=3 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="white" text="CREDITS" selectedindex=4 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="white" text="EXIT" selectedindex=5 onSubmit="1" />
-	    </controls>
-    </menu>
+    <scene id="options">
+        <controls>
+            <control="label" x="0" y="0" font="green" text="MOUSE MOVES PADDLE" />
+            <control="label" x="0" y="0" font="green" text="MOUSE SPEED" />
+            <control="label" x="0" y="0" font="green" text="SOUND VOLUME" />
+            <control="menuItemContainer">
+            </control>
+        </controls>
+    </scene>
+    <scene id="game_in_progress_main_menu">
+        <controls>
+            <control="label" x="0" y="0" font="green" text="M A I N M E N U" />
+            <control="menuItemContainer">
+                <containerItem="menuOption" x="0" y="0" font="white" text="NEW GAME" selectedIndex=0 navigateTo="new_game_prompt" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="CONTINUE GAME" selectedIndex=1 navigateTo="game" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="OPTIONS" selectedIndex=2 navigateTo="options" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="HIGHSCORES" selectedIndex=3 navigateTo="view_highscores" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="CREDITS" selectedIndex=4 navigateTo="credits" />
+                <containerItem="menuOption" x="0" y="0" font="white" text="EXIT" selectedIndex=5 navigateTo="exit_game_prompt" navigationArgs="self"/>
+            </control>
+        </controls>
+    </scene>
 
-    <menu id="2"> <!-- new game prompt when a game is already in progress -->
-	    <controls>
-		    <control="label" x="0" y="0" font="white" text="Are you sure you want to start a new game?" />
-		    <control="label" x="0" y="0" font="white" text="All current progress will be lost!" />
-		    <control="menuOption" x="0" y="0" font="green" text="YES" selectedindex=0 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="green" text="NO" selectedindex=1 onSubmit="1" />
-	    </controls>
-    </menu>
+    <scene id="new_game_prompt"> <!-- new game prompt when a game is already in progress -->
+        <controls>
+            <control="label" x="0" y="0" font="white" text="Are you sure you want to start a new game?" />
+            <control="label" x="0" y="0" font="white" text="All current progress will be lost!" />
+            <control="menuItemContainer">
+                <containerItem="menuOption" x="0" y="0" font="green" text="YES" selectedIndex=0 navigateTo="game" navigationArgs="new" />
+                <containerItem="menuOption" x="0" y="0" font="green" text="NO" selectedIndex=1 navigateTo="game" />
+            </control>
+        </controls>
+    </scene>
 
-    <menu id="3"> <!-- exit prompt -->
-	    <controls>
-		    <control="label" x="0" y="0" font="white" text="Are you sure you want to quit?" />
-		    <control="menuOption" x="0" y="0" font="green" text="YES" selectedindex=0 onSubmit="1" />
-		    <control="menuOption" x="0" y="0" font="green" text="NO" selectedindex=1 onSubmit="1" />
-	    </controls>
-    </menu>
+    <scene id="exit_game_prompt"> <!-- exit prompt -->
+        <controls>
+            <control="label" x="0" y="0" font="white" text="Are you sure you want to quit?" />
+            <control="menuItemContainer">
+                <containerItem="menuOption" x="0" y="0" font="green" text="YES" selectedIndex=0 navigateTo="caller" />
+                <containerItem="menuOption" x="0" y="0" font="green" text="NO" selectedIndex=1 navigateTo="terminate" />
+            </control>
+        </controls>
+    </scene>
 
-    <menu id="4"> <!-- new high score -->
-	    <controls>
-		    <control="table" x="0", y="0", data_source="highscores">
-			    <-- the x attribute signifies where to start rendering the text -->
-			    <column x="0", font="green" length="3"  />
-			    <column x="0", font="white" length="12" />
-			    <column x="0", font="green" length="7" />
-		    </control>
-		    <control="menuOption" x="0", y="0", font="white", text="BACK", visible="false", selectedindex="0", onSubmit="0"/>
-	    </controls>
-    </menu>
+    <scene id="new_high_score"> <!-- new high score -->
+        <controls>
+            <control="table" x="0", y="0", data_source="highscores">
+            <!-- the x attribute signifies where to start rendering the text -->
+                <column x="0", font="green" length="3"  />
+                <column x="0", font="white" length="12" />
+                <column x="0", font="green" length="7" />
+            </control>
+            <control="menuItemContainer">
+                <containerItem="menuOption" x="0", y="0", font="white", text="BACK", visible="false", selectedIndex="0", navigateTo="default_main_menu"/>
+            </control>
+        </controls>
+    </scene>
+
+    <scene id="game">
+        <control="gameview" x="0" y="0" />
+    </scene>
 </menus>
 
