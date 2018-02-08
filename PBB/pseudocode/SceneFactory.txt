@@ -1,0 +1,170 @@
+-- Currently missing support for gameview, table controls.
+
+class SceneFactory
+Private
+    function Log(String message, ...)
+        LogManager::WriteMessage(LogType->Debug | LogType->Error, message, arglist)
+    end function
+
+    function String GetAttributeValue(XElement element, string attribute)
+        XAttribute xAttribute := element->Attribute(attribute)
+        if(xAttribute = NULL)
+            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
+        end if
+
+        if(xAttribute->Value = String.Empty)
+            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
+        end if
+
+        return attribute->Value
+    end function
+
+    function int GetAttributeValueAsInt32(XElement element, string attribute)
+
+        string initialValue := NULL
+        int number
+        try
+            initialValue := GetAttributeValue(element, attribute)
+            number := Convert.ToInt32(initialValue)
+        catch(FormatException)
+            throw new FormatException("the x attribute contains a non-numeric value.")
+        catch(OverflowException)
+            throw new OverflowException("the x attribute contains a number that's too fuckin' big.")
+        catch(Exception)
+            throw
+        end try
+
+        return number
+    end function
+
+    function Label ParseLabel(XElement labelTag)
+
+        try
+
+            int x := GetAttributeValueAsInt32(labelTag, "x")
+            int y := GetAttributeValueAsInt32(labelTag, "y")
+            string font := GetAttributeValue(labelTag, "font")
+            string text := GetAttributeValue(labelTag, "text")
+        catch
+            throw
+        end try
+
+        return new Label(x, y, font, text)
+    end function
+
+    function MenuItem ParseMenuItem(XElement menuItemTag)
+        
+        try
+            int x := GetAttributeValueAsInt32(menuItemTag, "x")
+            int y := GetAttributeValueAsInt32(menuItemTag, "y")
+            string font := GetAttributeValue(menuItemTag, "font")
+            string text := GetAttributeValue(menuItemTag, "text")
+            int selectedIndex := GetAttributeValueAsInt32(menuItemTag, "selectedIndex")
+            string navigateTo := GetAttributeValue(menuItemTag, "navigateTo")
+            
+            string navigationArgs := NULL
+
+            try
+                navigationArgs := GetAttributeValue(menuItemTag, "navigationArgs")
+            catch
+                -- navigationArgs is an optional attribute, so ignore errors. 
+            end try
+
+        catch
+            throw
+        end try
+            MenuItem menuItem
+
+            if(navigationArgs = NULL)
+                menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo)
+            else 
+                menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo, navigationArgs)
+            end if
+
+            return menuItem
+    end function
+
+Public
+    function Scene[] Read(XDocument xml)
+        new List<Scene> SceneList
+
+        -- <scene>
+        IEnumerable<XElement> sceneQuery := xmlDocument->Root->Descendants("scene")
+        foreach(sceneTag in sceneQuery)
+            
+            XAttribute sceneID := sceneTag->Attribute("id")
+
+            if(sceneID = NULL)
+                Log("Scene is missing the id attribute, skipping.")
+            else if(sceneID->Value = String.Empty)
+                Log("The scene's ID attribute contains an empty string, skipping.")
+            end if
+
+            new Scene scene(sceneID->Value)
+
+            -- grabbing the <controls> element
+            IEnumerable<XElement> controlsQuery := sceneTag->Descendants("controls")
+            foreach(controlsTag in controlsQuery)
+
+                new List<Control[]> sceneControls 
+
+                -- read each <control> tag
+                IEnumerable<XElement> controlQuery := controlsTag->Descendants("control")
+                foreach(controlTag in controlQuery)
+
+                    XAttribute typeAttribute := controlTag->Attribute("type")
+                    if(typeAttribute = NULL)
+                        Log("scene {0} contains a control tag that's missing the type attribute.", sceneID->Value)
+                    else
+                        string typeAttributeValue := typeAttribute->Value
+                        if(typeAttributeValue = "label")
+                            try
+                                Label label := ParseLabel(controlTag)
+                                scene->GetControlList()->Add(label)
+                            catch(Exception e)
+                                Log("Failed to read a label element for the scene {0}. {1}", sceneID->Value, e->Message)
+
+                                continue
+                            end try
+
+                        else if(typeAttributeValue = "menuItemContainer")
+                            IEnumerable<XElement> containerItemQuery := controlTag->Descendants("containerItem")
+
+                            new MenuItemContainer menuItemContainer
+
+                            foreach(containerItemTag in menuItemQuery)
+
+                                XAttribute typeAttribute := containerItemTag->Attribute("type")
+
+                                if(typeAttribute = NULL)
+                                    Log("scene {0} contains a menuItemContainer child control that's missing the type attribute.", sceneID->Value)
+                                else
+                                    if(typeAttribute->Value = "menuItem")
+                                        try
+                                            MenuItem menuItem := ParseMenuItem(containerItemTag)
+                                            menuItemContainer->GetControlList()->Add(menuItem)
+                                        catch(Exception e)
+                                            Log("Failed to read a containerItem element for the scene {0}. {1}", sceneID->Value, e->Message)
+                                        end try
+                                    end if
+                                end if
+
+                            end foreach
+
+                            scene->GetContolList()->Add(menuItemContainer)
+
+                        else if(typeAttributeValue = String.Empty)
+                            Log("type path for a control belonging to {0} is empty.", sceneID->Value)
+                        else
+                            Log("Unknown control type {0} in scene {1}", typeAttributeValue, sceneID->Value)
+                        end if
+                    end if
+                end foreach
+            end foreach
+
+            sceneList->Add(scene)
+        end foreach
+
+        return sceneList->ToArray()
+    end function
+end class
