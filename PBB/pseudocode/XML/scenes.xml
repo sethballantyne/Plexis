@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenes>
+    <scene id="default_main_menu">
+        <controls>
+            <control type="label" x="0" y="0" font="green" text="M A I N M E N U" />
+            <control type="menuItemContainer">
+                <containerItem type="menuItem" x="0" y="0" font="white" text="NEW GAME" selectedIndex="0" navigateTo="game" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="OPTIONS" selectedIndex="1" navigateTo="options" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="HIGHSCORES" selectedIndex="2" navigateTo="view_highscores" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="CREDITS" selectedIndex="3" navigateTo="credits" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="EXIT" selectedIndex="4" navigateTo="exit_game_prompt" navigationArgs="self"/>
+            </control>
+        </controls>
+    </scene>
+
+    <scene id="options">
+        <controls>
+            <control type="label" x="0" y="0" font="green" text="MOUSE MOVES PADDLE" />
+            <control type="label" x="0" y="0" font="green" text="MOUSE SPEED" />
+            <control type="label" x="0" y="0" font="green" text="SOUND VOLUME" />
+            <control type="menuItemContainer">
+            </control>
+        </controls>
+    </scene>
+    <scene id="game_in_progress_main_menu">
+        <controls>
+            <control type="label" x="0" y="0" font="green" text="M A I N M E N U" />
+            <control type="menuItemContainer">
+                <containerItem type="menuItem" x="0" y="0" font="white" text="NEW GAME" selectedIndex="0" navigateTo="new_game_prompt" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="CONTINUE GAME" selectedIndex="1" navigateTo="game" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="OPTIONS" selectedIndex="2" navigateTo="options" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="HIGHSCORES" selectedIndex="3" navigateTo="view_highscores" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="CREDITS" selectedIndex="4" navigateTo="credits" />
+                <containerItem type="menuItem" x="0" y="0" font="white" text="EXIT" selectedIndex="5" navigateTo="exit_game_prompt" navigationArgs="self"/>
+            </control>
+        </controls>
+    </scene>
+
+    <scene id="new_game_prompt"> <!-- new game prompt when a game is already in progress -->
+        <controls>
+            <control type="label" x="0" y="0" font="white" text="Are you sure you want to start a new game?" />
+            <control type="label" x="0" y="0" font="white" text="All current progress will be lost!" />
+            <control type="menuItemContainer">
+                <containerItem type="menuItem" x="0" y="0" font="green" text="YES" selectedIndex="0" navigateTo="game" navigationArgs="new" />
+                <containerItem type="menuItem" x="0" y="0" font="green" text="NO" selectedIndex="1" navigateTo="game" />
+            </control>
+        </controls>
+    </scene>
+
+    <scene id="exit_game_prompt"> <!-- exit prompt -->
+        <controls>
+            <control type="label" x="0" y="0" font="white" text="Are you sure you want to quit?" />
+            <control type="menuItemContainer">
+                <containerItem type="menuItem" x="0" y="0" font="green" text="YES" selectedIndex="0" navigateTo="caller" />
+                <containerItem type="menuItem" x="0" y="0" font="green" text="NO" selectedIndex="1" navigateTo="terminate" />
+            </control>
+        </controls>
+    </scene>
+
+    <scene id="new_high_score"> <!-- new high score -->
+        <controls>
+            <control type="table" x="0" y="0" data_source="highscores">
+            <!-- the x attribute signifies where to start rendering the text -->
+                <column x="0" font="green" length="3"  />
+                <column x="0" font="white" length="12" />
+                <column x="0" font="green" length="7" />
+            </control>
+            <control type="menuItemContainer">
+                <containerItem type="menuItem" x="0" y="0" font="white" text="BACK" visible="false" selectedIndex="0" navigateTo="default_main_menu"/>
+            </control>
+        </controls>
+    </scene>
+
+    <scene id="game">
+        <control type="gameview" x="0" y="0" />
+    </scene>
+</scenes>
+
