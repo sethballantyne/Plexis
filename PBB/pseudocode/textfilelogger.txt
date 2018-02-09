@@ -26,7 +26,8 @@ Public
     function Write(string message) : virtual
     
         try
-            sw->Write(message)
+            string timeStamp := DateTime::Now.ToString("dd/MM/yy HH:mm:ss");
+            sw->Write("[{0}] {1}" timeStamp, message)
         catch
             throw
         end try
