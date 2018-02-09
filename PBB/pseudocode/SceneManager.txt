@@ -1,0 +1,39 @@
+class SceneManager : static
+    new Dictionary<string, Scene> scenes
+    Scene currentScene := NULL
+public
+    -- Builds an internal collection of Scenes based on the contents of the XML file and sets the 
+    -- specified scene as the inital scene that's displayed when the game first starts. If an initial
+    -- scene isn't specified in the XML file, it selects the first scene parsed from XML file. If No
+    -- scenes are read from the XML file, a NoScenesAvailableException is thrown.
+    function Initialise(XDocument sceneDocument)
+
+        if(sceneDocument = NULL)
+            throw ArgumentNullException("sceneDocument")
+        end if
+
+        new SceneFactory sceneFactory
+        try
+            Scene[] scenes := sceneFactory.Read(sceneDocument)
+            if(scenes->Count == 0)
+                throw new NoScenesAvailableException("No scenes have been read from the XML file. Screw you guys, I'm going home.")
+            end if
+
+            for(i = 0 to scenes->Count)
+                scenes.Add(scenes[i]->Name, scenes[i])
+
+                if(scene[i]->IsInitialScene)
+                    currentScene := scene[i]
+                end if
+            end for
+
+            if(currentScene = NULL)
+                -- XML file doesn't specify an initial scene, grab the first one in the array.
+                currentScene := scenes[0]
+            end if
+        catch
+            throw
+        end try
+
+    end function
+end class
