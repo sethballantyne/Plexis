@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenes>
-    <scene id="default_main_menu">
+    <scene id="default_main_menu" initialScene="true">
         <controls>
             <control type="label" x="0" y="0" font="green" text="M A I N M E N U" />
             <control type="menuItemContainer">

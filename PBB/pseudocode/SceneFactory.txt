@@ -49,7 +49,10 @@ Private
             throw
         end try
 
-        return new Label(x, y, font, text)
+        try
+            return new Label(x, y, font, text)
+        catch
+            throw
     end function
 
     function MenuItem ParseMenuItem(XElement menuItemTag)
@@ -74,14 +77,18 @@ Private
             throw
         end try
             MenuItem menuItem
+            try
+                if(navigationArgs = NULL)
+                    menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo)
+                else 
+                    menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo, navigationArgs)
+                end if
 
-            if(navigationArgs = NULL)
-                menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo)
-            else 
-                menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo, navigationArgs)
-            end if
+                return menuItem
+            catch
+                throw
+            end try
 
-            return menuItem
     end function
 
 Public
@@ -93,6 +100,7 @@ Public
         foreach(sceneTag in sceneQuery)
             
             XAttribute sceneID := sceneTag->Attribute("id")
+            XAttribute initialScene := sceneTag->Attribute("initialScene")
 
             if(sceneID = NULL)
                 Log("Scene is missing the id attribute, skipping.")
@@ -100,7 +108,21 @@ Public
                 Log("The scene's ID attribute contains an empty string, skipping.")
             end if
 
-            new Scene scene(sceneID->Value)
+            bool isInitialScene := false
+            try
+                if(isInitialScene != NULL)
+                    isInitialScene := Convert::ToBoolean(initialScene->Value)
+                end if
+            catch
+                Log("initialScene attribute for {0} contains an invalid value.", sceneID->Value)
+            end try
+
+            Scene scene 
+            if(isInitialScene)
+                scene := new Scene(sceneID->Value, isInitialScene)
+            else
+                scene := new Scene(sceneID->Value)
+            end if
 
             -- grabbing the <controls> element
             IEnumerable<XElement> controlsQuery := sceneTag->Descendants("controls")
