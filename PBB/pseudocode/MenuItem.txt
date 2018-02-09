@@ -1,4 +1,4 @@
-class MenuItem inherits IInputListener, SelectableControl
+class MenuItem inherits SelectableControl
 private
     Label label := NULL
     string navigateTo := NULL
