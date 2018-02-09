@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<options>
+  <option id="mouseMovesPaddle" value="false" />
+  <option id="mouseSpeed" value="5" />
+  <option id="soundVolume" value="50" />
+  <option id="fireKey" value="3" />
+  <option id="movePaddleLeft" value="4" />
+  <option id="movePaddleRight" value="5" />
+  <option id="screenshot" value="6" />
+  <option id="console" value="7" />
+  <option id="pause" value="8" />
+  <option id="new_key" value="foo" />
+</options>
