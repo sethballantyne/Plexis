@@ -43,27 +43,56 @@ Public
             Video::SetDisplayMode(windowWidth, windowHeight, bpp)
 
             LogManager::WriteMessage(LogType->Log, "Loading bitmaps\n")
+            -- TODO: pseudocode needed
             ResourceManager::LoadBitmaps()
             
             LogManager::WriteMessage(LogType->Log, "Loading sound effects\n")
+            -- TODO: pseudocode needed
             ResourceManager::LoadSounds()
 
 	       LogManager::WriteMessage(LogType->Log, "Generating fonts\n")
+            -- TODO: pseudocode needed
             ResourceManager::CreateFonts()
-
-            LogManager::WriteMessage(LogType->Log, "Parsing entities.xml\n")
-            TheCloneABrick5000TM::LoadEntities(ResourceManager::GetXML("entities"))
-
-
+           
+            LogManager::WriteMessage(LogType->Log, "Loading scenes\n")
+            XDocument scenesDocument := ResourceManager::GetXML("scenes.xml")
+            SceneManager::Initialise(scenesDocument)
+            
         catch
         
     end function
 
     function Shutdown()
         
+        Video::Shutdown()
+        Audio::Shutdown()
+        Input::Shutdown()
 
         LogManager::Remove(LogType->Error | LogType->Debug | LogType->Log, textFileOutput)
         textFileOutput->Close()
+    end function
+
+    function Update()
+        try
+            -- pseudocode needed
+            SceneManager->Update()
+        catch
+            throw
+        end try
+    end function
+
+    function Render()
+
+        try
+            -- pseudocode needed
+            SceneManager->CurrentScene->Render()
+
+            -- pseudocode needed
+            Video::Flip()
+        catch
+            throw
+        end try
+
     end function
 
     property bool IsWindowActive
