@@ -1,0 +1,33 @@
+class Label inherits Control
+private
+    Font labelFont := NULL
+    string text := NULL
+public
+    constructor Label(int x, int y, string font, string text)
+        Control(x, y)
+
+        try
+            labelFont := ResourceManager::GetFont(font)
+        catch
+            throw
+        end try
+
+        self->text := text
+    end constructor
+
+    property Font Font
+        accessors
+            get
+                return self->font
+        end accessors
+    end property
+
+    property string Text
+        accessors
+            get
+                return text
+            set
+                text := value
+        end accessors
+    end property
+end class
