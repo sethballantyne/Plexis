@@ -2,6 +2,12 @@ class MenuItem inherits IInputListener, SelectableControl
 private
     Label label := NULL
     string navigateTo := NULL
+    string navigationArgs := NULL
+    MenuItemContainer parentContainer := NULL
+
+protected
+    #SelectableControl bool selected
+
 public
     constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo) 
 
@@ -16,10 +22,52 @@ public
         self->navigateTo := navigateTo
 
     end constructor
+
     constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs)
 
-    self(x, y, font, text, selectedIndex, navigateTo)
-    self->navigationArgs := navigationArgs
+        self(x, y, font, text, selectedIndex, navigateTo)
+        self->navigationArgs := navigationArgs
 
     end constructor
+
+    function Update(Keys keyboardState, Mouse mouseState)
+
+        if(keyboardState->KeyDown(DIK_UP))
+            parent->SelectPreviousControl()
+        else if(keyboardState->KeyDown(DIK_DOWN))
+            parent->SelectNextControl()
+        else if(keyboardState->KeyDown(DIK_ENTER))
+            if(navigateTo != NULL)
+                SceneManager::SetActiveScene(navigateTo, navigationArgs)
+            end if
+        end if
+
+    end function
+
+    function Render()
+        
+        if(#selected)
+            
+        end 
+
+    end function
+
+    -- Assigns the MenuItem to the specified container. When assigning a container,
+    -- MenuItem adds itself to the containers control list.
+    -- Exceptions:
+    -- ArgumentNullException: attempting to assign a NULL value.
+    property MenuItemContainer ParentContainer
+
+        accessors
+            get
+                return parentContainer
+            set
+                if(value = NULL)
+                    throw ArgumentNullException("Nope")
+
+                parentContainer := value
+                parentContainer->Controls->Add(self)
+        end accessors
+
+    end property
 end class
