@@ -1,0 +1,25 @@
+class MenuItem inherits IInputListener, SelectableControl
+private
+    Label label := NULL
+    string navigateTo := NULL
+public
+    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo) 
+
+        SelectableControl(selectedIndex)
+
+        try
+            label := new Label(x, y, font, text)
+        catch
+            throw
+        end try
+
+        self->navigateTo := navigateTo
+
+    end constructor
+    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs)
+
+    self(x, y, font, text, selectedIndex, navigateTo)
+    self->navigationArgs := navigationArgs
+
+    end constructor
+end class
