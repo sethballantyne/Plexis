@@ -91,16 +91,20 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR 
         Game::Initialise()
 
         while(!quit)
-        if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-            if(msg.message != WM_QUIT)
-                TranslateMessage(&msg)
-                DispatchMessage(&msg)
-            else
-                quit = true
+            if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+                if(msg.message != WM_QUIT)
+                    TranslateMessage(&msg)
+                    DispatchMessage(&msg)
+                else
+                    quit = true
+                end if
             end if
-        end if
 
-        --NOTE: only update the game when the window is active.
+            --NOTE: only update the game when the window is active.
+            if(Game::IsWindowActive)
+                Game::Update()
+                Game::Render()
+            end if
         end while
     catch(Exception e)
         LogManager::WriteMessage(
