@@ -55,7 +55,7 @@ Private
             throw
     end function
 
-    function MenuItem ParseMenuItem(XElement menuItemTag)
+    function MenuItem ParseMenuItem(string sceneID, XElement menuItemTag)
             
         try
             int x := GetAttributeValueAsInt32(menuItemTag, "x")
@@ -69,6 +69,9 @@ Private
 
             try
                 navigationArgs := GetAttributeValue(menuItemTag, "navigationArgs")
+                if(navigationArgs = "self")
+                    navigationArgs := sceneID
+                end if
             catch
                 -- navigationArgs is an optional attribute, so ignore errors. 
             end try
@@ -163,7 +166,7 @@ Public
                                 else
                                     if(typeAttribute->Value = "menuItem")
                                         try
-                                            MenuItem menuItem := ParseMenuItem(containerItemTag)
+                                            MenuItem menuItem := ParseMenuItem(sceneID->Value, containerItemTag)
                                             menuItem->ParentContainer := menuItemContainer
                                             --menuItemContainer->GetControlList()->Add(menuItem)
                                         catch(Exception e)
