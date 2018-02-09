@@ -23,23 +23,35 @@ Public
 
     end function
 
-    virtual void WriteMessage(string message)
-    {
+    function Write(string message) : virtual
+    
         try
             sw->Write(message)
         catch
             throw
-        end try-catch
-    }
+        end try
 
+    end function
 
-    ~ApplicationLog()
-    {
+    function WriteLine(string message) : virtual
+
+        try
+            sw->WriteLine(message)
+        catch
+            throw
+        end try
+
+    end function
+
+    destructor ApplicationLog()
+    
         Close()
-    }
 
-    !ApplicationLog()
-    {
+    end destructor
+
+    finalizer ApplicationLog()
+    
         Close()
-    }
-};
+
+    end finalizer
+end class

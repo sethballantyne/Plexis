@@ -1,6 +1,10 @@
 class VSOutputLogger implements ILog
 Public
-    function WriteMessage(string message) : virtual
+    function Write(string message) : virtual
         System::Diagnostics::Debug::Print(message)
+    end function
+
+    function WriteLine(string message) : virtual
+        System::Diagnostics::Debug::Print(message + Environment::NewLine)
     end function
 end class

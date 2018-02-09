@@ -6,12 +6,16 @@ Public
         this->hWnd := hWnd
     end constructor
 
-    function WriteMessage(string message)
+    function Write(string message)
 
         pin_ptr<wchar_t> unmanagedMessage := PtrToStringChars(message)
 
         -- may need to call IDirectDraw7::FlipToGDISurface() in order for this to display properly.
         MessageBox(hWnd, unmanagedMessage, "Unholy Error", MB_OK | MB_ICONEXCLAMATION)
 
+    end function
+
+    function WriteLine(string message)
+        Write(message + Environment::NewLine)
     end function
 end class
