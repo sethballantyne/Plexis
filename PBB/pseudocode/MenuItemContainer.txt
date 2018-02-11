@@ -1,0 +1,15 @@
+class MenuItemContainer inherits SelectableControl
+private
+    new List<SelectableControl> items
+    new Comparison<SelectedObject> comparisonDelegate(&SortMethod)
+
+    -- sort by calling items->Sort(comparisonDelegate)
+    function int SortMethod(SelectableControl a, SelectableControl b) : static
+        return a->CompareTo(b)
+    end function
+
+public
+    function SelectNextControl()
+        
+    end function    
+end class
