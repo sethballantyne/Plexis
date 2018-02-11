@@ -2,14 +2,53 @@ class MenuItemContainer inherits SelectableControl
 private
     new List<SelectableControl> items
     new Comparison<SelectedObject> comparisonDelegate(&SortMethod)
+    Surface menuItemCursor := NULL
 
+    int currentSelectedItem := 0
     -- sort by calling items->Sort(comparisonDelegate)
     function int SortMethod(SelectableControl a, SelectableControl b) : static
         return a->CompareTo(b)
     end function
 
 public
+    constructor MenuItemContainer()
+
+        menuItemCursor := ResourceManager::GetSurface("menu_cursor")
+
+    end constructor
+
     function SelectNextControl()
-        
+        if(list->Count = 1)
+            return
+        end if
+
+        items[currentSelectedItem].IsSelected := false
+
+        if(currentSelectedItem = items.Count - 1)
+            currentSelectedItem := 0
+        else
+            currentSelectedItem++
+        end if
+
+        items[currentSelectedItem].IsSelected := true
+
     end function    
+
+    function SelectPreviousControl()
+
+        if(list->Count = 1)
+            return
+        end if
+
+        items[currentSelectedItem].IsSelected := false
+         
+        if(currentSelectedItem = 0)
+            currentSelectedItem := items.Count - 1
+        else 
+            currentSelectedItem--
+        end if
+
+        items[currentSelectedItem].IsSelected := true
+
+    end function
 end class
