@@ -1,8 +1,8 @@
 class Audio : static
 Private
     LPDIRECTSOUND8 lpDS := NULL
-Public
-    function LPDIRECTSOUNDBUFFER8 CreateSoundBuffer(bufferSize : uint) : static
+
+    function LPDIRECTSOUNDBUFFER8 CreateDirectSoundBuffer(bufferSize : uint) : static
         
         WAVEFORMATEX waveFormat
         DSBUFFERDESC dsBD
@@ -76,7 +76,180 @@ Public
         return lpDSSoundBuffer8
 
     end function
+Public
+    function SoundBuffer CreateSoundBuffer(string filename)
 
+        HMMIO hWav  -- handle to the wave file
+        MMCKINFO parentChunk
+        MMCKINFO childChunk
+
+        WAVEFORMATEX waveFormat
+
+        UCHAR *soundBuffer
+        UCHAR *audioPtr1 := NULL
+        UCHAR *audioPtr2 := NULL
+
+        DWORD audioLength1 := 0
+        DWORD audioLength2 := 0
+
+
+        parentChunk.ckid := (FOURCC)0
+        parentChunk.cksize := 0
+        parentChunk.fccType := (FOURCC)0
+        parentChunk.dwDataOffset := 0
+        parentChunk.dwFlags := 0
+
+        childChunk := parentChunk
+
+        -- You'll need to do string conversion here obviously, since you're using 
+        -- a managed string as the functions argurment.
+
+        hWav := mmioOpen(filename, NULL, MMIO_READ | MMIO_ALLOCBUF)
+        if (!hWav)  
+            -- not using FileNotFoundException because it may have failed because of another 
+            -- reason, such as permissions. 
+            throw System::IO::IOException("Failed to open " + filename)
+        end if
+
+        parentChunk.fccType := mmioFOURCC('W', 'A', 'V', 'E') -- mmioFOURCC is a macro
+        MMRESULT mmIOResult := mmioDescend(hWav, &parentChunk, NULL, MMIO_FINDRIFF)
+        if(mmIOResult != MMSYSERR_NOERROR) -- returns MMIOERR_CHUNKNOTFOUND on error
+        end if
+            mmioClose(hWav, 0)
+            
+            throw System::IO::IOException(filename + " is either corrupt or isn't a valid WAV file.")
+        end if
+
+        childChunk.ckid := mmioFOURCC('f', 'm', 't', ' ') 
+        mmIOResult := mmioDescend(hWav, &childChunk, &parentChunk, 0))
+        if(mmIOResult != MMSYSERR_NOERROR)
+            mmioClose(hWav, 0)
+
+           throw System::IO::IOException(filename + " is either corrupt or isn't a valid WAV file.")
+        end if
+
+        -- read the wave format information
+        LONG bytesRead := mmioRead(hWav, (char *)&waveFormat, sizeof(waveFormat))
+        if(bytesRead != sizeof(waveFormat))
+            mmioClose(hWav, 0)
+
+            if(bytesRead = 0) -- reached the end of the file while reading.
+                throw System::IO::EndOfStreamException("mmioRead: reached the end of " + filename + " while attempting to read in the format data.")
+            else              -- -1 returned; error reading from the file. 
+                throw System::IO::IOException("mmioRead: failed to read from " + filename)
+            end if
+        end if
+
+        if (waveFormat.wFormatTag != WAVE_FORMAT_PCM)
+        
+            mmioClose(hWav, 0);
+
+            System::IO::FileFormatException(filename + " is not a valid WAV file.")
+        end if
+
+        mmioResult := mmioAscend(hWav, &childChunk, 0)
+        if(mmioResult != MMSYSERR_NOERROR)
+            mmioClose(hWav, 0)
+
+            -- MMIOERR_CANNOTSEEK returned. mmioAscend also returns MMIOERR_CANNOTWRITE but
+            -- it's not handled here because it's not relevant; we're not writing to the file.
+            System::IO::IOException("mmioAscend: failed to seek while processing " + filename)
+        end if
+
+        childChunk.ckid := mmioFOURCC('d', 'a', 't', 'a')
+        mmioResult := mmioDescend(hWav, &childChunk, &parentChunk, MMIO_FINDCHUNK)
+        if(mmioResult != MMSYSERR_NOERROR)
+            mmioClose(hWav, 0)
+
+            throw System::IO::IOException("mmioDescend: the end of the file or parent chunk was reached before the desired chunk was found.")
+        end if
+
+        -- TODO: check for failure
+        soundBuffer := (UCHAR *)malloc(childChunk.cksize)
+        if(soundBuffer = NULL)
+            mmioClose(hWav, 0)
+            throw System::OutOfMemoryException("Not enough memory available to load the WAV file.")
+        end if
+
+        mmioRead(hWav, (char*)soundBuffer, childChunk.cksize)
+        if(bytesRead != childChunk.cksize)
+            mmioClose(hWav, 0)
+
+            if(bytesRead = 0) -- reached the end of the file while reading.
+                -- TODO: considering changing this to IOException as well just to simplify it.
+                throw System::IO::EndOfStreamException("mmioRead: reached the end of " + filename + " while attempting to read in the format data.")
+            else              -- -1 returned; error reading from the file. 
+                throw System::IO::IOException("mmioRead: failed to read from " + filename)
+            end if
+        end if
+
+        mmioClose(hWav, 0)
+
+        LPDIRECTSOUNDBUFFER8 lpDSBuffer := NULL
+        try
+            lpDSBuffer := Audio::CreateDirectSoundBuffer(childChunk.cksize) 
+        catch
+            free(soundBuffer)
+            throw
+        end try-catch
+
+        HRESULT result := lpDSBuffer->Lock(
+            0,
+            childChunk.cksize, 
+            (void **)&audioPtr1, 
+            &audioLength1, 
+            (void **)&audioPtr2, 
+            &audioLength2, 
+            DSBLOCK_FROMWRITECURSOR
+         )
+
+         if(result != DS_OK)
+            free(soundBuffer)
+            switch(result)
+                DSERR_BUFFERLOST:
+                    throw DirectSoundBufferLostException("IDirectSoundBuffer8::Lock: ")
+
+                DSERR_INVALIDCALL:
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Lock: ")
+
+                DSERR_INVALIDPARAM:
+                    throw  DirectSoundInvalidParameterException("IDirectSoundBuffer8::Lock: ")
+
+                DSERR_PRIOLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Lock: ")
+
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Lock failed.", result)
+            end switch
+         end if
+
+         -- TODO: change these to secure versions
+         memcpy(audioPtr1, soundBuffer, audioLength1)
+         memcpy(audioPtr2, (soundBuffer + audioLength1), audioLength2)
+
+         result := lpDSBuffer->Unlock(audioPtr1, audioLength1, audioPtr2, audioLength2)
+         if(result != DS_OK)
+            free(soundBuffer)
+            switch(result)
+                DSERR_INVALIDCALL:
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Unlock: ")
+
+                DSERR_INVALIDPARAM:
+                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::Unlock: ")
+
+                DSERR_PRIORITYLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Unlock: ")
+
+                 default:
+                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer::Unlock failed.", result)
+            end switch
+         end if
+
+         free(soundBuffer)
+
+         return new SoundBuffer(lpDSBuffer)
+    end function
+    
     function Initialise(HWND hWnd) : static 
         
         HRESULT result := DirectSoundCreate8(NULL, &lpDS, NULL)
