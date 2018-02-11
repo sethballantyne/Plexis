@@ -1,27 +1,6 @@
 class Sprite
 Private
-    LPDIRECTDRAWSURFACE7 lpDDSpriteSurface := NULL
 Public
-    function LoadBitmap(LPCWSTR filename)
-        
-        HBITMAP hBitmap
-        BITMAP bitmap;
-        HRESULT result
-
-        hBitmap := LoadImage(NULL, filename, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE)
-        if(NULL = hBitmap)
-            throw Win32Exception(Win32Exception::FormatMessage("LoadImage"))
-        end if
-
-       try
-            return Video.CreateSurface(hBitmap)
-       catch
-            throw
-       finally
-            DeleteObject(hBitmap)
-       end try-catch
-
-    end function
 
     function void Release()
        

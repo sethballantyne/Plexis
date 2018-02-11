@@ -230,8 +230,8 @@ Private
             throw
         end try-catch
     end function
-
-    function LPDIRECTDRAWSURFACE7 CreateSurface(HBITMAP hBitmap)
+    
+    function Surface CreateSurface(HBITMAP hBitmap)
 
         HDC hDCImage
         HDC hDC
@@ -363,9 +363,10 @@ Private
 
         DeleteObject(hDCImage)
 
-        return lpDDSurface
-
+        new Surface surface(lpDDSurface, bitmap.Width, bitmap.Height)
+        return surface
     end function
+
 Public
     function void Initialise() : static
         result := DirectDrawCreateEx()
@@ -477,7 +478,26 @@ Public
         end if
     end function
 
-    function void Restore()
+    function Surface CreateSurface(string path) : static
+
+        HBITMAP hBitmap
+      
+        hBitmap := LoadImage(NULL, filename, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE)
+        if(NULL = hBitmap)
+            throw Win32Exception(Win32Exception::FormatMessage("LoadImage"))
+        end if
+
+       try
+            return Video::CreateSurface(hBitmap)
+       catch
+            throw
+       finally
+            DeleteObject(hBitmap)
+       end try-catch
+
+    end function
+
+    function void Restore() : static
 
         VerifyNotNull(lpDD)
         -- the return values mentioned on MSDN for RestoreAllSurfaces() are wrong.
