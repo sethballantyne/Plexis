@@ -11,6 +11,23 @@ protected
 public
     constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo) 
 
+        if(font = NULL)
+            throw ArgumentNullException("font")
+        else if(text = NULL)
+            throw ArgumentNullException("text")
+        else if(navigateTo = NULL)
+            throw ArgumentNullException("navigateTo")
+        end if
+
+        if(font = String::Empty)
+            throw ArgumentException("font")
+        else if(text = String::Empty)
+            throw ArgumentException("text")
+        else if(navigateTo = String::Empty)
+            throw ArgumentException("navigateTo")
+        end if
+
+
         SelectableControl(selectedIndex)
 
         try
@@ -25,12 +42,49 @@ public
 
     constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs)
 
-        self(x, y, font, text, selectedIndex, navigateTo)
+        try
+            self(x, y, font, text, selectedIndex, navigateTo)
+        catch
+            throw
+        end try
+
         self->navigationArgs := navigationArgs
 
     end constructor
 
-    function Update(Keys keyboardState, Mouse mouseState)
+    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, MenuItemContainer parentContainer)
+       
+        if(parentContainer = NULL)
+            throw ArgumentNullException("parentContainer")
+        end if
+
+        try
+            self(x, y, font, text, selectedIndex, navigateTo)
+        catch
+            throw
+        end try
+
+        self->parentContainer := parentContainer
+    end constructor
+
+    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs, 
+                         MenuItemContainer parentContainer)
+
+        if(parentContainer = NULL)
+            throw ArgumentNullException("parentContainer")
+        end if
+
+        try
+            self(x, y, font, text, selectedIndex, navigateTo, navigationArgs)
+        catch
+            throw
+        end try
+
+        self->parentContainer := parentContainer
+
+    end constructor
+
+    function void Update(Keys keyboardState, Mouse mouseState)
 
         if(keyboardState->KeyDown(DIK_UP))
             parent->SelectPreviousControl()
