@@ -74,8 +74,16 @@ Public
 
     function Update()
         try
-            -- pseudocode needed
-            SceneManager->Update()
+
+            Keys keyboardState := Input::ReadKeybord()
+            Mouse mouseState := NULL
+
+            if(Options::GetValue("mouseMovesPaddle", false) = true)
+                mouseState := Input::ReadMouse()
+            end if
+
+            SceneManager::CurrentScene->Update(keyboardState, mouseState)
+
         catch
             throw
         end try
@@ -84,8 +92,9 @@ Public
     function Render()
 
         try
-            -- pseudocode needed
-            SceneManager->CurrentScene->Render()
+            Video::Clear(Color::Black)
+
+            SceneManager::CurrentScene->Render()
 
             -- pseudocode needed
             Video::Flip()

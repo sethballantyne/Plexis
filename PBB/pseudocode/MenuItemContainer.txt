@@ -3,6 +3,7 @@ private
     new List<SelectableControl> items
     new Comparison<SelectedObject> comparisonDelegate(&SortMethod)
     Surface menuItemCursor := NULL
+    string navigationArguments := NULL
 
     int currentSelectedItem := 0
     -- sort by calling items->Sort(comparisonDelegate)
@@ -16,6 +17,32 @@ public
         menuItemCursor := ResourceManager::GetSurface("menu_cursor")
 
     end constructor
+
+     function ReceiveSceneArgs(string args)
+        self->navigationArguments := args
+
+        for(i := 0 to items->Count - 1)
+            items[i]->ReceiveSceneArgs(args)
+        end for
+    end function 
+
+    function SelectPreviousControl()
+
+        if(list->Count = 1)
+            return
+        end if
+
+        items[currentSelectedItem].IsSelected := false
+         
+        if(currentSelectedItem = 0)
+            currentSelectedItem := items.Count - 1
+        else 
+            currentSelectedItem--
+        end if
+
+        items[currentSelectedItem].IsSelected := true
+
+    end function
 
     function SelectNextControl()
         if(list->Count = 1)
@@ -34,21 +61,32 @@ public
 
     end function    
 
-    function SelectPreviousControl()
+    function Update(Keys keyboardState, Mouse mouseState)
 
-        if(list->Count = 1)
-            return
+        if(keyboardState = NULL)
+            ArgumentNullException("keyboardState")
         end if
 
-        items[currentSelectedItem].IsSelected := false
-         
-        if(currentSelectedItem = 0)
-            currentSelectedItem := items.Count - 1
-        else 
-            currentSelectedItem--
-        end if
+        for(i := 0 to items->Count - 1)
+            items->Update(keyboardState, mouseState)
+        end for
 
-        items[currentSelectedItem].IsSelected := true
+    end function
+
+    function Render()
+
+        for(i := 0 to items->Count - 1)
+
+            -- only one item should be selected; bug otherwise.
+            if(items[i]->IsSelected)
+                int cursorXPos := items[i]->X - menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems
+                int cursorYPos := items[i]->Y
+
+                Video::Blit(menuItemCursor, cursorXPos, cursorYPos)
+            end if
+
+            items[i]->Render()
+        end for
 
     end function
 end class

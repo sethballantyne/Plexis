@@ -36,4 +36,30 @@ public
         end try
 
     end function
+
+    -- Specifies which scene to display to the user, along with optional arguments which can be
+    -- consumed by its child controls.
+    -- Arguments:
+    -- scene: the scene to be presented to the user.
+    -- sceneArgs: the optional arguments that will be passed to the scene specified in navigateTo.
+    -- Exceptions:
+    -- ArgumentNullException: scene is NULL
+    -- ArgumentException: scene evaluates to String::Empty. 
+    function SetActiveScene(string scene, string sceneArgs)
+
+        if(navigateTo = NULL)
+            throw new ArgumentNullException("scene")
+        else if(scene = String::Empty)
+            throw new ArgumentException("scene")
+        end if
+
+        try
+            currentScene := scenes[scene]
+            currentScene->BroadcastArguments(sceneArgs)
+        catch
+            throw
+        end try
+
+    end function
+
 end class

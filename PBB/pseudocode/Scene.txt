@@ -17,6 +17,15 @@ public
         self->name := id
     end constructor
 
+    -- Passes the arguments received via the SceneManager to the scenes child controls.
+    function BroadcastArguments(string navigationArgs)
+
+        for(i := 0 to controls->Count - 1)
+            controls[0]->ReceiveSceneArgs(navigationArgs)
+        end for
+        
+    end function
+
     -- Forwards the state of the keyboard and mouse on to the currently selected control. 
     -- keyboardState must not be null, mouseState may be.
     -- Exceptions:
@@ -27,12 +36,21 @@ public
             throw ArgumentNullException("keyboardState")
         end if
 
-        for(int i = 0 to controls->Count - 1)
+        for(int i := 0 to controls->Count - 1)
             if(controls[i] is type SelectableControl)
                 if(controls[i]->IsSelected)
                     controls[i]->Update(keyboardState, mouseState)
                 end if
             end if
+        end for
+
+    end function
+
+    -- Instructs each child control to draw itself to the backbuffer.
+    function Render()
+
+        for(i := 0 to controls->Count - 1)
+            controls[i]->Render()
         end for
 
     end function

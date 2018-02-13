@@ -1,10 +1,23 @@
 class MenuItem inherits SelectableControl
 private
+    -- Labels and MenuItems are the same in the sense that they both are a string of text
+    -- rendered to the screen, so an internal copy of a label is kept to handle this aspect
+    -- of the menu item. 
     Label label := NULL
+
+    -- the scene that should be displayed if the user hits the select key (currently the enter key)
     string navigateTo := NULL
-    string navigationArgs := NULL
+
+    -- arguments that were read from the controls "navigationArgs" attribute in the XML file.
+    -- these are passed to the new scene when a scene transition is requested.
+    string outboundArgs := NULL
+
+    -- Instance of MenuItemContainer that this control belongs to.
     MenuItemContainer parentContainer := NULL
 
+    -- arguments that were passed to the scene and subsequently this control, when the scene
+    -- this control belongs to became visible to user. 
+    string receivedArgs := NULL
 protected
     #SelectableControl bool selected
 
@@ -48,7 +61,7 @@ public
             throw
         end try
 
-        self->navigationArgs := navigationArgs
+        self->outboundArgs := navigationArgs
 
     end constructor
 
@@ -92,7 +105,14 @@ public
             parent->SelectNextControl()
         else if(keyboardState->KeyDown(DIK_ENTER))
             if(navigateTo != NULL)
-                SceneManager::SetActiveScene(navigateTo, navigationArgs)
+                if(navigateTo = "terminate")
+                    Game::Quit()
+                else if(navigateTo = "caller")
+                    navigateTo := receivedArgs
+                end if
+                --parentContainer->WeNeedToBoogy(navigateTo, navigationArgs)
+                
+                SceneManager::SetActiveScene(navigateTo, outboundArgs)
             end if
         end if
 
@@ -124,4 +144,12 @@ public
         end accessors
 
     end property
+
+    function ReceiveSceneArgs(string args)
+        receivedArgs := args
+    end function
+
+    function Render()
+        self->label->Render()
+    end function
 end class
