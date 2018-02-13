@@ -7,3 +7,5 @@ writing any code (that includes the in-game menus).
 Pseudocode for the game and engine is located in the pseudocode directory. The root directory of the project contains
 architecture.dia which is a UMLish diagram of the engine and game architecture. It's not meant to be strict UML but most
 people should be able to follow it (I hope *cough*). Each XML schema will be documented as it's finalized.   
+
+The level editor is functional but it's only a proof of concept. It's going to be replaced during development. 
