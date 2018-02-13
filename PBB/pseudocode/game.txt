@@ -20,45 +20,47 @@ Public
             LogManager::Add(LogType->Error | LogType->Debug | LogType->Log, textFileOutput)
             LogManager::Add(LogType->Error, messageBoxOutput)
 
-            LogManager::WriteMessage(LogType->Log, "Initialising Video\n")
+            LogManager::WriteLine(LogType->Log, "Initialising Video\n")
             Video::Initialise()
 
-            LogManager::WriteMessage(LogType->Log, "Initialising Audio\n")
+            LogManager::WriteLine(LogType->Log, "Initialising Audio\n")
             Audio::Initialise()
 
-            LogManager::WriteMessage(LogType->Log, "Initialising Input\n")
+            LogManager::WriteLine(LogType->Log, "Initialising Input\n")
             Input::Initialise(hInstance, hWnd)
 
-            LogManager::WriteMessage(LogType->Log, "Initialising the resource manager\n")
+            LogManager::WriteLine(LogType->Log, "Initialising the resource manager\n")
             ResourceManager::Intialise("paths.xml")
 
-            LogManager::WriteMessage(LogType->Log, "Reading options.xml")
+            LogManager::WriteLine(LogType->Log, "Reading options.xml")
             GameOptions::Open("options.xml")
             int windowWidth := GameOptions::GetValue("windowWidth", 1024)
             int windowHeight := GameOptions::GetValue("windowHeight", 768)
             int bpp := GameOptions::GetValue("bitsPerPixel", 32)
 
-            LogManager::WriteMessage(LogType->Log, 
+            LogManager::WriteLine(LogType->Log, 
             "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bpp)
             Video::SetDisplayMode(windowWidth, windowHeight, bpp)
 
-            LogManager::WriteMessage(LogType->Log, "Loading bitmaps\n")
+            LogManager::WriteLine(LogType->Log, "Loading bitmaps\n")
             -- TODO: pseudocode needed
             ResourceManager::LoadBitmaps()
             
-            LogManager::WriteMessage(LogType->Log, "Loading sound effects\n")
+            LogManager::WriteLine(LogType->Log, "Loading sound effects\n")
             -- TODO: pseudocode needed
             ResourceManager::LoadSounds()
 
-	       LogManager::WriteMessage(LogType->Log, "Generating fonts\n")
+	       LogManager::WriteLine(LogType->Log, "Generating fonts\n")
             -- TODO: pseudocode needed
             ResourceManager::CreateFonts()
            
-            LogManager::WriteMessage(LogType->Log, "Loading scenes\n")
+            LogManager::WriteLine(LogType->Log, "Loading scenes\n")
             XDocument scenesDocument := ResourceManager::GetXML("scenes.xml")
             SceneManager::Initialise(scenesDocument)
             
         catch
+            throw
+        end try
         
     end function
 

@@ -107,7 +107,7 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR 
             end if
         end while
     catch(Exception e)
-        LogManager::WriteMessage(
+        LogManager::WriteLine(
         LogType->Error | LogType->Debug, 
         "Fatal error: {0}\n\nStack trace: {1}", e->Message, e->StackTrace)
     finally

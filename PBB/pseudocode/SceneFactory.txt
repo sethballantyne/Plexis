@@ -3,7 +3,7 @@
 class SceneFactory
 Private
     function Log(String message, ...)
-        LogManager::WriteMessage(LogType->Debug | LogType->Error, message, arglist)
+        LogManager::WriteLine(LogType->Debug | LogType->Error, message, arglist)
     end function
 
     function String GetAttributeValue(XElement element, string attribute)
