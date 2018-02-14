@@ -1,23 +1,38 @@
 class MenuItemContainer inherits SelectableControl
 private
-    new List<SelectableControl> items
-    new Comparison<SelectedObject> comparisonDelegate(&SortMethod)
-    Surface menuItemCursor := NULL
-    string navigationArguments := NULL
 
+    -- controls contained within the container. Each control depends on the container to instruct it to render 
+    -- and pass on arguments received from the Scene they belong to each time the scene is displayed. 
+    new List<SelectableControl> items
+
+    -- used to sort the controls by their SelectedIndex property every time one is added to the control list. 
+    new Comparison<SelectedObject> comparisonDelegate(&SortMethod)
+
+    -- the cursor to be displayed next to a child control, indicating it's the control that is selected.
+    Surface menuItemCursor := NULL
+
+    -- The arguments passed by the Scene object each time the scene is shown to the user. 
+    string receivedArguments := NULL
+
+    -- the index of the currently selected item in the items list. This is used to determine which control 
+    -- is to be selected next, based on whether the user presses up (select previous control) 
+    -- or down (select the next control).
     int currentSelectedItem := 0
+
     -- sort by calling items->Sort(comparisonDelegate)
     function int SortMethod(SelectableControl a, SelectableControl b) : static
         return a->CompareTo(b)
     end function
 
 public
+    
     constructor MenuItemContainer()
 
         menuItemCursor := ResourceManager::GetSurface("menu_cursor")
 
     end constructor
 
+     -- Stores and forwards the arguments passed by the Scene to each control located within the container. 
      function ReceiveSceneArgs(string args)
         self->navigationArguments := args
 
@@ -26,6 +41,9 @@ public
         end for
     end function 
 
+    -- Selects the previous control in the items list, based on the position of the currently selected control. 
+    -- If the first item is currently selected, the last item in the list will be selected. Selecting an item 
+    -- postions the cursor next to it and receives the keyboard and mouse state each frame. 
     function SelectPreviousControl()
 
         if(list->Count = 1)
@@ -44,6 +62,9 @@ public
 
     end function
 
+    -- Selects the next item in the items list, based on the position of the currently selected item. 
+    -- If the currently selected item is the last item in the list, the first item will be selected. 
+    -- Selecting an item postions the cursor next to it and receives the keyboard and mouse state each frame. 
     function SelectNextControl()
         if(list->Count = 1)
             return
@@ -61,6 +82,7 @@ public
 
     end function    
 
+    -- Passes the state of the keyboard and mouse to each control within the container.
     function Update(Keys keyboardState, Mouse mouseState)
 
         if(keyboardState = NULL)
@@ -73,16 +95,16 @@ public
 
     end function
 
+    -- Draws the cursor next to the selected menu item and then instructs all items within the container to render themselves.
     function Render()
 
         for(i := 0 to items->Count - 1)
 
             -- only one item should be selected; bug otherwise.
             if(items[i]->IsSelected)
-                int cursorXPos := items[i]->X - menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems
-                int cursorYPos := items[i]->Y
-
-                Video::Blit(menuItemCursor, cursorXPos, cursorYPos)
+                int cursorXPos := items[i]->Position->X - menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems
+                
+                Video::Blit(menuItemCursor, cursorXPos, items[i]->Position->Y)
             end if
 
             items[i]->Render()
