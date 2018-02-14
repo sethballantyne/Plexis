@@ -2,10 +2,16 @@
 
 class SceneFactory
 Private
+
+    -- Used to write messages to the Debug and Error LogManager subscribers.
     function Log(String message, ...)
         LogManager::WriteLine(LogType->Debug | LogType->Error, message, arglist)
     end function
 
+    -- Returns the value of the specified attribute within the specified element as a string.
+    -- Exceptions:
+    -- System::Xml::XmlException: the specified attribute isn't present within the element,
+    --                            or the attributes value equates to String::Empty.
     function String GetAttributeValue(XElement element, string attribute)
         XAttribute xAttribute := element->Attribute(attribute)
         if(xAttribute = NULL)
@@ -19,6 +25,12 @@ Private
         return attribute->Value
     end function
 
+    -- Returns the value of the specified attribute within the specified element as an int. 
+    -- Exceptions:
+    -- System::Xml::XmlException: the specified attribute isn't present within the element,
+    --                            or the attributes value equates to String::Empty.
+    -- System::FormatException: the value of the attribute is non-numeric.
+    -- System::OverflowExcepion: the attribute contains a number that's too big to be stored as an int.
     function int GetAttributeValueAsInt32(XElement element, string attribute)
 
         string initialValue := NULL
@@ -37,6 +49,8 @@ Private
         return number
     end function
 
+    -- Reads an element whose type attribute evaluates to label, creating a new instance of Label using 
+    -- the values specified within the elements attributes.
     function Label ParseLabel(XElement labelTag)
 
         try
@@ -55,6 +69,8 @@ Private
             throw
     end function
 
+    -- Reads an element containing a menu item, creating a new instance of MenuItem using the 
+    -- values specified within the elements attributes.
     function MenuItem ParseMenuItem(string sceneID, XElement menuItemTag)
             
         try
@@ -95,6 +111,7 @@ Private
     end function
 
 Public
+    -- Parses the XML file containing scene information, returning an array of Scenes based on the information read.
     function Scene[] Read(XDocument xml)
         new List<Scene> SceneList
 

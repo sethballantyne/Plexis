@@ -1,6 +1,9 @@
 class Scene
 private
+    -- the name of scene as specified by the scene's id attribute in the XML file
     string name := NULL
+
+    -- contains each control present within the scene.
     new List<Control> controls
 public
 
