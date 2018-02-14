@@ -97,6 +97,7 @@ public
 
     end constructor
 
+    -- Updates the controls state, based on the keys that have been pressed. 
     function void Update(Keys keyboardState, Mouse mouseState)
 
         if(keyboardState->KeyDown(DIK_UP))
@@ -115,14 +116,6 @@ public
                 SceneManager::SetActiveScene(navigateTo, outboundArgs)
             end if
         end if
-
-    end function
-
-    function Render()
-        
-        if(#selected)
-            
-        end 
 
     end function
 
@@ -145,10 +138,12 @@ public
 
     end property
 
+    -- stores the arguments passed by the scene when it was set as the active scene. 
     function ReceiveSceneArgs(string args)
         receivedArgs := args
     end function
 
+    -- Blits the MenuItem to the backbuffer. 
     function Render()
         self->label->Render()
     end function
