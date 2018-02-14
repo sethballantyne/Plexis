@@ -4,17 +4,17 @@ private
     new List<Control> controls
 public
 
-    -- Initialises a new instance of Scene with the specified id. 
+    -- Initialises a new instance of Scene with the specified name. 
     -- Exceptions:
-    -- ArgumentNullException: id is null
-    -- ArgumentException: id evaluates to String::Empty.
-    constructor Scene(string id)
+    -- ArgumentNullException: name is null
+    -- ArgumentException: name evaluates to String::Empty.
+    constructor Scene(string name)
         if(id = NULL)
             throw new ArgumentNullException("id")
         else if(id = String::Empty)
             throw ArgumentException("id")
         end if
-        self->name := id
+        self->name := name
     end constructor
 
     -- Passes the arguments received via the SceneManager to the scenes child controls.
