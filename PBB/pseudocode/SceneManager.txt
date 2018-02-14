@@ -1,11 +1,17 @@
 class SceneManager : static
+    -- All the scenes read from the XML file, the key being the scenes name as read from scenes id attribute. 
     new Dictionary<string, Scene> scenes
+
+    -- the scene that's currently being displayed the user. 
     Scene currentScene := NULL
 public
     -- Builds an internal collection of Scenes based on the contents of the XML file and sets the 
-    -- specified scene as the inital scene that's displayed when the game first starts. If an initial
-    -- scene isn't specified in the XML file, it selects the first scene parsed from XML file. If No
+    -- specified scene as the initial scene that's displayed when the game first starts. If an initial
+    -- scene isn't specified in the XML file, it selects the first scene parsed from XML file. If no
     -- scenes are read from the XML file, a NoScenesAvailableException is thrown.
+    -- Exceptions:
+    -- System::ArgumentNullException: sceneDocument is null
+    -- NoScenesAvailableException: No scenes have been read from the XML file.
     function Initialise(XDocument sceneDocument)
 
         if(sceneDocument = NULL)
