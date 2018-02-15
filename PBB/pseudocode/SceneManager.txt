@@ -1,3 +1,5 @@
+-- Controls all the scenes within the game and acts as an intermediary between each scene and all the other subsystems within the game.
+
 class SceneManager : static
     -- All the scenes read from the XML file, the key being the scenes name as read from scenes id attribute. 
     new Dictionary<string, Scene> scenes

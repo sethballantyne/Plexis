@@ -1,3 +1,6 @@
+-- A non-interactive, static string of text that's displayed in a scene. 
+-- Grossly incomplete
+
 class Label inherits Control
 private
     Font labelFont := NULL

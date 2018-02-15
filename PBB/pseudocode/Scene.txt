@@ -1,3 +1,6 @@
+-- Encapsulates what the user is currently seeing on the screen. 
+-- A scene can be the actual game itself, or one of the menu screens. 
+
 class Scene
 private
     -- the name of scene as specified by the scene's id attribute in the XML file

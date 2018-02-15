@@ -1,3 +1,4 @@
+-- Produces scenes based on the data stored within scenes.xml
 -- Currently missing support for gameview, table controls.
 
 class SceneFactory

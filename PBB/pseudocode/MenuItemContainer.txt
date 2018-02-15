@@ -1,3 +1,7 @@
+-- In order for a MenuItem to be present within a Scene, it must be stored in a MenuItemContainter instance. 
+-- MenuItemContainers are in charge of selecting the appropriate MenuItem each time the user presses the down or up arrow keys. 
+-- They also forward the input state to the currently selected control and handle the rendering of each control.
+
 class MenuItemContainer inherits SelectableControl
 private
 

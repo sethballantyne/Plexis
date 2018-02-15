@@ -1,3 +1,5 @@
+-- MenuItems are interactive labels that are primarily used to transition between scenes.
+
 class MenuItem inherits SelectableControl
 private
     -- Labels and MenuItems are the same in the sense that they both are a string of text
