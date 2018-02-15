@@ -1,10 +1,22 @@
+-- LogManager maintains pools of subscribers that subscribe to certain types of messages; 
+-- currently these are error messages, debug messages and generic log messages. 
+-- When LogManager::Write or LogManager::WriteLine is called, all subscribers in the specified pool receive the 
+-- message and log or present it, based on how ILog::Write and ILog::WriteLine are implemented by the subscriber.
+
 class LogManager : static
 Private
+    -- List of all subscribers that want to log error messages.
     List<ILog> errorSubscribers := new List<ILog>()
+
+    -- List of all subscribers that want to receive any messages that aren't related to errors or debug information.
     List<ILog> logSubscribers := new List<ILog>() 
+
+    -- Subscribers that want to receive messages containing debug information.
     List<ILog> debugSubscribers := new List<ILog>()
 
 Public
+    -- Adds the subscriber to the specified list. 
+    -- Flags can be OR'd, allowing subscription to more than one list. 
     function Add(LogType flags, ILog subscriber)
         if(subscriber = NULL)
             return
@@ -23,6 +35,8 @@ Public
         end if
     end
 
+    -- Removes the subscriber from the specified list. 
+    -- Like Add, Flags can be OR'd resulting in removal from multiple lists.
     function Remove(LogType flags, ILog subscriber)
         if(subscriber = NULL)
             return
@@ -41,6 +55,8 @@ Public
         end if
     end function
 
+    -- Passes message to all subscribers of the specified list. 
+    -- Flags can be OR'd together to include multiple lists.
     function Write(LogType flags, string message...)
         if(message = NULL)
             return
@@ -53,7 +69,7 @@ Public
                 try
                     subscribers->Write(formattedMessage)
                 catch
-                end try-catch
+                end try
             end foreach
         end if
 
@@ -62,7 +78,7 @@ Public
                 try
                     subscribers->Write(formattedMessage)
                 catch
-                end try-catch
+                end try
             end foreach
         end if
 
@@ -71,12 +87,14 @@ Public
                 try
                     subscribers->Write(formattedMessage)
                 catch
-                end try-catch
+                end try
             end foreach
         end if
 
     end function
 
+    -- Passes a message that has a new line character appended to all subscribers of the specified list. 
+    -- Flags can be OR'd together to include multiple lists.
     function WriteLine(LogType flags, string message...)
         Write(flags, message + Environment::NewLine, arglist)
     end function
