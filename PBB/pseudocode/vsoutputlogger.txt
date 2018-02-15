@@ -1,9 +1,13 @@
+-- Writes a string via OutputDebugString(); meant to be used in conjunction with the LogManager.
+
 class VSOutputLogger implements ILog
 Public
+    -- Writes the specified message to the debugger.
     function Write(string message) : virtual
         System::Diagnostics::Debug::Print(message)
     end function
 
+    -- Writes the specified message to tbe debugger, followed by a new line character.
     function WriteLine(string message) : virtual
         System::Diagnostics::Debug::Print(message + Environment::NewLine)
     end function

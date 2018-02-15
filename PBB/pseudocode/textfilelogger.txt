@@ -1,9 +1,14 @@
+-- Writes time-stamped messages to a text file. TextFileLogger is designed to be used as a subscriber to LogManager.
+
 class TextFileLogger inherits ILog
 Private
+    -- The underlying stream responsible for writing to the text file.
     StreamWriter sw := NULL
 
 Public
-    constructor ApplicationLog(string path)
+    -- Puts the object into a state where it can write to the text file. If the text file already exists, 
+    -- all messages written to it will be appended to the existing data.
+    constructor TextFileLogger(string path)
     
         try
             sw := new StreamWriter(filename, true)
@@ -14,6 +19,7 @@ Public
 
     end constructor
 
+    -- Closes the underlying stream. Once the stream is closed, the text file can't be written to.
     function Close()
 
         if(sw != NULL)
@@ -23,6 +29,7 @@ Public
 
     end function
 
+    -- Writes a time-stamped mmessage to the text file.
     function Write(string message) : virtual
     
         try
@@ -34,6 +41,7 @@ Public
 
     end function
 
+    -- Writes a time-stamped mmessage to the text file along with an appended new line character.
     function WriteLine(string message) : virtual
 
         try

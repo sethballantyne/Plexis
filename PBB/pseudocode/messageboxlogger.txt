@@ -1,11 +1,16 @@
+-- Displays message on the screen via a call to the win32 function MessageBox. 
+-- MessageBoxLogger is designed to act as a subscriber to LogManager.
+
 class MessageBoxLogger inherits ILog
 Private
     HWND hWnd
 Public
+    -- Initialises the object with the handle of the game window.
     constructor MessageBoxLogger(HWND hWnd)
         this->hWnd := hWnd
     end constructor
 
+    -- Displays a MessageBox with the specified message. 
     function Write(string message)
 
         pin_ptr<wchar_t> unmanagedMessage := PtrToStringChars(message)
@@ -15,7 +20,8 @@ Public
 
     end function
 
+    -- Displays a MessageBox with the specified message. Effectively the same as Write. 
     function WriteLine(string message)
-        Write(message + Environment::NewLine)
+        Write(message + Environment::NewLine) -- what the fuck is the point of the new line? :P
     end function
 end class
