@@ -1,14 +1,22 @@
+-- Handles the game state, seperating it from the application layer. 
+-- No actual logic related to game play is handled by Game; that's the domain of GameView.
+
 class Game : static
 Private
+    -- used to determine whether the window is minimized; we don't want to update or render if it is.
     bool isWindowActive := false
 
+    -- used to present MessageBox alerts whenever a message is sent to LogManager's error subscriber list.
     MessageBoxLogger messageBoxOutput := NULL
+
+    -- Used to log messages to a text file via LogManager; subscribes to all lists.
     TextFileLogger textFileOutput := NULL
     $ifdef DEBUG
     new VSOutputLogger vsOutput 
     $endif
 
 Public
+    -- Initialises each subsystem and loads all resources and config information, putting the game into a playable state.
     function Initialise(HINSTANCE hInstance, HWND hWnd)
         try
             new messageBoxOutput(hWnd)
@@ -64,6 +72,7 @@ Public
         
     end function
 
+    -- Shuts down the game, instructing all subsystems to perform clean up and release any memory that's acquired.
     function Shutdown()
         
         Video::Shutdown()
@@ -74,6 +83,8 @@ Public
         textFileOutput->Close()
     end function
 
+    -- Polls user input and instructs the scene manager to update the scene each frame.
+    -- Update doesn't draw anything to the screen but rather sets up the scene in preparation to be drawn. 
     function Update()
         try
 
@@ -91,6 +102,7 @@ Public
         end try
     end function
 
+    -- Renders the current frame to the screen.
     function Render()
 
         try
