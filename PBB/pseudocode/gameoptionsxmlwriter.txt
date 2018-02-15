@@ -1,6 +1,9 @@
--- implement in C#, easier.
+-- Meant to update the options file each time a setting is changed in the game.
+
 class GameOptionsXMLWriter
 Public
+
+    -- Writes the provided KeyValuePairs to the options file.
     function Write(string path, KeyValuePair<string, string>[] options)
         new XmlWriterSettings settings
         settings->Indent := true
