@@ -1,3 +1,6 @@
+-- Wrapper around the IDirectSound8 COM+ interface. Audio handles the initialisation and shutdown of DirectSound, 
+-- along with creating SoundBuffers based on WAV files read from disk. 
+
 class Audio : static
 Private
     LPDIRECTSOUND8 lpDS := NULL
@@ -77,6 +80,8 @@ Private
 
     end function
 Public
+     -- Loads the specified WAV file from disk and returns it as a SoundBuffer object. 
+     -- CreateSoundBuffer currently only supports the DirectSound default of mono,  8bit 11KHz playback.
     function SoundBuffer CreateSoundBuffer(string filename)
 
         HMMIO hWav  -- handle to the wave file
@@ -250,6 +255,7 @@ Public
          return new SoundBuffer(lpDSBuffer)
     end function
     
+    -- Initialises DirectSound. This method must be called before any SoundBuffer objects are created and played.
     function Initialise(HWND hWnd) : static 
         
         HRESULT result := DirectSoundCreate8(NULL, &lpDS, NULL)
@@ -297,6 +303,7 @@ Public
 
     end function
 
+    -- Shutsdown DirectSound. Once Shutdown is called, the audio system must be reinitialised before sound can be played.
     function Shutdown() : static
 
         if(lpDS != NULL)

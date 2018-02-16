@@ -1,3 +1,5 @@
+-- Wrapper around a the IDirectSoundBuffer8 COM interface. SoundBuffer's are produced by Audio.
+
 class SoundBuffer
 Private
     LPDIRECTSOUNDBUFFER8 lpDSBuffer := NULL
@@ -12,6 +14,7 @@ Public
 
     end constructor
 
+    -- Plays the audio data stored in the buffer at the volume specified by SoundBuffer::Volume property.
     function Play()
         HRESULT result := lpDSBuffer->Play(0, 0, 0)
         if(result != DS_OK)
@@ -34,6 +37,8 @@ Public
         end if
     end function
     
+    -- Releases the encapsulated DirectSoundBuffer8 object. Once this is called, SoundBuffer::Play, 
+    -- SoundBuffer::Restore, SoundBuffer::Stop, SoundBuffer::IsPlaying, and SoundBuffer::Volume can no longer be called.
     function Release()
         if(lpDSBuffer != NULL)
             lpDSBuffer->Release()
@@ -41,6 +46,10 @@ Public
         end if
     end function
 
+    -- Attempts to restore the memory associated with the DirectSoundBuffer8 object. 
+    -- This method should be called if DirectSoundBufferLostException is encountered. 
+    -- If the exception is thrown when attempting to restore, the buffer has been lost and must be 
+    -- reloaded via Audio::CreateSoundBuffer().
     function Restore()
 
         DWORD status
@@ -82,6 +91,7 @@ Public
         end if
     end function
 
+    -- Stops the audio buffer if it's playing. 
     function Stop()
         HRESULT result := lpDSBuffer->Stop()
         if(result != DS_OK)
@@ -115,6 +125,7 @@ Public
         end if
     end function
 
+    -- Returns a boolean value indicating whether the buffer is currently playing.
     property bool IsPlaying
         get
             DWORD status := 0
@@ -136,6 +147,7 @@ Public
         end get
     end property
 
+    -- Gets and sets the buffer volume in the range of 0  - 100, 0 being silent and 100 being full volume.
     -- NOTE: use macro in the game to convert from the 0-100 range that the game will use to the value directsound expects. 
     property uint Volume
         get
