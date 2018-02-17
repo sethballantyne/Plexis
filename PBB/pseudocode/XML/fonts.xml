@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<fonts>
+  <font name="green" bitmap="green_font.bmp" glyphWidth="18" glyphHeight="18" />
+  <font name="white" bitmap="white_font.bmp" glyphWidth="18" glyphHeight="18" />
+</fonts>

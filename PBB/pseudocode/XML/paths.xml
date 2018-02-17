@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<paths>
+  <resource type="xml">
+    <path>/data</path>
+  </resource>
+  <resource type="bitmaps">
+    <path>/data/bitmaps</path>
+  </resource>
+  <resource type="audio">
+    <path>/data/audio</path>
+  </resource>
+</paths>
