@@ -148,7 +148,7 @@ Public
     end property
 
     -- Gets and sets the buffer volume in the range of 0  - 100, 0 being silent and 100 being full volume.
-    -- NOTE: use macro in the game to convert from the 0-100 range that the game will use to the value directsound expects. 
+    -- DirectSound treats 0 as being full volume, -10,000 is silent.
     property uint Volume
         get
             uint volume
@@ -168,12 +168,13 @@ Public
                         throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::GetVolume failed", result)
                 end switch
             else
-                return volume
+                return (10000 - -volume) / 100
             end if
         end get
 
         set
-            HRESULT result := lpDSBuffer->SetVolume(value)
+            int volume := 10000 - (value * 100)
+            HRESULT result := lpDSBuffer->SetVolume(volume)
             if(result != DS_OK)
                 switch(result)
                     DSERR_CONTROLUNAVAIL:
