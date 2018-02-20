@@ -1,14 +1,16 @@
 -- Produces KeyValuePairs that are consumed by GameOptions.
 
 class GameOptionsXMLReader
+Private
+   
 Public
     
     -- Reads the specified XML file containing the games settings, returning them as an array of KeyValuePairs.
     function KeyValuePair<string, string>[] Read(string path)
 
-        XElement xmlFile := XElement::Load(path)
+        XDocument xmlFile := XElement::Load(path)
 
-        IEnumerable<XElement> xmlOptionsData := from q in xmlFile->Elements("option") select q
+        XElement[] xmlOptionsData := xmlFile->Root->Descendants("options")->ToArray()
 
         new List<KeyViewPair<string, string>> parsedOptions
         foreach(element in xmlOptionsData)
