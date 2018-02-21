@@ -1,0 +1,113 @@
+class Font
+Private
+    Surface fontSurface
+    Point[] glyphPositions
+    uint glyphWidth
+    uint glyphHeight
+
+Public
+    -- Exceptions:
+    -- System::ArgumentNullException: name or fontBitmap are NULL
+    -- System::ArgumentException: name evaluates to String::Empty, or glphWidth is greater than the
+    --                            width of fontBitmap, or glyphHeight is greater than the height of fontBitmap.
+    constructor(string name, Surface fontBitmap, uint glyphWidth, uint glyphHeight)
+        
+        if(name = NULL)
+            throw ArgumentNullException("name")
+        else if(fontBitmap = NULL)
+            throw ArgumentNullException("fontBitmap")
+        end if
+
+        if(name = String::Empty)
+            throw ArgumentException("name")
+        else if(glpyhWidth > fontBitmap->Width)
+            throw ArgumentException("glyphWidth is greater than the width of the font surface.")
+        else if(glyphHeight > fontBitmap->Height)
+            throw ArgumentException("glyphHeight is greater than the height of the font surface.")
+        endif
+
+        self->glyphHeight := glyphHeight
+        self->glyphWidth := glyphWidth
+        fontSurface := fontBitmap
+        
+        int glyphsPerSheet := 94
+        new List<Point> glyphPositions(glyphsPerSheet)
+        for(i = 0 to glyphsPerSheet - 1)
+            int x := i * 18 
+          
+            glyphPositions->Add(new Point(x, 0))
+        end for
+
+        self->glyphPositions := glyphPositions->ToArray()
+    end constructor
+
+    constructor
+
+    constructor(string name, Surface fontBitmap, Size glyphSize)
+
+        if(glyphSize->Width <= 0)
+            throw ArgumentException("width must be greater than 0.")
+        else if(glyphSize->height <= 0)
+            throw ArgumentException("height must be greater than 0.")
+        end if
+
+       
+        self(name, fontBitmap, glyphSize->Width, glyphSize->Height)
+    end constructor
+
+    -- Renders the specified text to the backbuffer at the position specified by x and y.
+    -- Exceptions: 
+    -- System::ArgumentNullException: text is NULL
+    function Render(int x, int y, string text)
+        if(text = NULL)
+            throw ArgumentNullException("text")
+        end if
+
+        byte[] ascii := Encoding::ACSII::GetBytes(text)
+
+        Rectangle destRect
+        Rectangle srcRect
+
+        try
+            for(i := 0 to ascii->Count - 1)
+                destRect->X := x + (i * (glyphWidth - 1))
+                destRect->Y := y
+                destRect->Width := glyphWidth
+                destRect->Height := glyphHeight
+
+                -- subtracting 32 because the first character in a bitmap font
+                -- is the space character, which is decimal 32. A bitmap font has contains
+                -- the characters decimal 32 to decimal 126.
+                int index := ascii[i] - 32
+                srcRect->X := glyphPositions[index]->X
+                srcRect->Y := 0
+                
+                -- You may have issues with these, the documentation for IDirectDrawSurface7::Blit mentions
+                -- that "RECT structures are defined so that the right and bottom members are exclusive—therefore, 
+                -- right minus left equals the width of the rectangle, not 1 less than the width. "
+                -- Check here first if there's rendering issues.
+                srRect->Width := glyphWidth - 1
+                srcRect->Height := glyphHeight - 1
+
+                Video::Blit(destRect, srcRect, fontSurface)
+            end for
+        catch
+            throw
+        end try
+        
+    end function
+
+    -- Exceptions:
+    -- System::ArgumentNullException: - text is NULL
+    -- System::FormatException: - argslist is incorrectly formatted.
+    function Render(int x, int y, string text, ...)
+        try
+            -- String::Format throws ArgumentNullException if text is NULL,
+            -- FormatException if the argslist is incorrectly formatted.
+            string formattedText := String::Format(text, arglist)
+            Render(x, y, formattedText)
+        catch
+            throw
+        end try
+    end function
+end class
