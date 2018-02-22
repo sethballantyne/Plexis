@@ -497,6 +497,122 @@ Public
 
     end function
 
+    function void Flip()
+        -- DDFLIP_WAIT ensures it'll keep trying to flip until successful if the HAL returns
+        -- DDERR_WASSTILLDRAWING
+        HRESULT result := lpDDSPrimarySurface->Flip(NULL, DDFLIP_WAIT)
+        if(result != DD_OK)
+            switch(result)
+                DDERR_GENERIC:
+                    throw DirectDrawGenericException("")
+
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("")
+
+                DDERR_NOFLIPHW:
+                    throw DirectDrawNoFlipHardwareException("")
+
+                DDERR_NOTFLIPPABLE:
+                    throw DirectDrawNotFlippableException("")
+
+                DDERR_SURFACEBUSY:
+                    throw DirectDrawSurfaceBusyException("")
+
+                DDERR_SURFACELOST:
+                    throw DirectDrawSurfaceLostException("")
+
+                DDERR_UNSUPPORTED:
+                    throw DirectDrawUnsupportedException("")
+
+                DDERR_WASSTILLDRAWING:
+                    throw DirectDrawWasStillDrawingException("")
+
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::Flip() failed.\n")
+            end switch
+        end if
+    end function
+
+    function void Render(int x, int y, Surface surface)
+        RECT destRect
+        RECT srcRect
+
+        destRect.left := x
+        destRect.top := y
+        destRect.bottom := surface->Height
+        destRect.right := surface->Width
+
+        srcRect.left := 0
+        srcRect.top := 0
+        srcRect.bottom := surface->Height
+        srcRect.right := surface->Width
+
+        HRESULT result := lpDDSSecondarySurface->Blt(&destRect, surface->Surface, &srcRect, DDBLT_WAIT, NULL)
+        if(result != DD_OK)
+            switch(result)
+                DDERR_GENERIC:
+                    throw DirectDrawGenericException("")
+
+                DDERR_INVALIDCLIPLIST:
+                    throw DirectDrawInvalidClipListException("")
+
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("")
+
+                DDERR_INVALIDRECT:
+                    throw DirectDrawInvalidRectException("")
+
+                DDERR_NOALPHAHW:
+                    throw DirectDrawNoAlphaHardwareException("")
+
+                DDERR_NOBLTHW:
+                    throw DirectDrawNoBlitHardwareException("")
+
+                DDERR_NOCLIPLIST:
+                    throw DirectDrawNoClipListException("")
+
+                DDERR_NODDROPSHW:
+                    throw DirectDrawNoDDRaserOperationHardwareException("")
+
+                DDERR_NOMIRRORHW:
+                    throw DirectDrawNoMirrorHardwareException("")
+
+                DDERR_NORASTEROPHW:
+                    throw DirectDrawNoRasterOperationHardwareException("")
+
+                DDERR_NOROTATIONHW:
+                    throw DirectDrawNoRotationHardwareException("")
+
+                DDERR_NOSTRETCHHW:
+                    throw DirectDrawNoStretchHardwareException("")
+
+                DDERR_NOZBUFFERHW:
+                    throw DirectDrawNoZBUfferHardwareException("")
+
+                DDERR_SURFACEBUSY:
+                    throw DirectDrawSurfaceBusyException("")
+
+                DDERR_SURFACELOST:
+                    throw DirectDrawSurfaceLostException("")
+
+                DDERR_UNSUPPORTED:
+                    throw DirectDrawUnsupportedException("")
+
+                DDERR_WASSTILLDRAWING:
+                    throw DirectDrawWasStillDrawingException("")
+
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::Blt() failed.\n")
+            end switch
+        end if
+    end function
+
     function void Restore() : static
 
         VerifyNotNull(lpDD)
