@@ -32,7 +32,11 @@ public
     
     constructor MenuItemContainer()
 
-        menuItemCursor := ResourceManager::GetSurface("menu_cursor")
+        try
+            menuItemCursor := ResourceManager::GetSurface("menu_cursor")
+        catch
+            throw
+        end try
 
     end constructor
 
@@ -108,7 +112,8 @@ public
             if(items[i]->IsSelected)
                 int cursorXPos := items[i]->Position->X - menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems
                 
-                Video::Blit(menuItemCursor, cursorXPos, items[i]->Position->Y)
+                --Video::Blit(menuItemCursor, cursorXPos, items[i]->Position->Y)
+                Video::Blit(cursorXPos, items[i]->Position->Y, menuItemCursor)
             end if
 
             items[i]->Render()
