@@ -18,6 +18,15 @@ public
         self->text := text
     end constructor
 
+    -- Renders the labels' text to the backbuffer.
+    function Render()
+        try
+            labelFont->Render(self->position->X, self->Position->Y, text)
+        catch
+            throw
+        end try
+    end function
+
     property Font Font
         accessors
             get
