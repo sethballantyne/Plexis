@@ -147,6 +147,10 @@ public
 
     -- Blits the MenuItem to the backbuffer. 
     function Render()
-        self->label->Render()
+        try
+            self->label->Render()
+        catch
+            throw
+        end try
     end function
 end class
