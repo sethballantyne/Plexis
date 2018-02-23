@@ -1,0 +1,129 @@
+-- The resource manager creates, manages and destroys all the games assets. 
+-- All objects created by the resource manager must be destroyed by the resource manager. 
+-- When you request a resource via the 3 Get* methods, you're not getting a copy of a resource but 
+-- rather the address of the resource stored in the pool, thus multiple requests for the same resource
+-- by multiple objects get the same address to the same resource. DO NOT FREE THE RESOURCE UNTIL 
+-- IT'S TIME TO TERMINATE. Doing so makes the resource unavailable to any other object that needs it. 
+class ResourceManager : static 
+Private
+    new Dictionary<string, Font> fonts
+    new Dictionary<string, SoundBuffer> sounds
+    new Dictionary<string, Surface> surfaces
+    new Dictionary<string, XDocument> xmlFiles
+
+    new List<string> bitmapPaths
+    new List<string> xmlPaths
+    new List<string> audioPaths
+
+    string workingDirectory := NULL
+
+    -- Returns the value of the specified attribute within the specified element as a string.
+    -- Exceptions:
+    -- System::Xml::XmlException: the specified attribute isn't present within the element,
+    --                            or the attributes value equates to String::Empty.
+    function String GetAttributeValue(XElement element, string attribute)
+        XAttribute xAttribute := element->Attribute(attribute)
+        if(xAttribute = NULL)
+            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
+        end if
+
+        if(xAttribute->Value = String.Empty)
+            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
+        end if
+
+        return attribute->Value
+    end function
+
+    function ParsePaths(XElement resourceElement, List<string> pathList)
+        IEnumerable<XElement> pathsQuery := resourceElement->Descendants("path")
+                
+            foreach(pathElement in pathsQuery)
+                if(pathElement != NULL)
+                    string path := pathElement->Value
+                        if(path = String::IsNullOrWhiteSpace)
+                            path := "//"
+                        end if
+
+                        -- not handling the event that path equates to String::Empty because it's
+                        -- effectively the same as specifying the directory seperator.
+
+                        if(System::IO::Directory::Exists(workingPath + path))
+                            if(!pathList.Contains(path))
+                                pathList->Add(path)
+                            end if
+                        else 
+                            throw System::IO::DirectoryNotFoundException(path)
+                        end if
+                    end if
+                end if
+            end foreach
+
+    end function
+
+Public
+    -- Initialises the resorce manager with the paths in the specified XML file. 
+    function Initialise(string pathsFile)
+        
+        workingDirectory := Directory::GetCurrentDirectory()
+        XDocument pathsFile := XDocument::Load(pathsFile)
+
+        IEnumerable<XElement> resourcesQuery := pathsFile->Root->GetDescendants("resource")
+
+        
+        foreach(resourceElement in resourcesQuery)
+
+            string type := GetAttributeValue(resourceElement, "type")
+            if(type == "bitmaps")
+                ParsePaths(resourceElement, bitmapPaths)
+            else if(type == "audio")
+                ParsePaths(resourceElement, audioPaths)
+            else if(type == "xml")
+                ParsePaths(resourceElement, xmlPaths)
+            else 
+                throw new System::Xml::XmlException("invalid resource attribute {0}\n", type)
+            end if
+
+        end foreach
+    end function
+
+    function GetFont(string fontName)
+    end function
+
+    function GetSoundBuffer(string soundName)
+    end function
+
+    function GetSurface(string surfaceName)
+    end function
+
+    function GetXML(string documentName)
+    end function
+
+    function LoadFonts()
+    end function
+
+    function LoadSoundBuffers()
+    end function
+
+    function LoadSurfaces()
+    end function
+
+    function LoadXML()
+    end funtion
+
+    function LoadResources()
+    end function
+    -- Releases all the Surfaces and SoundObjects contained within the resource manager. 
+    -- Once released, these objects have to be reloaded before they can be used again.
+    function Release()
+    end function
+
+    -- Calls Restore() on each DirectX object stored within the resource manager. This should only be used
+    -- when DirectDrawSurfaceLostException or DirectSoundBufferLostException are encountered.
+    function Restore()
+    end function
+
+    -- Frees the memory used by all the resources contained within the resource manager. Unlike Release(), this
+    -- frees all resources, not just the DirectX objects. 
+    function Shutdown()
+    end function
+end class
