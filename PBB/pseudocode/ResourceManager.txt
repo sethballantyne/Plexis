@@ -34,11 +34,39 @@ Private
         return attribute->Value
     end function
 
+    function bool GetAttributeValueAsBoolean(XElement element, string attribute)
+
+        XAttribute xAttribute := element->Attribute(attribute)
+        if(xAttribute = NULL)
+            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
+        end if
+
+        if(xAttribute->Value = String.Empty)
+            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
+        end if
+
+        try
+            return Convert.ToBoolean(xAttribute->Value)
+        catch
+            throw
+        end try
+
+    end function
+
     function ParsePaths(XElement resourceElement, List<string> pathList)
+
+        if(resourceElement = NULL)
+            throw System::ArgumentNullException("resourceElement")
+        else if(pathList = NULL)
+            throw System::ArgumentNullException("pathList")
+        end if
+
+
         IEnumerable<XElement> pathsQuery := resourceElement->Descendants("path")
                 
             foreach(pathElement in pathsQuery)
                 if(pathElement != NULL)
+                    bool includeSubDirs := GetAttributeValueAsBoolean(pathElement, "includeSubDirectories")
                     string path := pathElement->Value
                         if(path = String::IsNullOrWhiteSpace)
                             path := "//"
@@ -48,9 +76,13 @@ Private
                         -- effectively the same as specifying the directory seperator.
 
                         if(System::IO::Directory::Exists(workingPath + path))
-                            if(!pathList.Contains(path))
-                                pathList->Add(path)
-                            end if
+                            for(i := 0 to pathList.Count - 1)
+                                if(pathList[i]->Path == path)
+                                    return
+                                end if
+                            end for
+                        
+                            pathList->Add(new ResourcePath(path, includeSubDirs))
                         else 
                             throw System::IO::DirectoryNotFoundException(path)
                         end if
@@ -86,31 +118,131 @@ Public
         end foreach
     end function
 
-    function GetFont(string fontName)
+    function Font GetFont(string fontName)
+        try
+            return font[fontName]
+        catch(KeyValuePairException)
+            throw ResourceNotFoundException("Font resource {0} doesn't exist.\n", surfaceName)
+        catch
+            throw
+        end try
     end function
 
-    function GetSoundBuffer(string soundName)
+    function SoundBuffer GetSoundBuffer(string soundName)
+        try
+            return sounds[soundName]
+        catch(KeyValuePairException)
+            throw ResourceNotFoundException("Sound resource {0} doesn't exist.\n", surfaceName)
+        catch
+            throw
+        end try
     end function
 
-    function GetSurface(string surfaceName)
+    function Surface GetSurface(string surfaceName)
+        try
+            return surfaces[surfaceName]
+        catch(KeyValuePairException)
+            throw ResourceNotFoundException("Surface resource {0} doesn't exist.\n", surfaceName)
+        catch
+            throw
+        end try
     end function
 
     function GetXML(string documentName)
+        try
+            return xmlFiles[documentName]
+        catch(KeyValuePairException)
+            throw ResourceNotFoundException("XML resource {0} doesn't exist.\n", documentName)
+        catch
+            throw
+        end try
     end function
 
-    function LoadFonts()
+    function LoadFonts(string file)
+        try
+            XDocument fontFile := GetXML(font)
+            Font[] fonts := FontFactory::CreateFonts(fontFile)
+            self->fonts->AddRange(fonts)
+        catch
+            throw
+        end try
+       
     end function
 
     function LoadSoundBuffers()
+        foreach(path in audioPaths)
+
+            string[] files := NULL
+
+            if(path->IncludeSubDirectories)
+                files := System::IO::Directory::GetFiles(path->Path, "*.wav", SearchOption::AllDirectories)
+            else 
+                files := System::IO::Directory::GetFiles(path->Path, "*.wav", SearchOption::TopDirectoryOnly)
+            end if
+
+            foreach(file in files)
+                SoundBuffer soundBuffer := Audio::CreateSoundBuffer(file)
+                string resourceName := System::IO::File::GetFileNameWithoutExtension(file->Path)
+
+                surfaces->Add(resourceName, soundBuffer)
+            end foreach
+        end foreach
     end function
 
     function LoadSurfaces()
+      foreach(path in bitmapPaths)
+
+        string[] files := NULL
+
+        if(path->IncludeSubDirectories)
+            files := System::IO::Directory::GetFiles(path->Path, "*.bmp", SearchOption::AllDirectories)
+        else 
+            files := System::IO::Directory::GetFiles(path->Path, "*.bmp", SearchOption::TopDirectoryOnly)
+        end if
+
+        foreach(file in files)
+            Surface surface := Video::CreateSurface(file)
+            string resourceName := System::IO::File::GetFileNameWithoutExtension(file->Path)
+
+            surfaces->Add(resourceName, surface)
+        end foreach
+      end foreach
     end function
 
     function LoadXML()
+
+        try
+            foreach(path in XmlPaths)
+                String[] files := NULL
+
+                if(path->IncludeSubDirectories)
+                    files := System::IO::Directory::GetFiles(path->Path, "*.xml", SearchOption::AllDirectories)
+                else 
+                    files := System::IO::Directory::GetFiles(path->Path, "*.xml", SearchOption::TopDirectoryOnly)
+                end if
+
+                foreach(file in files)
+                    XDocument xmlDocument := XDocument::Load(file->Path)
+                    string resourceName := System::IO::File::GetFileNameWithoutExtension(file->Path)
+
+                    xmlFiles->Add(resourceName, xmlDocument)
+                end foreach
+            foreach
+        catch
+            throw
+        end try
+        
     end funtion
 
     function LoadResources()
+        try
+            self->LoadXML()
+            self->LoadSurfaces()
+            self->LoadSoundBuffers()
+            self->LoadFonts("fonts")
+        catch
+            throw
+        end try
     end function
     -- Releases all the Surfaces and SoundObjects contained within the resource manager. 
     -- Once released, these objects have to be reloaded before they can be used again.
