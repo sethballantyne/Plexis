@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <paths>
   <resource type="xml">
-    <path>/data</path>
+    <path includeSubDirectories="false">/data</path>
   </resource>
   <resource type="bitmaps">
-    <path>/data/bitmaps</path>
+    <path includeSubDirectories="true">/data/bitmaps</path>
   </resource>
   <resource type="audio">
-    <path>/data/audio</path>
+    <path includeSubDirectories="true">/data/audio</path>
   </resource>
 </paths>
