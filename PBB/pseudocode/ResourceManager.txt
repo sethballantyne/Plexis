@@ -182,6 +182,7 @@ Public
 
             foreach(file in files)
                 SoundBuffer soundBuffer := Audio::CreateSoundBuffer(file)
+                soundBuffer->Path := file
                 string resourceName := System::IO::File::GetFileNameWithoutExtension(file->Path)
 
                 surfaces->Add(resourceName, soundBuffer)
@@ -202,9 +203,10 @@ Public
 
         foreach(file in files)
             Surface surface := Video::CreateSurface(file)
-            string resourceName := System::IO::File::GetFileNameWithoutExtension(file->Path)
+            surface->Path := file
+            surface->Name := System::IO::File::GetFileNameWithoutExtension(file->Path)
 
-            surfaces->Add(resourceName, surface)
+            surfaces->Add(surface->Name, surface)
         end foreach
       end foreach
     end function
@@ -247,15 +249,60 @@ Public
     -- Releases all the Surfaces and SoundObjects contained within the resource manager. 
     -- Once released, these objects have to be reloaded before they can be used again.
     function Release()
+        for(i := to surfaces->Count - 1)
+            surfaces[i]->Release()
+        end for
+
+        for(i := 0 to sounds->Count - 1)
+            sounds[i]->Release()
+        end for
+
+        surfaces->Clear()
+        sounds->Clear()
     end function
 
-    -- Calls Restore() on each DirectX object stored within the resource manager. This should only be used
-    -- when DirectDrawSurfaceLostException or DirectSoundBufferLostException are encountered.
-    function Restore()
+    function ReloadSurfaces()
+        string key := NULL
+        string path := NULL
+
+        KeyValuePair[] keyValuePairs := surfaces->ToArray()
+        foreach(keyValuePair in keyValuePairs)
+            key := keyValuePair->Key
+            surfaces[key]->Release()
+
+            surfaces[key]->Data := Video::CreateSurface(path)->Data
+        end foreach
+
+        -- fonts need to be updated too, since they contain a Surface.
+        KeyValuePairs := fonts->ToArray()
+        foreach(keyValuePair in keyValuePairs)
+            string key := keyValuePair->Key
+            
+            string resourceName := fonts[key]->Surface->Name
+            fonts[key]->Data := Video::GetSurface(resourceName)->Data
+        end foreach
+    end function
+
+    function ReloadSoundBuffers()
+        string key := NULL
+        string path := NULL
+
+        KeyValuePair[] keyValuePairs := soundBuffers->ToArray()
+        foreach(keyValuePair in keyValuePairs)
+            key := keyValuePair->Key
+            sounds[key]->Release()
+
+            path := sounds[key]->Path
+            sounds[key]->Data := Audio::CreateSoundBuffer(path)->Data
+        end foreach
     end function
 
     -- Frees the memory used by all the resources contained within the resource manager. Unlike Release(), this
     -- frees all resources, not just the DirectX objects. 
     function Shutdown()
+        fonts->Clear()
+        xml->Clear()
+
+        Release()
     end function
 end class

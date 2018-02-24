@@ -15,6 +15,28 @@ Private
     new VSOutputLogger vsOutput 
     $endif
 
+    function RestoreSurfaces()
+        try
+            Video::RestoreAllSurfaces()
+        catch(DirectDrawSurfaceWrongModeException)
+            try
+                Video::SetDisplayMode(1024, 768, 32)
+                
+                ResourceManager::ReloadSurfaces()
+            catch
+                throw
+            end try
+        catch
+            throw
+        end try
+    end function
+
+    function RestoreSoundBuffers()
+        try
+            ResourceManager::RestoreSoundBuffers()
+        catch
+        end try
+    end function
 Public
     -- Initialises each subsystem and loads all resources and config information, putting the game into a playable state.
     function Initialise(HINSTANCE hInstance, HWND hWnd)
@@ -40,6 +62,10 @@ Public
             LogManager::WriteLine(LogType->Log, "Initialising the resource manager\n")
             ResourceManager::Intialise("paths.xml")
 
+            LogManager::WriteLine(LogType->Log, "Loading Resources\n")
+            -- TODO: pseudocode needed
+            ResourceManager::LoadResources()
+
             LogManager::WriteLine(LogType->Log, "Reading options.xml")
             GameOptions::Open("options.xml")
             int windowWidth := GameOptions::GetValue("windowWidth", 1024)
@@ -49,23 +75,10 @@ Public
             LogManager::WriteLine(LogType->Log, 
             "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bpp)
             Video::SetDisplayMode(windowWidth, windowHeight, bpp)
-
-            LogManager::WriteLine(LogType->Log, "Loading bitmaps\n")
-            -- TODO: pseudocode needed
-            ResourceManager::LoadBitmaps()
             
-            LogManager::WriteLine(LogType->Log, "Loading sound effects\n")
-            -- TODO: pseudocode needed
-            ResourceManager::LoadSounds()
-
-	       LogManager::WriteLine(LogType->Log, "Generating fonts\n")
-            -- TODO: pseudocode needed
-            ResourceManager::CreateFonts()
-           
             LogManager::WriteLine(LogType->Log, "Loading scenes\n")
-            XDocument scenesDocument := ResourceManager::GetXML("scenes.xml")
+            XDocument scenesDocument := ResourceManager::GetXML("scenes")
             SceneManager::Initialise(scenesDocument)
-            
         catch
             throw
         end try
@@ -112,6 +125,18 @@ Public
 
             -- pseudocode needed
             Video::Flip()
+        catch(DirectDrawSurfaceLostException)
+            try
+               RestoreSurfaces()
+            catch
+                throw
+            end try
+        catch(DirectSoundBufferLostException)
+            try
+                ResourceManager::ReloadSoundBuffers()
+            catch
+                throw
+            end try
         catch
             throw
         end try
