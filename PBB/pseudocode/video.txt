@@ -550,7 +550,7 @@ Public
         srcRect.bottom := surface->Height
         srcRect.right := surface->Width
 
-        HRESULT result := lpDDSSecondarySurface->Blt(&destRect, surface->Surface, &srcRect, DDBLT_WAIT, NULL)
+        HRESULT result := lpDDSSecondarySurface->Blt(&destRect, surface->Data, &srcRect, DDBLT_WAIT, NULL)
         if(result != DD_OK)
             switch(result)
                 DDERR_GENERIC:
