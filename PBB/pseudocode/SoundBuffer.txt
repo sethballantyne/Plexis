@@ -50,46 +50,46 @@ Public
     -- This method should be called if DirectSoundBufferLostException is encountered. 
     -- If the exception is thrown when attempting to restore, the buffer has been lost and must be 
     -- reloaded via Audio::CreateSoundBuffer().
-    function Restore()
+    --function Restore()
 
-        DWORD status
-        HRESULT result
+    --    DWORD status
+    --    HRESULT result
 
-        VerifyNotNull(lpDSBuffer)
-        result := lpDSBuffer->GetStatus(&status)
-        if(result != DS_OK)
-            switch(result)
-                DSERR_INVALIDPARAM:
-                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::GetStatus: an invalid parameter was passed to the returning function.")
-
-                default:
-                    throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::GetStatus failed.\n", result)
-            end switch
-        end if
-
-        if(status & DSBSTATUS_BUFFERLOST)
-            
-            result := lpDSBuffer->Restore()
-            if(result != DS_OK)
-                    switch(result)
-                        DSERR_BUFFERLOST:
-                            throw DirectSoundBufferLostException("IDirectSoundBuffer8::Restore: ")
-                        DSERR_INVALIDCALL:
-                            throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Restore: this function is not valid for the current state of this object.")
-
-                        DSERR_PRIOLEVELNEEDED:
-                            throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Restore: a cooperative level of DSSCL_PRIORITY or higher is required.")
-
-                        default:
-                            throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Restore failed.", result)
-                    end switch
-                end if
-            end if
+    --    VerifyNotNull(lpDSBuffer)
+    --    result := lpDSBuffer->GetStatus(&status)
+    --    if(result != DS_OK)
+    --        switch(result)
+    --            DSERR_INVALIDPARAM:
+    --                throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::GetStatus: an invalid parameter was passed to the returning function.")
+    --
+    --            default:
+    --                throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::GetStatus failed.\n", result)
+    --        end switch
+    --    end if
+    --
+    --    if(status & DSBSTATUS_BUFFERLOST)
+    --        
+    --        result := lpDSBuffer->Restore()
+    --        if(result != DS_OK)
+    --                switch(result)
+    --                    DSERR_BUFFERLOST:
+    --                        throw DirectSoundBufferLostException("IDirectSoundBuffer8::Restore: ")
+    --                    DSERR_INVALIDCALL:
+    --                        throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Restore: this function is not valid for the current state of this object.")
+   
+    --                    DSERR_PRIOLEVELNEEDED:
+    --                        throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Restore: a cooperative level of DSSCL_PRIORITY or higher is required.")
+    --
+    --                    default:
+    --                        throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Restore failed.", result)
+    --                end switch
+    --            end if
+    --        end if
 
             -- TODO: BUFFER HAS BEEN RESTORED, NEEDS TO BE FILLED AGAIN WITH SOUND DATA.
 
-        end if
-    end function
+    --   end if
+    --end function
 
     -- Stops the audio buffer if it's playing. 
     function Stop()
