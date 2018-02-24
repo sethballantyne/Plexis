@@ -1,0 +1,48 @@
+class ResourcePath implements IEquatable
+Private
+    string path
+    bool includeSubDirs
+
+Public
+    constructor(string path, includeSubDirs)
+
+        if(String::IsNullOrWhiteSpace(path))
+            throw ArgumentException(path)
+        end if
+
+        self->path := path
+        self->includeSubDirs := includeSubDirs
+
+    end constructor
+
+    -- overriding Equals in IEquatable
+    function override Equals(Object obj)
+        string s := dynamic_cast<ResourcePath>(obj)
+        if(s = NULL)
+            return false
+        end if
+
+        return path->Equals(s)
+    end function
+
+    property IncludeSubDirectories
+        accessors
+            get
+                return includeSubDirs
+            set
+                includeSubDirs := value
+        end accessors
+    end property
+
+    property String Path
+        get
+            return path
+        set
+            if(String::IsNullOrWhiteSpace(value))
+                throw ArgumentException("value")
+            end if
+
+            path := value
+    end property
+    
+end class
