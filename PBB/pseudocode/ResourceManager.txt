@@ -11,10 +11,14 @@ Private
     new Dictionary<string, Surface> surfaces
     new Dictionary<string, XDocument> xmlFiles
 
+    -- each list contains absolute paths based on the paths read from paths.xml
+    -- these are used both when loading the resources when the game is launched
+    -- and also when the DirectDraw surfaces or DirectSound soundbuffer's need to be restored.
     new List<string> bitmapPaths
     new List<string> xmlPaths
     new List<string> audioPaths
 
+    -- the absolute path to the directory the program is executing in.
     string workingDirectory := NULL
 
     -- Returns the value of the specified attribute within the specified element as a string.
@@ -34,6 +38,11 @@ Private
         return attribute->Value
     end function
 
+    -- returns the specified attribute value as a boolean. 
+    -- Exceptions:
+    -- System::Xml::XmlException: the element doesn't contain the specified attribute, 
+    --                            or the attributes value equates to String::Empty.
+    -- System::FormatException: the attributes value is not "true" or "false".
     function bool GetAttributeValueAsBoolean(XElement element, string attribute)
 
         XAttribute xAttribute := element->Attribute(attribute)
@@ -46,13 +55,17 @@ Private
         end if
 
         try
-            return Convert.ToBoolean(xAttribute->Value)
+            return Convert::ToBoolean(xAttribute->Value)
         catch
             throw
         end try
 
     end function
 
+    -- Reads all the paths associated with the specified element.
+    -- Exceptions: 
+    -- System::ArgumentNullException: resourceElement or pathList is NULL.
+    -- System::IO::DirectoryNotFoundException: one of the paths specified within the file doesn't exist or is invalid.
     function ParsePaths(XElement resourceElement, List<string> pathList)
 
         if(resourceElement = NULL)
@@ -75,7 +88,7 @@ Private
                         -- not handling the event that path equates to String::Empty because it's
                         -- effectively the same as specifying the directory seperator.
 
-                        if(System::IO::Directory::Exists(workingPath + path))
+                        if(System::IO::Directory::Exists(workingDirectory + path))
                             for(i := 0 to pathList.Count - 1)
                                 if(pathList[i]->Path == path)
                                     return
@@ -118,6 +131,9 @@ Public
         end foreach
     end function
 
+    -- Retrieves the Font instance with the specified name.
+    -- Exceptions:
+    -- ResourceNotFoundException: the specified font doesn't exist within the resource manager.
     function Font GetFont(string fontName)
         try
             return font[fontName]
@@ -128,6 +144,9 @@ Public
         end try
     end function
 
+    -- Retrieves the SoundBuffer instance with the specified name.
+    -- Exceptions:
+    -- ResourceNotFoundException: the specified SoundBuffer doesn't exist within the resource manager.
     function SoundBuffer GetSoundBuffer(string soundName)
         try
             return sounds[soundName]
@@ -138,6 +157,9 @@ Public
         end try
     end function
 
+    -- Retrieves the Surface instance with the specified name.
+    -- Exceptions:
+    -- ResourceNotFoundException: the specified Surface doesn't exist within the resource manager.
     function Surface GetSurface(string surfaceName)
         try
             return surfaces[surfaceName]
@@ -148,7 +170,10 @@ Public
         end try
     end function
 
-    function GetXML(string documentName)
+    -- Retrieves the XDocument instance with the specified name
+    -- Exceptions:
+    -- ResourceNotFoundException: the specified XML file doesn't exist within the resource manager.
+    function XDocument GetXML(string documentName)
         try
             return xmlFiles[documentName]
         catch(KeyValuePairException)
@@ -158,6 +183,7 @@ Public
         end try
     end function
 
+    -- Creates the fonts based on the settings within the fonts file.
     function LoadFonts(string file)
         try
             XDocument fontFile := GetXML(font)
@@ -169,6 +195,7 @@ Public
        
     end function
 
+    -- Loads each WAV located at the path(s) specified in the paths file as SoundBuffer objects.
     function LoadSoundBuffers()
         foreach(path in audioPaths)
 
@@ -190,6 +217,7 @@ Public
         end foreach
     end function
 
+    -- Loads each Bitmap located at the path(s) specified in the paths file as Surface objects.
     function LoadSurfaces()
       foreach(path in bitmapPaths)
 
@@ -211,6 +239,7 @@ Public
       end foreach
     end function
 
+    -- Loads each XML file located at the path(s) specified in the paths file as XDocument objects.
     function LoadXML()
 
         try
@@ -236,6 +265,8 @@ Public
         
     end funtion
 
+    -- Helper function that loads each resource type in the appropriate order. Calling this is the same as calling'
+    -- LoadXML(), LoadSurfaces(), LoadSoundBuffers() and LoadFonts() in that order.
     function LoadResources()
         try
             self->LoadXML()
@@ -246,6 +277,7 @@ Public
             throw
         end try
     end function
+
     -- Releases all the Surfaces and SoundObjects contained within the resource manager. 
     -- Once released, these objects have to be reloaded before they can be used again.
     function Release()
@@ -261,6 +293,7 @@ Public
         sounds->Clear()
     end function
 
+    -- Reloads each Surface object if restoring failed after the user alt-tabbed. 
     function ReloadSurfaces()
         string key := NULL
         string path := NULL
@@ -283,6 +316,7 @@ Public
         end foreach
     end function
 
+     -- Reloads each SoundBuffer object if restoring failed after the user alt-tabbed. 
     function ReloadSoundBuffers()
         string key := NULL
         string path := NULL
