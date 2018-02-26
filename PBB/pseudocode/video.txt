@@ -4,6 +4,7 @@ Private
     LPDIRECTDRAWSURFACE7 lpDDSPrimarySurface := NULL
     LPDIRECTDRAWSURFACE7 lpDDSSecondarySurface := NULL
     LPDIRECTDRAWCLIPPER lpDDClipper := NULL
+    uint colourKey 
 
     function uint RGBTo32Bit(uint a, uint r, uint g, uint b) : inline, static
             return ((b) + ((g) << 8) + ((r) << 16) + ((a) << 24))
@@ -249,10 +250,12 @@ Private
 
         SecureZeroMemory(&ddSD, sizeof(ddSD))
         ddSD.dwSize := sizeof(imageddsd)
-        ddSD.dwFlags := DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT
+        ddSD.dwFlags := DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT | DDSD_CKSRCBLT
         ddSD.ddsCaps.dwCaps := DDSCAPS_OFFSCREENPLAIN
         ddSD.dwWidth := bitmap.Width
         ddSD.dwHeight := bitmap.Height
+        ddSD.ddckCKSrcBlt.dwColorSpaceLowValue = self->colourKey
+        ddSD.ddckCKSrcBlt.dwColorSpaceHighValue = self->colourKey
 
         VerifyNotNull(lpDD)
         result := lpDD->CreateSurface(&ddSD, &lpDDSurface, NULL)
@@ -317,6 +320,41 @@ Private
             end switch
         end if
 
+        DDCOLORKEY ddColourKey
+        ddColourKey.dwColorSpaceHighValue = self->colourKey
+        ddColourKey.dwColorSpaceLowValue = self->colourKey
+
+        result := lpDDSurface->SetColorKey(DDCKEY_SRCBLT, &ddColourKey)))
+        if(result != DD_OK)
+            switch(result)
+                DDERR_GENERIC:
+                    throw DirectDrawGenericException("IDirectDrawSurface7::SetColorKey: ")
+                
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("IDirectDrawSurface7::SetColorKey: ")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("IDirectDrawSurface7::SetColorKey: ")
+
+                DDERR_INVALIDSURFACETYPE:
+                    throw DirectDrawInvalidSurfaceTypeException("IDirectDrawSurface7::SetColorKey: ")
+
+                DDERR_NOTAOVERLAYSURFACE:
+                    throw DirectDrawNotAnOverlaySurfaceException("IDirectDrawSurface7::SetColorKey: ")
+
+                DDERR_SURFACELOST:
+                    throw DirectDrawSurfaceLostException("IDirectDrawSurface7::SetColorKey: ")
+
+                DDERR_UNSUPPORTED:
+                    throw DirectDrawUnsupportedException("IDirectDrawSurface7::SetColorKey: ")
+
+                DDERR_WASSTILLDRAWING::
+                    throw DirectDrawWasStillDrawingException("IDirectDrawSurface7:SetColorKey: ")
+                default:
+                     throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::SetColorKey failed.", result)
+            end switch
+        end if
+
         result := lpDDSurface->GetDC(&hDC)
         if(result != DD_OK)
             switch(result)
@@ -369,6 +407,8 @@ Private
 
 Public
     function void Initialise() : static
+        colourKey := RGBTo32Bit(255, 255, 0, 255)
+
         result := DirectDrawCreateEx()
         if(result != DD_OK) 
             switch(result)
@@ -550,7 +590,7 @@ Public
         srcRect.bottom := surface->Height
         srcRect.right := surface->Width
 
-        HRESULT result := lpDDSSecondarySurface->Blt(&destRect, surface->Data, &srcRect, DDBLT_WAIT, NULL)
+        HRESULT result := lpDDSSecondarySurface->Blt(&destRect, surface->Data, &srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL)
         if(result != DD_OK)
             switch(result)
                 DDERR_GENERIC:

@@ -17,7 +17,7 @@ Private
 
     function RestoreSurfaces()
         try
-            Video::RestoreAllSurfaces()
+            Video::Restore()
         catch(DirectDrawSurfaceWrongModeException)
             try
                 Video::SetDisplayMode(1024, 768, 32)
