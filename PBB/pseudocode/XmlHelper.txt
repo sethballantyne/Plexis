@@ -1,0 +1,105 @@
+class XmlHelper : static
+Private
+Public
+    -- Returns the value of the specified attribute within the specified element as a string.
+    -- Exceptions:
+    -- System::ArgumentNullException: element or attribute are NULL
+    -- System::ArgumentException: attribute evaluates to String::Empty
+    -- System::Xml::XmlException: the specified attribute isn't present within the element,
+    --                            or the attributes value equates to String::Empty.
+    function String GetAttributeValue(XElement element, string attribute)
+
+        if(element = NULL)
+            throw ArgumentNullException("element")
+        else if(attribute = NULL)
+            throw ArgumentNullException("attribute")
+        end if
+
+        if(attribute = String::Empty)
+            throw ArgumentException("attribute")
+        end if
+
+        XAttribute xAttribute := element->Attribute(attribute)
+        if(xAttribute = NULL)
+            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
+        end if
+
+        if(xAttribute->Value = String.Empty)
+            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
+        end if
+
+        return attribute->Value
+
+    end function
+
+    -- Returns the value of the specified attribute within the specified element as an int. 
+    -- Exceptions:
+    -- System::ArgumentNullException: element or attribute are NULL
+    -- System::ArgumentException: attribute evaluates to String::Empty
+    -- System::Xml::XmlException: the specified attribute isn't present within the element,
+    --                            or the attributes value equates to String::Empty.
+    -- System::FormatException: the value of the attribute is non-numeric.
+    -- System::OverflowExcepion: the attribute contains a number that's too big to be stored as an int.
+    function int GetAttributeValueAsInt32(XElement element, string attribute)
+        
+        if(element = NULL)
+            throw ArgumentNullException("element")
+        else if(attribute = NULL)
+            throw ArgumentNullException("attribute")
+        end if
+
+        if(attribute = String::Empty)
+            throw ArgumentException("attribute")
+        end if
+
+        string initialValue := NULL
+        int number
+        try
+            initialValue := GetAttributeValue(element, attribute)
+            number := Convert.ToInt32(initialValue)
+        catch(FormatException)
+            throw new FormatException(String::Format("the {0} attribute contains a non-numeric value.", attribute))
+        catch(OverflowException)
+            throw new OverflowException(String::Format("the {0} attribute contains a number that's too fuckin' big.", attribute))
+        catch(Exception)
+            throw
+        end try
+
+        return number
+    end function
+
+    -- returns the specified attribute value as a boolean. 
+    -- Exceptions:
+    -- System::ArgumentNullException: element or attribute are NULL
+    -- System::ArgumentException: attribute evaluates to String::Empty
+    -- System::Xml::XmlException: the element doesn't contain the specified attribute, 
+    --                            or the attributes value equates to String::Empty.
+    -- System::FormatException: the attributes value is not "true" or "false".
+    function bool GetAttributeValueAsBoolean(XElement element, string attribute)
+
+        if(element = NULL)
+            throw ArgumentNullException("element")
+        else if(attribute = NULL)
+            throw ArgumentNullException("attribute")
+        end if
+
+        if(attribute = String::Empty)
+            throw ArgumentException("attribute")
+        end if
+
+        XAttribute xAttribute := element->Attribute(attribute)
+        if(xAttribute = NULL)
+            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
+        end if
+
+        if(xAttribute->Value = String.Empty)
+            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
+        end if
+
+        try
+            return Convert::ToBoolean(xAttribute->Value)
+        catch
+            throw
+        end try
+
+    end function
