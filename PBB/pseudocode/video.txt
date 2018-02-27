@@ -594,58 +594,58 @@ Public
         if(result != DD_OK)
             switch(result)
                 DDERR_GENERIC:
-                    throw DirectDrawGenericException("")
+                    throw DirectDrawGenericException("IDirectDrawSurface7::Blt: a non-specific error has occured.\n")
 
                 DDERR_INVALIDCLIPLIST:
-                    throw DirectDrawInvalidClipListException("")
+                    throw DirectDrawInvalidClipListException("IDirectDrawSurface7::Blt: DirectDraw does not support the provided clip list.\n")
 
                 DDERR_INVALIDOBJECT:
-                    throw DirectDrawInvalidObjectException("")
+                    throw DirectDrawInvalidObjectException("IDirectDrawSurface7::Blt: DirectDraw received a pointer that was an invalid DirectDraw object.\n")
 
                 DDERR_INVALIDPARAMS:
-                    throw DirectDrawInvalidParametersException("")
+                    throw DirectDrawInvalidParametersException("IDirectDrawSurface7::Blt: one or more of the parameters passed to the method are incorrect.\n")
 
                 DDERR_INVALIDRECT:
-                    throw DirectDrawInvalidRectException("")
+                    throw DirectDrawInvalidRectException("IDirectDrawSurface7::Blt: the provided rectangle was invalid.\n")
 
                 DDERR_NOALPHAHW:
-                    throw DirectDrawNoAlphaHardwareException("")
+                    throw DirectDrawNoAlphaHardwareException("IDirectDrawSurface7::Blt: no alpha acceleration hardware is present or available, causing the failure of the requested operation.\n")
 
                 DDERR_NOBLTHW:
-                    throw DirectDrawNoBlitHardwareException("")
+                    throw DirectDrawNoBlitHardwareException("IDirectDrawSurface7::Blt: no blitter hardware is present.\n")
 
                 DDERR_NOCLIPLIST:
-                    throw DirectDrawNoClipListException("")
+                    throw DirectDrawNoClipListException("IDirectDrawSurface7::Blt: no clip list is available.\n")
 
                 DDERR_NODDROPSHW:
-                    throw DirectDrawNoDDRaserOperationHardwareException("")
+                    throw DirectDrawNoDDRaserOperationHardwareException("IDirectDrawSurface7::Blt: no DirectDraw raster operation (ROP) hardware is available.\n")
 
                 DDERR_NOMIRRORHW:
-                    throw DirectDrawNoMirrorHardwareException("")
+                    throw DirectDrawNoMirrorHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no mirroring hardware is present or available.\n")
 
                 DDERR_NORASTEROPHW:
-                    throw DirectDrawNoRasterOperationHardwareException("")
+                    throw DirectDrawNoRasterOperationHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no appropriate raster operation hardware is present or available.\n")
 
                 DDERR_NOROTATIONHW:
-                    throw DirectDrawNoRotationHardwareException("")
+                    throw DirectDrawNoRotationHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no rotation hardware is present or available.\n")
 
                 DDERR_NOSTRETCHHW:
-                    throw DirectDrawNoStretchHardwareException("")
+                    throw DirectDrawNoStretchHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because there is no hardware support for stretching.\n")
 
                 DDERR_NOZBUFFERHW:
-                    throw DirectDrawNoZBUfferHardwareException("")
+                    throw DirectDrawNoZBUfferHardwareException("IDirectDrawSurface7::Blt: the hardware doesn't have Z buffer support.\n")
 
                 DDERR_SURFACEBUSY:
-                    throw DirectDrawSurfaceBusyException("")
+                    throw DirectDrawSurfaceBusyException("IDirectDrawSurface7::Blt: the specified surface locked by another thread and access has been refused.\n")
 
                 DDERR_SURFACELOST:
-                    throw DirectDrawSurfaceLostException("")
+                    throw DirectDrawSurfaceLostException("IDirectDrawSurface7::Blt: access to the surface is refused because the surface memory is gone.\n")
 
                 DDERR_UNSUPPORTED:
-                    throw DirectDrawUnsupportedException("")
+                    throw DirectDrawUnsupportedException("IDirectDrawSurface7::Blt: the operation isn't supported.\n")
 
                 DDERR_WASSTILLDRAWING:
-                    throw DirectDrawWasStillDrawingException("")
+                    throw DirectDrawWasStillDrawingException("IDirectDrawSurface7::Blt: the previous blit operation that is transferring information to or from this surface is incomplete.\n")
 
                 default:
                     throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::Blt() failed.\n")
