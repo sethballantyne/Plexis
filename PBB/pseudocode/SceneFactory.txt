@@ -9,46 +9,7 @@ Private
         LogManager::WriteLine(LogType->Debug | LogType->Error, message, arglist)
     end function
 
-    -- Returns the value of the specified attribute within the specified element as a string.
-    -- Exceptions:
-    -- System::Xml::XmlException: the specified attribute isn't present within the element,
-    --                            or the attributes value equates to String::Empty.
-    function String GetAttributeValue(XElement element, string attribute)
-        XAttribute xAttribute := element->Attribute(attribute)
-        if(xAttribute = NULL)
-            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
-        end if
-
-        if(xAttribute->Value = String.Empty)
-            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
-        end if
-
-        return attribute->Value
-    end function
-
-    -- Returns the value of the specified attribute within the specified element as an int. 
-    -- Exceptions:
-    -- System::Xml::XmlException: the specified attribute isn't present within the element,
-    --                            or the attributes value equates to String::Empty.
-    -- System::FormatException: the value of the attribute is non-numeric.
-    -- System::OverflowExcepion: the attribute contains a number that's too big to be stored as an int.
-    function int GetAttributeValueAsInt32(XElement element, string attribute)
-
-        string initialValue := NULL
-        int number
-        try
-            initialValue := GetAttributeValue(element, attribute)
-            number := Convert.ToInt32(initialValue)
-        catch(FormatException)
-            throw new FormatException("the x attribute contains a non-numeric value.")
-        catch(OverflowException)
-            throw new OverflowException("the x attribute contains a number that's too fuckin' big.")
-        catch(Exception)
-            throw
-        end try
-
-        return number
-    end function
+    
 
     -- Reads an element whose type attribute evaluates to label, creating a new instance of Label using 
     -- the values specified within the elements attributes.
@@ -56,10 +17,10 @@ Private
 
         try
 
-            int x := GetAttributeValueAsInt32(labelTag, "x")
-            int y := GetAttributeValueAsInt32(labelTag, "y")
-            string font := GetAttributeValue(labelTag, "font")
-            string text := GetAttributeValue(labelTag, "text")
+            int x := XmlHelper::GetAttributeValueAsInt32(labelTag, "x")
+            int y := XmlHelper::GetAttributeValueAsInt32(labelTag, "y")
+            string font := XmlHelper::GetAttributeValue(labelTag, "font")
+            string text := XmlHelper::GetAttributeValue(labelTag, "text")
         catch
             throw
         end try
@@ -75,17 +36,17 @@ Private
     function MenuItem ParseMenuItem(string sceneID, XElement menuItemTag)
             
         try
-            int x := GetAttributeValueAsInt32(menuItemTag, "x")
-            int y := GetAttributeValueAsInt32(menuItemTag, "y")
-            string font := GetAttributeValue(menuItemTag, "font")
-            string text := GetAttributeValue(menuItemTag, "text")
-            int selectedIndex := GetAttributeValueAsInt32(menuItemTag, "selectedIndex")
-            string navigateTo := GetAttributeValue(menuItemTag, "navigateTo")
+            int x := XmlHelper::GetAttributeValueAsInt32(menuItemTag, "x")
+            int y := XmlHelper::GetAttributeValueAsInt32(menuItemTag, "y")
+            string font := XmlHelper::GetAttributeValue(menuItemTag, "font")
+            string text := XmlHelper::GetAttributeValue(menuItemTag, "text")
+            int selectedIndex := XmlHelper::GetAttributeValueAsInt32(menuItemTag, "selectedIndex")
+            string navigateTo := XmlHelper::GetAttributeValue(menuItemTag, "navigateTo")
             
             string navigationArgs := NULL
 
             try
-                navigationArgs := GetAttributeValue(menuItemTag, "navigationArgs")
+                navigationArgs := XmlHelper::GetAttributeValue(menuItemTag, "navigationArgs")
                 if(navigationArgs = "self")
                     navigationArgs := sceneID
                 end if

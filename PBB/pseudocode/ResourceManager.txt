@@ -21,46 +21,9 @@ Private
     -- the absolute path to the directory the program is executing in.
     string workingDirectory := NULL
 
-    -- Returns the value of the specified attribute within the specified element as a string.
-    -- Exceptions:
-    -- System::Xml::XmlException: the specified attribute isn't present within the element,
-    --                            or the attributes value equates to String::Empty.
-    function String GetAttributeValue(XElement element, string attribute)
-        XAttribute xAttribute := element->Attribute(attribute)
-        if(xAttribute = NULL)
-            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
-        end if
+   
 
-        if(xAttribute->Value = String.Empty)
-            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
-        end if
-
-        return attribute->Value
-    end function
-
-    -- returns the specified attribute value as a boolean. 
-    -- Exceptions:
-    -- System::Xml::XmlException: the element doesn't contain the specified attribute, 
-    --                            or the attributes value equates to String::Empty.
-    -- System::FormatException: the attributes value is not "true" or "false".
-    function bool GetAttributeValueAsBoolean(XElement element, string attribute)
-
-        XAttribute xAttribute := element->Attribute(attribute)
-        if(xAttribute = NULL)
-            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
-        end if
-
-        if(xAttribute->Value = String.Empty)
-            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
-        end if
-
-        try
-            return Convert::ToBoolean(xAttribute->Value)
-        catch
-            throw
-        end try
-
-    end function
+    
 
     -- Reads all the paths associated with the specified element.
     -- Exceptions: 
@@ -79,7 +42,7 @@ Private
                 
             foreach(pathElement in pathsQuery)
                 if(pathElement != NULL)
-                    bool includeSubDirs := GetAttributeValueAsBoolean(pathElement, "includeSubDirectories")
+                    bool includeSubDirs := XmlHelper::GetAttributeValueAsBoolean(pathElement, "includeSubDirectories")
                     string path := pathElement->Value
                         if(path = String::IsNullOrWhiteSpace)
                             path := "//"
@@ -117,7 +80,7 @@ Public
         
         foreach(resourceElement in resourcesQuery)
 
-            string type := GetAttributeValue(resourceElement, "type")
+            string type := XmlHelper::GetAttributeValue(resourceElement, "type")
             if(type == "bitmaps")
                 ParsePaths(resourceElement, bitmapPaths)
             else if(type == "audio")

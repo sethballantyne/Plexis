@@ -1,48 +1,6 @@
+-- Produces Font objects based on the settings in fonts.xml; these are consumed by the ResourceManager.
 class FontFactory
 Private
-
-    -- Returns the value of the specified attribute within the specified element as a string.
-    -- Exceptions:
-    -- System::Xml::XmlException: the specified attribute isn't present within the element,
-    --                            or the attributes value equates to String::Empty.
-    function String GetAttributeValue(XElement element, string attribute)
-
-        XAttribute xAttribute := element->Attribute(attribute)
-        if(xAttribute = NULL)
-            throw new System::Xml::XmlException("the {0} attribute is missing.", attribute)
-        end if
-
-        if(xAttribute->Value = String.Empty)
-            throw new System::Xml::XmlException("the {0} attribute contains an empty string value.", attribute)
-        end if
-
-        return attribute->Value
-
-    end function
-
-    -- Returns the value of the specified attribute within the specified element as an int. 
-    -- Exceptions:
-    -- System::Xml::XmlException: the specified attribute isn't present within the element,
-    --                            or the attributes value equates to String::Empty.
-    -- System::FormatException: the value of the attribute is non-numeric.
-    -- System::OverflowExcepion: the attribute contains a number that's too big to be stored as an int.
-    function int GetAttributeValueAsInt32(XElement element, string attribute)
-
-        string initialValue := NULL
-        int number
-        try
-            initialValue := GetAttributeValue(element, attribute)
-            number := Convert.ToInt32(initialValue)
-        catch(FormatException)
-            throw new FormatException(String::Format("the {0} attribute contains a non-numeric value.", attribute))
-        catch(OverflowException)
-            throw new OverflowException(String::Format("the {0} attribute contains a number that's too fuckin' big.", attribute))
-        catch(Exception)
-            throw
-        end try
-
-        return number
-    end function
 Public
     -- Creates a Font object from each <font> element read in fonts.xml
     -- Exceptions:
@@ -59,10 +17,10 @@ Public
         foreach(fontElement in fontElements)
 
             try
-                string name := GetAttributeValue(fontElement, "name")
-                string bitmap := GetAttributeValue(fontElement, "bitmap")
-                int glyphWidth := GetAttributeValueAsInt32(fontElement, "glyphWidth")
-                int glyphHeight := GetAttributeValueAsInt32(fontElement, "glyphHeight")
+                string name := XmlHelper::GetAttributeValue(fontElement, "name")
+                string bitmap := XmlHelper::GetAttributeValue(fontElement, "bitmap")
+                int glyphWidth := XmlHelper::GetAttributeValueAsInt32(fontElement, "glyphWidth")
+                int glyphHeight := XmlHelper::GetAttributeValueAsInt32(fontElement, "glyphHeight")
 
                 Surface fontSurface := ResourceManager::GetSurface("bitmap")
                 parsedFonts->Add(new Font(name, fontSurface, glyphWidth, glyphHeight))
