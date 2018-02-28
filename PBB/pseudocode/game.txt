@@ -19,6 +19,8 @@ Private
     uint windowHeight := 768
     uint bitsPerPixel := 32
 
+    bool isRunning := true
+
     function RestoreSurfaces()
         try
             Video::Restore()

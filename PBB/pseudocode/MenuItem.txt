@@ -109,7 +109,7 @@ public
         else if(keyboardState->KeyDown(DIK_ENTER))
             if(navigateTo != NULL)
                 if(navigateTo = "terminate")
-                    Game::Quit()
+                    Game::IsRunning := FALSE
                 else if(navigateTo = "caller")
                     navigateTo := receivedArgs
                 end if
