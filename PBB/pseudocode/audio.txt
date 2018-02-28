@@ -226,6 +226,8 @@ Public
                 default:
                     throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Lock failed.", result)
             end switch
+
+            lpDSBuffer->Release()
          end if
 
          -- TODO: change these to secure versions
@@ -248,6 +250,8 @@ Public
                  default:
                     throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer::Unlock failed.", result)
             end switch
+
+            lpDSBuffer->Release()
          end if
 
          free(soundBuffer)
