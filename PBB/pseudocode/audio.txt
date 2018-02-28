@@ -212,16 +212,16 @@ Public
             free(soundBuffer)
             switch(result)
                 DSERR_BUFFERLOST:
-                    throw DirectSoundBufferLostException("IDirectSoundBuffer8::Lock: ")
+                    throw DirectSoundBufferLostException("IDirectSoundBuffer8::Lock: The buffer memory has been lost and must be restored.\n")
 
                 DSERR_INVALIDCALL:
-                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Lock: ")
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Lock: This function is not valid for the current state of this object.\n")
 
                 DSERR_INVALIDPARAM:
-                    throw  DirectSoundInvalidParameterException("IDirectSoundBuffer8::Lock: ")
+                    throw  DirectSoundInvalidParameterException("IDirectSoundBuffer8::Lock: An invalid parameter was passed to the returning function.\n")
 
                 DSERR_PRIOLEVELNEEDED:
-                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Lock: ")
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Lock: A cooperative level of DSSCL_PRIORITY or higher is required.\n")
 
                 default:
                     throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer8::Lock failed.", result)
@@ -237,13 +237,13 @@ Public
             free(soundBuffer)
             switch(result)
                 DSERR_INVALIDCALL:
-                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Unlock: ")
+                    throw DirectSoundInvalidCallException("IDirectSoundBuffer8::Unlock: this function is not valid for the current state of this object.\n")
 
                 DSERR_INVALIDPARAM:
-                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::Unlock: ")
+                    throw DirectSoundInvalidParameterException("IDirectSoundBuffer8::Unlock: an invalid parameter was passed to the returning function.\n")
 
-                DSERR_PRIORITYLEVELNEEDED:
-                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Unlock: ")
+                DSERR_PRIOLEVELNEEDED:
+                    throw DirectSoundPriorityLevelNeededException("IDirectSoundBuffer8::Unlock: A cooperative level of DSSCL_PRIORITY or higher is required.\n")
 
                  default:
                     throw System::Runtime::InteropServices::COMException("IDirectSoundBuffer::Unlock failed.", result)
