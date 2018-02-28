@@ -19,22 +19,22 @@ Private
             if(result != DI_OK)
                 switch(result)
                     DIERR_DEVICENOTREG:
-                        throw DirectInputDeviceNotRegisteredException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputDeviceNotRegisteredException("IDirectInput8::CreateDevice: the device or device instance is not registered with DirectInput.\n")
 
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputInvalidParameterException("IDirectInput8::CreateDevice: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOINTERFACE:
-                        throw DirectInputNoInterfaceException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputNoInterfaceException("IDirectInput8::CreateDevice: the object does not support the specified interface.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputNotInitializedException("IDirectInput8::CreateDevice: this object has not been initialized.\n")
 
                     DIERR_OUTOFMEMORY:
-                        throw System::OutOfMemoryException("IDirectInput8::CreateDevice: ")
+                        throw System::OutOfMemoryException("IDirectInput8::CreateDevice: the DirectInput subsystem could not allocate sufficient memory to complete the call.\n")
 
                     default:
-                        throw System::Runtime::InteropServices::COMException("IDirectInput8::CreateDevice: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInput8::CreateDevice: an unspecified COM+ error occured.\n", result)
                 end switch
             end if
 
@@ -42,13 +42,13 @@ Private
             if(result != DI_OK)
                 switch(result)
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetCooperativeLevel: ")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetCooperativeLevel: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: this object has not been initialized.\n")
 
                     default:
-                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetCooperativeLevel: an unspecified COM+ error occured.\n", result)
 
                 end switch
             end if
@@ -57,16 +57,16 @@ Private
             if(result != DI_OK)
                 switch(result)
                     DIERR_ACQUIRED: 
-                        throw DirectInputAcquiredException("IDirectInputDevice8::SetDataFormat: ")
+                        throw DirectInputAcquiredException("IDirectInputDevice8::SetDataFormat: the operation cannot be performed while the device is acquired.\n")
 
                     DIERR_INVALIDPARAM: 
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetDataFormat: ")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetDataFormat: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: this object has not been initialized.\n")
 
                     default:
-                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetDataFormat: ", result)
+                        throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetDataFormat: an unspecified COM+ error occured.\n", result)
                 end switch
             end if
 
@@ -74,13 +74,13 @@ Private
             if(result != DI_OK)
                 switch(result)
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: this object has not been initialized.\n")
 
                     DIERR_OTHERAPPHASPRIO:
-                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: another application has a higher priority level, preventing this call from succeeding.\n")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire failed", result)
@@ -101,19 +101,19 @@ Private
             if(result != DI_OK)
                 switch(result)
                     DIERR_DEVICENOTREG:
-                        throw DirectInputDeviceNotRegisteredException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputDeviceNotRegisteredException("IDirectInput8::CreateDevice: the device or device instance is not registered with DirectInput.\n")
 
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputInvalidParameterException("IDirectInput8::CreateDevice: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOINTERFACE:
-                        throw DirectInputNoInterfaceException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputNoInterfaceException("IDirectInput8::CreateDevice: the object does not support the specified interface.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInput8::CreateDevice: ")
+                        throw DirectInputNotInitializedException("IDirectInput8::CreateDevice: this object has not been initialized.\n")
 
                     DIERR_OUTOFMEMORY:
-                        throw System::OutOfMemoryException("IDirectInput8::CreateDevice: ")
+                        throw System::OutOfMemoryException("IDirectInput8::CreateDevice: the DirectInput subsystem could not allocate sufficient memory to complete the call. ")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("IDirectInput8::CreateDevice: ", result)
@@ -124,10 +124,10 @@ Private
             if(result != DI_OK)
                 switch(result)
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetCooperativeLevel: ")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetCooperativeLevel: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: this object has not been initialized.\n")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetCooperativeLevel: ", result)
@@ -142,10 +142,10 @@ Private
                         throw DirectInputAcquiredException("IDirectInputDevice8::SetDataFormat: ")
 
                     DIERR_INVALIDPARAM: 
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetDataFormat: ")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::SetDataFormat: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: this object has not been initialized.\n")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::SetDataFormat: ", result)
@@ -156,13 +156,13 @@ Private
             if(result != DI_OK)
                 switch(result)
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: this object has not been initialized.\n")
 
                     DIERR_OTHERAPPHASPRIO:
-                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: another application has a higher priority level, preventing this call from succeeding.\n")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire", result)
@@ -184,13 +184,13 @@ Public
             if(result != DI_OK)
                 switch(result)
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("DirectInput8Create: ")
+                        throw DirectInputInvalidParameterException("DirectInput8Create: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_OLDDIRECTINPUTVERSION:
-                        throw DirectInputOldVersionException("DirectInput8Create: ")
+                        throw DirectInputOldVersionException("DirectInput8Create: the application requires a newer version of DirectInput.\n")
 
                     DIERR_OUTOFMEMORY:
-                        throw System::OutOfMemoryException("DirectInput8Create: ")
+                        throw System::OutOfMemoryException("DirectInput8Create: the DirectInput subsystem could not allocate sufficient memory to complete the call.\n")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("DirectInput8Create: ", result)
@@ -244,13 +244,13 @@ Public
             if(result != DI_OK)
                 switch(result)
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: this object has not been initialized.\n")
 
                     DIERR_OTHERAPPHASPRIO:
-                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: another application has a higher priority level, preventing this call from succeeding.\n")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire", result)
@@ -263,13 +263,13 @@ Public
             if(result != DI_OK)
                 switch(result)
                     DIERR_INVALIDPARAM:
-                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire")
+                        throw DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.\n")
 
                     DIERR_NOTINITIALIZED:
-                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputNotInitializedException("IDirectInputDevice8::Acquire: this object has not been initialized.\n")
 
                     DIERR_OTHERAPPHASPRIO:
-                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: ")
+                        throw DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: Another application has a higher priority level, preventing this call from succeeding.\n")
 
                     default:
                         throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire", result)
