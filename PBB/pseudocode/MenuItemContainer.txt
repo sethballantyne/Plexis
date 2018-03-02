@@ -57,36 +57,68 @@ public
         if(list->Count = 1)
             return
         end if
+        
+        int newCurrentSelectedItem := currentSelectedItem
+
+        -- using startingPosition to avoid a possible infinite loop. If we've searched the entire
+        -- list an can't find anything, break out. 
+        int startingPosition = currentSelectedItem
+
+        do
+            if(newCurrentSelectedItem = 0)
+                newCurrentSelectedItem := Items->Count - 1
+            else
+                newCurrentSelectedItem--
+            end if
+
+        while(items[newCurrentSelectedItem]->Enabled = false || newCurrentSelectedItem != startingPosition)
 
         items[currentSelectedItem].IsSelected := false
-         
-        if(currentSelectedItem = 0)
-            currentSelectedItem := items.Count - 1
-        else 
-            currentSelectedItem--
-        end if
-
-        items[currentSelectedItem].IsSelected := true
-
+        items[newCurrentSelectedItem].IsSelected := true
+        currentSelectedItem := newCurrentSelectedItem
     end function
 
     -- Selects the next item in the items list, based on the position of the currently selected item. 
     -- If the currently selected item is the last item in the list, the first item will be selected. 
     -- Selecting an item postions the cursor next to it and receives the keyboard and mouse state each frame. 
     function SelectNextControl()
+
         if(list->Count = 1)
             return
         end if
+        
+        int newCurrentSelectedItem := currentSelectedItem
+
+        -- using startingPosition to avoid a possible infinite loop. If we've searched the entire
+        -- list an can't find anything, break out. 
+        int startingPosition = currentSelectedItem
+
+        do
+            if(newCurrentSelectedItem = 0)
+                newCurrentSelectedItem := Items->Count - 1
+            else
+                newCurrentSelectedItem++
+            end if
+
+        while(items[newCurrentSelectedItem]->Enabled = false || newCurrentSelectedItem != startingPosition)
 
         items[currentSelectedItem].IsSelected := false
+        items[newCurrentSelectedItem].IsSelected := true
+        currentSelectedItem := newCurrentSelectedItem
 
-        if(currentSelectedItem = items.Count - 1)
-            currentSelectedItem := 0
-        else
+       -- if(list->Count = 1)
+        --    return
+       -- end if
+
+       -- items[currentSelectedItem].IsSelected := false
+
+       -- if(currentSelectedItem = items.Count - 1)
+        --    currentSelectedItem := 0
+       -- else
             currentSelectedItem++
-        end if
+       -- end if
 
-        items[currentSelectedItem].IsSelected := true
+       -- items[currentSelectedItem].IsSelected := true
 
     end function    
 
@@ -109,7 +141,7 @@ public
         for(i := 0 to items->Count - 1)
 
             -- only one item should be selected; bug otherwise.
-            if(items[i]->IsSelected)
+            if(items[i]->IsSelected && items[i]->ShowMenuCursor)
                 int cursorXPos := items[i]->Position->X - menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems
                 
                 --Video::Blit(menuItemCursor, cursorXPos, items[i]->Position->Y)

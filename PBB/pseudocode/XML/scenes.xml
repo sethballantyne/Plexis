@@ -88,8 +88,8 @@
         <controls>
             <control type="label" x="0" y="0" font="white" text="NEW HIGH SCORE! ENTER YOUR NAME" />
             <control type="menuItemContainer">
-                <containerItem type="highscoreTable" x="0" y="0" indexFont="green" userNameFont="white" scoreFont="green"/>
-                <containerItem type="menuItem" x="0" y="0" font="white" text="OKAY" visible="false" selectedIndex="0" navigateTo="default_main_menu"/>
+                <containerItem type="highscoreTable" x="0" y="0" rowSpacing="0" indexFont="green" userNameFont="white" scoreFont="green" selectedIndex="0"/>
+                <containerItem type="menuItem" x="0" y="0" font="white" text="OKAY" visible="false" selectedIndex="1" navigateTo="default_main_menu"/>
             </control>
         </controls>
     </scene>
