@@ -1,0 +1,71 @@
+class EditableLabel
+Private
+    $define KEY_SPACE 32
+    $define KEY_TILDE 126
+
+    Font font := NULL
+    Point position
+    uint currentPosition := 0
+    byte[] text := NULL
+    bool editMode := false
+Public
+    constructor(int x, int y, Font font, byte length)
+
+        if(font = NULL)
+            throw ArgumentNullException("font")
+        end if
+
+        new position(x, y)
+        self->font = font
+        new text[length]
+           
+    end constructor
+
+    function void Update(Keys keyboardState, Mouse mouseState)
+        if(keyboardState = NULL)
+            throw ArgumentNullException("keyboardState")
+        end if
+
+        if(editMode = TRUE)
+            int dikCode := keyboardState::Key
+            uint asciiCode := Input::DIKToASCII(dikCode)
+
+            if(asciiCode >= KEY_SPACE && asciiCode <= KEY_TILDE)
+                if(currentPosition < (text->Length - 1))
+                    text[currentPosition] := asciiCode
+                    currentPosition++
+                end if
+            else
+                switch(dikCode)
+                    VIK_BACKSPACE:
+                        if(currentPosition != 0)
+                            text[currentPosition] := 0
+                            currentPosition--
+                        end if
+
+                    VIK_ENTER:
+                        editMode := FALSE
+                    default:
+                        break
+                end switch
+            end if
+        end if
+    end function
+
+    function Render()
+        int renderX := 0
+
+        for(i = 0 to text->Length - 1)
+            renderX := self->position->X + (i * font->GlyphWidth)
+
+            if(text[i] != 0)
+                self->font->Render(renderX, self->position->Y, text[i])
+            else
+                break
+        end for
+
+        if(editMode = TRUE)
+            self->font->Render(renderX, position->Y, 95)
+        end if
+    end function
+end class
