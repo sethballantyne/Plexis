@@ -5,6 +5,7 @@ Private
     LPDIRECTINPUTDEVICE8 lpDIMouse := NULL
     UCHAR keys[256]
     DIMOUSESTATE2 mouseState
+    HKL keyboardLayout
 
     function InitKeyboard(HWND hWnd)
 
@@ -86,6 +87,9 @@ Private
                         throw System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire failed", result)
                 end switch
             end if
+
+            -- user32.lib; windows.h
+            self->keyboardLayout := GetKeyboardLayout(0)
     end function
 
     function InitMouse(HWND hWnd)
@@ -280,5 +284,9 @@ Public
 
     function Shutdown()
         Release()
+    end function
+
+    function DIKToASCII(DWORD DirectInputScancode) : inline
+        return MapVirtualKeyEx(DirectInputScancode, 1, self->keyboardLayout)
     end function
 end class

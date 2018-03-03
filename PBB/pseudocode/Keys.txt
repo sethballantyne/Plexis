@@ -1,6 +1,7 @@
 class Keys
 Private
     UCHAR *keys := NULL
+    DWORD firstKey := 0
 Public
     constructor Keys(UCHAR *keys)
         if(keys = NULL)
@@ -8,9 +9,21 @@ Public
         end if
 
         this->keys := keys
+
+        for(i := 0 to 255)
+            if(key[i] & 0x80) 
+                firstKey := i
+                break
+            end if
+        end for
     end constructor
 
     function bool KeyDown(UCHAR key) : inline
         return keys[key] & 0x80
     end function
+
+    property Key
+        get
+            return firstKey
+    end property
 end class
