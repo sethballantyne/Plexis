@@ -6,6 +6,7 @@ Private
     Font font := NULL
     Point position
     uint currentPosition := 0
+    int stringLength
     byte[] text := NULL
     bool editMode := false
 Public
@@ -18,7 +19,7 @@ Public
         new position(x, y)
         self->font = font
         new text[length]
-           
+        self->stringLength := length
     end constructor
 
     function void Update(Keys keyboardState, Mouse mouseState)
@@ -68,4 +69,39 @@ Public
             self->font->Render(renderX, position->Y, 95)
         end if
     end function
+
+    property bool EditModeEnabled 
+        get
+            return self->editMode
+        set
+            if(value = true)
+                Array::Clear(text, 0, text->Length)
+            end if
+
+            self->editMode := value
+    end property
+
+    property string Text 
+        get
+            return System::Text::Encoding::ASCII::GetString(text)
+        set
+            byte[] byteString := Encoding::ASCII::GetBytes(value)
+            int upperBound 
+
+            if(byteString->Count > self->stringLength)
+                upperBound := self->stringLength
+            else
+                upperBound := byteString->Count - 1
+            end if
+             
+            for(i := 0 to upperBound)
+                if((byteString[i] < 32 && byteString[i] > 126)) && byteString[i] != 0)
+                        throw ArgumentException("only ASCII values 0, 32 to 126 are accepted.")
+                    end if
+                else
+                    self->text[i] := byteString[i]
+                end if
+            end for
+    end property
+
 end class
