@@ -1,0 +1,31 @@
+class HighscoreRow
+Private
+    Label rowIndexLabel
+    Label scoreLabel
+    EditableLabel playerNameLabel
+Public
+    -- Exceptions:
+    -- System::ArgumentNullException: either rowNumberFont, playerNameFont, or scoreFont are NULL.
+    constructor(Font rowNumberFont, Point indexPosition, Font playerNameFont, 
+                Point playerNamePosition, Font scoreFont, Point scorePosition)
+
+        if(rowNumberFont = NULL)
+            throw ArgumentNullException("rowNumberFont")
+        else if(playerNameFont = NULL)
+            throw ArgumentNullException("playerNameFont")
+        else if(scoreFont = NULL)
+            throw ArgumentNullException("scoreFont")
+        end if
+
+        rowIndexLabel := new Label(indexPosition->X, indexPosition->Y, rowNumberFont)
+        scoreLabel := new Label(indexPosition->X, indexPosition->Y, scoreFont)
+        playerNameLabel := new Label(playerNamePosition->X, playerNamePosition->Y, playerNameFont)
+
+    end constructor
+
+    function Render()
+        EditableLabel->Render()
+        rowIndexLabel->Render()
+        scoreLabel->Render()
+    end function
+end class
