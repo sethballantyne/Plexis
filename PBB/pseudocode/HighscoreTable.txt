@@ -1,0 +1,76 @@
+class HighscoreTable
+Private
+    new List<HighscoreRow> rows
+    int rowSpacing
+    bool enabled
+    int rowBeingEdited
+    int newHighScore
+Public
+    -- Exceptions: 
+    -- System::ArgumentNullException: either rowNumberFont, playerNameFont, or scoreFont is NULL.
+    constructor(int x, int y, int selectedIndex, int numberOfRows, int verticalSpacing, int indexXPosition,
+    Font rowNumberFont, int playerNameXPosition, Font playerNameFont, int scoreXPosition, Font scoreFont)
+
+        if(rowNumberFont = NULL)
+            throw ArgumentNullException("rowNumberFont")
+        else if(playerNameFont = NULL)
+            throw ArgumentNullException("playerNameFont")
+        else if(scoreFont = NULL)
+            throw ArgumentNullException("scoreFont")
+        end if
+
+        self->selectedIndex := selectedIndex
+
+        for(i := 0 to numberOfRows)
+            int rowYPosition := y + (i * verticalSpacing)
+
+            new Point indexPosition(indexXPosition, rowYPosition)
+            new Point playerNamePosition(indexXPosition, rowYPosition)
+            new Point scorePosition(indexXPosition, rowYPosition)
+
+            rows->Add(new HighScoreRow(rowNumberFont, indexPosition, playerNameFont, 
+                                       playerNamePosition, scoreFont, scorePosition))
+        end for
+    end constructor 
+
+    function ReceiveSceneArgs(object[] args)
+        if(args != NULL)
+            if(args->Count > 1 && ((args[0] is type(int)) && (args[1] is type(int))))
+                if(args[0] <= rows->Count - 1)
+                    self->rowBeingEdited := args[0]
+                    self->newHighScore := args[1]
+
+                    rows[self->rowBeingEdited]->PlayerName->EditModeEnabled := true
+                    self->enabled := true
+                end if
+            end if
+        end if
+    end function
+
+
+    function Update(Keys keyboardState, Mouse mouseState)
+        if(keyboardState = NULL)
+            throw ArgumentNullException("keyboardState")
+        end if
+
+        if(enabled)
+            rows[self->rowBeingEdited]->PlayerName->Update(keyboardState, mouseState)
+            
+            -- possible bug here; will report true if enter is pressed along with other keys
+            -- which may not be the intended desire. Make sure to test.
+            if(keyboardState->KeyDown(DIK_ENTER))
+                enabled := false
+
+                string newPlayerName := rows[self->rowBeingEdited]->PlayerName->Text
+                Highscores::Update(self->rowBeingEdited, newPlayerName, newHighScore)
+            end if
+
+        end if
+    end if
+
+    function Render()
+        for(i := 0 to rows->Count - 1)
+            rows[i]->Render()
+        end for
+    end function
+end class
