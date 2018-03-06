@@ -50,6 +50,7 @@ Private
                 if(navigationArgs = "self")
                     navigationArgs := sceneID
                 end if
+
             catch
                 -- navigationArgs is an optional attribute, so ignore errors. 
             end try
@@ -57,6 +58,7 @@ Private
         catch
             throw
         end try
+
             MenuItem menuItem
             try
                 if(navigationArgs = NULL)
@@ -70,6 +72,59 @@ Private
                 throw
             end try
 
+    end function
+
+    function HighScoreTable ParseHighScoreTable(XElement element, MenuItemContainer parentContainer)
+        try
+            -- reading <containerItem>
+            int x := XmlHelper::GetAttributeValueAsInt32(element, "x")
+            int y := XmlHelper::GetAttributeValueAsInt32(element, "y")
+            int selectedIndex := XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex")
+            int numberOfRows := XmlHelper::GetAttributeValueAsInt32(element, "rows")
+            
+            -- reading <row>
+            XElement[] rowsQuery := controlsTag->Descendants("rows")->ToArray()
+            if(rowsQuery == NULL || rowsQuery->Count < 1)
+                throw System::Xml::XmlException("HighScoreTable: <rows> element is missing")
+            end if
+           
+            int verticalSpacing := XmlHelper::GetAttributeValueAsInt32(rowsQuery[0], "verticalSpacing")
+
+            -- reading <column>
+            XElement[] columnQuery := rowsQuery[0]->Descendants("column")->ToArray()
+            if(columnQuery == NULL || columnQuery->Count < 3)
+                throw System::Xml::XmlException("HighScoreTable: not enough <column> elements defined for the highscore table.")
+            end if
+
+            int indexXPosition 
+            int playerNameXPosition
+            int scoreXPosition
+            string indexFont
+            string playerNameFont
+            string scoreFont
+
+            for(i := 0 to columnQuery->Count - 1)
+                string id := XmlHelper::GetAttributeValue(columnQuery[i], "id")
+
+                if(id = "index")
+                    indexXPosition := XmlHelper::GetAttributeValueAsInt32(columnQuery[i], "x")
+                    indexFont := XmlHelper::GetAttributeValue(columnQuery[i], "font")
+                else if(id = "playerName")
+                    playerNameXPosition := XmlHelper::GetAttributeValueAsInt32(columnQuery[i], "x")
+                    playerNameFont := XmlHelper::GetAttributeValue(columnQuery[i], "font")
+                else if(id = "score")
+                    scoreXPosition := XmlHelper::GetAttributeValueAsInt32(columnQuery[i], "x")
+                    scoreFont := XmlHelper::GetAttributeValue(columnQuery[i], "font")
+                else
+                    throw Sytem::Xml::XmlException("HighScoreTable: id attribute in column element has an illegal value\n") 
+                end if
+            end for
+
+            return new HighScoreTable(x, y, selectedIndex, numberOfRows, verticalSpacing, indexXPosition, indexFont,
+                                      playerNameXPosition, playerNameFont, scoreXPosition, scoreFont, parentContainer)
+        catch
+            throw 
+        end try
     end function
 
 Public
@@ -143,19 +198,20 @@ Public
                                 if(typeAttribute = NULL)
                                     Log("scene {0} contains a menuItemContainer child control that's missing the type attribute.", sceneID->Value)
                                 else
-                                    if(typeAttribute->Value = "menuItem")
                                         try
-                                            MenuItem menuItem := ParseMenuItem(sceneID->Value, containerItemTag)
-                                            menuItem->ParentContainer := menuItemContainer
-                                            --menuItemContainer->GetControlList()->Add(menuItem)
-                                        catch(Exception e)
-                                            Log("Failed to read a containerItem element for the scene {0}. {1}", sceneID->Value, e->Message)
+                                            -- Items are registered with the parent MenuItemContainer through the property called in the
+                                            -- specific controls constructor.
+
+                                            if(typeAttribute->Value = "menuItem")
+                                                MenuItem menuItem := ParseMenuItem(sceneID->Value, containerItemTag, menuItemContainer)
+                                            else if(typeAttribute->Value = "HighScoreTable")
+                                                HighScoreTable highScoreTable := ParseHighScoreTable(containerItemTag, menuItemContainer)
+                                            end if
+                                        catch
+                                             Log("Failed to read a containerItem element for the scene {0}. {1}", sceneID->Value, e->Message)
                                         end try
-                                    end if
                                 end if
-
                             end foreach
-
                             scene->GetContolList()->Add(menuItemContainer)
 
                         else if(typeAttributeValue = String.Empty)

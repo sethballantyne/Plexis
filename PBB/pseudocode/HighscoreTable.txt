@@ -1,8 +1,8 @@
-class HighscoreTable
+class HighScoreTable
 Private
     new List<HighscoreRow> rows
     int rowSpacing
-    bool enabled
+    bool enabled := false
     int rowBeingEdited
     int newHighScore
     MenuItemContainer parentContainer
@@ -42,6 +42,8 @@ Public
 
             rows->Add(newHighScoreRow)         
         end for
+
+        self->ParentContainer := parentContainer
     end constructor 
 
     function ReceiveSceneArgs(object[] args)
@@ -73,7 +75,7 @@ Public
                 enabled := false
 
                 string newPlayerName := rows[self->rowBeingEdited]->PlayerName->Text
-                Highscores::Update(self->rowBeingEdited, newPlayerName, newHighScore)
+                HighScores::Update(self->rowBeingEdited, newPlayerName, newHighScore)
 
                 parentContainer->SelectNextControl()
             end if
@@ -86,4 +88,23 @@ Public
             rows[i]->Render()
         end for
     end function
+
+    -- Assigns the HighscoreTable to the specified container. When assigning a container,
+    -- HighScoreTable adds itself to the containers control list.
+    -- Exceptions:
+    -- ArgumentNullException: attempting to assign a NULL value.
+    property MenuItemContainer ParentContainer
+
+        accessors
+            get
+                return parentContainer
+            set
+                if(value = NULL)
+                    throw ArgumentNullException("Nope")
+
+                parentContainer := value
+                parentContainer->Controls->Add(self)
+        end accessors
+
+    end property
 end class
