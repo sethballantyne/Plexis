@@ -53,7 +53,7 @@ public
     -- Exceptions:
     -- ArgumentNullException: scene is NULL
     -- ArgumentException: scene evaluates to String::Empty. 
-    function SetActiveScene(string scene, string sceneArgs)
+    function SetActiveScene(string scene, object[] sceneArgs)
 
         if(navigateTo = NULL)
             throw new ArgumentNullException("scene")
@@ -69,5 +69,4 @@ public
         end try
 
     end function
-
 end class

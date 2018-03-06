@@ -19,7 +19,7 @@ private
 
     -- arguments that were passed to the scene and subsequently this control, when the scene
     -- this control belongs to became visible to user. 
-    string receivedArgs := NULL
+    object[] receivedArgs := NULL
 protected
     #SelectableControl bool selected
 
@@ -63,7 +63,7 @@ public
             throw
         end try
 
-        self->outboundArgs := navigationArgs
+        self->outboundArgs := new object[] { (object) navigationArgs }
 
     end constructor
 
@@ -111,7 +111,9 @@ public
                 if(navigateTo = "terminate")
                     Game::IsRunning := FALSE
                 else if(navigateTo = "caller")
-                    navigateTo := receivedArgs
+                    if(receivedArgs != NULL && receivedArgs[0] is type(String))
+                        navigateTo := receivedArgs[0]
+                    end if 
                 end if
                 --parentContainer->WeNeedToBoogy(navigateTo, navigationArgs)
                 
