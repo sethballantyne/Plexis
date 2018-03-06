@@ -79,7 +79,8 @@ public
             throw
         end try
 
-        self->parentContainer := parentContainer
+        -- calling the property! the control has to be registered 
+        self->ParentContainer := parentContainer
     end constructor
 
     constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs, 
@@ -95,7 +96,8 @@ public
             throw
         end try
 
-        self->parentContainer := parentContainer
+        -- calling the property! the control has to be registered 
+        self->ParentContainer := parentContainer
 
     end constructor
 
