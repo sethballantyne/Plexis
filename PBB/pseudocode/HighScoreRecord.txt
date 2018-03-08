@@ -40,8 +40,16 @@ Public
             end try
     end property
     
+    -- Exceptions:
+    -- System::ArgumentNullException: value is NULL.
     property byte[] PlayerName
         get
             return playerName   
+        set
+            if(value = NULL)
+                throw ArgumentNullException()
+            else
+                playerName := value
+            end if
     end property
 end class
