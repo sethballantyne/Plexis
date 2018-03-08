@@ -1,3 +1,6 @@
+-- Acts as a database for the games highsores. If any other object in the game requires highscore
+-- data, it has to request it from this class. When a new highscore is given to the class, it updates
+-- both its records in memory and the highscores stored on disk.
 class HighScores : static 
 Private
     new List<HighScoreEntry> highScores
@@ -5,14 +8,26 @@ Private
     BinaryReader binaryReader
     BinaryWriter binaryWriter
 Public
-    function Initialise(string fileName)
+    -- Attempts to read the Highscores into memory. This function should only be called once during the life-time of
+    -- of the application. 
+    -- Exceptions:
+    -- System::ArgumentNullException: filename is NULL.
+    -- System::ArgumentException: filename evaluates to String::Empty.
+    -- System::NotSupportedException: filename refers to a non-file device.
+    -- System::Security::SecurityException: the caller doesn't have the required permission.
+    -- System::IO::DirectoryNotFoundException: the specified path is invalid, such as being on an unmapped drive. 
+    -- System::UnauthorizedAccessException: access to the specified path was denied by the operating system.
+    -- System::IO::PathTooLongException: the length of filename exceeds the maximum length allowed for a path.
+    -- System::IO::EndOfStreamException: prematurely reached the end of the file while trying to read the highscores into memory.
+    -- System::IO::IOException: an unspecified I/O error occured.
+    function Initialise(string filename)
         if(fileName = NULL)
             throw ArgumentNullException("filename")
         else if(fileName := String::Empty)
             throw ArgumentException("filename")
 
         try
-            new fileStream(fileName, FileMode::OpenOrCreate, FileAccess::ReadWrite)
+            new fileStream(filename, FileMode::OpenOrCreate, FileAccess::ReadWrite)
             new binaryReader(fileStream, Encoding::ASCII)
             new binaryWriter(fileStream, Encoding::ASCII)
 
@@ -33,9 +48,16 @@ Public
         end try
     function
 
+    -- Inserts the specified player name and score into the specified highscore position. Call HighScores::IsAHighScore()
+    -- to verify a score belongs in the highscore table before calling this function. HighScores::Update updates both
+    -- the scores stored in memory and the data stored on disk.
+    -- Exceptions:
+    -- System::ArgumentNullException: playerName is NULL.
+    -- System::ArgumentOutOfRangeException: row is greater than the number of entries on the highscore table.
+    -- System::IO::IOException: an unspecified IO error occured while writing to disk.
     function Update(uint row, string playerName, uint newHighScore)
         if(row > highScores->Count)
-            throw ArgumentException("row is invalid")
+            throw ArgumentOutOfRangeException("row is invalid")
         else if(playerName = NULL)
             throw ArgumentNullException("playerName")
         end if
@@ -45,7 +67,7 @@ Public
 
         -- High scores are written out because waiting until the application 
         -- terminates may result in high scores not being saved (ie, the game crashes).
-        -- It'll be wonderfully ironic if this results in scores not being saved! 
+        -- It'd be wonderfully ironic if this results in scores not being saved! 
         try
             fileStream->Flush()
             fileStream->SetLength(0)
@@ -57,18 +79,31 @@ Public
             end for
     end function
 
-    function uint GetHighScore(uint row)
-        if(row < highScores->Count)
-            return highScores[row]->Score
+    -- returns the score belonging to the specified position on the highscore table.
+    -- Exceptions:
+    -- System::ArgumentOutOfRangeException: the value of position exceeds the number of positions on the highscore table.
+    function uint GetHighScore(uint position)
+        if(position < highScores->Count)
+            return highScores[position]->Score
+        else
+            throw System::ArgumentOutOfRangeException("position is greater than the number of entries on the highscore table.")
         end if
     end function
 
+    -- returns player name belonging to the specified position on the highscore table. 
+    -- Exceptions:
+    -- System::ArgumentOutOfRangeException: the value of position exceeeds the number of positions on the highsore table.
     function string GetPlayerName(uint row)
         if(row < highScores->Count)
             return highScores[row]->PlayerNameAsString    
+        else
+            throw System::ArgumentOutOfRangeException("position is greater than {0}", highScores->Count - 1)
         end if
     end function
 
+    -- Checks if score is greater than any of the existing scores on the highscore table, from the top down.
+    -- If a lower score is found, the position of that score is returned, else it returns -1. 
+    -- The position returned is zero-based.
     function int IsAHighScore(uint score)
         for(i := 0 to highScores->Count - 1)
             if(score > highScores[i]->Score)
@@ -78,6 +113,8 @@ Public
         return -1
     end function
 
+    -- Closes the highscores file and frees the memory allocated by the class. When this function is called,
+    -- none of Highscore's methods can be called until the object is reinitialised via HighScores::Initialise().
     function void Shutdown()
         binaryReader->Close()
         binaryWriter->Close()
