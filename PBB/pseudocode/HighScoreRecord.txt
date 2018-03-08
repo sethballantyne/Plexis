@@ -1,10 +1,11 @@
-class HighScoreEntry
+-- represents a single name and the associated score. HighScoreRecord is consumed by HighScores.
+class HighScoreRecord
 Private
     byte[13] playerName
     uint score
 Public
     constructor()
-        -- populate the list with defaults. The idea is that if there happens to be
+        -- populate with defaults. The idea is that if there happens to be
         -- entries missing from the file, the defaults will get displayed in their place.
         -- When the HighScores are written back out, it should rectify the problem. 
         -- This is entirely pedantic and needless since if the user fucks with the High score file
@@ -27,14 +28,16 @@ Public
             score->value
     end property
 
+    -- Exceptions:
+    -- System::ArgumentNullException: playerName is NULL
+    -- System::ArgumentException: playerName contains invalid CHARACTERS DUDE1
     property string PlayerNameAsString
         get
-            -- avoid ArgumentNullException being thrown 
-            if(playerName != NULL)
+            try
                return Encoding::ASCII::GetString(playerName)
-            else
-               return NULL
-            end if
+            catch
+                throw
+            end try
     end property
     
     property byte[] PlayerName

@@ -3,7 +3,7 @@
 -- both its records in memory and the highscores stored on disk.
 class HighScores : static 
 Private
-    new List<HighScoreEntry> highScores
+    new List<HighScoreRecord> highScores
     FileStream fileStream
     BinaryReader binaryReader
     BinaryWriter binaryWriter
@@ -35,10 +35,10 @@ Public
                 uint numberOfEntries := binaryReader->ReadUint32()
 
                 for(i := 0 to numberOfEntries - 1)
-                    new HighScoreEntry highScoreEntry
+                    new HighScoreRecord highScoreRecord
 
-                    highScoreEntry->PlayerName := binaryReader->ReadBytes(highScoreEntry->PlayerName->Length)
-                    highScoreEntry->Score := binaryReader->ReadUint32()
+                    highScoreRecord->PlayerName := binaryReader->ReadBytes(highScoreEntry->PlayerName->Length)
+                    highScoreRecord->Score := binaryReader->ReadUint32()
 
                     highScores->Add(highScoreEntry)
                 end for
