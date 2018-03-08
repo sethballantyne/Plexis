@@ -65,6 +65,9 @@ Public
             LogManager::WriteLine(LogType->Log, "Initialising Input\n")
             Input::Initialise(hInstance, hWnd)
 
+            LogManager::WriteLine("LogType->Log, "Opening highscores.dat")
+            HighScores::Initialise("highscores.dat")
+
             LogManager::WriteLine(LogType->Log, "Initialising the resource manager\n")
             ResourceManager::Intialise("paths.xml")
 
@@ -93,6 +96,7 @@ Public
         Video::Shutdown()
         Audio::Shutdown()
         Input::Shutdown()
+        HighScores::Shutdown()
 
         LogManager::Remove(LogType->Error | LogType->Debug | LogType->Log, textFileOutput)
         textFileOutput->Close()

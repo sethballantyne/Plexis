@@ -1,0 +1,44 @@
+class HighScoreEntry
+Private
+    byte[13] playerName
+    uint score
+Public
+    constructor()
+        -- populate the list with defaults. The idea is that if there happens to be
+        -- entries missing from the file, the defaults will get displayed in their place.
+        -- When the HighScores are written back out, it should rectify the problem. 
+        -- This is entirely pedantic and needless since if the user fucks with the High score file
+        -- it's their own fault but I HAVE TO DEAL WITH IT ANYWAY OTHERWISE I WON'T SLEEP AT NIGHT.
+        Array::Clear(self->playerName, 0, self->playerName->Length)
+
+        -- spells ASS.
+        self->playerName[0] := 65
+        self->playerName[1] := 83
+        self->playerName[2] := 83
+   
+        -- I know it's needless since it defaults to 0 but it makes it apparent that's what's going on. 
+        self->score := 0
+    end constructor
+
+    property uint Score
+        get
+            return self->score
+        set
+            score->value
+    end property
+
+    property string PlayerNameAsString
+        get
+            -- avoid ArgumentNullException being thrown 
+            if(playerName != NULL)
+               return Encoding::ASCII::GetString(playerName)
+            else
+               return NULL
+            end if
+    end property
+    
+    property byte[] PlayerName
+        get
+            return playerName   
+    end property
+end class

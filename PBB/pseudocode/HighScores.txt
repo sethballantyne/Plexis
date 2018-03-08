@@ -1,0 +1,90 @@
+class HighScores : static 
+Private
+    new List<HighScoreEntry> highScores
+    FileStream fileStream
+    BinaryReader binaryReader
+    BinaryWriter binaryWriter
+Public
+    function Initialise(string fileName)
+        if(fileName = NULL)
+            throw ArgumentNullException("filename")
+        else if(fileName := String::Empty)
+            throw ArgumentException("filename")
+
+        try
+            new fileStream(fileName, FileMode::OpenOrCreate, FileAccess::ReadWrite)
+            new binaryReader(fileStream, Encoding::ASCII)
+            new binaryWriter(fileStream, Encoding::ASCII)
+
+            if(fileStream->Length != 0)   
+                uint numberOfEntries := binaryReader->ReadUint32()
+
+                for(i := 0 to numberOfEntries - 1)
+                    new HighScoreEntry highScoreEntry
+
+                    highScoreEntry->PlayerName := binaryReader->ReadBytes(highScoreEntry->PlayerName->Length)
+                    highScoreEntry->Score := binaryReader->ReadUint32()
+
+                    highScores->Add(highScoreEntry)
+                end for
+            end if
+        catch
+            throw
+        end try
+    function
+
+    function Update(uint row, string playerName, uint newHighScore)
+        if(row > highScores->Count)
+            throw ArgumentException("row is invalid")
+        else if(playerName = NULL)
+            throw ArgumentNullException("playerName")
+        end if
+
+        highScores[row]->PlayerName := Encoding::ASCII::GetBytes(playerName)
+        highScores[row]->Score := newHighScore
+
+        -- High scores are written out because waiting until the application 
+        -- terminates may result in high scores not being saved (ie, the game crashes).
+        -- It'll be wonderfully ironic if this results in scores not being saved! 
+        try
+            fileStream->Flush()
+            fileStream->SetLength(0)
+            BinaryWriter->WriteUInt32(highScores->Count)
+
+            for(i := 0 to highScores->Count - 1)
+                BinaryWriter->WriteBytes(highScores[i]->PlayerName->Length)
+                BinaryWriter->WriteUInt32(highScores[i]->Score)
+            end for
+    end function
+
+    function uint GetHighScore(uint row)
+        if(row < highScores->Count)
+            return highScores[row]->Score
+        end if
+    end function
+
+    function string GetPlayerName(uint row)
+        if(row < highScores->Count)
+            return highScores[row]->PlayerNameAsString    
+        end if
+    end function
+
+    function int IsAHighScore(uint score)
+        for(i := 0 to highScores->Count - 1)
+            if(score > highScores[i]->Score)
+                return i
+        end for
+
+        return -1
+    end function
+
+    function void Shutdown()
+        binaryReader->Close()
+        binaryWriter->Close()
+        fileStream->Close()
+
+        fs->Dispose()
+        binaryReader->Dispose()
+        binaryWriter->Dispose()
+    end function
+end class

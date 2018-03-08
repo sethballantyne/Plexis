@@ -37,7 +37,7 @@ Public
                                        playerNamePosition, scoreFont, scorePosition)
 
             newHighScoreRow->Index->Text := Convert::ToString(i)
-            newHighScoreRow->PlayerName->Text := Convert::ToString(HighScores::GetPlayerName(i))
+            newHighScoreRow->PlayerName->Text := HighScores::GetPlayerName(i)
             newHighScoreRow->Score->Text := Convert::ToString(HighScores::GetHighScore(i))
 
             rows->Add(newHighScoreRow)         
