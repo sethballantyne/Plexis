@@ -1,7 +1,7 @@
 -- represents a single name and the associated score. HighScoreRecord is consumed by HighScores.
 class HighScoreRecord
 Private
-    byte[13] playerName
+    byte[12] playerName
     uint score
 Public
     constructor()
