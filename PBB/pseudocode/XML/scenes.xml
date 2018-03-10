@@ -6,7 +6,7 @@
             <control type="menuItemContainer">
                 <containerItem type="menuItem" x="0" y="0" font="white" text="NEW GAME" selectedIndex="0" navigateTo="game" navigationArgs="new;game_in_progress_main_menu"/>
                 <containerItem type="menuItem" x="0" y="0" font="white" text="OPTIONS" selectedIndex="1" navigateTo="options" />
-                <containerItem type="menuItem" x="0" y="0" font="white" text="HIGHSCORES" selectedIndex="2" navigateTo="view_highscores" navigationArgs="readonly"/>
+                <containerItem type="menuItem" x="0" y="0" font="white" text="HIGHSCORES" selectedIndex="2" navigateTo="view_highscores" />
                 <containerItem type="menuItem" x="0" y="0" font="white" text="CREDITS" selectedIndex="3" navigateTo="credits" />
                 <containerItem type="menuItem" x="0" y="0" font="white" text="EXIT" selectedIndex="4" navigateTo="exit_game_prompt" navigationArgs="self"/>
             </control>
@@ -38,12 +38,12 @@
             <control type="label" x="0" y="0" font="green" text="CONSOLE"/>
             <control type="label" x="0" y="0" font="green" text="PAUSE"/>
             <control type="menuItemContainer">
-                <containerItem type="keyConfigurationLabel" x="0" y="0" font="white" selectedIndex="0" optionKey="fireKey" />
-                <containerItem type="keyConfigurationLabel" x="0" y="0" font="white" selectedIndex="1" optionKey="movePaddleLeftKey" />
-                <containerItem type="keyConfigurationLabel" x="0" y="0" font="white" selectedIndex="2" optionKey="movePaddleRightKey" />
-                <containerItem type="keyConfigurationLabel" x="0" y="0" font="white" selectedIndex="3" optionKey="screenshotKey" />
-                <containerItem type="keyConfigurationLabel" x="0" y="0" font="white" selectedIndex="4" optionKey="consoleKey" />
-                <containerItem type="keyConfigurationLabel" x="0" y="0" font="white" selectedIndex="5" optionKey="pauseKey" />
+                <containerItem type="keyConfigLabel" x="0" y="0" font="white" selectedIndex="0" optionsKey="fireKey" />
+                <containerItem type="keyConfigLabel" x="0" y="0" font="white" selectedIndex="1" optionsKey="movePaddleLeftKey" />
+                <containerItem type="keyConfigLabel" x="0" y="0" font="white" selectedIndex="2" optionsKey="movePaddleRightKey" />
+                <containerItem type="keyConfigLabel" x="0" y="0" font="white" selectedIndex="3" optionsKey="screenshotKey" />
+                <containerItem type="keyConfigLabel" x="0" y="0" font="white" selectedIndex="4" optionsKey="consoleKey" />
+                <containerItem type="keyConfigLabel" x="0" y="0" font="white" selectedIndex="5" optionsKey="pauseKey" />
                 <containerItem type="menuItem" x="0" y="0" font="white" text="BACK" selectedIndex="6" navigateTo="caller" />
             </control>
         </controls>
@@ -88,7 +88,7 @@
         <controls>
             <control type="label" x="0" y="0" font="white" text="NEW HIGH SCORE! ENTER YOUR NAME" />
             <control type="menuItemContainer">
-                <containerItem type="highscoreTable" x="0" y="0" selectedIndex="0" rows="10">
+                <containerItem type="highScoreTable" x="0" y="0" selectedIndex="0" rows="10">
                     <rows verticalSpacing="0">
                         <column id="index" x="0" font="green" />
                         <column id="playerName" x="0" font="white" />
