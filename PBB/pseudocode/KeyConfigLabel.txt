@@ -1,0 +1,217 @@
+class KeyPressLabel inherits SelectableControl
+Private
+    Label label
+
+    -- Lookup table for all the keys supported by the game. If the user presses a key that's not supported,
+    -- an exception will be thrown which is ignored; see KeyPressLabel::UpdateConfig. If it's supported,
+    -- the string is used to update the label's text.
+    static new Dictionary<int, string> keys = {
+        -- scroll lock isn't present because it's not on my keyboard.
+        { DIK_ESCAPE, "ESCAPE" },
+        { DIK_1,      "1" },
+        { DIK_2       "2" },
+        { DIK_3       "3" },
+        { DIK_4       "4" },
+        { DIK_5       "5" },
+        { DIK_6       "6" },
+        { DIK_7       "7" },
+        { DIK_8       "8" },
+        { DIK_9       "9" },
+        { DIK_0       "10" },
+        { DIK_MINUS   "-" }, -- - on main keyboard 
+        { DIK_EQUALS  "=" },
+        { DIK_BACK    "BACKSPACE" },
+        { DIK_TAB     "TAB" },
+        { DIK_Q       "Q" },
+        { DIK_W       "W" },
+        { DIK_E       "E" },
+        { DIK_R       "R" },
+        { DIK_T       "T" },
+        { DIK_Y       "Y" },
+        { DIK_U       "U" },
+        { DIK_I       "I" },
+        { DIK_O       "O" },
+        { DIK_P       "P" },
+        { DIK_LBRACKET  "[" },
+        { DIK_RBRACKET  "]" },
+        { DIK_RETURN    "ENTER" },    -- Enter on main keyboard
+        { DIK_LCONTROL   "LEFT CTRL" },
+        { DIK_A          "A" },
+        { DIK_S          "S" },
+        { DIK_D          "D" },
+        { DIK_F          "F" },
+        { DIK_G          "G" },
+        { DIK_H          "H" },
+        { DIK_J          "J" },
+        { DIK_K          "K" },
+        { DIK_L          "L" },
+        { DIK_SEMICOLON  ";" },
+        { DIK_APOSTROPHE "\'" },
+        { DIK_GRAVE      "`" },
+        { DIK_LSHIFT     "LEFT SHIFT" },
+        { DIK_BACKSLASH  "\\" },
+        { DIK_Z          "Z" },
+        { DIK_X          "X" },
+        { DIK_C          "C" },
+        { DIK_V          "V" },
+        { DIK_B          "B" },
+        { DIK_N          "N" },
+        { DIK_M          "M" },
+        { DIK_COMMA      "," },
+        { DIK_PERIOD     "." },    -- . on main keyboard
+        { DIK_SLASH      "/" },    -- / on main keyboard 
+        { DIK_RSHIFT     "RIGHT SHIFT" },
+        { DIK_MULTIPLY   "*" },    -- * on numeric keypad 
+        { DIK_LMENU      "LEFT ALT" }, -- left Alt 
+        { DIK_SPACE      "SPACE" },
+        { DIK_CAPITAL    "CAPS LOCK" },
+        { DIK_F1         "F1" },
+        { DIK_F2         "F2" },
+        { DIK_F3         "F3" },
+        { DIK_F4         "F4" },
+        { DIK_F5         "F5" },
+        { DIK_F6         "F6" },
+        { DIK_F7         "F7" },
+        { DIK_F8         "F8" },
+        { DIK_F9         "F9" },
+        { DIK_F10        "F10" },
+        { DIK_NUMLOCK    "NUM LOCK" },
+        { DIK_NUMPAD7    "NUMPAD 7" },
+        { DIK_NUMPAD8    "NUMPAD 8" },
+        { DIK_NUMPAD9    "NUMPAD 9" },
+        { DIK_SUBTRACT   "NUMPAD -" },    -- - on numeric keypad 
+        { DIK_NUMPAD4    "NUMPAD 4" },
+        { DIK_NUMPAD5    "NUMPAD 5" },
+        { DIK_NUMPAD6    "NUMPAD 6" },
+        { DIK_ADD        "NUMPAD +" },   -- + on numeric keypad
+        { DIK_NUMPAD1    "NUMPAD 1" },
+        { DIK_NUMPAD2    "NUMPAD 2" },
+        { DIK_NUMPAD3    "NUMPAD 3" },
+        { DIK_NUMPAD0    "NUMPAD 0" },
+        { DIK_DECIMAL    "NUMPAD ." },   -- . on numeric keypad
+        { DIK_F11        "F11" },
+        { DIK_F12        "F12" },
+        { DIK_NUMPADENTER "NUMPAD ENTER" },    -- Enter on numeric keypad 
+        { DIK_DIVIDE      "NUMPAD /" },   -- / on numeric keypad 
+        { DIK_RMENU       "RIGHT ALT" },   -- right Alt
+        { DIK_PAUSE       "PAUSE" },
+        { DIK_HOME        "HOME" },   -- Home on arrow keypad 
+        { DIK_UP          "UP" },    -- up arrow
+        { DIK_PRIOR       "PAGE UP" },   
+        { DIK_LEFT        "LEFT" },   -- left arrow
+        { DIK_RIGHT       "RIGHT" },   -- right arrow
+        { DIK_END         "END" },    
+        { DIK_DOWN        "DOWN" },   -- down arrow
+        { DIK_NEXT        "PAGE DOWN" },  
+        { DIK_INSERT      "INSERT" },    
+        { DIK_DELETE      "DELETE" }, 
+        { DIMOUSE_BUTTON0 "LEFT MOUSE BUTTON" },
+        { DIMOUSE_BUTTON1 "RIGHT MOUSE BUTTON" }
+    };
+
+    bool changeKeyOption := false
+
+    function UpdateConfig(uint key)
+        try
+            self->label->Text := self->keys[key]
+            GameOptions::SetValue(self->optionsKey, key)
+            changeKeyOption := false
+        catch(KeyValuePairException)
+            -- ignore it; invalid key pressed.
+        catch
+            throw
+    end function
+Public
+    -- Exceptions:
+    -- System::ArgumentNullException: optionKey or font is NULL.
+    -- System::ArgumentException: optionsKey evaluates to String::Empty, or optionsKey evaluates to a GameOptions
+    -- key that doesn't exist.
+    constructor(int x, int y, Font font, int selectedIndex, string optionsKey)
+
+        if(optionKey = NULL)
+            throw ArgumentNullException("optionsKey")
+        else if(font = NULL)
+            throw ArgumentNullException("font")
+        end if
+
+        if(optionsKey = String::Empty)
+            throw ArgumentException("optionsKey")
+        end if
+
+        if(GameOptions::GetValue(optionsKey, -1) = -1)
+            throw ArgumentException("optionsKey")
+        end if
+
+        self->selectedIndex := selectedIndex
+
+        -- using default text until the scene is displayed. 
+        new self->label(x, y, font, "HACK THE PLANET!!")
+    end constructor
+
+    function ReceiveSceneArgs(object[] sceneArgs)
+        static bool firstRun := true
+
+        -- there's no arguments passed to the label, but if it's receiving arguments
+        -- then it's about to be displayed, so grab the value associated with the key
+        -- contained within optionsKey. We only need to do this the first time it's displayed
+        -- because it'll be kept uptodate each time the user presses a key from then on. 
+        if(firstRun)
+            firstRun := false
+            -- default shouldn't be returned because optionsKey is verified in the constructor.
+            int keyValue := GameOptions::GetValue(optionsKey, 0)
+            label->Text := keys[keyValue]
+        end if
+    end function
+
+    function Render()
+        label->Render()
+    end function
+
+    -- Exceptions:
+    -- System::ArgumentNullException: keyboardState is NULL
+    function Update(Keys keyboardState, Mouse mouseState)
+        
+        if(keyboardState = NULL)
+            throw ArgumentNullException("keyboardState")
+        end if
+
+        if(changeKeyOption != true)
+            if(keyboardState->KeyDown(DIK_ENTER))
+                changeKeyOption := true
+                self->label->Text := "PRESS A KEY"
+            else if(keyboardState->KeyDown(DIK_UP))
+                self->parentContainer->SelectPreviousControl()
+            else if(keyboardState->KeyDown(DIK_DOWN))
+                self->parentContainer->SelectNextControl()
+            end if
+        else
+            uint keyPressed := keyboardState->Key 
+
+            -- in off chance that the user presses keys and mouse buttons(s) at the same time,
+            -- the keyboard takes precedence.
+            if(keyPressed != ULONG_MAX)
+                UpdateConfig(keyPressed)
+            else if(mouseState != NULL)
+                if(mouseState->ButtonDown(0)) -- left mouse button
+                    UpdateConfig(DIMOUSE_BUTTON0)
+                else if(mouseState->ButtonDown(1)) -- right mouse button
+                    UpdateConfig(DIMOUSE_BUTTON1)
+                end if
+            end if
+
+        end if
+    end function
+
+    property MenuItemContainer ParentContainer
+
+        accessors
+            get
+                return parentContainer
+            set
+                if(value = NULL)
+                    throw ArgumentNullException("Nope")
+
+                parentContainer := value
+                parentContainer->Controls->Add(self)
+        end accessors
+end class
