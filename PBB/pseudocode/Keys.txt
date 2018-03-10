@@ -1,7 +1,9 @@
 class Keys
 Private
     UCHAR *keys := NULL
-    DWORD firstKey := 0
+
+    -- ULONG_MAX is used to specify that a key hasn't been pressed.
+    DWORD firstKey := ULONG_MAX
 Public
     constructor Keys(UCHAR *keys)
         if(keys = NULL)
