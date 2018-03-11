@@ -1,6 +1,5 @@
 -- Produces scenes based on the data stored within scenes.xml
--- Currently missing support for gameview, table controls.
-
+-- Currently missing support for gameview, ToggleLabel and the slider.
 class SceneFactory
 Private
 
@@ -127,6 +126,21 @@ Private
         end try
     end function
 
+
+    function KeyConfigLabel ParseKeyConfigLabel(XElement element, MenuItemContainer parentContainer)
+        try
+             int x := XmlHelper::GetAttributeValueAsInt32(element, "x")
+             int y := XmlHelper::GetAttributeValueAsInt32(element, "y")
+             string font := XmlHelper::GetAttributeValue(element, "font")
+             int selectedIndex := XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex")
+             string optionsKey := xmlHelper::GetAttributeValue(element, "optionsKey")
+
+             return new KeyConfigLabel(x, y, font, selectedIndex, optionsKey, parentContainer)
+        catch
+            throw
+        end try
+    end function
+
 Public
     -- Parses the XML file containing scene information, returning an array of Scenes based on the information read.
     function Scene[] Read(XDocument xml)
@@ -206,6 +220,8 @@ Public
                                                 MenuItem menuItem := ParseMenuItem(sceneID->Value, containerItemTag, menuItemContainer)
                                             else if(typeAttribute->Value = "HighScoreTable")
                                                 HighScoreTable highScoreTable := ParseHighScoreTable(containerItemTag, menuItemContainer)
+                                            else if(typeAttribute->Value = "keyConfigLabel")
+                                                KeyConfigLabel keyConfigLabel := ParseKeyConfigLabel(containerItemTag, menuItmContainer)
                                             end if
                                         catch
                                              Log("Failed to read a containerItem element for the scene {0}. {1}", sceneID->Value, e->Message)
@@ -213,9 +229,8 @@ Public
                                 end if
                             end foreach
                             scene->GetContolList()->Add(menuItemContainer)
-
                         else if(typeAttributeValue = String.Empty)
-                            Log("type path for a control belonging to {0} is empty.", sceneID->Value)
+                            Log("type attribute for a control belonging to {0} is empty.", sceneID->Value)
                         else
                             Log("Unknown control type {0} in scene {1}", typeAttributeValue, sceneID->Value)
                         end if
