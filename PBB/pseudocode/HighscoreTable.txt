@@ -71,7 +71,7 @@ Public
             
             -- possible bug here; will report true if enter is pressed along with other keys
             -- which may not be the intended desire. Make sure to test.
-            if(keyboardState->KeyDown(DIK_ENTER))
+            if(keyboardState->KeyPressed(DIK_ENTER))
                 enabled := false
 
                 string newPlayerName := rows[self->rowBeingEdited]->PlayerName->Text

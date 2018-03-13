@@ -176,12 +176,12 @@ Public
         end if
 
         if(changeKeyOption != true)
-            if(keyboardState->KeyDown(DIK_ENTER))
+            if(keyboardState->KeyPressed(DIK_ENTER))
                 changeKeyOption := true
                 self->label->Text := "PRESS A KEY"
-            else if(keyboardState->KeyDown(DIK_UP))
+            else if(keyboardState->KeyPressed(DIK_UP))
                 self->parentContainer->SelectPreviousControl()
-            else if(keyboardState->KeyDown(DIK_DOWN))
+            else if(keyboardState->KeyPressed(DIK_DOWN))
                 self->parentContainer->SelectNextControl()
             end if
         else

@@ -104,11 +104,11 @@ public
     -- Updates the controls state, based on the keys that have been pressed. 
     function void Update(Keys keyboardState, Mouse mouseState)
 
-        if(keyboardState->KeyDown(DIK_UP))
+        if(keyboardState->KeyPressed(DIK_UP))
             parent->SelectPreviousControl()
-        else if(keyboardState->KeyDown(DIK_DOWN))
+        else if(keyboardState->KeyPressed(DIK_DOWN))
             parent->SelectNextControl()
-        else if(keyboardState->KeyDown(DIK_ENTER))
+        else if(keyboardState->KeyPressed(DIK_ENTER))
             if(navigateTo != NULL)
                 if(navigateTo = "terminate")
                     Game::IsRunning := FALSE
