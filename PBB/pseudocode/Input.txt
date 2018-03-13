@@ -3,7 +3,8 @@ Private
     LPDIRECTINPUT8 lpDI := NULL
     LPDIRECTINPUTDEVICE8 lpDIKeyboard := NULL
     LPDIRECTINPUTDEVICE8 lpDIMouse := NULL
-    UCHAR keys[256]
+    UCHAR previousKeyboardState[256]
+    UCHAR currentKeyboardState[256]
     DIMOUSESTATE2 mouseState
     HKL keyboardLayout
 
@@ -14,6 +15,9 @@ Private
                 lpDIKeyboard->Release()
                 lpDIKeyboard := NULL
             end if
+
+            SecureZeroMemory(&previousKeyboardState, 256);
+            SecureZeroMemory(&currentKeyboardState, 256);
 
             VerifyNotNull(lpDI)
             result := lpDI->CreateDevice(GUID_SysKeyboard, &lpDIKeyboard, NULL)
@@ -182,7 +186,7 @@ Private
     end function
 Public
     function Initialise(HINSTANCE hInstance, HWND hWnd)
-            SecureZeroMemory(&keys[0], sizeof(keys))
+            SecureZeroMemory(&currentKeyboardState[0], sizeof(currentKeyboardState))
 
             HRESULT result := DirectInput8Create(hInstance, DIRECT_INPUTVERSION, IID_IDirectInput8, (void **)&lpDI, NULL)
             if(result != DI_OK)
@@ -214,8 +218,11 @@ Public
     function Keys* ReadKeyboard()
 
         VerifyNotNull(lpDIKeyboard)
-        lpDIKeyboard->GetDeviceState(sizeof(keys), (LPVOID) keys)
-        return new Keys(&keys[0])
+
+        -- copy keys into previousKeyboardState
+        memcpy_s(previousKeyboardState, 256, currentKeyboardState, 256);
+        lpDIKeyboard->GetDeviceState(sizeof(currentKeyboardState), (LPVOID) currentKeyboardState)
+        return new Keys(&currentkeyboardState[0], &previousKeyboardState[0])
 
     end function
 

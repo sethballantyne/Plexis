@@ -1,31 +1,41 @@
 class Keys
 Private
-    UCHAR *keys := NULL
+    UCHAR *currentKeyboardState := NULL
+    UCHAR *previousKeyboardState := NULL
 
     -- ULONG_MAX is used to specify that a key hasn't been pressed.
     DWORD firstKey := ULONG_MAX
 Public
-    constructor Keys(UCHAR *keys)
-        if(keys = NULL)
-            throw System::ArgumentNullException("keys")
+    constructor Keys(UCHAR *currentKeyboardState, UCHAR *previousKeyboardState)
+        if(currentKeyboardState = NULL)
+            throw System::ArgumentNullException("curentKeyboardState")
         end if
 
-        this->keys := keys
+        self->currentKeyboardState := currentKeyboardState
 
         for(i := 0 to 255)
-            if(key[i] & 0x80) 
-                firstKey := i
+            if(self->currentKeyboardState[i] & 0x80) 
+                self->firstKey := i
                 break
             end if
         end for
     end constructor
 
     function bool KeyDown(UCHAR key) : inline
-        return keys[key] & 0x80
+        return self->currentKeyboardState[key] & 0x80
+    end function
+
+    function bool KeyPressed(UCHAR key) : inline
+        bool currentKeyState = self->currentKeyboardState[key] & 0x80
+        bool previousKeyState = self->previousKeyboardState[key] & 0x80
+
+        -- key pressed if the currentState is false (key is up) and previous is true (key is down)
+        return ((currentKeyState == false) && (previousKeyState == true))
     end function
 
     property Key
         get
-            return firstKey
+            return self->firstKey
     end property
+
 end class
