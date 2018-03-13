@@ -28,27 +28,29 @@ Public
         end if
 
         if(editMode = TRUE)
-            int dikCode := keyboardState::Key
-            uint asciiCode := Input::DIKToASCII(dikCode)
+            int dikCode := keyboardState::PressedKey
+            if(dikCode != -1)
+                uint asciiCode := Input::DIKToASCII(dikCode)
 
-            if(asciiCode >= KEY_SPACE && asciiCode <= KEY_TILDE)
-                if(currentPosition < (text->Length - 1))
-                    text[currentPosition] := asciiCode
-                    currentPosition++
+                if(asciiCode >= KEY_SPACE && asciiCode <= KEY_TILDE)
+                    if(currentPosition < (text->Length - 1))
+                        text[currentPosition] := asciiCode
+                        currentPosition++
+                    end if
+                else
+                    switch(dikCode)
+                        VIK_BACKSPACE:
+                            if(currentPosition != 0)
+                                text[currentPosition] := 0
+                                currentPosition--
+                            end if
+
+                        VIK_ENTER:
+                            editMode := FALSE
+                        default:
+                            break
+                    end switch
                 end if
-            else
-                switch(dikCode)
-                    VIK_BACKSPACE:
-                        if(currentPosition != 0)
-                            text[currentPosition] := 0
-                            currentPosition--
-                        end if
-
-                    VIK_ENTER:
-                        editMode := FALSE
-                    default:
-                        break
-                end switch
             end if
         end if
     end function

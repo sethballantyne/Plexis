@@ -1,10 +1,11 @@
 class Keys
 Private
+    -- ULONG_MAX is used to specify that a key hasn't been pressed.
+    DWORD firstKey := ULONG_MAX
+
     UCHAR *currentKeyboardState := NULL
     UCHAR *previousKeyboardState := NULL
 
-    -- ULONG_MAX is used to specify that a key hasn't been pressed.
-    DWORD firstKey := ULONG_MAX
 Public
     constructor Keys(UCHAR *currentKeyboardState, UCHAR *previousKeyboardState)
         if(currentKeyboardState = NULL)
@@ -38,4 +39,13 @@ Public
             return self->firstKey
     end property
 
+    property int PressedKey
+        get
+            for(i := 0 to 256)
+                if(self->KeyPressed(i))
+                    return i
+            end for
+
+            return -1
+    end property
 end class
