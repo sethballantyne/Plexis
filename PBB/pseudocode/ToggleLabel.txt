@@ -1,15 +1,14 @@
-class ToggleLabel inherits SelectableControl
+class ToggleLabel inherits ContainerControl
 Private
     bool toggleState := false
     string[] captions
     string optionsKey
     Label label
-    MenuItemContainer parentContainer
     object[] receivedArgs := NULL
 
 Public
     constructor(int x, int y, string font, string trueCaption, string falseCaption, 
-                int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : SelectableControl(selectedIndex)
+                int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
 
         if(font = NULL)
             throw ArgumentNullException("font")
@@ -19,8 +18,6 @@ Public
             throw ArgumentNullException("falseCaption")
         else if(optionsKey = NULL)
             throw ArgumentNullException("optionsKey")
-        else if(parentContainer = NULL)
-            throw ArgumentNullException("parentContainer")
         end if
 
         if(font = String::Empty)
@@ -75,15 +72,4 @@ Public
         end if
 
     end function
-
-    property MenuItemContainer ParentContainer
-        get
-            return parentContainer
-        set
-            if(value = NULL)
-                throw ArgumentNullException("Nope")
-
-            parentContainer := value
-            parentContainer->Controls->Add(self)
-    end property
 end class

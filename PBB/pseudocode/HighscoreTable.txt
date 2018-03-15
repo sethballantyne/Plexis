@@ -1,17 +1,16 @@
-class HighScoreTable
+class HighScoreTable inherits ContainerControl
 Private
     new List<HighscoreRow> rows
     int rowSpacing
     bool enabled := false
     int rowBeingEdited
     int newHighScore
-    MenuItemContainer parentContainer
 Public
     -- Exceptions: 
     -- System::ArgumentNullException: either rowNumberFont, playerNameFont, or scoreFont is NULL.
     constructor(int x, int y, int selectedIndex, int numberOfRows, int verticalSpacing, int indexXPosition,
     Font rowNumberFont, int playerNameXPosition, Font playerNameFont, int scoreXPosition, Font scoreFont,
-    MenuItemContainer parentContainer)
+    MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
 
         if(rowNumberFont = NULL)
             throw ArgumentNullException("rowNumberFont")
@@ -19,12 +18,9 @@ Public
             throw ArgumentNullException("playerNameFont")
         else if(scoreFont = NULL)
             throw ArgumentNullException("scoreFont")
-        else if(parentContainer = NULL)
-            throw ArgumentNullException("parentContainer")
         end if
 
         self->selectedIndex := selectedIndex
-        self->parentContainer := parentContainer
 
         for(i := 0 to numberOfRows)
             int rowYPosition := y + (i * verticalSpacing)
@@ -42,8 +38,6 @@ Public
 
             rows->Add(newHighScoreRow)         
         end for
-
-        self->ParentContainer := parentContainer
     end constructor 
 
     function ReceiveSceneArgs(object[] args)
@@ -93,18 +87,18 @@ Public
     -- HighScoreTable adds itself to the containers control list.
     -- Exceptions:
     -- ArgumentNullException: attempting to assign a NULL value.
-    property MenuItemContainer ParentContainer
+    --property MenuItemContainer ParentContainer
 
-        accessors
-            get
-                return parentContainer
-            set
-                if(value = NULL)
-                    throw ArgumentNullException("Nope")
+     --   accessors
+     --       get
+     ---           return parentContainer
+     --       set
+     --           if(value = NULL)
+     --               throw ArgumentNullException("Nope")
+     --
+      --          parentContainer := value
+     --           parentContainer->Controls->Add(self)
+     --   end accessors
 
-                parentContainer := value
-                parentContainer->Controls->Add(self)
-        end accessors
-
-    end property
+    --end property
 end class

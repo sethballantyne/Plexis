@@ -1,6 +1,6 @@
 -- MenuItems are interactive labels that are primarily used to transition between scenes.
 
-class MenuItem inherits SelectableControl
+class MenuItem inherits ContainerControl
 private
     -- Labels and MenuItems are the same in the sense that they both are a string of text
     -- rendered to the screen, so an internal copy of a label is kept to handle this aspect
@@ -15,7 +15,7 @@ private
     string outboundArgs := NULL
 
     -- Instance of MenuItemContainer that this control belongs to.
-    MenuItemContainer parentContainer := NULL
+    --MenuItemContainer parentContainer := NULL
 
     -- arguments that were passed to the scene and subsequently this control, when the scene
     -- this control belongs to became visible to user. 
@@ -42,9 +42,6 @@ public
             throw ArgumentException("navigateTo")
         end if
 
-
-        SelectableControl(selectedIndex)
-
         try
             label := new Label(x, y, font, text)
         catch
@@ -67,11 +64,8 @@ public
 
     end constructor
 
-    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, MenuItemContainer parentContainer)
-       
-        if(parentContainer = NULL)
-            throw ArgumentNullException("parentContainer")
-        end if
+    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, 
+                         MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
 
         try
             self(x, y, font, text, selectedIndex, navigateTo)
@@ -80,15 +74,12 @@ public
         end try
 
         -- calling the property! the control has to be registered 
-        self->ParentContainer := parentContainer
+        --self->ParentContainer := parentContainer
     end constructor
 
     constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs, 
-                         MenuItemContainer parentContainer)
+                         MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
 
-        if(parentContainer = NULL)
-            throw ArgumentNullException("parentContainer")
-        end if
 
         try
             self(x, y, font, text, selectedIndex, navigateTo, navigationArgs)
@@ -97,7 +88,7 @@ public
         end try
 
         -- calling the property! the control has to be registered 
-        self->ParentContainer := parentContainer
+        --self->ParentContainer := parentContainer
 
     end constructor
 
@@ -129,20 +120,20 @@ public
     -- MenuItem adds itself to the containers control list.
     -- Exceptions:
     -- ArgumentNullException: attempting to assign a NULL value.
-    property MenuItemContainer ParentContainer
+    --property MenuItemContainer ParentContainer
 
-        accessors
-            get
-                return parentContainer
-            set
-                if(value = NULL)
-                    throw ArgumentNullException("Nope")
+     --   accessors
+     --       get
+     --           return parentContainer
+     --       set
+     --           if(value = NULL)
+     --               throw ArgumentNullException("Nope")
+     --
+     --           parentContainer := value
+     --           parentContainer->Controls->Add(self)
+     --   end accessors
 
-                parentContainer := value
-                parentContainer->Controls->Add(self)
-        end accessors
-
-    end property
+    --end property
 
     -- stores the arguments passed by the scene when it was set as the active scene. 
     function ReceiveSceneArgs(string args)

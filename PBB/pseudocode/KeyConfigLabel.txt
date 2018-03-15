@@ -1,4 +1,4 @@
-class KeyPressLabel inherits SelectableControl
+class KeyPressLabel inherits ContainerControl
 Private
     Label label
 
@@ -126,7 +126,8 @@ Public
     -- System::ArgumentNullException: optionKey or font is NULL.
     -- System::ArgumentException: optionsKey evaluates to String::Empty, or optionsKey evaluates to a GameOptions
     -- key that doesn't exist.
-    constructor(int x, int y, Font font, int selectedIndex, string optionsKey)
+    constructor(int x, int y, Font font, int selectedIndex, string optionsKey, MenuItemContainer parentContainer) :
+                ContainerControl(parentContainer, selectedIndex)
 
         if(optionKey = NULL)
             throw ArgumentNullException("optionsKey")
@@ -141,8 +142,6 @@ Public
         if(GameOptions::GetValue(optionsKey, -1) = -1)
             throw ArgumentException("optionsKey")
         end if
-
-        self->selectedIndex := selectedIndex
 
         -- using default text until the scene is displayed. 
         new self->label(x, y, font, "HACK THE PLANET!!")
@@ -202,16 +201,16 @@ Public
         end if
     end function
 
-    property MenuItemContainer ParentContainer
+    --property MenuItemContainer ParentContainer
 
-        accessors
-            get
-                return parentContainer
-            set
-                if(value = NULL)
-                    throw ArgumentNullException("Nope")
+    --    accessors
+    --        get
+    --            return parentContainer
+    --        set
+     --           if(value = NULL)
+     --               throw ArgumentNullException("Nope")
 
-                parentContainer := value
-                parentContainer->Controls->Add(self)
-        end accessors
+     --           parentContainer := value
+     --           parentContainer->Controls->Add(self)
+     --   end accessors
 end class
