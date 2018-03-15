@@ -141,6 +141,21 @@ Private
         end try
     end function
 
+    function ToggleLabel ParseToggleLabel(XElement element, MenuItemContainer parentContainer)
+        try
+            int x := XmlHelper::GetAttributeValueAsInt32(element, "x")
+            int y := XmlHelper::GetAttributeValueAsInt32(element, "y")
+            int selectedIndex := XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex")
+            string font := XmlHelper::GetAttributeValue(element, "font")
+            string optionsKey := XmlHelper::GetAttributeValue(element, "optionsKey")
+            string falseCaption := XmlHelper::GetAttributeValue(element, "falseCaption")
+            string trueCaption := XmlHelper::GetAttributeValue(element, "trueCaption")
+
+            return new ToggleLabel(x, y, font, trueCaption, falseCaption, selectedIndex, optionsKey, parentContainer)
+        catch
+            throw
+        end try
+    end function
 Public
     -- Parses the XML file containing scene information, returning an array of Scenes based on the information read.
     function Scene[] Read(XDocument xml)
@@ -222,6 +237,8 @@ Public
                                                 HighScoreTable highScoreTable := ParseHighScoreTable(containerItemTag, menuItemContainer)
                                             else if(typeAttribute->Value = "keyConfigLabel")
                                                 KeyConfigLabel keyConfigLabel := ParseKeyConfigLabel(containerItemTag, menuItmContainer)
+                                            else if(typeAttribute->Value = "toggleLabel")
+                                                ToggleLabel toggleLabel := ParseToggleLabel(containerItemTag, menuItemContainer)
                                             end if
                                         catch
                                              Log("Failed to read a containerItem element for the scene {0}. {1}", sceneID->Value, e->Message)
