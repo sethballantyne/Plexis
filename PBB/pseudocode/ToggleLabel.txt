@@ -1,0 +1,89 @@
+class ToggleLabel inherits SelectableControl
+Private
+    bool toggleState := false
+    string[] captions
+    string optionsKey
+    Label label
+    MenuItemContainer parentContainer
+    object[] receivedArgs := NULL
+
+Public
+    constructor(int x, int y, string font, string trueCaption, string falseCaption, 
+                int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : SelectableControl(selectedIndex)
+
+        if(font = NULL)
+            throw ArgumentNullException("font")
+        else if(trueCaption = NULL)
+            throw ArgumentNullException("trueCaption")
+        else if(falseCaption = NULL)
+            throw ArgumentNullException("falseCaption")
+        else if(optionsKey = NULL)
+            throw ArgumentNullException("optionsKey")
+        else if(parentContainer = NULL)
+            throw ArgumentNullException("parentContainer")
+        end if
+
+        if(font = String::Empty)
+            throw ArgumentException("font")
+        else if(trueCaption = String::Empty)
+            throw ArgumentException("trueCaption")
+        else if(falseCaption = String::Empty)
+            throw ArgumentException("falseCaption")
+        else if(optionsKey = String::Empty)
+            throw ArgumentException("optionsKey")
+        end if
+
+        captions := new string[2]
+        captions[0] := falseCaption
+        captions[1] := trueCaption
+
+        self->optionsKey := optionsKey
+        self->ParentContainer := parentContainer
+
+         -- the caption passed is merely a default. When the scene is displayed, the control
+         -- will query GameOptions and update the labels text to reflect the value of the setting
+         -- it represents.
+         new self->label(x, y, font, captions[FALSE_CAPTION])
+    end constructor
+
+    function ReceiveSceneArgs(object[] sceneArgs)
+        self->sceneArgs := sceneArgs
+    end function
+
+    function Render()
+        self->label->Render()
+    end function
+
+    function Toggle()
+        toggleState = !tloggleState
+
+        GameOptions::SetValue(self->optionsKey, (int) toggleValue)
+        self->label->Text := self->captions[(int) toggleState]
+    end function
+
+    function Update(Keys keyboardState, Mouse mouseState)
+        if(keyboardState = NULL)
+            throw ArgumentNullException("keyboardState")
+        end if
+
+        if(keyboardState->KeyPressed(DIK_ENTER))
+            self->Toggle()
+        else if(keyboardState->KeyPressed(DIK_DOWN))
+            self->parentContainer->SelectNextControl()
+        else if(keyboardState->KeyPressed(DIK_UP))
+            self->parentContainer->SelectPreviousControl()
+        end if
+
+    end function
+
+    property MenuItemContainer ParentContainer
+        get
+            return parentContainer
+        set
+            if(value = NULL)
+                throw ArgumentNullException("Nope")
+
+            parentContainer := value
+            parentContainer->Controls->Add(self)
+    end property
+end class
