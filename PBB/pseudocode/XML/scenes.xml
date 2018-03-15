@@ -19,7 +19,7 @@
             <control type="label" x="0" y="0" font="green" text="MOUSE SPEED" />
             <control type="label" x="0" y="0" font="green" text="SOUND VOLUME" />
             <control type="menuItemContainer">
-                <containerItem type="toggleLabel" x="0" y="0" font="white" selectedIndex="0" optionKey="mouseMovesPaddle"/>
+                <containerItem type="toggleLabel" x="0" y="0" font="white" trueCaption="YES" falseCaption="NO" selectedIndex="0" optionsKey="mouseMovesPaddle"/>
                 <containerItem type="slider" x="0" y="0" selectedIndex="1" minimum="0" maximum="100" optionKey="mouseSpeed"/> <!-- mouse speed -->
                 <containerItem type="slider" x="0" y="0" selectedIndex="2" minimum="0" maximum="100" optionKey="soundVolume"/>  <!-- sound volume -->
                 <containerItem type="menuItem" x="0" y="0" font="white" text="CONFIGURE KEYS" selectedIndex="3" navigateTo="configure_keys"/>
