@@ -24,7 +24,8 @@ protected
     #SelectableControl bool selected
 
 public
-    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo) 
+    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, 
+                         MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
 
         if(font = NULL)
             throw ArgumentNullException("font")
@@ -50,45 +51,14 @@ public
 
         self->navigateTo := navigateTo
 
-    end constructor
-
-    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs)
-
-        try
-            self(x, y, font, text, selectedIndex, navigateTo)
-        catch
-            throw
-        end try
-
-        self->outboundArgs := new object[] { (object) navigationArgs }
-
-    end constructor
-
-    constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, 
-                         MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
-
-        try
-            self(x, y, font, text, selectedIndex, navigateTo)
-        catch
-            throw
-        end try
-
         -- calling the property! the control has to be registered 
         --self->ParentContainer := parentContainer
     end constructor
 
     constructor MenuItem(int x, int y, string font, string text, int selectedIndex, string navigateTo, string navigationArgs, 
-                         MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
+                         MenuItemContainer parentContainer) : self(x, y, font, text, selectedIndex, navigateTo, parentContainer)
 
-
-        try
-            self(x, y, font, text, selectedIndex, navigateTo, navigationArgs)
-        catch
-            throw
-        end try
-
-        -- calling the property! the control has to be registered 
-        --self->ParentContainer := parentContainer
+        self->outboundArgs := new object[] { (object) navigationArgs }
 
     end constructor
 
