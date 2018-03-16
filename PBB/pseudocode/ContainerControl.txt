@@ -1,0 +1,30 @@
+-- Base class for controls that are contained within a MenuItemContainer instance.
+class ContainerControl inherits SelectableControl
+Private
+    -- container the control belongs to.
+    MenuItemContainer parentContainer
+Public
+    constructor(int selectedIndex, MenuItemContainer parentContainer) : SelectedControl(selectedIndex)
+
+        if(parentContainer = NULL)
+            throw ArgumentNullException("parentContainer")
+        end if
+
+        self->parentContainer := parentContainer
+    end constructor
+
+    -- Assigns the ContainerControl instance to the specified container. When assigning a container,
+    -- the property adds itself to the containers control list.
+    -- Exceptions:
+    -- ArgumentNullException: attempting to assign a NULL value.
+    property MenuItemContainer ParentContainer
+        get
+            return self->parentContainer
+        set
+            if(value = NULL)
+                throw ArgumentNullException("Nope")
+     
+                self->parentContainer := value
+                self->parentContainer->Controls->Add(self)
+    end property
+end class
