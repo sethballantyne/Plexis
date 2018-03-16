@@ -4,19 +4,17 @@ Private
     $define KEY_TILDE 126
 
     Font font := NULL
-    Point position
     uint currentPosition := 0
     int stringLength
     byte[] text := NULL
     bool editMode := false
 Public
-    constructor(int x, int y, Font font, byte length)
+    constructor(int x, int y, Font font, byte length) : Control(x, y)
 
         if(font = NULL)
             throw ArgumentNullException("font")
         end if
 
-        new position(x, y)
         self->font = font
         new text[length]
         self->stringLength := length
