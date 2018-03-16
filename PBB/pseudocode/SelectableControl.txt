@@ -1,5 +1,12 @@
-class SelectableControl : abstract inherits IComparable
+class SelectableControl : abstract inherits Control, IComparable
+private
+    bool selected
+    int selectedIndex
 public
+    constructor(int x, int y, int selectedIndex) : Control(x, y)
+        self->selectedIndex := selectedIndex
+    end constructor
+
     function CompareTo(Object obj)
         if(obj is type SelectableControl)
             if(selectableIndex > ((SelectableControl)obj)->SelectedIndex)
@@ -11,4 +18,18 @@ public
         else
             throw ArgumentException("obj must of type SelectableControl")
     end function
+
+    property bool IsSelected
+        get
+            return selected
+        set
+            selected := value
+    end property
+
+    property int SelectedIndex
+        get
+            return selectedIndex
+        set
+            selectedIndex := value
+    end property
 end class
