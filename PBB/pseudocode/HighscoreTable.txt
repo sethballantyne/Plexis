@@ -10,7 +10,7 @@ Public
     -- System::ArgumentNullException: either rowNumberFont, playerNameFont, or scoreFont is NULL.
     constructor(int x, int y, int selectedIndex, int numberOfRows, int verticalSpacing, int indexXPosition,
     Font rowNumberFont, int playerNameXPosition, Font playerNameFont, int scoreXPosition, Font scoreFont,
-    MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
+    MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
 
         if(rowNumberFont = NULL)
             throw ArgumentNullException("rowNumberFont")
@@ -19,8 +19,6 @@ Public
         else if(scoreFont = NULL)
             throw ArgumentNullException("scoreFont")
         end if
-
-        self->selectedIndex := selectedIndex
 
         for(i := 0 to numberOfRows)
             int rowYPosition := y + (i * verticalSpacing)
