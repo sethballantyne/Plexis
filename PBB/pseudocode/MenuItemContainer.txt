@@ -30,8 +30,11 @@ private
 
 public
     
-    constructor MenuItemContainer()
-
+    constructor MenuItemContainer() : SelectableControl(0, 0, 0)
+        
+        -- a container is always selected; if it's not, then it won't receive keyboard and mouse states from
+        -- the scene it belongs to. 
+        self->IsSelected := true
         try
             menuItemCursor := ResourceManager::GetSurface("menu_cursor")
         catch
