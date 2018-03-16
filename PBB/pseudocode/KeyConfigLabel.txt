@@ -127,7 +127,7 @@ Public
     -- System::ArgumentException: optionsKey evaluates to String::Empty, or optionsKey evaluates to a GameOptions
     -- key that doesn't exist.
     constructor(int x, int y, Font font, int selectedIndex, string optionsKey, MenuItemContainer parentContainer) :
-                ContainerControl(parentContainer, selectedIndex)
+                ContainerControl(x, y, parentContainer, selectedIndex)
 
         if(optionKey = NULL)
             throw ArgumentNullException("optionsKey")
