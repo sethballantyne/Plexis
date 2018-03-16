@@ -8,7 +8,7 @@ Private
 
 Public
     constructor(int x, int y, string font, string trueCaption, string falseCaption, 
-                int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : ContainerControl(parentContainer, selectedIndex)
+                int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
 
         if(font = NULL)
             throw ArgumentNullException("font")
@@ -35,7 +35,6 @@ Public
         captions[1] := trueCaption
 
         self->optionsKey := optionsKey
-        self->ParentContainer := parentContainer
 
          -- the caption passed is merely a default. When the scene is displayed, the control
          -- will query GameOptions and update the labels text to reflect the value of the setting
