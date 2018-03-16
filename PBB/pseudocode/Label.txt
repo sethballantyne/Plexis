@@ -1,9 +1,7 @@
 -- A non-interactive, static string of text that's displayed in a scene. 
--- Grossly incomplete
-
 class Label inherits Control
 private
-    Font labelFont := NULL
+    Font font := NULL
     string text := NULL
 public
     constructor Label(int x, int y, string font, string text)
