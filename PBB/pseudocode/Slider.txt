@@ -1,0 +1,104 @@
+class Slider inherits CotainerControl
+private
+    double minimumValue
+    double maximumValue
+    double stepValue
+    double currentValue
+
+    int trackEndXPosition
+
+    -- position on the Y axis the slider starts rendering from.
+    -- the position passed to the constructor is for the track.
+    -- this value should be equal to Position.Y - (sliderHeight / 2).
+    int sliderYStartPosition
+    int sliderYFinishPosition
+
+    -- height of the slider in pixels.
+    int sliderHeight = 12;
+    function Decrement()
+        if(currentValue > minimumValue)
+            currentValue -= stepValue
+            if(currentValue < minimumValue)
+                currentValue := minimumValue
+            end if
+
+            GameOptions::SetValue(self->optionsKey, self->currentValue)
+        end if
+    end function
+
+    function Increment()
+        if(currentValue < maximumValue)
+            currentValue += stepValue
+            if(currentValue > maximumValue)
+                currentValue := maximumValue
+            end if
+
+            GameOptions::SetValue(self->optionsKey, self->currentValue)
+        end if
+    end function
+public
+    constructor(int x, int y, uint width, int selectedIndex, double minimum, double maximum, double step, string optionsKey,
+                MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
+         
+         if(minimumValue >= maximumValue)
+            throw ArgumentException("minimum is greater than or equal to maximum")
+         else if(step > maximumValue)
+            throw ArgumentException("step is greater than maximum")
+         end if
+
+        minimumValue := minimum
+        maximumValue := maximum
+        stepValue := step
+
+        self->trackEndXPosition := x + width
+        self->sliderYPosition := y - (sliderHeight / 2)
+        self->sliderYFinishPosition := y + (sliderHeight / 2)
+
+    end constructor
+    
+    function ReceiveSceneArgs(object[] sceneArgs)
+        static bool firstRun := true
+        try
+            if(firstRun)
+                self->currentValue := GameOptions::GetValue(self->optionsKey, self->minimumValue)
+                firstRun := false
+            end if
+        catch
+        end try
+    end function
+
+    function Render()
+        -- track
+        Video::DrawLine(Color::White, self->Position->X, self->Position->Y, self->trackEndXPosition, self->Position->Y)
+        Video::DrawLine(Color::FromArgb(0, 127, 127, 127), self->Postion->X, self->Position->Y, 
+                        self->trackEndXPosition, self->Postion->X)
+
+        double progress = currentValue / maximumvalue;
+        int pixelOffset = (int)Math::Truncate(progress * self->trackWidth)
+
+        -- slider
+        for(int i := pixelOffset - 3 to pixelOffset + 2)
+            Video::DrawLine(Color::White, self->Position->X + i, self->sliderYStartPosition, 
+                            self->Position->X + i, self->sliderYFinishPosition)
+        end for
+
+        -- slider shadow
+        int shadowXPosition := self->Position->X + (pixelOffset + 3)
+        Video::DrawLine(Color::FromArgb(0, 127, 127, 127), shadowXPosition, self->sliderYStartPosition,
+                        shadowXPosition, self->sliderYFinishPosition)
+
+    end function
+
+    function Update(Keys keyboardState, Mouse mouseState)
+        if(keyboardState = NULL)
+            throw ArgumentNullException("keyboardState")
+        end if
+
+        if(keyboardState->KeyDown(DIK_LEFT))
+            self->Decrement()
+        else if(keyboardState->KeyDown(DIK_RIGHT))
+            self->Increment()
+        end if
+    end function
+
+end class
