@@ -150,8 +150,8 @@ Public
     function ReceiveSceneArgs(object[] sceneArgs)
         static bool firstRun := true
 
-        -- there's no arguments passed to the label, but if it's receiving arguments
-        -- then it's about to be displayed, so grab the value associated with the key
+        -- KeyConfigLabels don't require the scene to pass it any arguments, but when this function is called
+        -- it means the control is about to be displayed, so grab the value associated with the key
         -- contained within optionsKey. We only need to do this the first time it's displayed
         -- because it'll be kept uptodate each time the user presses a key from then on. 
         if(firstRun)
