@@ -2,15 +2,18 @@ class Line
 Private
     Point from
     Point to
+    System::Drawing::Color colour
 Public
-    constructor(Point from, Point To)
+    constructor(System::Drawing::Color colour, Point from, Point To)
         self->from := from
         self->to := to
+        self->colour := colour
     end constructor
 
-    constructor(int fromX, int fromY, int toX, int toY)
+    constructor(System::Drawing::Color colour, int fromX, int fromY, int toX, int toY)
         self->from := new Point(fromX, fromY)
         self->to := new Point(toX, toY)
+        self->colour := colour
     end constructor
 
     property Point From
@@ -25,5 +28,12 @@ Public
             return self->to
         set
             self->to := value
+    end property
+
+    property System::Drawing::Color Colour
+        get
+            return self->colour
+        set 
+            self->colour := value
     end property
 end class

@@ -616,7 +616,7 @@ Private
     end function
 
     -- Bresenham line algorithm
-    function DrawLine(System::Drawing::Color colour, Line line, LPDDSURFACEDESC2 surfaceDescription)
+    function DrawLine(Line line, LPDDSURFACEDESC2 surfaceDescription)
        
         -- difference between both points on the X axis
         int deltaX
@@ -666,7 +666,7 @@ Private
             error := dy2 - deltaX
 
             for(i := 0; i <= deltaX; i++)
-                uint colour := RGBTo32Bit(0, colour->R, colour->G, colour->B)
+                uint colour := RGBTo32Bit(0, line->Colour->R, line->Colour->G, line->Colour->B)
                 video_buffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] := colour
 
                 if(error >= 0)
@@ -683,7 +683,7 @@ Private
             error := dx2 - deltaY
 
             for(i := 0; i <= deltaY; i++)
-                uint colour := RGBTo32Bit(0, colour->R, colour->G, colour->B)
+                uint colour := RGBTo32Bit(0, line->Colour->R, line->Colour->G, line->Colour->B)
                 video_buffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] := colour
 
                 if(error >= 0)
@@ -835,7 +835,7 @@ Public
     -- System::ArgumentException: the coords of one of the lines in lines is invalid, or
     --                            lines is an empty array.
     -- System::ArgumentNullException: lines is NULL.
-    function DrawLines(System::Drawing::Color colour, Line[] lines)
+    function DrawLines(Line[] lines)
         if(lines = NULL)
             throw System::ArgumentNullException("lines is NULL")
         else if(lines->Count = 0)
@@ -875,7 +875,7 @@ Public
             for(i := 0 to lines->Count)
                 try
                     Line clippedLine := self->ClipLine(line, ddSD)
-                    self->DrawLine(colour, line, ddSD)
+                    self->DrawLine(line, ddSD)
                 catch
                     throw
                 end try
