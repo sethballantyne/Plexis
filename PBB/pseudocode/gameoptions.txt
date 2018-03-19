@@ -37,6 +37,17 @@ Public
 
         return value
 
+    end function
+    
+    function double GetValue(string id, double default)
+        double value
+        try
+            value := Convert::ToDouble(gameOptions[id])
+        catch
+            value := default
+        end try
+
+        return value
     end function 
 
     function Save()
@@ -58,6 +69,10 @@ Public
     end function
 
     function SetValue(string id, int value)
+        gameOptions[id] := Convert.ToString(value)
+    end function
+
+    function SetValue(string id, double value)
         gameOptions[id] := Convert.ToString(value)
     end function
 end class
