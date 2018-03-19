@@ -5,16 +5,11 @@ private
     double stepValue
     double currentValue
 
-    int trackEndXPosition
-
-    -- position on the Y axis the slider starts rendering from.
-    -- the position passed to the constructor is for the track.
-    -- this value should be equal to Position.Y - (sliderHeight / 2).
-    int sliderYStartPosition
-    int sliderYFinishPosition
-
     -- height of the slider in pixels.
-    int sliderHeight = 12;
+    --int sliderHeight = 12;
+
+    Lines[2] trackLines
+    Lines[6] sliderLines
     function Decrement()
         if(currentValue > minimumValue)
             currentValue -= stepValue
@@ -50,10 +45,17 @@ public
         maximumValue := maximum
         stepValue := step
 
-        self->trackEndXPosition := x + width
-        self->sliderYPosition := y - (sliderHeight / 2)
-        self->sliderYFinishPosition := y + (sliderHeight / 2)
+        -- track
+        trackLines[0] := new Line(Color::White, new Point(x, y), new Point(x + width, y))
+        trackLines[1] := new Line(Color::FromArgb(0, 127, 127, 127), new Point(x, y), new Point(x + width, y))
 
+        -- x is a placeholder, it'll be updated to the correct value when the slider is rendered.
+        for(i := 0; i < sliderLines->Count; i++)
+            sliderLines[i] := new Line(Colour::White, new Point(x, y - (sliderHeight / 2)), new Point(x, y + (sliderHeight / 2))
+        end for
+        
+        -- slider shadow
+        sliderLines[sliderLines->Count - 1]->Colour := Color::FromArgb(0, 83, 83, 83)
     end constructor
     
     function ReceiveSceneArgs(object[] sceneArgs)
@@ -68,25 +70,32 @@ public
     end function
 
     function Render()
-        -- track
-        Video::DrawLine(Color::White, self->Position->X, self->Position->Y, self->trackEndXPosition, self->Position->Y)
-        Video::DrawLine(Color::FromArgb(0, 127, 127, 127), self->Postion->X, self->Position->Y, 
-                        self->trackEndXPosition, self->Postion->X)
+        Video::DrawLines(trackLines)
 
-        double progress = currentValue / maximumvalue;
-        int pixelOffset = (int)Math::Truncate(progress * self->trackWidth)
+        double progress = currentValue / maximumvalue
+        -- subtracting 3 because the slider is 6 pixels wide and currentValue is the middle of the slider.
+        int pixelOffset = (int)Math::Truncate(progress * self->trackWidth) - (sliderLines->Count / 2)
 
         -- slider
-        for(int i := pixelOffset - 3 to pixelOffset + 2)
-            Video::DrawLine(Color::White, self->Position->X + i, self->sliderYStartPosition, 
-                            self->Position->X + i, self->sliderYFinishPosition)
+        -- pixelOffset -= 3; 
+        --for(int i := pixelOffset - 3 to pixelOffset + 2)
+        --    Video::DrawLine(Color::White, self->Position->X + i, self->sliderYStartPosition, 
+        --                    self->Position->X + i, self->sliderYFinishPosition)
+        --end for
+        --pixelOffset -= 3;
+     
+        for(i := 0; i < sliderLines->Count - 1; i++)
+            sliderLines[i]->From->X := self->Position->X + pixelOffset
+            sliderLines[i]->To->X := sliderLines[i]->From->X
+
+            pixelOffset++
         end for
 
         -- slider shadow
-        int shadowXPosition := self->Position->X + (pixelOffset + 3)
-        Video::DrawLine(Color::FromArgb(0, 127, 127, 127), shadowXPosition, self->sliderYStartPosition,
-                        shadowXPosition, self->sliderYFinishPosition)
-
+        sliderLines[sliderLines->Count - 1]->From->X := self->Position->X + (sliderLines->Count / 2)
+        sliderLines[sliderLines->Count - 1]->To->X := sliderLines[sliderLines->Count - 1]->From->X
+        
+        Video::DrawLines(sliderLines)
     end function
 
     function Update(Keys keyboardState, Mouse mouseState)
