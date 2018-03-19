@@ -405,6 +405,299 @@ Private
         return surface
     end function
 
+    -- Clips the specified line if either of its points are located off screen, so Video::DrawLine() 
+    -- doesn't attempt to access invalid regions of memory when drawing the line.
+    -- Ecxeptions:
+    -- System::ArgumentException: both lines From and To Points are the same, or
+    --                            the function failed to clip the line due to a primordial flux in the 
+    --                            hyperphonic modulator.
+    function Line ClipLine(Line line, LPDDSURFACEDESC2 surfaceDescription)
+
+        $define CLIPCODE_CENTER     0
+        $define CLIPCODE_WEST       1
+        $define CLIPCODE_EAST       2
+        $define CLIPCODE_SOUTH      4
+        $define CLIPCODE_SOUTHWEST  5
+        $define CLIPCODE_SOUTHEAST  6
+        $define CLIPCODE_NORTH      8
+        $define CLIPCODE_NORTHWEST  9
+        $define CLIPCODE_NORTHEAST 10
+        
+        new Rectangle clipRect(0, 0, surfaceDescription->dwWidth, surfaceDescription->dwHeight)
+
+        int fromPointCode := 0
+        int toPointCode := 0
+
+        Point tempFromPoint := line->From;
+        Point tempToPoin := line->To;
+
+        if(line->From->Y < 0)
+            fromPointCode |= CLIPCODE_NORTH
+        else if(line->From->Y > clipRect->Height)
+            fromPointCode |= CLIPCODE_SOUTH
+        end if
+
+        if(line->From->X < 0)
+            fromPointCode |= CLIPCODE_WEST
+        else if(line->From->X > clipRect->Width)
+            fromPointCode |= CLIPCODE_EAST
+        end if
+
+        if(line->To->Y < 0)
+            toPointCode |= CLIPCODE_NORTH
+        else if(line->To->Y > clipRect->Height)
+            toPointCode |= CLIPCODE_SOUTH
+        end if
+
+        if(line->To->X < 0)
+            toPointCode |= CLIPCODE_WEST
+        else if(line->To->X > clipRect->Width)
+            toPointCode |= CLIPCODE_EAST
+        end if
+
+        
+        if(fromPointCode & toPointCode)
+            -- either both points match or the line is completely off screen.
+            throw ArgumentException("both points match or the line is completely off screen."")
+        else if(fromPointCode == 0 && toPointCode == 0)
+            -- neither point is clipped by the bounding rect, so there's nothing more to do.
+            return line
+        end if
+
+        -- determine the end clip point for the first point
+        switch(fromPointCode)
+            CLIPCODE_NORTH:
+                tempFromPoint->Y := clipRect->Top
+                tempFromPoint->X := line->From->X + 0.5 + (clipRect->Y - line->From->Y) * (line->To->X - line->From->X) / (line->To->Y - line->From->Y)
+            
+            CLIPCODE_SOUTH:
+                tempFromPoint->Y := clipRect->Bottom
+                tempFromPoint->X := line->From->X + 0.5 + (clipRect->Bottom - line->From->Y) * (line->To->X - line->From->X) / (line->To->Y - line->From->Y)
+            
+            CLIPCODE_WEST:
+                tempFromPoint->X := clipRect->Left
+                tempFromPoint->Y := line->From->Y + 0.5 + (clipRect->Left - line->From->X)*(line->To->Y - line->From->Y) / (line->To->X - line->From->X)
+        
+
+            CLIPCODE_EAST:
+                tempFromPoint->X := clipRect->Right
+                tempFromPoint->Y := line->From->Y + 0.5 + (clipRect->Right - line->From->X)*(line->To->Y - line->From->Y) / (line->To->X - line->From->X)
+
+            -- these cases are more complex, must compute 2 intersections
+            CLIPCODE_NORTHEAST:
+                -- north hline intersection
+                tempFromPoint->Y := clipRect->Y
+                tempFromPoint->X := line->From->X + 0.5 + (clipRect->Y - line->From->Y)*(line->To->X - line->From->X) / (line->To->Y - line->From->Y)
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempFromPoint->X < clipRect->X || tempFromPoint->X > clipRect->Right)
+                    -- east vline intersection
+                    tempFromPoint->X := clipRect->Right
+                    tempFromPoint->Y := line->From->Y + 0.5 + (clipRect->Right - line->From->X)*(line->To->Y - line->From->Y) / (line->To->X - line->From->X)
+                end if 
+
+            CLIPCODE_SOUTHEAST:
+                -- south hline intersection
+                tempFromPoint->Y := clipRect->Bottom;
+                tempFromPoint->X := line->From->X + 0.5 + (clipRect->Bottom - line->From->Y)*(line->To->X - line->From->X) / (line->To->Y - line->From->Y)
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempFromPoint->X < clipRect->X || tempFromPoint->X > clipRect->Right)
+                    -- east vline intersection
+                    tempFromPoint->X := clipRect->Right
+                    tempFromPoint->Y := line->From->Y + 0.5 + (clipRect->Right - line->From->X)*(line->To->Y - line->From->Y) / (line->To->X - line->From->X
+                end if
+
+            CLIPCODE_NORTHWEST:
+                -- north hline intersection
+                tempFromPoint->Y := clipRect->Y
+                tempFromPoint->X := line->From->X + 0.5 + (clipRect->Y - line->From->Y)*(line->To->X - line->From->X) / (line->To->Y - line->From->Y)
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempFromPoint->X < clipRect->X || tempFromPoint->X > clipRect->Right)
+                    tempFromPoint->X := clipRect->X
+                    tempFromPoint->Y := line->From->Y + 0.5 + (clipRect->X - line->From->X)*(line->To->Y - line->From->Y) / (line->To->X - line->From->X)
+                end if
+
+            CLIPCODE_SOUTHWEST:
+                -- south hline intersection
+                tempFromPoint->Y := clipRect->Bottom
+                tempFromPoint->X := line->From->X + 0.5 + (clipRect->Bottom - line->From->Y)*(line->To->X - line->From->X) / (line->To->Y - line->From->Y)
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempFromPoint->X < clipRect->X || tempFromPoint->X > clipRect->Right)
+                    tempFromPoint->X := clipRect->X
+                    tempFromPoint->Y := line->From->Y + 0.5 + (clipRect->X - line->From->X)*(line->To->Y - line->From->Y) / (line->To->X - line->From->X)
+                end if
+
+            default:
+                break;
+        end switch
+
+        -- determine clip point for p2
+        switch (toPointCode)
+    
+            CLIPCODE_NORTH:
+                tempToPoint->Y := clipRect->Y
+                tempToPoint->X := line->To->X + (clipRect->Y - line->To->Y)*(line->From->X - line->To->X) / (line->From->Y - line->To->Y)
+
+            CLIPCODE_SOUTH:
+                tempToPoint->Y := clipRect->Bottom
+                tempToPoint->X := line->To->X + (clipRect->Bottom - line->To->Y)*(line->From->X - line->To->X) / (line->From->Y - line->To->Y)
+
+            CLIPCODE_WEST:
+                tempToPoint->X := clipRect->X
+                tempToPoint->Y := line->To->Y + (clipRect->X - line->To->X)*(line->From->Y - line->To->Y) / (line->From->X - line->To->X)
+
+            CLIPCODE_EAST:
+                tempToPoint->X := clipRect->Right
+                tempToPoint->Y := line->To->Y + (clipRect->Right - line->To->X)*(line->From->Y - line->To->Y) / (line->From->X - line->To->X)
+
+            -- these cases are more complex, must compute 2 intersections
+            CLIPCODE_NORTHEAST:
+                -- north hline intersection
+                tempToPoint->Y := clipRect->Y
+                tempToPoint->X := line->To->X + 0.5 + (clipRect->Y - line->To->Y)*(line->From->X - line->To->X) / (line->From->Y - line->To->Y);
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempToPoint->X < clipRect->X || tempToPoint->X > clipRect->Right)
+                    -- east vline intersection
+                    tempToPoint->X := clipRect->Right
+                    tempToPoint->Y := line->To->Y + 0.5 + (clipRect->Right - line->To->X)*(line->From->Y - line->To->Y) / (line->From->X - line->To->X)
+                end if
+
+            CLIPCODE_SOUTHEAST:
+                -- south hline intersection
+                tempToPoint->Y := clipRect->Bottom
+                tempToPoint->X := line->To->X + 0.5 + (clipRect->Bottom - line->To->Y)*(line->From->X - line->To->X) / (line->From->Y - line->To->Y)
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempToPoint->X < clipRect->X || tempToPoint->X > clipRect->Right)
+                    -- east vline intersection
+                    tempToPoint->X := clipRect->Right
+                    tempToPoint->Y := line->To->Y + 0.5 + (clipRect->Right - line->To->X)*(line->From->Y - line->To->Y) / (line->From->X - line->To->X)
+                end if
+
+            CLIPCODE_NORTHWEST:
+                -- north hline intersection
+                tempToPoint->Y := clipRect->Y
+                tempToPoint->X := line->To->X + 0.5 + (clipRect->Y - line->To->Y)*(line->From->X - line->To->X) / (line->From->Y - line->To->Y)
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempToPoint->X < clipRect->X || tempToPoint->X > clipRect->Right)
+                    tempToPoint->X := clipRect->X
+                    tempToPoint->Y := line->To->Y + 0.5 + (clipRect->X - line->To->X)*(line->From->Y - line->To->Y) / (line->From->X - line->To->X)
+                end if
+
+            CLIPCODE_SOUTHWEST:
+                -- south hline intersection
+                tempToPoint->Y := clipRect->Bottom
+                tempToPoint->X := line->To->X + 0.5 + (clipRect->Bottom - line->To->Y)*(line->From->X - line->To->X) / (line->From->Y - line->To->Y)
+
+                -- test if intersection is valid, of so then done, else compute next
+                if (tempToPoint->X < clipRect->X || tempToPoint->X > clipRect->Right)
+                    tempToPoint->X := clipRect->X
+                    tempToPoint->Y := line->To->Y + 0.5 + (clipRect->X - line->To->X)*(line->From->Y - line->To->Y) / (line->From->X - line->To->X)
+                end if
+            default:
+                break
+        end switch
+
+        -- verify they've been clipped. 
+        if ((tempFromPoint->X < clipRect->X) || (tempFromPoint->X > clipRect->Right) ||
+            (tempFromPoint->Y < clipRect->Y) || (tempFromPoint->Y > clipRect->Bottom) ||
+            (tempToPoint->X < clipRect->X) || (tempToPoint->X > clipRect->Right) ||
+            (tempToPoint->Y < clipRect->Y) || (tempToPoint->Y > clipRect->Bottom))
+            // nope. 
+            throw ArgumentException("Failed to clip the line, so have fun with that.")
+        end if 
+
+        return new Line(tempFromPoint, tempToPoint)
+    end function
+
+    -- Bresenham line algorithm
+    function DrawLine(System::Drawing::Color colour, Line line, LPDDSURFACEDESC2 surfaceDescription)
+       
+        -- difference between both points on the X axis
+        int deltaX
+
+        -- difference between both points on the Y axis
+        int deltaY
+
+        int dx2
+        int dy2
+
+        -- the number of pixels to move along the X axis when drawing
+        int xIncrementAmount 
+
+        -- the number of pixels to move along the Y axis when drawing
+        int yIncrementAmount
+
+        int error
+
+        UINT *video_buffer := (UINT *) surfaceDescription->lpSurface
+        int pitch := surfaceDescription->lPitch >> 2
+
+        deltaX := line->To->X - line->From->X
+        deltaY := line->To->Y - line->From->Y
+
+        -- test fo' the slopes angle, yo
+        if(delta >= 0)
+            xIncrementAmount := 1
+        else
+            xIncrementAmount := -1
+            deltaX := -deltaX
+        end if
+
+        if(deltaY >= 0)
+            yIncrementAmount := 1
+        else 
+            yIncrementAmount := -1
+            deltaY := -deltaY
+        end if
+
+        int dx2 := deltaX << 1
+        int dy2 := deltaY << 1
+
+        int xCoordinate := line->From->X
+        int yCoordinate := line->From->Y
+
+        if(deltaX > deltaY)
+            error := dy2 - deltaX
+
+            for(i := 0; i <= deltaX; i++)
+                uint colour := RGBTo32Bit(0, colour->R, colour->G, colour->B)
+                video_buffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] := colour
+
+                if(error >= 0)
+                    error -= dx2
+
+                    yCoordinate += yIncrementAmount
+                end if
+
+                error += dy2
+
+                xCoordinate += xIncrementAmount
+            end for
+        else
+            error := dx2 - deltaY
+
+            for(i := 0; i <= deltaY; i++)
+                uint colour := RGBTo32Bit(0, colour->R, colour->G, colour->B)
+                video_buffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] := colour
+
+                if(error >= 0)
+                    error -= dy2
+                    xCoordinate += xIncrementAmount
+                end if
+
+                error += dx2
+
+                yCoordinate += yIncrementAmount
+            end for
+        end if
+    end function
+     
 Public
     function void Initialise() : static
         colourKey := RGBTo32Bit(255, 255, 0, 255)
@@ -537,6 +830,59 @@ Public
 
     end function
 
+    -- Draws one or more clipped lines using the Bresenham line algorithm.
+    -- Exceptions: 
+    -- System::ArgumentException: the coords of one of the lines in lines is invalid, or
+    --                            lines is an empty array.
+    -- System::ArgumentNullException: lines is NULL.
+    function DrawLines(System::Drawing::Color colour, Line[] lines)
+        if(lines = NULL)
+            throw System::ArgumentNullException("lines is NULL")
+        else if(lines->Count = 0)
+            throw System::ArgumentException("lines is an empty array")
+        end if
+
+        DDSURFACEDESC2 ddSD
+        SecureZeroMemory(&ddSD, sizeof(ddSD))
+        ddSD.dwSize := sizeof(DDSURFACEDESC2)
+
+        HRESULT result := lpDDSSecondarySurface->Lock(NULL, &ddSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL)
+        if(result != DD_OK)
+            switch(result)
+                DDERR_INVALIDOBJECT:
+                    throw DirectDrawInvalidObjectException("IDirectDrawSurface7::Lock: ")
+
+                DDERR_INVALIDPARAMS:
+                    throw DirectDrawInvalidParametersException("IDirectDrawSurface7::Lock: ")
+
+                DDERR_OUTOFMEMORY:
+                    throw System::OutOfMemoryException("IDirectDrawSurface7::Lock: ")
+
+                DDERR_SURFACEBUSY:
+                    throw DirectDrawSurfaceBusyException("IDirectDrawSurface7::Lock: ")
+
+                DDERR_SURFACELOST:
+                    throw DirectDrawSurfaceLostException("IDirectDrawSurface7::Lock: ")
+
+                DDERR_WASSTILLDRAWING:
+                    throw DirectDrawWasStillDrawingException("IDirectDrawSurface7::Lock: ")
+
+                default:
+                    throw System::Runtime::InteropServices::COMException("IDirectDrawSurface7::Lock failed, yo!")
+            end switch
+        else
+
+            for(i := 0 to lines->Count)
+                try
+                    Line clippedLine := self->ClipLine(line, ddSD)
+                    self->DrawLine(colour, line, ddSD)
+                catch
+                    throw
+                end try
+            end for
+
+    end function
+
     function void Flip()
         -- DDFLIP_WAIT ensures it'll keep trying to flip until successful if the HAL returns
         -- DDERR_WASSTILLDRAWING
@@ -661,31 +1007,31 @@ Public
         if(result != DD_OK)
             switch(result)
                     DDERR_GENERIC:
-                        throw DirectDrawGenericException("RestoreAllSurfaces: ")
+                        throw DirectDrawGenericException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_IMPLICITLYCREATED:
-                        throw DirectDrawImplicitlyCreatedException("RestoreAllSurfaces: ")
+                        throw DirectDrawImplicitlyCreatedException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_INCOMPATIBLEPRIMARY:
-                        throw DirectDrawIncompatiblePrimarySurfaceException("RestoreAllSurfaces: ")
+                        throw DirectDrawIncompatiblePrimarySurfaceException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_INVALIDOBJECT:
-                        throw DirectDrawInvalidObjectException("RestoreAllSurface: ")
+                        throw DirectDrawInvalidObjectException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_INVALIDPARAMS:
-                        throw DirectDrawInvalidParametersException("RestoreAllSurfaces: ")
+                        throw DirectDrawInvalidParametersException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_NOEXCLUSIVEMODE:
-                        throw DirectDrawNoExclusiveModeException("RestoreAllSurfaces: ")
+                        throw DirectDrawNoExclusiveModeException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_OUTOFMEMORY:
-                        throw System::OutOfMemoryException("RestoreAllSurfaces: ")
+                        throw System::OutOfMemoryException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_UNSUPPORTED:
-                        throw DirectDrawUnsupportedException("RestoreAllSurfaces: ")
+                        throw DirectDrawUnsupportedException("IDirectDraw7::RestoreAllSurfaces: ")
 
                     DDERR_WRONGMODE:
-                        throw DirectDrawWrongModeException("RestoreAllSurfaces: ")
+                        throw DirectDrawWrongModeException("IDirectDraw7::RestoreAllSurfaces: ")
 
                 default:
                     throw System::Runtime::InteropServices::COMException("IDirectDraw7::RestoreAllSurfaces failed.", result)
