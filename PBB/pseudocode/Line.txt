@@ -1,0 +1,29 @@
+class Line
+Private
+    Point from
+    Point to
+Public
+    constructor(Point from, Point To)
+        self->from := from
+        self->to := to
+    end constructor
+
+    constructor(int fromX, int fromY, int toX, int toY)
+        self->from := new Point(fromX, fromY)
+        self->to := new Point(toX, toY)
+    end constructor
+
+    property Point From
+        get
+            return self->from
+        set
+            self->from := value
+    end property
+
+    property Point To
+        get
+            return self->to
+        set
+            self->to := value
+    end property
+end class
