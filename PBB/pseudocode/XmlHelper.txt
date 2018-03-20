@@ -103,3 +103,26 @@ Public
         end try
 
     end function
+
+    function double GetAttributeAsDouble(XElement element, string attribute)
+        if(element = NULL)
+            throw ArgumentNullException("element")
+        else if(attribute = NULL)
+            throw ArgumentNullException("attribute")
+        end if
+
+        if(attribute = String::Empty)
+            throw ArgumentException("attribute")
+        end if
+
+        try
+            string initialValue := GetAttributeValue(element, attribute)
+            double doubleValue := Convert::ToDouble(initialValue)
+
+            return double
+        catch(FormatException)
+            throw new FormatException(String::Format("the {0} attribute contains a non-numeric value.", attribute))
+        catch(OverflowException)
+            throw new OverflowException(String::Format("the attribute {0} contains a value that is less than Double.MinValue or greater than Double.MaxValue.", attribute))
+        end try
+    end function
