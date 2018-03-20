@@ -6,7 +6,7 @@ private
     double currentValue
 
     -- height of the slider in pixels.
-    --int sliderHeight = 12;
+    int sliderHeight = 12;
 
     Lines[2] trackLines
     Lines[6] sliderLines
@@ -35,11 +35,29 @@ public
     constructor(int x, int y, uint width, int selectedIndex, double minimum, double maximum, double step, string optionsKey,
                 MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
          
-         if(minimumValue >= maximumValue)
+        if(optionsKey = NULL)
+            throw ArgumentNullException("optionsKey")
+        else if(opitionsKey = String::Empty)
+            throw ArgumentException("optionsKey")
+        end if
+
+        if(minimum >= maximum)
             throw ArgumentException("minimum is greater than or equal to maximum")
-         else if(step > maximumValue)
+        else if(step > maximum)
             throw ArgumentException("step is greater than maximum")
-         end if
+        else if(minimum > Int32::MaxValue)
+            throw ArgumentException("minimum is greater than Int32::MaxValue")
+        else if(minimum < Int32::MinValue)
+            throw ArgumentException(minimum is less than Int32::MinValue")
+        else if(maximum > Int32::MaxValue)
+            throw ArgumentException("maximum is greater than Int32::MaxValue")
+        else if(maximum < Int32::MinValue)
+            throw ArgumentException("maximum is less than Int32::MinValue")
+        else if(step > Int32::MaxValue)
+            throw ArgumentException("step is greater than Int32::MaxValue")
+        else if(step < Int32::MinValue)
+            throw ArgumentException("step is less than Int32::MinValue")
+        end if
 
         minimumValue := minimum
         maximumValue := maximum
