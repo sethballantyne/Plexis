@@ -156,6 +156,30 @@ Private
             throw
         end try
     end function
+
+    function Slider ParseSlider(XElement element, MenuItemContainer parentContainer)
+        if(element = NULL)
+            throw ArgumentNullException("element")
+        else if(parentContainer = NULL)
+            throw ArgumentNullException("parentContainer")
+        end if
+
+        try
+            int x := XmlHelper::GetAttributeValueAsInt32(element, "x")
+            int y := XmlHelper::GetAttributeValueAsInt32(element, "y")
+            uint width := XmlHelper::GetAttributeValueAsInt32(element, "width")
+            int selectedIndex := XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex")
+            double minimum := XmlHelper::GetAttributeAsDouble(element, "minimum")
+            double maximum := XmlHelper::GetAttributeAsDouble(element, "maximum")
+            double stepValue := XmlHelper::GetAttributeAsDouble(element, "stepValue")
+            string optionsKey := XmlHelper::GetAttribute(element, "optionsKey")
+    
+            return new Slider(x, y, width, selectedIndex, minimum, maximum, stepValue, optionsKey, parentContainer)
+        catch
+            throw
+        end try
+    end function
+
 Public
     -- Parses the XML file containing scene information, returning an array of Scenes based on the information read.
     function Scene[] Read(XDocument xml)
@@ -239,6 +263,8 @@ Public
                                                 KeyConfigLabel keyConfigLabel := ParseKeyConfigLabel(containerItemTag, menuItmContainer)
                                             else if(typeAttribute->Value = "toggleLabel")
                                                 ToggleLabel toggleLabel := ParseToggleLabel(containerItemTag, menuItemContainer)
+                                            else if(typeAttribute->Value = "toggleLabel")
+                                                Slider slider := ParseSlider(containerItemTag, menuItemContainer)
                                             end if
                                         catch
                                              Log("Failed to read a containerItem element for the scene {0}. {1}", sceneID->Value, e->Message)
