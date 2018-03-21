@@ -1,15 +1,36 @@
+-- a basic version of the Track Bar found in Windows. 
 class Slider inherits CotainerControl
 private
+    -- the lower bound of currentValue.
     double minimumValue
+
+    -- the upper bound of currentValue. 
     double maximumValue
+
+    -- The amount that's added or subtracted from currentValue, based on whether the scroll box is 
+    -- being moved to the left (decrease) or right (increase).
     double stepValue
+
+    -- represents the current position of the scroll box on the track.
+    -- This obviously will be <= maximumValue and >= minimumValue at any given time.
     double currentValue
 
-    -- height of the slider in pixels.
-    int sliderHeight = 12;
+    -- Height of the scroll box in pixels. NOT THE TRACK. The scroll box; that would be silly. 
+    --
+    -- A 12 pixel-high track. Geeeeeeeeeze.
+    int scrollBoxHeight := 12
 
-    Lines[2] trackLines
-    Lines[6] sliderLines
+    -- the lines that make up the track that the track box moves along. 
+    Line[2] trackLines
+
+    -- the lines that make up the track box when rendered.
+    Line[6] trackBoxLines
+
+    -- Decreases the currentValue by the step amount specified at construction and updates 
+    -- the value of the controls option key with the new value. 
+    -- This also causes the controls track box to slide to the left if currentValue
+    -- was greater than the controls minimum value before Decrement() was called; the change will be displayed
+    -- the next time Slider::Render() is executed. 
     function Decrement()
         if(currentValue > minimumValue)
             currentValue -= stepValue
@@ -21,6 +42,11 @@ private
         end if
     end function
 
+    -- Increases the currentValue by the step amount specified at construction and updates 
+    -- the value of the controls option key with the new value. 
+    -- This also causes the controls track box to slide to the right if currentValue
+    -- was less than the controls maximum value before Increment() was called; the change will be displayed
+    -- the next time Slider::Render() is executed. 
     function Increment()
         if(currentValue < maximumValue)
             currentValue += stepValue
@@ -32,6 +58,25 @@ private
         end if
     end function
 public
+    -- Initialises the slider control with the values read from the XML file.
+    -- Arguments:
+    -- x: the screen coordinate of the control on the x axis.
+    -- y: the screen coordinate of the control on the y axis.
+    -- width: the width (length) of the track in pixels.
+    -- selectedIndex: the position of the control within its parent MenuItemContainer instance. 
+    --                this specifies in which order the control is selected, not rendered or placed.
+    -- minimum: the lower limit of the sliders range.
+    -- maximum: the upper limit of the sliders range.
+    -- step: the amount to add or subtract from the controls current value when the track box is moved.
+    -- optionsKey: the key for the value in GameOptions that has to be updated whenever the track box is moved.
+    -- parentContainer: the instance of MenuItemContainer the control belongs to.
+    -- Exceptions:
+    -- System::ArgumentNullException: optionsKey is NULL.
+    -- System:ArgumentException: optionsKey evaluates to String::Empty, or
+    --                           the value of minimum is greater than maximum, or
+    --                           the value of step is greater than maximum, or
+    --                           minimum, maximum or step are greater than Int32::MaxValue, or
+    --                           minimum, maximum, or step are less than Int32::MinValue.
     constructor(int x, int y, uint width, int selectedIndex, double minimum, double maximum, double step, string optionsKey,
                 MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
          
@@ -76,6 +121,10 @@ public
         sliderLines[sliderLines->Count - 1]->Colour := Color::FromArgb(0, 83, 83, 83)
     end constructor
     
+    -- Called when the controls parent Scene has been activated by the scene manager.
+    -- The slider control doesn't have any arguments to receive but since it's called only
+    -- when the scene has been activated, it's a good place to update the control during 
+    -- runtime so it's displaying the correct information when it's displayed. 
     function ReceiveSceneArgs(object[] sceneArgs)
         static bool firstRun := true
         try
@@ -86,7 +135,8 @@ public
         catch
         end try
     end function
-
+    
+    -- Draws the control to the backbuffer.
     function Render()
         Video::DrawLines(trackLines)
 
@@ -116,6 +166,11 @@ public
         Video::DrawLines(sliderLines)
     end function
 
+    -- Polls the keyboard, moving the track box to the left or right if the relevant key is pressed. 
+    -- Exceptions:
+    -- ArgumentNullException: keyboardState is NULL.
+    -- Remarks:
+    -- Apart from GameView, the mouse isn't used by controls hence why it's not checked for a null value.
     function Update(Keys keyboardState, Mouse mouseState)
         if(keyboardState = NULL)
             throw ArgumentNullException("keyboardState")
