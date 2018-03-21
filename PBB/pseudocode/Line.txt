@@ -1,21 +1,40 @@
+-- Stores two points and a colour that represent the position, length and colour of a line.
 class Line
 Private
+    -- the lines starting position.
     Point from
+
+    -- the lines finishing position.
     Point to
+    
+    -- the lines colour. Stick to facebook if I really needed to explain this.
     System::Drawing::Color colour
 Public
+    -- Initialises a new instance of the Line class with the specified location and colour.
+    -- Arguments:
+    -- colour: the lines colour.. derp derp derp.
+    -- from: the lines starting point.
+    -- to: the lines finishing point.
     constructor(System::Drawing::Color colour, Point from, Point To)
         self->from := from
         self->to := to
         self->colour := colour
     end constructor
 
+    -- Initialises a new instance of the Line class with the specified location and colour.
+    -- Arguments: 
+    -- colour: the colour of the line. PRO TIP: don't set the colour to the same as the background!
+    -- fromX: the lines starting x coordinate.
+    -- fromY: the lines starting y coordinate.
+    -- toX: the lines finishing x coordinate.
+    -- toY: the lines finishing y coordinate.
     constructor(System::Drawing::Color colour, int fromX, int fromY, int toX, int toY)
         self->from := new Point(fromX, fromY)
         self->to := new Point(toX, toY)
         self->colour := colour
     end constructor
 
+    -- Gets or sets the lines starting coordinates.
     property Point From
         get
             return self->from
@@ -23,6 +42,7 @@ Public
             self->from := value
     end property
 
+    -- Gets or sets the lines finishing coordinates.
     property Point To
         get
             return self->to
@@ -30,6 +50,7 @@ Public
             self->to := value
     end property
 
+    -- Gets or sets the lines colour. Right?! Amazing. 
     property System::Drawing::Color Colour
         get
             return self->colour
