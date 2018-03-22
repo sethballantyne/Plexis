@@ -4,7 +4,8 @@ Private
     -- container the control belongs to.
     MenuItemContainer parentContainer
 Public
-    constructor(int selectedIndex, MenuItemContainer parentContainer) : SelectedControl(x, y, selectedIndex)
+    -- Initialises ContainerControl with the values read from the XML file.
+    constructor(int x, int y, int selectedIndex, MenuItemContainer parentContainer) : SelectedControl(x, y, selectedIndex)
 
         if(parentContainer = NULL)
             throw ArgumentNullException("parentContainer")
