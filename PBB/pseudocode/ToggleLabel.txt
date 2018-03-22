@@ -1,12 +1,45 @@
+-- A label that acts like a toggle switch. When the user presses enter, the label alternates
+-- between the two strings specified in its "trueCaption" and "falseCaption" XML attributes.
+-- When the control alternates between these two values, it automatically updates the setting referenced
+-- by its XML attribute "optionsKey". 
 class ToggleLabel inherits ContainerControl
 Private
+    -- specifies whether the control is currently displaying its falseCaption or trueCaption text.
     bool toggleState := false
+
+    -- the strings used to denote when the control is in a false or true state. 
+    -- false is always the 0th element, true the 1st element.
     string[] captions
+
+    -- the key that references the value to update each time the control is toggled.
     string optionsKey
+
+    -- used to render the controls text.
     Label label
-    object[] receivedArgs := NULL
+
+    -- alternates the controls text between the strings specified in the trueCaption and falseCaption XML attributes.
+    function Toggle()
+        toggleState := !tloggleState
+
+        GameOptions::SetValue(self->optionsKey, (int) toggleValue)
+        self->label->Text := self->captions[(int) toggleState]
+    end function
 
 Public
+    -- Initialises the object using the values read from the XML file.
+    -- ARGUMENTS:
+    -- x: the controls screen position on the x axis.
+    -- y: the controls screen position on the y axis.
+    -- font: the name of the font that's going to render the text.
+    -- trueCaption: the string to display when the control is in a true state.
+    -- falseCaption: the string to display when the control is in a false state.
+    -- selectedIndex: the position of the control within its parent MenuItemContainer instance. 
+    --                this specifies in which order the control is selected, not rendered or placed.
+    -- optionsKey: the key for the value in GameOptions that has to be updated whenever the control is toggled.
+    -- parentContainer: the instance of MenuItemContainer the control belongs to. 
+    -- EXCEPTIONS:
+    -- System::ArgumentNullException: either font, trueCaption, falseCaption or optionsKey are NULL.
+    -- System::ArgumentException: either font, trueCaption, falseCaption or optionsKey evaluate to String::Empty.
     constructor(int x, int y, string font, string trueCaption, string falseCaption, 
                 int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
 
@@ -39,24 +72,21 @@ Public
          -- the caption passed is merely a default. When the scene is displayed, the control
          -- will query GameOptions and update the labels text to reflect the value of the setting
          -- it represents.
-         new self->label(x, y, font, captions[FALSE_CAPTION])
+         new self->label(x, y, font, captions[0])
     end constructor
 
     function ReceiveSceneArgs(object[] sceneArgs)
         self->sceneArgs := sceneArgs
     end function
 
+    -- Renders the controls text to the backbuffer.
     function Render()
         self->label->Render()
     end function
 
-    function Toggle()
-        toggleState = !tloggleState
-
-        GameOptions::SetValue(self->optionsKey, (int) toggleValue)
-        self->label->Text := self->captions[(int) toggleState]
-    end function
-
+    -- Updates the control state, based on the users input. 
+    -- Exceptions:
+    -- System::ArgumentNullException: keyboardState is NULL.
     function Update(Keys keyboardState, Mouse mouseState)
         if(keyboardState = NULL)
             throw ArgumentNullException("keyboardState")
