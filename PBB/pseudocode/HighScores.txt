@@ -3,13 +3,24 @@
 -- both its records in memory and the highscores stored on disk.
 class HighScores : static 
 Private
+    -- Where all the high scores are kept during gameplay. 
+    -- A list is used instead of an array simply so if things change in the future, 
+    -- I don't have to worry about changing the size of the array.
     new List<HighScoreRecord> highScores
+
+    -- fileStream, binaryReader and binaryWriter are released  when Shutdown() is called.
+    -- When this happens, HighScores shouldn't be used until it's reintialised via a call
+    -- to initialise().
     FileStream fileStream
+
+    -- Reads the scores in from the file when Initialise() is called.
     BinaryReader binaryReader
+
+    -- Writes the scores to disk whenever Update() is called.
     BinaryWriter binaryWriter
 Public
     -- Attempts to read the Highscores into memory. This function should only be called once during the life-time of
-    -- of the application. 
+    -- the application. 
     -- Exceptions:
     -- System::ArgumentNullException: filename is NULL.
     -- System::ArgumentException: filename evaluates to String::Empty.
