@@ -1,3 +1,5 @@
+-- represents a single row on the HighscoreTable control.
+
 class HighscoreRow
 Private
     -- displays the score's rank; 1 for 1st, 2 for 2nd, etc.
