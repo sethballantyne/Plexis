@@ -10,7 +10,8 @@ Private
 Public
     -- Exceptions:
     -- System::ArgumentNullException: either rowNumberFont, playerNameFont, or scoreFont are NULL.
-    -- System::ArgumentException: either rowNumberFont, playerNameFont or scoreFont evaluate to String::Empty
+    -- System::ArgumentException: either rowNumberFont, playerNameFont or scoreFont evaluate to String::Empty.
+    -- ResourceNotFoundException: the specified font doesn't exist.
     constructor(string rowNumberFont, Point indexPosition, string playerNameFont, 
                 Point playerNamePosition, string scoreFont, Point scorePosition)
         if(rowNumberFont = NULL)
@@ -29,9 +30,13 @@ Public
             throw ArgumentException("scoreFont")
         end if
 
-        rowIndexLabel := new Label(indexPosition->X, indexPosition->Y, rowNumberFont, "0")
-        scoreLabel := new Label(indexPosition->X, indexPosition->Y, scoreFont, "0")
-        playerNameLabel := new EditableLabel(playerNamePosition->X, playerNamePosition->Y, playerNameFont, 12)
+        try
+            rowIndexLabel := new Label(indexPosition->X, indexPosition->Y, rowNumberFont, "0")
+            scoreLabel := new Label(indexPosition->X, indexPosition->Y, scoreFont, "0")
+            playerNameLabel := new EditableLabel(playerNamePosition->X, playerNamePosition->Y, playerNameFont, 12)
+        catch
+            throw
+        end try
 
     end constructor
 
