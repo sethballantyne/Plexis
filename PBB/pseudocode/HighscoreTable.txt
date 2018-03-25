@@ -7,9 +7,10 @@ Private
     int newHighScore
 Public
     -- Exceptions: 
-    -- System::ArgumentNullException: either rowNumberFont, playerNameFont, or scoreFont is NULL.
+    -- System::ArgumentNullException: either rowNumberFont, playerNameFont, scoreFont or parentContainer is NULL.
+    -- System::ArgumentException: either rowNumberFont, playerNameFont, or scoreFont evaluates to String::Empty.
     constructor(int x, int y, int selectedIndex, int numberOfRows, int verticalSpacing, int indexXPosition,
-    Font rowNumberFont, int playerNameXPosition, Font playerNameFont, int scoreXPosition, Font scoreFont,
+    string rowNumberFont, int playerNameXPosition, string playerNameFont, int scoreXPosition, string scoreFont,
     MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
 
         if(rowNumberFont = NULL)
@@ -18,6 +19,16 @@ Public
             throw ArgumentNullException("playerNameFont")
         else if(scoreFont = NULL)
             throw ArgumentNullException("scoreFont")
+        else if(parentContainer = NULL)
+            throw ArgumentNullException("parentContainer")
+        end if
+
+        if(rowNumberFont = String::Empty)
+            throw ArgumentException("rowNumberFont")
+        else if(playerNameFont = String::Empty)
+            throw ArgumentException("playerNameFont")
+        else if(scoreFont = String::Empty)
+            throw ArgumentException("scoreFont")
         end if
 
         for(i := 0 to numberOfRows)
