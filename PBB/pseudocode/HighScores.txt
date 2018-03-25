@@ -88,6 +88,9 @@ Public
                 BinaryWriter->WriteBytes(highScores[i]->PlayerName->Length)
                 BinaryWriter->WriteUInt32(highScores[i]->Score)
             end for
+        catch
+            throw
+        end try
     end function
 
     -- returns the score belonging to the specified position on the highscore table.
