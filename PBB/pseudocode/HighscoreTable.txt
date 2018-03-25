@@ -1,9 +1,21 @@
+-- Control that displays all the highscores. It can be put into an edit mode so the 
+-- player can enter a username. See HighScoreTable::ReceiveSceneArgs() for details.
 class HighScoreTable inherits ContainerControl
 Private
-    new List<HighscoreRow> rows
-    int rowSpacing
-    bool enabled := false
+    -- each row that makes up the table. A list is being used instead of an array so if the number
+    -- of rows that makes up the table happens to change, I don't have to mess around changing the number of 
+    -- elements. 
+    new List<HighScoreRow> rows
+
+    -- determines whether the control has been put into a state where the player can 
+    -- enter a name for a new highscore.
+    bool editModeEnabled := false
+
+    -- the row that contains the new highscore. This is only used when the player
+    -- has to enter a name to go with a new highscore. 
     int rowBeingEdited
+
+    -- only used in edit mode. It represents the new high score, go figure. 
     int newHighScore
 Public
     -- Exceptions: 
@@ -54,6 +66,9 @@ Public
         end for
     end constructor 
 
+    -- Passing a row index as the first argument and another integer as the second argument
+    -- puts the table into edit mode. The second arg will be assumed to be the score.
+    -- If incorrect params are passed or no params at all, the table will be in "view" mode.
     function ReceiveSceneArgs(object[] args)
         if(args != NULL)
             if(args->Count > 1 && ((args[0] is type(int)) && (args[1] is type(int))))
@@ -62,25 +77,33 @@ Public
                     self->newHighScore := args[1]
 
                     rows[self->rowBeingEdited]->PlayerName->EditModeEnabled := true
-                    self->enabled := true
+                    self->editModeEnabled := true
                 end if
             end if
         end if
     end function
 
-
+    -- Used to process user input when the control is in edit mode. 
+    -- Exceptions:
+    -- System::ArgumentNullException: keyboardState is NULL.
+    -- System::ArgumentOutOfRangeException: the row number is greater than the number of rows
+    --                                      contained within HighScores. (ie, attempting to submit a score for a 11th position when only 10 are supported).
+    -- System::IO::IOException: an unspecified IO error occured while writing to disk.
     function Update(Keys keyboardState, Mouse mouseState)
         if(keyboardState = NULL)
             throw ArgumentNullException("keyboardState")
         end if
 
-        if(enabled)
+        if(editModeEnabled)
             rows[self->rowBeingEdited]->PlayerName->Update(keyboardState, mouseState)
             
             -- possible bug here; will report true if enter is pressed along with other keys
             -- which may not be the intended desire. Make sure to test.
             if(keyboardState->KeyPressed(DIK_ENTER))
                 enabled := false
+
+                -- don't need to set the eitable labels EditModeEnabled property to false
+                -- because it'll be handled in the objects Update() method.
 
                 string newPlayerName := rows[self->rowBeingEdited]->PlayerName->Text
                 HighScores::Update(self->rowBeingEdited, newPlayerName, newHighScore)
@@ -91,6 +114,7 @@ Public
         end if
     end if
 
+    -- Renders the table to the backbuffer.
     function Render()
         for(i := 0 to rows->Count - 1)
             rows[i]->Render()
