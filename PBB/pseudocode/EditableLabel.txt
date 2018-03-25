@@ -1,14 +1,32 @@
+-- EditableLabel is a label control that can be put into an edit mode. When this happens,
+-- the control essentially behaves like a textbox with a single line. The user can type to add or remove
+-- text from the control in real-time. 
 class EditableLabel
 Private
+
+    -- The user can only enter ASCII values within these bounds
     $define KEY_SPACE 32
     $define KEY_TILDE 126
 
+    -- the font used to render the text
     Font font := NULL
+
+    -- index for the text array.
     uint currentPosition := 0
-    int stringLength
+    
+    -- the maximum size the labels string can be.
+    int maxLength
+
+    -- the labels text.
     byte[] text := NULL
+
+    -- determines whether the label is being edited by the user or is in "read only" mode.
     bool editMode := false
 Public
+    -- Exceptions:
+    -- System::ArgumentNullException: font is NULL.
+    -- System::ArgumentException: font evaluates to String::Empty
+    -- ResourceNotFoundException: the specified font doesn't exist within the resource manager.
     constructor(int x, int y, string font, byte length) : Control(x, y)
 
         if(font = NULL)
@@ -19,11 +37,20 @@ Public
             throw ArgumentException("font")
         end if
 
-        self->font = font
-        new text[length]
-        self->stringLength := length
+        try
+            self->font := ResourceManager::GetFont(font)
+
+            new text[length]
+            self->maxLength := length
+        catch
+            throw
+        end try
     end constructor
 
+    -- If the control is in edit mode, Update handles the users keyboard input and modifies
+    -- the controls text accordingly.
+    -- Exceptions:
+    -- System::ArgumentNullException: keyboardState is NULL.
     function void Update(Keys keyboardState, Mouse mouseState)
         if(keyboardState = NULL)
             throw ArgumentNullException("keyboardState")
@@ -57,6 +84,8 @@ Public
         end if
     end function
 
+    -- Renders the labels text to the backbuffer, with the addition of a cursor to the immediate right of it if the
+    -- control is in edit mode. 
     function Render()
         int renderX := 0
 
@@ -74,6 +103,8 @@ Public
         end if
     end function
 
+    -- Gets or sets a boolean value determining whether the control is in edit mode.
+    -- When setting to true, the labels current text is cleared. 
     property bool EditModeEnabled 
         get
             return self->editMode
@@ -85,6 +116,11 @@ Public
             self->editMode := value
     end property
 
+    -- Gets or sets the labels text via a string. When assigning a string, 
+    -- the property verifies the string, making sure it only contains ASCII characters
+    -- within the range of 32 (space) to 126 (tilde). The only exception is 0, which is used internally 
+    -- to represent an empty element within the byte array used to store the ASCII characters. 
+    -- If a character outside of these bounds is encountered, an exception is thrown. 
     property string Text 
         get
             return System::Text::Encoding::ASCII::GetString(text)
@@ -92,14 +128,14 @@ Public
             byte[] byteString := Encoding::ASCII::GetBytes(value)
             int upperBound 
 
-            if(byteString->Count > self->stringLength)
-                upperBound := self->stringLength
+            if(byteString->Count > self->maxLength)
+                upperBound := self->maxLength
             else
                 upperBound := byteString->Count - 1
             end if
              
             for(i := 0 to upperBound)
-                if((byteString[i] < 32 && byteString[i] > 126)) && byteString[i] != 0)
+                if((byteString[i] < KEY_SPACE && byteString[i] > KEY_TILDE)) && byteString[i] != 0)
                         throw ArgumentException("only ASCII values 0, 32 to 126 are accepted.")
                     end if
                 else
