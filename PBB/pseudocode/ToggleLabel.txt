@@ -42,7 +42,7 @@ Public
     -- System::ArgumentException: either font, trueCaption, falseCaption or optionsKey evaluate to String::Empty.
     -- ResourceNotFoundException: the specified font doesn't exist within the resource manager.
     constructor(int x, int y, string font, string trueCaption, string falseCaption, 
-                int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
+                int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : ContainerControl(x, y, selectedIndex, parentContainer)
 
         if(font = NULL)
             throw ArgumentNullException("font")
