@@ -29,8 +29,8 @@ Public
             throw ArgumentException("scoreFont")
         end if
 
-        rowIndexLabel := new Label(indexPosition->X, indexPosition->Y, rowNumberFont)
-        scoreLabel := new Label(indexPosition->X, indexPosition->Y, scoreFont)
+        rowIndexLabel := new Label(indexPosition->X, indexPosition->Y, rowNumberFont, "0")
+        scoreLabel := new Label(indexPosition->X, indexPosition->Y, scoreFont, "0")
         playerNameLabel := new EditableLabel(playerNamePosition->X, playerNamePosition->Y, playerNameFont, 12)
 
     end constructor
