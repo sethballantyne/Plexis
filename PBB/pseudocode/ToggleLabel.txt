@@ -40,6 +40,7 @@ Public
     -- EXCEPTIONS:
     -- System::ArgumentNullException: either font, trueCaption, falseCaption or optionsKey are NULL.
     -- System::ArgumentException: either font, trueCaption, falseCaption or optionsKey evaluate to String::Empty.
+    -- ResourceNotFoundException: the specified font doesn't exist within the resource manager.
     constructor(int x, int y, string font, string trueCaption, string falseCaption, 
                 int selectedIndex, string optionsKey, MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
 
@@ -69,10 +70,14 @@ Public
 
         self->optionsKey := optionsKey
 
-         -- the caption passed is merely a default. When the scene is displayed, the control
-         -- will query GameOptions and update the labels text to reflect the value of the setting
-         -- it represents.
-         new self->label(x, y, font, captions[0])
+        try
+            -- the caption passed is merely a default. When the scene is displayed, the control
+            -- will query GameOptions and update the labels text to reflect the value of the setting
+            -- it represents.
+            new self->label(x, y, font, captions[0])
+        catch
+            throw
+        end try
     end constructor
 
     function ReceiveSceneArgs(object[] sceneArgs)
