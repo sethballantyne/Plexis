@@ -1,3 +1,4 @@
+-- Helper class that retrieves the values of the specified XML attribute.
 class XmlHelper : static
 Private
 Public
@@ -104,6 +105,15 @@ Public
 
     end function
 
+    -- returns the specified attribute value as a double.
+    -- Exceptions:
+    -- System::ArgumentNullException: element or attribute are NULL
+    -- System::ArgumentException: attribute evaluates to String::Empty
+    -- System::Xml::XmlException: the specified attribute isn't present within the element,
+    --                            or the attributes value equates to String::Empty.
+    -- System::OverflowException: the specified attribute contains a value that is less than 
+    --                            Double.MinValue or greater than Double.MaxValue.
+    -- System::FormatException: the attribute contains a non-numeric value.
     function double GetAttributeAsDouble(XElement element, string attribute)
         if(element = NULL)
             throw ArgumentNullException("element")
