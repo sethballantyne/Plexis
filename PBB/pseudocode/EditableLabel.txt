@@ -9,10 +9,14 @@ Private
     byte[] text := NULL
     bool editMode := false
 Public
-    constructor(int x, int y, Font font, byte length) : Control(x, y)
+    constructor(int x, int y, string font, byte length) : Control(x, y)
 
         if(font = NULL)
             throw ArgumentNullException("font")
+        end if
+
+        if(font = String::Empty)
+            throw ArgumentException("font")
         end if
 
         self->font = font
