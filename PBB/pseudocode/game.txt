@@ -21,6 +21,7 @@ Private
 
     bool isRunning := true
 
+    DWORD lastTime := 0
     function RestoreSurfaces()
         try
             Video::Restore()
@@ -84,6 +85,8 @@ Public
             LogManager::WriteLine(LogType->Log, "Loading scenes\n")
             XDocument scenesDocument := ResourceManager::GetXML("scenes")
             SceneManager::Initialise(scenesDocument)
+
+            lastTime := timeGetTime()
         catch
             throw
         end try
@@ -106,16 +109,23 @@ Public
     -- Update doesn't draw anything to the screen but rather sets up the scene in preparation to be drawn. 
     function Update()
         try
+            DWORD currentTime := timeGetTime()
+            DWORD timeDifference := currentTime - lastTime
 
-            Keys keyboardState := Input::ReadKeybord()
-            Mouse mouseState := NULL
+            if(timeDifference != 0)
+                Keys keyboardState := Input::ReadKeybord()
+                Mouse mouseState := NULL
 
-            if(Options::GetValue("mouseMovesPaddle", false) = true)
-                mouseState := Input::ReadMouse()
+                if(Options::GetValue("mouseMovesPaddle", false) = true)
+                    mouseState := Input::ReadMouse()
+                end if
+
+                SceneManager::CurrentScene->Update(keyboardState, mouseState)
+
+                self->Render()
             end if
 
-            SceneManager::CurrentScene->Update(keyboardState, mouseState)
-
+            lastTime := currentTime
         catch
             throw
         end try

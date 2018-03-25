@@ -91,7 +91,7 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR 
     
         Game::Initialise()
 
-        lastTime := timeGetTime()
+        
 
         while(Game::IsRunning)
             if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -105,16 +105,8 @@ function int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR 
 
             --NOTE: only update the game when the window is active.
             if(Game::IsWindowActive)
-                DWORD currentTime := timeGetTime()
-                DWORD timeDifference := currentTime - lastTime
-
-                if(timeDifference != 0)
                     Game::Update()
                     Game::Render()
-                end if
-
-                lastTime := currentTime
-
             end if
         end while
     catch(Exception e)
