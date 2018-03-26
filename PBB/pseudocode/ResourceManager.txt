@@ -29,7 +29,7 @@ Private
     -- Exceptions: 
     -- System::ArgumentNullException: resourceElement or pathList is NULL.
     -- System::IO::DirectoryNotFoundException: one of the paths specified within the file doesn't exist or is invalid.
-    function ParsePaths(XElement resourceElement, ref List<string> pathList)
+    function ParsePaths(XElement resourceElement, ref List<ResourcePath> pathList)
 
         if(resourceElement = NULL)
             throw System::ArgumentNullException("resourceElement")
