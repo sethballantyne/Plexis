@@ -14,9 +14,9 @@ Private
     -- each list contains absolute paths based on the paths read from paths.xml
     -- these are used both when loading the resources when the game is launched
     -- and also when the DirectDraw surfaces or DirectSound soundbuffer's need to be restored.
-    new List<string> bitmapPaths
-    new List<string> xmlPaths
-    new List<string> audioPaths
+    new List<ResourcePath> bitmapPaths
+    new List<ResourcePath> xmlPaths
+    new List<ResourcePath> audioPaths
 
     -- the absolute path to the directory the program is executing in.
     string workingDirectory := NULL
@@ -29,7 +29,7 @@ Private
     -- Exceptions: 
     -- System::ArgumentNullException: resourceElement or pathList is NULL.
     -- System::IO::DirectoryNotFoundException: one of the paths specified within the file doesn't exist or is invalid.
-    function ParsePaths(XElement resourceElement, List<string> pathList)
+    function ParsePaths(XElement resourceElement, ref List<string> pathList)
 
         if(resourceElement = NULL)
             throw System::ArgumentNullException("resourceElement")
