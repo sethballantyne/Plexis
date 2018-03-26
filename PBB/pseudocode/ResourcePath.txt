@@ -1,12 +1,27 @@
+-- Represents a single <path> element in paths.xml.
+-- For every <path> element parsed by the resource manager, one resulting instance of this
+-- class will be created. Resources can have multiple instances of this class, each instance
+-- pointing to a different directory location. 
 class ResourcePath implements IEquatable
 Private
+
+    -- the directory containing the resource(s). Paths are relative to the game binary.
     string path
+
+    -- determines whether the subdirectories in the location pointed to by path are searched by the 
+    -- searched by the resource manager when loading resources.
     bool includeSubDirs
 
 Public
-    constructor(string path, includeSubDirs)
+    -- Exceptions:
+    -- System::ArgumentNullException: path is NULL.
+    -- System::ArgumentException: path is either whitespace or evaluates to String::Empty
+    constructor(string path, bool includeSubDirs)
+        if(path = NULL) 
+            throw ArgumentNullException("path")
+        end if
 
-        if(String::IsNullOrWhiteSpace(path))
+        if(String::IsNullOrWhiteSpace(path) || path = String::Empty)
             throw ArgumentException(path)
         end if
 
@@ -25,20 +40,27 @@ Public
         return path->Equals(s)
     end function
 
+    -- Gets or sets a boolean value determining whether subdirectories should be searched
+    -- when loading resources from this location.
     property IncludeSubDirectories
-        accessors
-            get
-                return includeSubDirs
-            set
-                includeSubDirs := value
-        end accessors
+        get
+            return includeSubDirs
+        set
+            includeSubDirs := value
     end property
 
+    -- Gets or sets the path relative to the games binary that contains resources. 
+    -- Exception:
+    -- System::ArgumentNullException: the string being passed to the property is NULL.
+    -- System::ArgumentException: the property was assigned a string that either contained all whitespace
+    --                            characters or evaluates to String::Empty.
     property String Path
         get
             return path
         set
-            if(String::IsNullOrWhiteSpace(value))
+            if(value = NULL) 
+                throw ArgumentNullException("path")
+            else if(String::IsNullOrWhiteSpace(value) || value = String::Empty)
                 throw ArgumentException("value")
             end if
 
