@@ -140,19 +140,25 @@ public
 
     -- Draws the cursor next to the selected menu item and then instructs all items within the container to render themselves.
     function Render()
+        try
+            for(i := 0 to items->Count - 1)
 
-        for(i := 0 to items->Count - 1)
-
-            -- only one item should be selected; bug otherwise.
-            if(items[i]->IsSelected && items[i]->ShowMenuCursor)
-                int cursorXPos := items[i]->Position->X - menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems
+                -- only one item should be selected; bug otherwise.
+                if(items[i]->IsSelected && items[i]->ShowMenuCursor)
+                    int cursorXPos := items[i]->Position->X - menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems
                 
-                --Video::Blit(menuItemCursor, cursorXPos, items[i]->Position->Y)
-                Video::Blit(cursorXPos, items[i]->Position->Y, menuItemCursor)
-            end if
-
-            items[i]->Render()
-        end for
-
+                    --Video::Blit(menuItemCursor, cursorXPos, items[i]->Position->Y)
+                    try
+                        Video::Blit(cursorXPos, items[i]->Position->Y, menuItemCursor)
+                    catch
+                        throw
+                    end try
+                end if
+   
+                items[i]->Render()
+            end for
+        catch
+            throw
+        end try
     end function
 end class
