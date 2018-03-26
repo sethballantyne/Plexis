@@ -1,5 +1,5 @@
 -- Produces scenes based on the data stored within scenes.xml
--- Currently missing support for gameview, ToggleLabel and the slider.
+-- Currently missing support for gameview.
 class SceneFactory
 Private
 
@@ -8,31 +8,43 @@ Private
         LogManager::WriteLine(LogType->Debug | LogType->Error, message, arglist)
     end function
 
-    
-
-    -- Reads an element whose type attribute evaluates to label, creating a new instance of Label using 
-    -- the values specified within the elements attributes.
+    -- Parses a control element when the value of its type attribute is "label", returning a new instance of Label
+    -- that was created using the parsed settings.
+    -- Exceptions:
+    -- System::ArgumentNullException: labelTag is NULL.
+    -- System::Xml::XmlException: the element is missing a required attribute or the value of the attribute
+                                  evaluates to String::Empty.
+    -- System::FormatException: the value  of the element's x or y attributes contain non-integer values.
+    -- System::OverflowException: either the x or y attribute contains a value that's less than Int32::MinValue or 
+    --                            greater than Int32.MaxValue.
+    -- ResourceNotFoundException: the font specified in the elements font attribute doesn't exist within
+    --                            the resource manager.
     function Label ParseLabel(XElement labelTag)
 
         try
-
             int x := XmlHelper::GetAttributeValueAsInt32(labelTag, "x")
             int y := XmlHelper::GetAttributeValueAsInt32(labelTag, "y")
             string font := XmlHelper::GetAttributeValue(labelTag, "font")
             string text := XmlHelper::GetAttributeValue(labelTag, "text")
-        catch
-            throw
-        end try
 
-        try
             return new Label(x, y, font, text)
         catch
             throw
+        end try
     end function
 
-    -- Reads an element containing a menu item, creating a new instance of MenuItem using the 
-    -- values specified within the elements attributes.
-    function MenuItem ParseMenuItem(string sceneID, XElement menuItemTag)
+    -- Parses a containerItem element when the value of its type attribute is "menuItem", 
+    -- returning a new instance of MenuItem that was created using the parsed settings.
+    -- Exceptions:
+    -- System::ArgumentNullException: menuItemTag or parentContainer is NULL.
+    -- System::Xml::XmlException: the element is missing a required attribute or the value of an attribute
+                                  evaluates to String::Empty.
+    -- System::FormatException: the value  of the element's x, y, or selectedIndex attributes contain non-integer values.
+    -- System::OverflowException: either the x, y, or selectedIndex attribute contains a value that's less than Int32::MinValue or 
+    --                            greater than Int32.MaxValue.
+    -- ResourceNotFoundException: the font specified in the elements font attribute doesn't exist within
+    --                            the resource manager.
+    function MenuItem ParseMenuItem(XElement menuItemTag, MenuItemContainer parentContainer)
             
         try
             int x := XmlHelper::GetAttributeValueAsInt32(menuItemTag, "x")
@@ -61,9 +73,9 @@ Private
             MenuItem menuItem
             try
                 if(navigationArgs = NULL)
-                    menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo)
+                    menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo, parentContainer)
                 else 
-                    menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo, navigationArgs)
+                    menuItem := new MenuItem(x, y, font, text, selectedIndex, navigateTo, navigationArgs, parentContainer)
                 end if
 
                 return menuItem
@@ -73,6 +85,18 @@ Private
 
     end function
 
+    -- Parses a containerItem element when the value of its type attribute is "highScoreTable", 
+    -- returning a new instance of HighScoreTable that was created using the parsed settings.
+    -- Exceptions:
+    -- System::ArgumentNullException: element or parentContainer are NULL.
+    -- System::Xml::XmlException: element is missing a required attribute or the value of an attribute
+                                  evaluates to String::Empty.
+    -- System::FormatException: the value of the element's x, y, selectedIndex or rows attributes contain non-integer values;
+                                or the x attributes of the <column> child attributes contain non-integer values. 
+    -- System::OverflowException: either the x, y, selectedIndex or rows attribute contains a value that's less than Int32::MinValue or 
+    --                            greater than Int32.MaxValue; or the x attributes of the <column> child attributes contain non-integer values.
+    -- ResourceNotFoundException: a font specified in the <column> child elements font attribute doesn't exist within
+    --                            the resource manager.
     function HighScoreTable ParseHighScoreTable(XElement element, MenuItemContainer parentContainer)
         try
             -- reading <containerItem>
@@ -126,7 +150,17 @@ Private
         end try
     end function
 
-
+    -- Parses a containerItem element when the value of its type attribute is "keyConfigLabel", 
+    -- returning a new instance of KeyConfigLabel that was created using the parsed settings.
+    -- Exceptions:
+    -- System::ArgumentNullException: element or parentContainer is NULL.
+    -- System::Xml::XmlException: the element is missing a required attribute or the value of an attribute
+                                  evaluates to String::Empty.
+    -- System::FormatException: the value  of the element's x, y, or selectedIndex attributes contain non-integer values.
+    -- System::OverflowException: either the x, y, or selectedIndex attribute contains a value that's less than Int32::MinValue or 
+    --                            greater than Int32.MaxValue.
+    -- ResourceNotFoundException: the font specified in the elements font attribute doesn't exist within
+    --                            the resource manager.
     function KeyConfigLabel ParseKeyConfigLabel(XElement element, MenuItemContainer parentContainer)
         try
              int x := XmlHelper::GetAttributeValueAsInt32(element, "x")
@@ -141,6 +175,17 @@ Private
         end try
     end function
 
+    -- Parses a containerItem element when the value of its type attribute is "toggleLabel", 
+    -- returning a new instance of ToggleLabel that was created using the parsed settings.
+    -- Exceptions:
+    -- System::ArgumentNullException: element or parentContainer is NULL.
+    -- System::Xml::XmlException: the element is missing a required attribute or the value of an attribute
+                                  evaluates to String::Empty.
+    -- System::FormatException: the value  of the element's x, y, or selectedIndex attributes contain non-integer values.
+    -- System::OverflowException: either the x, y, or selectedIndex attribute contains a value that's less than Int32::MinValue or 
+    --                            greater than Int32.MaxValue.
+    -- ResourceNotFoundException: the font specified in the elements font attribute doesn't exist within
+    --                            the resource manager.
     function ToggleLabel ParseToggleLabel(XElement element, MenuItemContainer parentContainer)
         try
             int x := XmlHelper::GetAttributeValueAsInt32(element, "x")
@@ -157,6 +202,19 @@ Private
         end try
     end function
 
+    -- Parses a containerItem element when the value of its type attribute is "slider", 
+    -- returning a new instance of Slider that was created using the parsed settings.
+    -- Exceptions:
+    -- System::ArgumentNullException: element or parentContainer is NULL.
+    -- System::Xml::XmlException: the element is missing a required attribute or the value of an attribute
+                                  evaluates to String::Empty.
+    -- System::FormatException: the value of the element's x, y, selectedIndex, maximum, minimum or stepValue attributes contain non-numeric values.
+    -- System::OverflowException: either the x, y, selectedIndex or width attribute contains a value that's less than Int32::MinValue or 
+    --                            greater than Int32.MaxValue; or
+                                  either the minimum, maximum or stepValue attributes contain a value that's less than Double.MinValue
+                                  or greater Double.MaxValue.
+    -- ResourceNotFoundException: the font specified in the elements font attribute doesn't exist within
+    --                            the resource manager.
     function Slider ParseSlider(XElement element, MenuItemContainer parentContainer)
         if(element = NULL)
             throw ArgumentNullException("element")
@@ -181,7 +239,7 @@ Private
     end function
 
 Public
-    -- Parses the XML file containing scene information, returning an array of Scenes based on the information read.
+    -- Parses the XML file containing scene information, returning an array of Scenes based on the information read. 
     function Scene[] Read(XDocument xml)
         new List<Scene> SceneList
 
