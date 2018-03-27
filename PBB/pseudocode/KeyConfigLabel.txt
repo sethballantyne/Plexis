@@ -1,5 +1,11 @@
-class KeyPressLabel inherits ContainerControl
+-- KeyConfigLabel is used to map a particular key to a game option; typically player movement and the like. 
+-- When the label is selected and the user presses enter, a prompt to press a key is displayed.
+-- when the user presses a key within a specified range, the option is set to that key and the name of the key
+-- is displayed by the label until the user binds another key. 
+class KeyConfigLabel inherits ContainerControl
 Private
+
+    -- used to display the controls text
     Label label
 
     -- Lookup table for all the keys supported by the game. If the user presses a key that's not supported,
@@ -109,13 +115,16 @@ Private
         { DIMOUSE_BUTTON1 "RIGHT MOUSE BUTTON" }
     };
 
-    bool changeKeyOption := false
+    -- when true, the control is listening for a keypress that will be mapped to 
+    -- the option assigned at initialisation.
+    bool changingKey := false
 
+    -- Saves the new key and takes the control out of its listening state.
     function UpdateConfig(uint key)
         try
             self->label->Text := self->keys[key]
             GameOptions::SetValue(self->optionsKey, key)
-            changeKeyOption := false
+            changingKey := false
         catch(KeyValuePairException)
             -- ignore it; invalid key pressed.
         catch
@@ -123,28 +132,37 @@ Private
     end function
 Public
     -- Exceptions:
-    -- System::ArgumentNullException: optionKey or font is NULL.
+    -- System::ArgumentNullException: either optionsKey, font or parentContainer are NULL.
     -- System::ArgumentException: optionsKey evaluates to String::Empty, or optionsKey evaluates to a GameOptions
-    -- key that doesn't exist.
-    constructor(int x, int y, Font font, int selectedIndex, string optionsKey, MenuItemContainer parentContainer) :
+    -- key that doesn't exist; or font evaluates to String::Empty.
+    -- ResourceNotFoundException: the specified font doesn't exist within the resource manager.
+    constructor(int x, int y, string font, int selectedIndex, string optionsKey, MenuItemContainer parentContainer) :
                 ContainerControl(x, y, parentContainer, selectedIndex)
 
         if(optionKey = NULL)
             throw ArgumentNullException("optionsKey")
         else if(font = NULL)
             throw ArgumentNullException("font")
+        else if(parentContainer = NULL)
+            throw ArgumentNullException("parentContainer")
         end if
 
         if(optionsKey = String::Empty)
             throw ArgumentException("optionsKey")
+        else if(font = String::Empty)
+            throw ArgumentException("font")
         end if
 
         if(GameOptions::GetValue(optionsKey, -1) = -1)
             throw ArgumentException("optionsKey")
         end if
 
-        -- using default text until the scene is displayed. 
-        new self->label(x, y, font, "HACK THE PLANET!!")
+        try
+            -- using default text until the scene is displayed. 
+            new self->label(x, y, font, NULL)
+        catch
+            throw
+        end try
     end constructor
 
     function ReceiveSceneArgs(object[] sceneArgs)
@@ -162,8 +180,35 @@ Public
         end if
     end function
 
+    -- Exceptions:
+    -- Draws the label text to the backbuffer.
+    -- System::ArgumentNullException: the labels text evaluates to NULL.
+    -- DirectDrawGenericException: a non-specific DirectDraw error has occured.
+    -- DirectDrawInvalidClipListException: DirectDraw does not support the provided clip list.
+    -- DirectDrawInvalidObjectException: DirectDraw received a pointer that was an invalid DirectDraw object.
+    -- DirectDrawInvalidParametersException: one or more of the parameters passed to the method are incorrect.
+    -- DirectDrawInvalidRectException: the provided rectangle was invalid.
+    -- DirectDrawNoAlphaHardwareException: no alpha acceleration hardware is present or available, 
+    --                                     causing the failure of the requested operation.
+    -- DirectDrawNoBlitHardwareException: no blitter hardware is present.
+    -- DirectDrawNoClipListException: no clip list is available.
+    -- DirectDrawNoDDRaserOperationHardwareException: no DirectDraw raster operation (ROP) hardware is available.
+    -- DirectDrawNoMirrorHardwareException: the operation cannot be carried out because no mirroring hardware is present or available.
+    -- DirectDrawNoRasterOperationHardwareException: the operation cannot be carried out because no appropriate raster operation hardware is present or available.
+    -- DirectDrawNoRotationHardwareException: the operation cannot be carried out because no rotation hardware is present or available.
+    -- DirectDrawNoStretchHardwareException: the operation cannot be carried out because there is no hardware support for stretching.
+    -- DirectDrawNoZBUfferHardwareException: the hardware doesn't have Z buffer support.
+    -- DirectDrawSurfaceBusyException: the specified surface locked by another thread and access has been refused.
+    -- DirectDrawSurfaceLostException: access to the surface is refused because the surface memory is gone.
+    -- DirectDrawUnsupportedException: the operation isn't supported.
+    -- DirectDrawWasStillDrawingException: the previous blit operation that is transferring information to or from this surface is incomplete.
+    -- System::Runtime::InteropServices::COMException: An unspecified COM+ error occured.
     function Render()
-        label->Render()
+        try
+            label->Render()
+        catch
+            throw
+        end try
     end function
 
     -- Exceptions:
@@ -174,9 +219,9 @@ Public
             throw ArgumentNullException("keyboardState")
         end if
 
-        if(changeKeyOption != true)
+        if(changingKey != true)
             if(keyboardState->KeyPressed(DIK_ENTER))
-                changeKeyOption := true
+                changingKey := true
                 self->label->Text := "PRESS A KEY"
             else if(keyboardState->KeyPressed(DIK_UP))
                 self->parentContainer->SelectPreviousControl()
