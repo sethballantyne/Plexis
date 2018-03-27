@@ -1,12 +1,29 @@
--- A non-interactive, static string of text that's displayed in a scene. 
+-- A non-interactive (from the users perspective) string of text that's displayed in a scene. 
 class Label inherits Control
 private
     Font font := NULL
     string text := NULL
 public
-    constructor Label(int x, int y, string font, string text)
-        Control(x, y)
+    -- Exceptions:
+    -- System::ArgumentNullException: font is NULL.
+    -- System::ArgumentException: font evaluates to String::Empty.
+    -- ResourceNotFoundException: the specified font doesn't exist within the resource manager.
+    constructor Label(int x, int y, string font, string text) : Control(x, y)
+        
+        if(font = NULL)
+            throw ArgumentNullException("font")
+        else if(font = String::Empty)
+            throw ArgumentException("font")
+        end if
 
+        -- not throwing an exception here because sometimes controls that make use of Label
+        -- don't have anything to pass to the control in terms of text during initialisation.
+        -- the log message is intended as a heads up incase it really is an accident.
+        -- Attempting to render it when it's NULL will throw an exception, however.
+        if(text = NULL)
+            LogManager::WriteLine(LogType->Debug, "Label::ctor: self->text evaluates to NULL.")
+        end if
+            
         try
             labelFont := ResourceManager::GetFont(font)
         catch
@@ -16,7 +33,7 @@ public
         self->text := text
     end constructor
 
-    -- Renders the labels' text to the backbuffer.
+    -- Renders the label's text to the backbuffer.
     function Render()
         try
             labelFont->Render(self->position->X, self->Position->Y, text)
@@ -38,6 +55,11 @@ public
                 return text
             set
                 text := value
+
+                -- not throwing an exception for the same reasons specified in the ctor.
+                if(text = NULL)
+                    LogManager::WriteLine(LogType->Debug, "Label::Text: assigned a string that evaluates to NULL.")   
+                end if
         end accessors
     end property
 end class
