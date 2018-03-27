@@ -1,6 +1,16 @@
+-- Base class for all controls that the user can interact with and which receive
+-- input from their parent Scene.
 class SelectableControl : abstract inherits Control, IComparable
 private
+    -- specifies whether the control has the menu cursor adjacent to it.
     bool selected
+
+    -- determines the controls position in the control list. 
+    -- Controls that descend from SelectableControl are sorted in ascending order
+    -- by their selectedIndex value, which is used to determine which control
+    -- should be selected next when the user presses the up or down keys. 
+    -- Technically, this value doesn't need to be unique to the control, but it's a good
+    -- idea if you want to ensure the correct order. 
     int selectedIndex
 public
     constructor(int x, int y, int selectedIndex) : Control(x, y)
