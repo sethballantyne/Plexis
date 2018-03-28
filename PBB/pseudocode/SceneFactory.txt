@@ -329,7 +329,7 @@ Public
                                         end try
                                 end if
                             end foreach
-                            scene->GetContolList()->Add(menuItemContainer)
+                            scene->GetControlList()->Add(menuItemContainer)
                         else if(typeAttributeValue = String.Empty)
                             Log("type attribute for a control belonging to {0} is empty.", sceneID->Value)
                         else
