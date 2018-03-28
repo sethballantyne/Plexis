@@ -1,7 +1,15 @@
+-- Class for loading and rendering bitmap fonts.
 class Font
 Private
+    -- font to be rendered.
     Surface fontSurface
+
+    -- acts as a look up table for the position of each character so it doesn't have to be computed during
+    -- rendering.
     Point[] glyphPositions
+
+    -- the fonts width and height of each character in pixels. It's assumed every character
+    -- in the bitmap is of the same dimensions.
     uint glyphWidth
     uint glyphHeight
 
@@ -33,7 +41,7 @@ Public
         int glyphsPerSheet := 94
         new List<Point> glyphPositions(glyphsPerSheet)
         for(i = 0 to glyphsPerSheet - 1)
-            int x := i * 18 
+            int x := i * self->glyphWidth 
           
             glyphPositions->Add(new Point(x, 0))
         end for
@@ -43,6 +51,11 @@ Public
 
     constructor
 
+     -- Exceptions:
+    -- System::ArgumentNullException: name or fontBitmap are NULL
+    -- System::ArgumentException: name evaluates to String::Empty, or either glyphSize::Width is less than 0 or greater
+    --                            than the width of the bitmap, or 
+    --                            glyphSize::Height is less than zero or greater than the height of the bitmap.                         
     constructor(string name, Surface fontBitmap, Size glyphSize)
 
         if(glyphSize->Width <= 0)
@@ -50,9 +63,12 @@ Public
         else if(glyphSize->height <= 0)
             throw ArgumentException("height must be greater than 0.")
         end if
-
        
-        self(name, fontBitmap, glyphSize->Width, glyphSize->Height)
+        try
+            self(name, fontBitmap, glyphSize->Width, glyphSize->Height)
+        catch
+            throw
+        end try
     end constructor
 
     -- Renders the specified text to the backbuffer at the position specified by x and y.
@@ -96,8 +112,8 @@ Public
                 destRect->Height := glyphHeight
 
                 -- subtracting 32 because the first character in a bitmap font
-                -- is the space character, which is decimal 32. A bitmap font has contains
-                -- the characters decimal 32 to decimal 126.
+                -- is the space character, which is decimal 32. A bitmap font contains
+                -- the characters decimal 32 (space) to decimal 126 (~).
                 int index := ascii[i] - 32
                 srcRect->X := glyphPositions[index]->X
                 srcRect->Y := 0
@@ -120,6 +136,26 @@ Public
     -- Exceptions:
     -- System::ArgumentNullException: - text is NULL
     -- System::FormatException: - argslist is incorrectly formatted.
+    -- DirectDrawGenericException: a non-specific DirectDraw error has occured.
+    -- DirectDrawInvalidClipListException: DirectDraw does not support the provided clip list.
+    -- DirectDrawInvalidObjectException: DirectDraw received a pointer that was an invalid DirectDraw object.
+    -- DirectDrawInvalidParametersException: one or more of the parameters passed to the method are incorrect.
+    -- DirectDrawInvalidRectException: the provided rectangle was invalid.
+    -- DirectDrawNoAlphaHardwareException: no alpha acceleration hardware is present or available, 
+    --                                     causing the failure of the requested operation.
+    -- DirectDrawNoBlitHardwareException: no blitter hardware is present.
+    -- DirectDrawNoClipListException: no clip list is available.
+    -- DirectDrawNoDDRaserOperationHardwareException: no DirectDraw raster operation (ROP) hardware is available.
+    -- DirectDrawNoMirrorHardwareException: the operation cannot be carried out because no mirroring hardware is present or available.
+    -- DirectDrawNoRasterOperationHardwareException: the operation cannot be carried out because no appropriate raster operation hardware is present or available.
+    -- DirectDrawNoRotationHardwareException: the operation cannot be carried out because no rotation hardware is present or available.
+    -- DirectDrawNoStretchHardwareException: the operation cannot be carried out because there is no hardware support for stretching.
+    -- DirectDrawNoZBUfferHardwareException: the hardware doesn't have Z buffer support.
+    -- DirectDrawSurfaceBusyException: the specified surface locked by another thread and access has been refused.
+    -- DirectDrawSurfaceLostException: access to the surface is refused because the surface memory is gone.
+    -- DirectDrawUnsupportedException: the operation isn't supported.
+    -- DirectDrawWasStillDrawingException: the previous blit operation that is transferring information to or from this surface is incomplete.
+    -- System::Runtime::InteropServices::COMException: An unspecified COM+ error occured.
     function Render(int x, int y, string text, ...)
         try
             -- String::Format throws ArgumentNullException if text is NULL,
