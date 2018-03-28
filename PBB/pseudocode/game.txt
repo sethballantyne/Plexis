@@ -38,12 +38,12 @@ Private
         end try
     end function
 
-    function RestoreSoundBuffers()
-        try
-            ResourceManager::RestoreSoundBuffers()
-        catch
-        end try
-    end function
+    --function RestoreSoundBuffers()
+    --    try
+    --        ResourceManager::RestoreSoundBuffers()
+    --    catch
+    --    end try
+    --end function
 Public
     -- Initialises each subsystem and loads all resources and config information, putting the game into a playable state.
     function Initialise(HINSTANCE hInstance, HWND hWnd)
