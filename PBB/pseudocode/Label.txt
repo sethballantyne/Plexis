@@ -34,6 +34,27 @@ public
     end constructor
 
     -- Renders the label's text to the backbuffer.
+    -- System::ArgumentNullException: text is NULL
+    -- DirectDrawGenericException: a non-specific DirectDraw error has occured.
+    -- DirectDrawInvalidClipListException: DirectDraw does not support the provided clip list.
+    -- DirectDrawInvalidObjectException: DirectDraw received a pointer that was an invalid DirectDraw object.
+    -- DirectDrawInvalidParametersException: one or more of the parameters passed to the method are incorrect.
+    -- DirectDrawInvalidRectException: the provided rectangle was invalid.
+    -- DirectDrawNoAlphaHardwareException: no alpha acceleration hardware is present or available, 
+    --                                     causing the failure of the requested operation.
+    -- DirectDrawNoBlitHardwareException: no blitter hardware is present.
+    -- DirectDrawNoClipListException: no clip list is available.
+    -- DirectDrawNoDDRaserOperationHardwareException: no DirectDraw raster operation (ROP) hardware is available.
+    -- DirectDrawNoMirrorHardwareException: the operation cannot be carried out because no mirroring hardware is present or available.
+    -- DirectDrawNoRasterOperationHardwareException: the operation cannot be carried out because no appropriate raster operation hardware is present or available.
+    -- DirectDrawNoRotationHardwareException: the operation cannot be carried out because no rotation hardware is present or available.
+    -- DirectDrawNoStretchHardwareException: the operation cannot be carried out because there is no hardware support for stretching.
+    -- DirectDrawNoZBUfferHardwareException: the hardware doesn't have Z buffer support.
+    -- DirectDrawSurfaceBusyException: the specified surface locked by another thread and access has been refused.
+    -- DirectDrawSurfaceLostException: access to the surface is refused because the surface memory is gone.
+    -- DirectDrawUnsupportedException: the operation isn't supported.
+    -- DirectDrawWasStillDrawingException: the previous blit operation that is transferring information to or from this surface is incomplete.
+    -- System::Runtime::InteropServices::COMException: An unspecified COM+ error occured.
     function Render()
         try
             labelFont->Render(self->position->X, self->Position->Y, text)
