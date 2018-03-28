@@ -1,0 +1,36 @@
+-- Encapsulates DirectDrawSurface's created by Video.
+class Surface
+Private
+    -- the surface created by Video
+    LPDIRECTDRAWSURFACE7 surface := NULL
+
+    -- width and height of the bitmap used to produce the surface.
+    -- It's possible for DirectDraw to create a surface that's a greater width or height,
+    -- the distinction is important.
+    uint width
+    uint height
+
+    --  path and filename of the bitmap used to create the surface. 
+    --  these are used when the surface has to be restored by DirectDraw.
+    string path
+    string name
+Public
+    -- Exceptions:
+    -- System::ArgumentNullException: surface is NULL.
+    constructor(LPDIRECTDRAWSURFACE7 surface, uint width, uint height)
+        if(surface = NULL)
+            throw ArgumentNullException("surface")
+        else
+            self->surface := surface
+            self->width := width
+            self->height := height
+        end if
+    end constructor
+
+    -- Frees the memory allocated for the surface.
+    function Release()
+        if(self->surface != NULL)
+            self->surface->Release()
+        end if
+    end function
+end class
