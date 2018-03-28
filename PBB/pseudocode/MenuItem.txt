@@ -106,7 +106,7 @@ public
     --end property
 
     -- stores the arguments passed by the scene when it was set as the active scene. 
-    function ReceiveSceneArgs(string args)
+    function ReceiveSceneArgs(object[] args)
         receivedArgs := args
     end function
 
