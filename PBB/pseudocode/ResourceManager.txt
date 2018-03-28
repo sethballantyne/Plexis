@@ -6,6 +6,7 @@
 -- IT'S TIME TO TERMINATE. Doing so makes the resource unavailable to any other object that needs it. 
 class ResourceManager : static 
 Private
+    -- pools for each resource type.
     new Dictionary<string, Font> fonts
     new Dictionary<string, SoundBuffer> sounds
     new Dictionary<string, Surface> surfaces
@@ -21,10 +22,6 @@ Private
     -- the absolute path to the directory the program is executing in.
     string workingDirectory := NULL
 
-   
-
-    
-
     -- Reads all the paths associated with the specified element.
     -- Exceptions: 
     -- System::ArgumentNullException: resourceElement or pathList is NULL.
@@ -36,7 +33,6 @@ Private
         else if(pathList = NULL)
             throw System::ArgumentNullException("pathList")
         end if
-
 
         IEnumerable<XElement> pathsQuery := resourceElement->Descendants("path")
                 
@@ -65,19 +61,26 @@ Private
                     end if
                 end if
             end foreach
-
     end function
 
 Public
-    -- Initialises the resorce manager with the paths in the specified XML file. 
+    -- Initialises the resorce manager with the paths in the specified XML file.
+    -- Exceptions:
+    -- System::ArgumentNullException: pathsFile is NULL.
+    -- System::ArgumentException: pathsFile evaluates to String::Empty.
+    -- System::Xml::XmlException: the value of the type attribute is invalid.
     function Initialise(string pathsFile)
-        
+        if(pathsFile = NULL)
+            throw System::ArgumentNullException("pathsFile")
+        else if(pathsFile = String::Empty)
+            throw System::ArgumentException("pathsFile")
+        end if
+
         workingDirectory := Directory::GetCurrentDirectory()
         XDocument pathsFile := XDocument::Load(pathsFile)
 
         IEnumerable<XElement> resourcesQuery := pathsFile->Root->GetDescendants("resource")
 
-        
         foreach(resourceElement in resourcesQuery)
 
             string type := XmlHelper::GetAttributeValue(resourceElement, "type")
@@ -147,7 +150,16 @@ Public
     end function
 
     -- Creates the fonts based on the settings within the fonts file.
+    -- Exceptions:
+    -- System::ArgumentNullException: file is NULL
+    -- System::ArgumentException: file evaluates to String::Empty.
     function LoadFonts(string file)
+        if(file = NULL)
+            throw System::ArgumentNullException("file")
+        else if(file = String::Empty)
+            throw System::ArgumentException("file")
+        end if
+
         try
             XDocument fontFile := GetXML(font)
             Font[] fonts := FontFactory::CreateFonts(fontFile)
