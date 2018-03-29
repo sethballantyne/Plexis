@@ -1,3 +1,4 @@
+-- Encapsulates a snapshot of the keyboard state. 
 class Keys
 Private
     -- ULONG_MAX is used to specify that a key hasn't been pressed.
@@ -22,10 +23,13 @@ Public
         end for
     end constructor
 
+    -- returns true if the specified key is pressed down, otherwise returns false.
     function bool KeyDown(UCHAR key) : inline
         return self->currentKeyboardState[key] & 0x80
     end function
 
+    -- returns true if the specified key has been pressed (pressed down and then released), otherwise
+    -- returns false.
     function bool KeyPressed(UCHAR key) : inline
         bool currentKeyState = self->currentKeyboardState[key] & 0x80
         bool previousKeyState = self->previousKeyboardState[key] & 0x80
@@ -34,18 +38,19 @@ Public
         return ((currentKeyState == false) && (previousKeyState == true))
     end function
 
+    -- returns the current pressed key as a DirectInput scancode.
     property Key
         get
             return self->firstKey
     end property
 
-    property int PressedKey
-        get
-            for(i := 0 to 256)
-                if(self->KeyPressed(i))
-                    return i
-            end for
+    --property int PressedKey
+    --    get
+    --        for(i := 0 to 256)
+    --            if(self->KeyPressed(i))
+    --                return i
+    --        end for
 
-            return -1
-    end property
+    --        return -1
+    --end property
 end class
