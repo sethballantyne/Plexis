@@ -1,3 +1,6 @@
+-- encapsulates a snapshot of the mouse state. There's functionality missing (Like ButtonUp or ButtonClick functions)
+-- because the game doesn't need them.
+
 class Mouse
 Private
     LPDIMOUSESTATE2 mouseState := NULL
@@ -10,16 +13,19 @@ Public
         this->mouseState := mouseState
     end constructor
 
+    -- returns true if the specified mouse button is currently pressed down.
     function bool ButtonDown(BYTE button) : inline
         return mouseState->rgbButtons[button] & 0x80
     end function
 
+    -- returns the X position of the mouse
     property int X
         get
             return mouseState->lX
         end get
     end property
 
+    -- returns the Y position of the mouse
     property int Y
         get
             return mouseState->lY
