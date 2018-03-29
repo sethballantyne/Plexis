@@ -1,15 +1,25 @@
 class Video
 Private
     LPDIRECTDRAW7 lpDD := NULL
+
+    -- the screen surface
     LPDIRECTDRAWSURFACE7 lpDDSPrimarySurface := NULL
+
+    -- the backbuffer
     LPDIRECTDRAWSURFACE7 lpDDSSecondarySurface := NULL
+
+    -- the windows clipping rect
     LPDIRECTDRAWCLIPPER lpDDClipper := NULL
+
+    -- the colour key used by the games sprites.
     uint colourKey 
 
+    -- converts an RGB value to an integer.
     function uint RGBTo32Bit(uint a, uint r, uint g, uint b) : inline, static
             return ((b) + ((g) << 8) + ((r) << 16) + ((a) << 24))
     end function
 
+    -- Attaches the clipping rect to the specified window
     function void AttachClipper(HWND hWnd) : static
         
         result := lpDD->CreateClipper()
@@ -73,6 +83,7 @@ Private
         end if
     end function
 
+    -- creates a fullscreen window at the specified resolution
     function void CreateFullscreenWindow(HWND hWnd, uint width, uint height, uint bitsPerPixel) : static 
 
         VerifyNotNull(lpDD)
@@ -232,6 +243,7 @@ Private
         end try-catch
     end function
     
+    -- Creates Surface objects based on the specified bitmap
     function Surface CreateSurface(HBITMAP hBitmap)
 
         HDC hDCImage
@@ -699,6 +711,7 @@ Private
     end function
      
 Public
+    -- Initialises DirectDraw. 
     function void Initialise() : static
         colourKey := RGBTo32Bit(255, 255, 0, 255)
 
@@ -729,6 +742,7 @@ Public
         end if
     end function
 
+    -- Clears the backbuffer with the specified colour.
     function Clear(System::Drawing::Color ^colour)
 
         try
@@ -739,6 +753,7 @@ Public
 
     end function
 
+    -- Clears the backbuffer with the specified colour.
     function Clear(int r, int g, int b)
 
         DDBLTFX ddBltFX 
@@ -811,6 +826,7 @@ Public
         end if
     end function
 
+    -- Creates a Surface object based on the bitmap at the specified path.
     function Surface CreateSurface(string path) : static
 
         HBITMAP hBitmap
@@ -922,7 +938,9 @@ Public
         end if
     end function
 
-    function void Render(int x, int y, Surface surface)
+    -- Draws the specified surface to the backbuffer. Surfaces can use the colour key specified self->colourKey
+    -- for the blit mask.
+    function void Blit(int x, int y, Surface surface)
         RECT destRect
         RECT srcRect
 
@@ -999,6 +1017,8 @@ Public
         end if
     end function
 
+    -- Attempts to restore the primary and secondary buffers; should only be called when a DirectDraw
+    -- call returns DDERR_SURFACELOST. 
     function void Restore() : static
 
         VerifyNotNull(lpDD)
@@ -1039,6 +1059,7 @@ Public
         end if
     end function
 
+    -- Creates a window of the specified size.
     function void SetDisplayMode(HWND hWnd, uint width, uint height, uchar bitsPerPixel, bool fullscreen) : static
 
         -- Frees the surfaces on the off chance that the function is called by the user due to DirectDrawWrongModeException being 
