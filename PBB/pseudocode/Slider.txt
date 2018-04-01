@@ -60,8 +60,8 @@ private
 public
     -- Initialises the slider control with the values read from the XML file.
     -- Arguments:
-    -- x: the screen coordinate of the control on the x axis.
-    -- y: the screen coordinate of the control on the y axis.
+    -- x: the controls screen position on the x axis.
+    -- y: the controls screen position on the y axis.
     -- width: the width (length) of the track in pixels.
     -- selectedIndex: the position of the control within its parent MenuItemContainer instance. 
     --                this specifies in which order the control is selected, not rendered or placed.
@@ -77,7 +77,7 @@ public
     --                           the value of step is greater than maximum, or
     --                           minimum, maximum or step are greater than Int32::MaxValue, or
     --                           minimum, maximum, or step are less than Int32::MinValue.
-    constructor(int x, int y, uint width, int selectedIndex, double minimum, double maximum, double step, string optionsKey,
+    constructor(int x, int y, uint length, int selectedIndex, double minimum, double maximum, double step, string optionsKey,
                 MenuItemContainer parentContainer) : ContainerControl(x, y, parentContainer, selectedIndex)
          
         if(optionsKey = NULL)
@@ -109,8 +109,8 @@ public
         stepValue := step
 
         -- track
-        trackLines[0] := new Line(Color::White, new Point(x, y), new Point(x + width, y))
-        trackLines[1] := new Line(Color::FromArgb(0, 127, 127, 127), new Point(x, y), new Point(x + width, y))
+        trackLines[0] := new Line(Color::White, new Point(x, y), new Point(x + length, y))
+        trackLines[1] := new Line(Color::FromArgb(0, 127, 127, 127), new Point(x, y), new Point(x + length, y))
 
         -- x is a placeholder, it'll be updated to the correct value when the slider is rendered.
         for(i := 0; i < sliderLines->Count; i++)

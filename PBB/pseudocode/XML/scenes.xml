@@ -20,8 +20,8 @@
             <control type="label" x="0" y="0" font="green" text="SOUND VOLUME" />
             <control type="menuItemContainer">
                 <containerItem type="toggleLabel" x="0" y="0" font="white" trueCaption="YES" falseCaption="NO" selectedIndex="0" optionsKey="mouseMovesPaddle"/>
-                <containerItem type="slider" x="0" y="0" width="74" selectedIndex="1" minimum="0.1" maximum="1.0" stepValue="0.1" optionsKey="mouseSpeed"/> <!-- mouse speed -->
-                <containerItem type="slider" x="0" y="0" width="74" selectedIndex="2" minimum="0" maximum="100" stepValue="10" optionsKey="soundVolume"/>  <!-- sound volume -->
+                <containerItem type="slider" x="0" y="0" length="74" selectedIndex="1" minimum="0.1" maximum="1.0" stepValue="0.1" optionsKey="mouseSpeed"/> <!-- mouse speed -->
+                <containerItem type="slider" x="0" y="0" length="74" selectedIndex="2" minimum="0" maximum="100" stepValue="10" optionsKey="soundVolume"/>  <!-- sound volume -->
                 <containerItem type="menuItem" x="0" y="0" font="white" text="CONFIGURE KEYS" selectedIndex="3" navigateTo="configure_keys"/>
                 <containerItem type="menuItem" x="0" y="0" font="white" text="BACK" selectedIndex="4" navigateTo="caller"/>
             </control>

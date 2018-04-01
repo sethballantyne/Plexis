@@ -225,14 +225,14 @@ Private
         try
             int x := XmlHelper::GetAttributeValueAsInt32(element, "x")
             int y := XmlHelper::GetAttributeValueAsInt32(element, "y")
-            uint width := XmlHelper::GetAttributeValueAsInt32(element, "width")
+            uint length := XmlHelper::GetAttributeValueAsInt32(element, "width")
             int selectedIndex := XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex")
             double minimum := XmlHelper::GetAttributeAsDouble(element, "minimum")
             double maximum := XmlHelper::GetAttributeAsDouble(element, "maximum")
             double stepValue := XmlHelper::GetAttributeAsDouble(element, "stepValue")
             string optionsKey := XmlHelper::GetAttribute(element, "optionsKey")
     
-            return new Slider(x, y, width, selectedIndex, minimum, maximum, stepValue, optionsKey, parentContainer)
+            return new Slider(x, y, length, selectedIndex, minimum, maximum, stepValue, optionsKey, parentContainer)
         catch
             throw
         end try
