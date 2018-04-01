@@ -1,13 +1,25 @@
+-- Class for manipulating the mouse and keyboard.
 class Input : static
 Private
     LPDIRECTINPUT8 lpDI := NULL
+
+    -- the object used for polling the keyboard
     LPDIRECTINPUTDEVICE8 lpDIKeyboard := NULL
+
+    -- the object used for polling the mouse.
     LPDIRECTINPUTDEVICE8 lpDIMouse := NULL
+
+    -- DirectInput stores the state of each key in an array of 256 bytes. 
+    -- the previously polled state is kept to determine which keys have been pressed (ie, a key that's been pushed down
+    -- and then released).
     UCHAR previousKeyboardState[256]
     UCHAR currentKeyboardState[256]
+
+
     DIMOUSESTATE2 mouseState
     HKL keyboardLayout
 
+    -- Initialises the keyboard so it can be polled.
     function InitKeyboard(HWND hWnd)
 
             if(lpDIKeyboard != NULL)
@@ -96,6 +108,7 @@ Private
             self->keyboardLayout := GetKeyboardLayout(0)
     end function
 
+    -- initialises the mouse so it can be polled.
     function InitMouse(HWND hWnd)
 
             if(lpDIMouse != NULL)
@@ -178,6 +191,8 @@ Private
             end if
     end function
 
+    -- frees the memory allocated by DirectInput to the specified device. Once this is called, the device
+    -- in question can't be used until its reinitialised.
     function ReleaseDevice(LPDIRECTINPUTDEVICE8 lpDevice) : inline
         if(lpDevice != NULL)
             lpDevice->Unacquire()
@@ -185,6 +200,7 @@ Private
             lpDevice := NULL
     end function
 Public
+    -- Initialises DirectInput. 
     function Initialise(HINSTANCE hInstance, HWND hWnd)
             SecureZeroMemory(&currentKeyboardState[0], sizeof(currentKeyboardState))
 
@@ -215,6 +231,7 @@ Public
 
     end function
 
+    -- Polls the keyboard, returning the keyboard state as a Keys object.
     function Keys* ReadKeyboard()
 
         VerifyNotNull(lpDIKeyboard)
@@ -226,6 +243,7 @@ Public
 
     end function
 
+    -- Polls the mouse, returning the mouse state as a Mouse object.
     function Mouse* ReadMouse()
         
         VerifyNotNull(lpDIMouse)
@@ -234,6 +252,7 @@ Public
 
     end function
 
+    -- Releases DirectInput and frees the memory allocated to it.
     function Release()
 
         ReleaseDevice(lpDIKeyboard)
