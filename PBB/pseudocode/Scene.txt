@@ -40,9 +40,10 @@ public
 
     -- Passes the arguments received via the SceneManager to the scenes child controls.
     function BroadcastArguments(object[] navigationArgs)
-
         for(i := 0 to controls->Count - 1)
-            controls[0]->ReceiveSceneArgs(navigationArgs)
+            if(controls[0] is type SelectableControl)
+                controls[0]->ReceiveSceneArgs(navigationArgs)
+            end if
         end for
         
     end function
