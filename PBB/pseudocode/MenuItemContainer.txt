@@ -7,10 +7,10 @@ private
 
     -- controls contained within the container. Each control depends on the container to instruct it to render 
     -- and pass on arguments received from the Scene they belong to each time the scene is displayed. 
-    new List<SelectableControl> items
+    new List<ContainerControl> items
 
     -- used to sort the controls by their SelectedIndex property every time one is added to the control list. 
-    new Comparison<SelectedObject> comparisonDelegate(&SortMethod)
+    new Comparison<ContainerControl> comparisonDelegate(&SortMethod)
 
     -- the cursor to be displayed next to a child control, indicating it's the control that is selected.
     Surface menuItemCursor := NULL
@@ -24,7 +24,7 @@ private
     int currentSelectedItem := 0
 
     -- sort by calling items->Sort(comparisonDelegate)
-    function int SortMethod(SelectableControl a, SelectableControl b) : static
+    function int SortMethod(ContainerControl a, ContainerControl b) : static
         return a->CompareTo(b)
     end function
 
