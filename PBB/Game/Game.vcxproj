@@ -77,15 +77,23 @@
     <ClInclude Include="engine_exceptions.h" />
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="ilog.h" />
+    <ClInclude Include="logmanager.h" />
+    <ClInclude Include="logtype.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="version.h" />
+    <ClInclude Include="vsoutputlogger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -17,48 +17,33 @@
 // DEALINGS IN THE SOFTWARE.
 
 #pragma once
+#include "ilog.h"
 
-#include <windows.h>
+using namespace System;
+using namespace System::Diagnostics;
 
 /// <summary>
-/// Handles the game state, seperating it from the application layer. 
-/// No actual logic related to game play is handled by Game; that's the domain of GameView.
+/// Writes messages to the debugger; meant to be used in conjunction with the LogManager.
 /// </summary>
-public ref class Game abstract
+public ref class VSOutputLogger : public ILog
 {
-
 public:
-    static Game()
+
+    /// <summary>
+    /// Writes the specified message to the debugger.
+    /// </summary>
+    /// <param name="message">the message to write.</param>
+    void virtual Write(String ^message)
     {
-        IsRunning = true;
-        IsWindowActive = false;
+        Debug::Print(message);
     }
 
     /// <summary>
-    /// Initialises each subsystem and loads all resources and config information, putting the game 
-    /// into a playable state.
+    /// Writes the specified message to the debugger with a newline character appended.
     /// </summary>
-    /// <param name="hInstance">The application instance handle.</param>
-    /// <param name="hWnd">the handle of the window the game will be played in.</param>
-    static void Initialise(HINSTANCE hInstance, HWND hWnd);
-
-    /// <summary>
-    /// Renders the contents of the backbuffer to the screen.
-    /// </summary>
-    static void Render();
-
-    /// <summary>
-    /// Shuts down the game, instructing all subsystems to perform clean up and release any memory that's 
-    /// acquired.
-    /// </summary>
-    static void Shutdown();
-
-    /// <summary>
-    /// Updates the game state and polls user input.
-    /// Update doesn't draw anything to the screen but rather sets up the scene in preparation to be drawn.
-    /// </summary>
-    static void Update();
-
-    static property bool IsRunning;
-    static property bool IsWindowActive;
+    /// <param name="message">the message to write.</param>
+    void virtual WriteLine(String ^message)
+    {
+        Debug::WriteLine(message);
+    }
 };

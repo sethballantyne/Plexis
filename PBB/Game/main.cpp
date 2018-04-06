@@ -38,7 +38,10 @@
 #include <windowsx.h>
 #include <tchar.h>
 #include "game.h"
+#include "logtype.h"
+#include "logmanager.h"
 #include "version.h"
+#include "vsoutputlogger.h"
 
 #define WINDOW_CLASS_NAME L"WindowClass"
 
@@ -84,6 +87,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     HWND hWnd;
     DWORD lastTime = 0;
 
+    VSOutputLogger ^vsOutputLogger = gcnew VSOutputLogger();
+    LogManager::Add(LogType::Log | LogType::Debug, vsOutputLogger);
+
     SecureZeroMemory(&windowClass, sizeof(windowClass));
     windowClass.cbClsExtra = 0;
     windowClass.cbWndExtra = 0;
@@ -128,7 +134,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
 
     ShowWindow(hWnd, SW_SHOWNORMAL);
-
+    LogManager::Write(LogType::Log, "test {0}{1}{2}", 1, 2, 3);
     try
     {
         Game::Initialise(hInstance, hWnd);
@@ -158,8 +164,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
     catch(Exception ^e)
     {
-        /*LogManager::WriteLine(LogType->Error | LogType->Debug,
-            "Fatal Error: {0}\n\nStack trace: {1}", e->message, e->StackTrace);*/
+        LogManager::WriteLine(LogType::Error | LogType::Debug,
+            "Fatal Error: {0}\n\nStack trace: {1}", e->Message, e->StackTrace);
     }
     finally
     {
