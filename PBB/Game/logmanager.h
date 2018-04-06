@@ -23,6 +23,14 @@
 using namespace System;
 using namespace System::Collections::Generic;
 
+/// <summary>
+/// LogManager maintains pools of subscribers that subscribe to certain types of messages; 
+/// currently these are error messages, debug messages and generic log messages.
+/// When LogManager::Write or LogManager::WriteLine is called, all subscribers in the specified pool receive the
+/// message and log or present it, based on how ILog::Write and ILog::WriteLine are implemented by the subscriber.
+/// By design, LogManager handles errors silently.This is so if it fails, it doesn't bring down the rest of the 
+/// program with it.
+/// </summary>
 public ref class LogManager abstract
 {
 private:
