@@ -20,10 +20,19 @@
 
 #include <windows.h>
 
+/// <summary>
+/// Handles the game state, seperating it from the application layer. 
+/// No actual logic related to game play is handled by Game; that's the domain of GameView.
+/// </summary>
 public ref class Game abstract
 {
 
 public:
+    static Game()
+    {
+        IsRunning = true;
+        IsWindowActive = false;
+    }
     /// <summary>
     /// Initialises each subsystem and loads all resources and config information, putting the game 
     /// into a playable state.

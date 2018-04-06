@@ -20,8 +20,7 @@
 
 void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 {
-    IsRunning = true;
-    IsWindowActive = false;
+   
 }
 
 void Game::Render()
