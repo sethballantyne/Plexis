@@ -24,7 +24,7 @@
 /// Handles the game state, seperating it from the application layer. 
 /// No actual logic related to game play is handled by Game; that's the domain of GameView.
 /// </summary>
-public ref class Game abstract
+public ref class Game abstract sealed
 {
 
 public:

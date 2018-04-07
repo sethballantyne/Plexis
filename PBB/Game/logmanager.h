@@ -31,7 +31,7 @@ using namespace System::Collections::Generic;
 /// By design, LogManager handles errors silently.This is so if it fails, it doesn't bring down the rest of the 
 /// program with it.
 /// </summary>
-public ref class LogManager abstract
+public ref class LogManager abstract sealed
 {
 private:
     // subscribers that want to log error messages.
