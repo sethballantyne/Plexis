@@ -40,6 +40,7 @@
 #include "game.h"
 #include "logtype.h"
 #include "logmanager.h"
+#include "messageboxlogger.h"
 #include "version.h"
 #include "vsoutputlogger.h"
 
@@ -87,9 +88,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     HWND hWnd;
     DWORD lastTime = 0;
 
-    VSOutputLogger ^vsOutputLogger = gcnew VSOutputLogger();
-    LogManager::Add(LogType::Log | LogType::Debug, vsOutputLogger);
-
     SecureZeroMemory(&windowClass, sizeof(windowClass));
     windowClass.cbClsExtra = 0;
     windowClass.cbWndExtra = 0;
@@ -133,8 +131,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return -1;
     }
 
+    
     ShowWindow(hWnd, SW_SHOWNORMAL);
-    LogManager::Write(LogType::Log, "test {0}{1}{2}", 1, 2, 3);
+    
+    MessageBoxLogger ^msgBoxLogger = gcnew MessageBoxLogger(hWnd);
+    LogManager::Add(LogType::Error, msgBoxLogger);
+
+#ifdef _DEBUG
+    VSOutputLogger ^vsOutputLogger = gcnew VSOutputLogger();
+    LogManager::Add(LogType::Debug | LogType::Error | LogType::Log, vsOutputLogger);
+#endif
+
+    LogManager::Write(LogType::Error, "test!");
     try
     {
         Game::Initialise(hInstance, hWnd);
