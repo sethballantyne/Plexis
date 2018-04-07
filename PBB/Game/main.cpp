@@ -41,6 +41,7 @@
 #include "logtype.h"
 #include "logmanager.h"
 #include "messageboxlogger.h"
+#include "textfilelogger.h"
 #include "version.h"
 #include "vsoutputlogger.h"
 
@@ -134,15 +135,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     ShowWindow(hWnd, SW_SHOWNORMAL);
     
-    MessageBoxLogger ^msgBoxLogger = gcnew MessageBoxLogger(hWnd);
-    LogManager::Add(LogType::Error, msgBoxLogger);
-
 #ifdef _DEBUG
     VSOutputLogger ^vsOutputLogger = gcnew VSOutputLogger();
     LogManager::Add(LogType::Debug | LogType::Error | LogType::Log, vsOutputLogger);
 #endif
 
-    LogManager::Write(LogType::Error, "test!");
+    MessageBoxLogger ^msgBoxLogger = gcnew MessageBoxLogger(hWnd);
+    LogManager::Add(LogType::Error, msgBoxLogger);
+
+    TextFileLogger ^textFileLogger = nullptr;
+    try
+    {
+        textFileLogger = gcnew TextFileLogger("log.txt");
+    }
+    catch(Exception ^e)
+    {
+        LogManager::Write(LogType::Error, "Failed to open log.txt: {0}", e->Message);
+    }
+    finally
+    {
+        if(textFileLogger != nullptr)
+        {
+            LogManager::Add(LogType::Error | LogType::Debug | LogType::Log, textFileLogger);
+        }
+    }
+
+    
+
+    LogManager::WriteLine(LogType::Error, "test!");
     try
     {
         Game::Initialise(hInstance, hWnd);
@@ -178,6 +198,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     finally
     {
         Game::Shutdown();
+        
+        if(textFileLogger != nullptr)
+        {
+            textFileLogger->Close();
+        }
     }
 
     return msg.wParam;

@@ -80,7 +80,9 @@
     <ClInclude Include="ilog.h" />
     <ClInclude Include="logmanager.h" />
     <ClInclude Include="logtype.h" />
+    <ClInclude Include="messageboxlogger.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="textfilelogger.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="vsoutputlogger.h" />
   </ItemGroup>
@@ -88,6 +90,8 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="messageboxlogger.cpp" />
+    <ClCompile Include="textfilelogger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

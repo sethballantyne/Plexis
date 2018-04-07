@@ -51,6 +51,12 @@
     <ClInclude Include="vsoutputlogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="messageboxlogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textfilelogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -60,6 +66,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="logmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="messageboxlogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textfilelogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
