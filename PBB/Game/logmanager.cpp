@@ -25,7 +25,7 @@ void LogManager::Write(List<ILog ^> ^subscriberPool, String ^message)
     {
         try
         {
-            debugSubscribers[i]->Write(message);
+            subscriberPool[i]->Write(message);
         }
         catch(...)
         {
