@@ -39,6 +39,26 @@ public:
 };
 
 /// <summary>
+/// thrown when a DirectDraw function returns DDERR_DCALREADYCREATED, indicating a device 
+/// context (DC) has already been returned for this surface. Only one DC can be retrieved 
+/// for each surface. 
+/// </summary>
+public ref class DirectDrawDCAlreadyCreatedException : public Exception
+{
+public:
+    DirectDrawDCAlreadyCreatedException() : Exception()
+    {
+        this->HResult = DDERR_DCALREADYCREATED;
+    }
+
+
+    DirectDrawDCAlreadyCreatedException(String ^message) : Exception(message)
+    {
+        this->HResult = DDERR_DCALREADYCREATED;
+    }
+};
+
+/// <summary>
 /// thrown when DDERR_EXCLUSIVEMODEALREADYSET is returned by a call to DirectDraw, indicating an 
 /// attempt was made to set the cooperative level when it was already set to exclusive.
 /// </summary>
