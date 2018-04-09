@@ -378,6 +378,24 @@ public:
 };
 
 /// <summary>
+/// thrown when a DirectDraw function returns DDERR_NOCLIPPERATTACHED, 
+/// indicating no DirectDrawClipper object is attached to the surface object. 
+/// </summary>
+public ref class DirectDrawNoClipperAttachedException : Exception
+{
+public:
+    DirectDrawNoClipperAttachedException() : Exception()
+    {
+        this->HResult = DDERR_NOCLIPPERATTACHED;
+    }
+
+    DirectDrawNoClipperAttachedException(String ^message) : Exception(message)
+    {
+        this->HResult = DDERR_NOCLIPPERATTACHED;
+    }
+};
+
+/// <summary>
 /// thrown when a DirectDraw function returns DDERR_NOCOOPERATIVELEVELSET, indicating a create function 
 /// is called without the IDirectDraw7::SetCooperativeLevel method being called. 
 /// </summary>
