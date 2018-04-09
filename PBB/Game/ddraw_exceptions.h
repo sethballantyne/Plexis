@@ -455,6 +455,7 @@ public:
 /// </summary>
 public ref class DirectDrawNoEmulationException : public Exception
 {
+public:
     DirectDrawNoEmulationException() : Exception()
     {
         this->HResult = DDERR_NOEMULATION;
@@ -685,6 +686,7 @@ public:
 /// </summary>
 public ref class DirectDrawOutOfVideoMemoryException : public Exception
 {
+public:
     DirectDrawOutOfVideoMemoryException() : Exception()
     {
         this->HResult = DDERR_OUTOFVIDEOMEMORY;
