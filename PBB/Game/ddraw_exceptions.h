@@ -207,6 +207,7 @@ public:
 /// </summary>
 public ref class DirectDrawInvalidModeException : public Exception
 {
+public:
     DirectDrawInvalidModeException() : Exception()
     {
         this->HResult = DDERR_INVALIDMODE;
@@ -471,6 +472,7 @@ public ref class DirectDrawNoEmulationException : public Exception
 /// </summary>
 public ref class DirectDrawNoExclusiveModeException : public Exception
 {
+public:
     DirectDrawNoExclusiveModeException() : Exception()
     {
         this->HResult = DDERR_NOEXCLUSIVEMODE;
