@@ -144,8 +144,11 @@ private:
     /// Clips the specified line if either of its points are located off screen, so Video::DrawLine(),
     /// doesn't attempt to access invalid regions of memory when drawing the line.
     /// </summary>
-    /// <param name="line"></param>
+    /// <param name="line">the line to be clipped.</param>
     /// <param name="surfaceDescription"></param>
-    /// <returns></returns>
+    /// <returns>A clipped version of <i>line. If the line didn't need to be clipped, <i>line</i> is 
+    /// returned unmodified.</returns>
+    /// <exception cref="System::ArgumemtException">The lines From and To points are the same, or
+    /// the line is located off the screen and can't be clipped.</exception>
     static Line ^ClipLine(Line ^line, LPDDSURFACEDESC2 surfaceDescription);
 };

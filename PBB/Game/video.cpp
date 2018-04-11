@@ -23,6 +23,7 @@
 #include "surface.h"
 #include "video.h"
 
+using namespace System::Drawing;
 using namespace System::Runtime::InteropServices; // COMException
 
 void Video::AttachClipper(HWND hWnd)
@@ -536,5 +537,259 @@ Surface ^Video::CreateSurface(HBITMAP hBitmap)
     DeleteObject(hdcImage);
 
     return gcnew Surface(lpDDSurface, bitmap.bmWidth, bitmap.bmHeight);
+}
+
+Line ^Video::ClipLine(Line ^line, LPDDSURFACEDESC2 surfaceDescription)
+{
+    const int clipCodeCenter = 0;
+    const int clipCodeWest = 1;
+    const int clipCodeEast = 2;
+    const int clipCodeSouth = 4;
+    const int clipCodeSouthWest = 5;
+    const int clipCodeSouthEast = 6;
+    const int clipCodeNorth = 8;
+    const int clipCodeNorthWest = 9;
+    const int clipCodeNorthEast = 10;
+
+    int fromPointCode = 0;
+    int toPointCode = 0;
+
+    Point tempFromPoint = line->From;
+    Point tempToPoint = line->To;
+
+    System::Drawing::Rectangle ^clipRect = gcnew System::Drawing::Rectangle(0, 0, 
+        surfaceDescription->dwWidth, surfaceDescription->dwHeight);
+
+    if(line->From.Y < 0)
+    {
+        fromPointCode |= clipCodeNorth;
+    }
+    else if(line->From.Y > clipRect->Height)
+    {
+        fromPointCode |= clipCodeSouth;
+    }
+
+    if(line->From.X < 0)
+    {
+        fromPointCode |= clipCodeWest;
+    }
+    else if(line->From.X > clipRect->Width)
+    {
+        fromPointCode |= clipCodeEast;
+    }
+
+    if(line->To.Y < 0)
+    {
+        toPointCode |= clipCodeNorth;
+    }
+    else if(line->To.Y > clipRect->Height)
+    {
+        toPointCode |= clipCodeSouth;
+    }
+
+    if(line->To.X < 0)
+    {
+        toPointCode |= clipCodeWest;
+    }
+    else if(line->To.X > clipRect->Width)
+    {
+        toPointCode |= clipCodeEast;
+    }
+
+    // check if both points match or the line is completely off screen. 
+    // if they do, we can't clip anything because there's nothing to be clipped.
+    if(fromPointCode & toPointCode)
+    {
+        throw gcnew ArgumentException("both points match or the line is completely off screen.");
+    }
+    else if(fromPointCode == 0 && toPointCode == 0)
+    {
+        // neither point is clipped by the bounding rect, so there's nothing more to do.
+        return line;
+    }
+
+    // determine the end clip point for the first point
+    switch(fromPointCode)
+    {
+        case clipCodeNorth:
+            tempFromPoint.Y = clipRect->Top;
+            tempFromPoint.X = line->From.X + 0.5 + (clipRect->Y - line->From.Y) * (line->To.X - line->From.X) / (line->To.Y - line->From.Y);
+            break;
+
+        case clipCodeSouth:
+            tempFromPoint.Y = clipRect->Bottom;
+            tempFromPoint.X = line->From.X + 0.5 + (clipRect->Bottom - line->From.Y) * (line->To.X - line->From.X) / (line->To.Y - line->From.Y);
+            break;
+
+        case clipCodeWest:
+            tempFromPoint.X = clipRect->Left;
+            tempFromPoint.Y = line->From.Y + 0.5 + (clipRect->Left - line->From.X) * (line->To.Y - line->From.Y) / (line->To.X - line->From.X);
+            break;
+
+        case clipCodeEast:
+            tempFromPoint.X = clipRect->Right;
+            tempFromPoint.Y = line->From.Y + 0.5 + (clipRect->Right - line->From.X) * (line->To.Y - line->From.Y) / (line->To.X - line->From.X);
+            break;
+
+            //these cases are more complex, must compute 2 intersections
+        case clipCodeNorthEast:
+            // north horizontal line intersection
+            tempFromPoint.Y = clipRect->Y;
+            tempFromPoint.X = line->From.X + 0.5 + (clipRect->Y - line->From.Y) * (line->To.X - line->From.X) / (line->To.Y - line->From.Y);
+
+            // test if intersection is valid; if so then done, else compute next
+            if(tempFromPoint.X < clipRect->X || tempFromPoint.X > clipRect->Right)
+            {
+                // east vertical line intersection
+                tempFromPoint.X = clipRect->Right;
+                tempFromPoint.Y = line->From.Y + 0.5 + (clipRect->Right - line->From.X) * (line->To.Y - line->From.Y) / (line->To.X - line->From.X);
+            }
+
+            break;
+
+        case clipCodeSouthEast:
+            // south horizontal line intersection
+            tempFromPoint.Y = clipRect->Bottom;
+            tempFromPoint.X = line->From.X + 0.5 + (clipRect->Bottom - line->From.Y) * (line->To.X - line->From.X) / (line->To.Y - line->From.Y);
+
+            // test if intersection is valid; if so then done, else compute next
+            if(tempFromPoint.X < clipRect->X || tempFromPoint.X > clipRect->Right)
+            {
+                //east vertical line intersection
+                tempFromPoint.X = clipRect->Right;
+                tempFromPoint.Y = line->From.Y + 0.5 + (clipRect->Right - line->From.X) * (line->To.Y - line->From.Y) / (line->To.X - line->From.X);
+            }
+
+            break;
+
+        case clipCodeNorthWest:
+            // north horizontal line intersection
+            tempFromPoint.Y = clipRect->Y;
+            tempFromPoint.X = line->From.X + 0.5 + (clipRect->Y - line->From.Y) * (line->To.X - line->From.X) / (line->To.Y - line->From.Y);
+
+            // test if intersection is valid; if so then done, else compute next
+            if(tempFromPoint.X < clipRect->X || tempFromPoint.X > clipRect->Right)
+            {
+                tempFromPoint.X = clipRect->X;
+                tempFromPoint.Y = line->From.Y + 0.5 + (clipRect->X - line->From.X) * (line->To.Y - line->From.Y) / (line->To.X - line->From.X);
+            }
+
+            break;
+
+        case clipCodeSouthWest:
+            // south hline intersection
+            tempFromPoint.Y = clipRect->Bottom;
+            tempFromPoint.X = line->From.X + 0.5 + (clipRect->Bottom - line->From.Y) * (line->To.X - line->From.X) / (line->To.Y - line->From.Y);
+
+            // test if intersection is valid; if so then done, else compute next
+            if(tempFromPoint.X < clipRect->X || tempFromPoint.X > clipRect->Right)
+            {
+                tempFromPoint.X = clipRect->X;
+                tempFromPoint.Y = line->From.Y + 0.5 + (clipRect->X - line->From.X) * (line->To.Y - line->From.Y) / (line->To.X - line->From.X);
+            }
+
+            break;
+
+        default:
+            // log here
+            break;
+    }
+
+    // determine the clipping point for tempToPoint.
+    switch(toPointCode)
+    {
+        case clipCodeNorth:
+            tempToPoint.Y = clipRect->Y;
+            tempToPoint.X = line->To.X + (clipRect->Y - line->To.Y) * (line->From.X - line->To.X) / (line->From.Y - line->To.Y);
+            break;
+
+        case clipCodeSouth:
+            tempToPoint.Y = clipRect->Bottom;
+            tempToPoint.X = line->To.X + (clipRect->Bottom - line->To.Y) * (line->From.X - line->To.X) / (line->From.Y - line->To.Y);
+            break;
+
+        case clipCodeWest:
+            tempToPoint.X = clipRect->X;
+            tempToPoint.Y = line->To.Y + (clipRect->X - line->To.X) * (line->From.Y - line->To.Y) / (line->From.X - line->To.X);
+            break;
+
+        case clipCodeEast:
+            tempToPoint.X = clipRect->Right;
+            tempToPoint.Y = line->To.Y + (clipRect->Right - line->To.X) * (line->From.Y - line->To.Y) / (line->From.X - line->To.X);
+            break;
+
+            // these cases are more complex, must compute 2 intersections
+        case clipCodeNorthEast:
+            // north horizontal line intersection
+            tempToPoint.Y = clipRect->Y;
+            tempToPoint.X = line->To.X + 0.5 + (clipRect->Y - line->To.Y) * (line->From.X - line->To.X) / (line->From.Y - line->To.Y);
+
+            // test if intersection is valid; if so then done, else compute next
+            if(tempToPoint.X < clipRect->X || tempToPoint.X > clipRect->Right)
+            {
+                // east vertical line intersection
+                tempToPoint.X = clipRect->Right;
+                tempToPoint.Y = line->To.Y + 0.5 + (clipRect->Right - line->To.X) * (line->From.Y - line->To.Y) / (line->From.X - line->To.X);
+            }
+
+            break;
+
+        case clipCodeSouthEast:
+            // south horizontal line intersection
+            tempToPoint.Y = clipRect->Bottom;
+            tempToPoint.X = line->To.X + 0.5 + (clipRect->Bottom - line->To.Y) * (line->From.X - line->To.X) / (line->From.Y - line->To.Y);
+
+            // test if intersection is valid; if so then done, else compute next
+            if(tempToPoint.X < clipRect->X || tempToPoint.X > clipRect->Right)
+            {
+                // east vertical line intersection
+                tempToPoint.X = clipRect->Right;
+                tempToPoint.Y = line->To.Y + 0.5 + (clipRect->Right - line->To.X) * (line->From.Y - line->To.Y) / (line->From.X - line->To.X);
+            }
+
+            break;
+
+        case clipCodeNorthWest:
+            // north horizontal line intersection
+            tempToPoint.Y = clipRect->Y;
+            tempToPoint.X = line->To.X + 0.5 + (clipRect->Y - line->To.Y) * (line->From.X - line->To.X) / (line->From.Y - line->To.Y);
+
+            // test if intersection is valid, of so then done, else compute next
+            if(tempToPoint.X < clipRect->X || tempToPoint.X > clipRect->Right)
+            {
+                tempToPoint.X = clipRect->X;
+                tempToPoint.Y = line->To.Y + 0.5 + (clipRect->X - line->To.X)*(line->From.Y - line->To.Y) / (line->From.X - line->To.X);
+            }
+
+            break;
+        case clipCodeSouthWest:
+            // south horizotal line intersection
+            tempToPoint.Y = clipRect->Bottom;
+            tempToPoint.X = line->To.X + 0.5 + (clipRect->Bottom - line->To.Y) * (line->From.X - line->To.X) / (line->From.Y - line->To.Y);
+
+            // test if intersection is valid; if so then done, else compute next
+            if(tempToPoint.X < clipRect->X || tempToPoint.X > clipRect->Right)
+            {
+                tempToPoint.X = clipRect->X;
+                tempToPoint.Y = line->To.Y + 0.5 + (clipRect->X - line->To.X)*(line->From.Y - line->To.Y) / (line->From.X - line->To.X);
+            }
+
+            break;
+
+        default:
+            break;
+    }
+
+    // verify the lines have been clipped
+    if((tempFromPoint.X < clipRect->X) || (tempFromPoint.X > clipRect->Right) ||
+        (tempFromPoint.Y < clipRect->Y) || (tempFromPoint.Y > clipRect->Bottom) ||
+        (tempToPoint.X < clipRect->X) || (tempToPoint.X > clipRect->Right) ||
+        (tempToPoint.Y < clipRect->Y) || (tempToPoint.Y > clipRect->Bottom))
+    {
+        // nope. 
+        throw gcnew ArgumentException("Failed to clip the line, so have fun with that.");
+    }
+
+    return gcnew Line(line->Colour, tempFromPoint, tempToPoint);
 }
 
