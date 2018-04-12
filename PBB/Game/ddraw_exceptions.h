@@ -683,6 +683,24 @@ public:
 };
 
 /// <summary>
+/// thrown when a DirectDraw function returns DDERR_NOTLOCKED, indicating an attempt to 
+/// unlock a surface has been made when it wasn't locked in the first place.
+/// </summary>
+public ref class DirectDrawNotLockedException : public Exception
+{
+public:
+    DirectDrawNotLockedException() : Exception()
+    {
+        this->HResult = DDERR_NOTLOCKED;
+    }
+
+    DirectDrawNotLockedException(String ^message) : Exception(message)
+    {
+        this->HResult = DDERR_NOTLOCKED;
+    }
+};
+
+/// <summary>
 /// thrown when a DirectDraw function returns DDERR_NOZBUFFERHW, indicating the hardware doesn't have 
 /// Z buffer support. 
 /// </summary>
