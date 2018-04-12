@@ -793,3 +793,367 @@ Line ^Video::ClipLine(Line ^line, LPDDSURFACEDESC2 surfaceDescription)
     return gcnew Line(line->Colour, tempFromPoint, tempToPoint);
 }
 
+void Video::DrawLine(Line ^line, LPDDSURFACEDESC2 surfaceDescription)
+{
+    // difference between both points on the X axis
+    int deltaX;
+
+    // difference between both points on the Y axis.
+    int deltaY;
+
+    // the number of pixels to move along the X axis when drawing
+    int xIncrementAmount;
+
+    // the number of pixels to move along the Y axis when drawing
+    int yIncrementAmount;
+
+    UINT *videoBuffer = (UINT *) surfaceDescription->lpSurface;
+    int pitch = surfaceDescription->lPitch >> 2;
+
+    //-------------------------------------------------------------------------
+    // determine the angle of the lines slope.
+    // ------------------------------------------------------------------------
+    deltaX = line->To.X - line->From.X;
+    deltaY = line->To.Y - line->From.Y;
+
+    if(deltaX >= 0)
+    {
+        // slope is to the right
+        xIncrementAmount = 1;
+    }
+    else
+    {
+        // sloping to the left
+        xIncrementAmount = -1;
+        deltaX = -deltaX;
+    }
+
+    if(deltaY >= 0)
+    {
+        // sloping downwards.
+        yIncrementAmount = 1;
+    }
+    else
+    {
+        // sloping upwards.
+        yIncrementAmount = -1;
+        deltaY = -deltaY;
+    }
+
+    int dx2 = deltaX << 1;
+    int dy2 = deltaY << 1;
+
+    int xCoordinate = line->From.X;
+    int yCoordinate = line->From.Y;
+
+    int error;
+    
+    unsigned int colour = ARGBTo32Bit(0, line->Colour.R, line->Colour.G, line->Colour.B);
+    if(deltaX > deltaY)
+    {
+        error = dy2 - deltaX;
+
+        for(int i = 0; i < deltaX; i++)
+        {
+            // draw the pixel
+            videoBuffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] = colour;
+
+            if(error >= 0)
+            {
+                error -= dx2;
+                yCoordinate += yIncrementAmount;
+            }
+
+            error += dy2;
+            xCoordinate += xIncrementAmount;
+        }
+    }
+    else
+    {
+        error = dx2 - deltaY;
+
+        for(int i = 0; i < deltaY; i++)
+        {
+            videoBuffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] = colour;
+            if(error >= 0)
+            {
+                error -= dy2;
+                xCoordinate += xIncrementAmount;
+            }
+
+            error += dx2;
+            yCoordinate += yIncrementAmount;
+        }
+    }
+}
+
+void Video::Initialise()
+{
+    // magenta
+    colourKey = ARGBTo32Bit(0, 255, 0, 255);
+
+    // Note: Passing NULL in the first argument on machines with multiple monitors will
+    // cause DirectDraw to run in emulation mode when the normal coperatative level is set.
+    // see https://msdn.microsoft.com/en-us/library/windows/desktop/gg426118(v=vs.85).aspx.
+    pin_ptr<LPDIRECTDRAW7> pinnedlpDD = &lpDD;
+    HRESULT result = DirectDrawCreateEx(
+        NULL,                   // pointer to a devices GUID. NULL = use default device.
+        (void **)pinnedlpDD,    // argument will be set to a valid DirectDraw7 interface pointer if the call succeeds.
+        IID_IDirectDraw7,       // must be IID_IDirectDraw7; function fails with DDERR_INVALIDPARAMS otherwise. 
+        NULL);                  // reserved for future use, currently fails if NULL is not passed.
+
+    if(result != DD_OK)
+    {
+        switch(result)
+        {
+            case DDERR_INVALIDDIRECTDRAWGUID:
+                throw gcnew DirectDrawInvalidGUIDException("IDirectDraw7::CreateDirectDrawEx: Invalid GUID passed to DirectDrawCreateEx");
+                break;
+
+            case DDERR_DIRECTDRAWALREADYCREATED:
+                throw gcnew DirectDrawAlreadyCreatedException("IDirectDraw7::CreateDirectDrawEx: Direct Draw has already been initialised.");
+                break;
+
+            case DDERR_INVALIDPARAMS:
+                throw gcnew DirectDrawInvalidParametersException("IDirectDraw7::CreateDirectDrawEx: Invalid parameters passed to DirectDrawCreateEx");
+                break;
+
+            case DDERR_GENERIC:
+                throw gcnew DirectDrawGenericException("IDirectDraw7::CreateDirectDrawEx: Undefined error condition returned by DirectDrawCreateEx. Consult your local psychic.");
+                break;
+
+            case DDERR_NODIRECTDRAWHW:
+                throw gcnew DirectDrawNoHardwareException("IDirectDraw7::CreateDirectDrawEx: The specified driver doesn't support DirectDraw hardware acceleration.");
+                break;
+            
+            case DDERR_OUTOFMEMORY:
+                throw gcnew OutOfMemoryException("IDirectDraw7::CreateDirectDrawEx: Not enough memory available to initialise DirectDraw.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectDraw7::CreateDirectDrawEx failed.", result);
+        }
+    }
+}
+
+void Video::Clear(unsigned int R, unsigned int G, unsigned B)
+{
+    DDBLTFX ddBltFX;
+
+    SecureZeroMemory(&ddBltFX, sizeof(DDBLTFX));
+    ddBltFX.dwFillColor = ARGBTo32Bit(255, R, G, B);
+    
+    HRESULT result = lpDDSSecondarySurface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddBltFX);
+    if(result != DD_OK)
+    {
+        switch(result)
+        {
+            case DDERR_GENERIC:
+                throw gcnew DirectDrawGenericException("IDirectDrawSurface7::Blt: failed, fucked if I know why.");
+                break;
+
+            case DDERR_INVALIDCLIPLIST:
+                throw gcnew DirectDrawInvalidClipListException("IDirectDrawSurface7::Blt: DirectDraw does not support the provided clip list.");
+                break;
+
+            case DDERR_INVALIDOBJECT:
+                throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Blt: DirectDraw received a pointer that was an invalid DirectDraw object.");
+                break;
+
+            case DDERR_INVALIDPARAMS:
+                throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Blt: one or more of the parameters passed to the method are incorrect.");
+                break;
+
+            case DDERR_INVALIDRECT:
+                throw gcnew DirectDrawInvalidRectException("IDirectDrawSurface7::Blt: the provided rectangle was invalid.");
+                break;
+
+            case DDERR_NOALPHAHW:
+                throw gcnew DirectDrawNoAlphaHardwareException("IDirectDrawSurface7::Blt: no alpha acceleration hardware is present or available.");
+                break;
+
+            case DDERR_NOBLTHW:
+                throw gcnew DirectDrawNoBlitHardwareException("IDirectDrawSurface7::Blt: no blitter hardware is present.");
+                break;
+
+            case DDERR_NOCLIPLIST:
+                throw gcnew DirectDrawNoClipListException("IDirectDrawSurface7::Blt: no clip list is available.");
+                break;
+
+            case DDERR_NODDROPSHW:
+                throw gcnew DirectDrawNoDDRasterOperationHardwareException("IDirectDrawSurface7::Blt: no DirectDraw raster operation (ROP) hardware is available.");
+                break;
+
+            case DDERR_NOMIRRORHW:
+                throw gcnew DirectDrawNoMirrorHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no mirroring hardware is present or available.");
+                break;
+
+            case DDERR_NORASTEROPHW:
+                throw gcnew DirectDrawNoRasterOperationHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no appropriate raster operation hardware is present or available.");
+                break;
+
+            case DDERR_NOROTATIONHW:
+                throw gcnew DirectDrawNoRotationHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no rotation hardware is present or available.");
+                break;
+
+            case DDERR_NOSTRETCHHW:
+                throw gcnew DirectDrawNoStretchHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because there is no hardware support for stretching.");
+                break;
+
+            case DDERR_NOZBUFFERHW:
+                throw gcnew DirectDrawNoZBufferHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because there is no hardware support for Z-buffers.");
+                break;
+
+            case DDERR_SURFACEBUSY:
+                throw gcnew DirectDrawSurfaceBusyException("IDirectDrawSurface7::Blt: access to the surface is refused because the surface is locked by another thread.");
+                break;
+
+            case DDERR_SURFACELOST:
+                throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Blt: access to the surface is refused because the surface memory is gone.");
+                break;
+
+            case DDERR_UNSUPPORTED:
+                throw gcnew DirectDrawUnsupportedException("IDirectDrawSurface7::Blt: the operation is not supported.");
+                break;
+
+            case DDERR_WASSTILLDRAWING:
+                throw gcnew DirectDrawWasStillDrawingException("IDirectDrawSurface7::Blt: the previous blit operation is incomplete.");
+
+            default:
+                throw gcnew COMException("IDirectDrawSurface7::Blt failed.", result);
+                break;
+        }
+    }
+}
+
+Surface ^Video::CreateSurface(String ^path)
+{
+    if(path == nullptr)
+    {
+        throw gcnew ArgumentNullException("path");
+    }
+    else if(path == String::Empty)
+    {
+        throw gcnew ArgumentException("path evaluates to String::Empty.");
+    }
+
+    pin_ptr<const wchar_t> pinnedPath = PtrToStringChars(path);
+
+    HBITMAP hBitmap = (HBITMAP) LoadImage(NULL, pinnedPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    if(!hBitmap)
+    {
+        throw gcnew Win32Exception(Win32Exception::Format("LoadImage"));
+    }
+
+    try
+    {
+        return Video::CreateSurface(hBitmap);
+    }
+    catch(...)
+    {
+        throw;
+    }
+    finally
+    {
+        DeleteObject(hBitmap);
+    }
+}
+
+void Video::DrawLines(array<Line ^>^ lines)
+{
+    if(lines == nullptr)
+    {
+        throw gcnew ArgumentNullException("lines");
+    }
+    else if(lines->Length == 0)
+    {
+        throw gcnew ArgumentException("lines is an empty array.");
+    }
+
+    DDSURFACEDESC2 ddSD;
+    SecureZeroMemory(&ddSD, sizeof(ddSD));
+    ddSD.dwSize = sizeof(DDSURFACEDESC2);
+
+    HRESULT result = lpDDSSecondarySurface->Lock(NULL, &ddSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL);
+    if(result != DD_OK)
+    {
+        switch(result)
+        {
+            case DDERR_INVALIDOBJECT:
+                throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Lock: DirectDraw received a pointer that was an invalid DirectDraw object.");
+                break;
+
+            case DDERR_INVALIDPARAMS:
+                throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Lock: one or more of the parameters passed to the method are incorrect.");
+                break;
+
+            case DDERR_OUTOFMEMORY:
+                throw gcnew OutOfMemoryException("IDirectDrawSurface7::Lock: ");
+                break;
+
+            case DDERR_SURFACEBUSY:
+                throw gcnew DirectDrawSurfaceBusyException("IDirectDrawSurface7::Lock: access to the surface is refused because the surface is locked by another thread.");
+                break;
+
+            case DDERR_SURFACELOST:
+                throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Lock: access to the surface is refused because the surface memory is gone.");
+                break;
+
+            case DDERR_WASSTILLDRAWING:
+                throw gcnew DirectDrawWasStillDrawingException("IDirectDrawSurface7::Lock: the previous blit operation is incomplete.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectDrawSurface7::Lock failed.", result);
+                break;
+        }
+    }
+    else
+    {
+        for(int i = 0; i < lines->Length; i++)
+        {
+            try
+            {
+                Line ^clippedLine = Video::ClipLine(lines[i], &ddSD);
+                Video::DrawLine(clippedLine, &ddSD);
+            }
+            catch(...)
+            {
+                throw;
+            }
+        }
+
+        result = lpDDSSecondarySurface->Unlock(NULL);
+        if(result != DD_OK)
+        {
+            switch(result)
+            {
+                case DDERR_GENERIC:
+                    throw gcnew DirectDrawGenericException("IDirectDrawSurface7::Unlock: DirectDraw returned an unspecified error condition.");
+                    break;
+
+                case DDERR_INVALIDOBJECT:
+                    throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Unlock: DirectDraw received a pointer that was an invalid DirectDraw object.");
+                    break;
+
+                case DDERR_INVALIDPARAMS:
+                    throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Unlock: one or more of the parameters passed to the method are incorrect.");
+                    break;
+
+                case DDERR_INVALIDRECT:
+                    throw gcnew DirectDrawInvalidRectException("IDirectDrawSurface7::Unlock: the rectangle coordinates used by the surface were invalid.");
+                    break;
+
+                case DDERR_NOTLOCKED:
+                    throw gcnew DirectDrawNotLockedException("IDirectDrawSurface7::Unlock: attempting to unlock the surface when it wasn't locked.");
+                    break;
+
+                case DDERR_SURFACELOST:
+                    throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Unlock: access to the surface is refused because the surface memory is gone.");
+
+                default:
+                    break;
+            }
+        }
+    }
+}

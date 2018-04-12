@@ -141,7 +141,7 @@ private:
     static Surface ^CreateSurface(HBITMAP hBitmap);
 
     /// <summary>
-    /// Clips the specified line if either of its points are located off screen, so Video::DrawLine(),
+    /// Clips the specified line if either of its points are located off screen, so Video::DrawLine()
     /// doesn't attempt to access invalid regions of memory when drawing the line.
     /// </summary>
     /// <param name="line">the line to be clipped.</param>
@@ -151,4 +151,97 @@ private:
     /// <exception cref="System::ArgumemtException">The lines From and To points are the same, or
     /// the line is located off the screen and can't be clipped.</exception>
     static Line ^ClipLine(Line ^line, LPDDSURFACEDESC2 surfaceDescription);
+
+    /// <summary>
+    /// Draws <i>line</i> to the backbuffer using the Bresenham line drawing algorithm.
+    /// </summary>
+    /// <param name="line">the line to drawn.</param>
+    /// <param name="surfaceDescription"></param>
+    /// <remarks>Clip the line via Video::ClipLine() before using this method, else bad things will happen.</remarks>
+    static void DrawLine(Line ^line, LPDDSURFACEDESC2 surfaceDescription);
+
+public:
+    /// <summary>
+    /// Initialises DirectDraw. This method must be called before any other Video methods can
+    /// be used.
+    /// </summary>
+    /// <exception cref="DirectDrawInvalidGUIDException">The GUID used to initialise DirectDraw is not a valid DirectDraw driver identifier.</exception>
+    /// <exception cref="DirectDrawAlreadyCreatedException">A DirectDraw object representing this driver has already been created.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">One or more of the parameters used to initialise DirectDraw was incorrect.</exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an undefined error condition.</exception>
+    /// <exception cref="DirectDrawNoHardwareException">Hardware-only DirectDraw object creation is not possible; the driver does not support any hardware. </exception>
+    /// <exception cref="OutOfMemoryException">There's not enough memory available to initialise DirectDraw.</exception>
+    /// <exception cref="System::Runtime::InteropServices::COMException">DirectDraw returned an undefined COM error.</exception>
+    static void Initialise();
+
+    /// <summary>
+    /// Clears the backbuffer with the specified colour.
+    /// </summary>
+    /// <param name="colour"></param>
+    static void Clear(Color ^colour)
+    {
+        try
+        {
+            Video::Clear(colour->R, colour->G, colour->B);
+        }
+        catch(...)
+        {
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Clears the backbuffer with the specified colour.
+    /// </summary>
+    /// <param name="R"></param>
+    /// <param name="G"></param>
+    /// <param name="B"></param>
+    /// <exception cref="System::Runtime::InteropServices::COMException">An unspecified COM error was returned.</exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+    /// <exception cref="DirectDrawInvalidClipListException">DirectDraw does not support the provided clip list.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidRectException">the rectangle coordinates used by the surface were invalid.</exception>
+    /// <exception cref="DirectDrawNoAlphaHardwareException">no alpha acceleration hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoBlitHardwareException">no blitter hardware is present.</exception>
+    /// <exception cref="DirectDrawNoClipListException">no clip list is available.</exception>
+    /// <exception cref="DirectDrawNoDDRasterOperationHardwareException">no DirectDraw raster operation (ROP) hardware is available.</exception>
+    /// <exception cref="DirectDrawNoMirrorHardwareException">the operation cannot be carried out because no mirroring hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRasterOperationHardwareException">the operation cannot be carried out because no appropriate raster operation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRotationHardwareException">the operation cannot be carried out because no rotation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoStretchHardwareException">the operation cannot be carried out because there is no hardware support for stretching.</exception>
+    /// <exception cref="DirectDrawNoZBufferHardwareException">the operation cannot be carried out because there is no hardware support for Z-buffers.</exception>
+    /// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+    static void Clear(unsigned int R, unsigned int G, unsigned int B);
+
+    /// <summary>
+    /// Attempts to load a bitmap as a DirectDraw surface.
+    /// </summary>
+    /// <param name="path">The image to load.</param>
+    /// <returns>The specified bitmap as a Surface object.</returns>
+    /// <exception cref="System::ArgumentException"><i>path</i> evaluates to String::Empty.</exception>
+    /// <exception cref="System::ArgumentNullException"><i>path</i> is <b>null</b>.</exception>
+    /// <exception cref="Win32Exception">The function was unable to load the image at the specified path.</exception>
+    static Surface ^CreateSurface(String ^path);
+
+    /// <summary>
+    /// Draws one or more clipped lines using the Bresenham line algorithm.
+    /// </summary>
+    /// <param name="lines">the line(s) to draw to the backbuffer.</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="COMException"></exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidRectException">the rectangle coordinates used by the surface were invalid.</exception>
+    /// <exception cref="DirectDrawNotLockedException">Attempted to unlock a surface that wasn't locked.</exception>
+    /// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+    /// <exception cref="OutOfMemoryException">Not enough memory available to complete the operation.</exception>
+    static void DrawLines(array<Line ^> ^lines);
 };
