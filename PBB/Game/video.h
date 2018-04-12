@@ -244,4 +244,19 @@ public:
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     /// <exception cref="OutOfMemoryException">Not enough memory available to complete the operation.</exception>
     static void DrawLines(array<Line ^> ^lines);
+
+    /// <summary>
+    /// Flips the buffers, causing the contents of the backbuffer to be rendered to the screen.
+    /// </summary>
+    /// <exception cref="COMException">DirectDraw returned an unspecified COM error.</exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawNoFlipHardwareException">flipping visible surfaces is not supported by the video hardware.</exception>
+    /// <exception cref="DirectDrawNotFlippableException">Attempting to flip a surface that cannot be flipped.</exception>
+    /// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+    static void Flip();
 };

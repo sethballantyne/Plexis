@@ -1157,3 +1157,57 @@ void Video::DrawLines(array<Line ^>^ lines)
         }
     }
 }
+
+void Video::Flip()
+{
+    // DDFLIP_WAIT ensures it'll keep trying to flip until successful if the HAL returns
+    // DDERR_WASSTILLDRAWING. DDERR_WASSTILLDRAWING is handled below anyway, for the sake of completeness.
+    HRESULT result = lpDDSPrimarySurface->Flip(NULL, DDFLIP_WAIT);
+    if(result != DD_OK)
+    {
+        switch(result)
+        {
+            case DDERR_GENERIC:
+                throw gcnew DirectDrawGenericException("IDirectDrawSurface7::Flip: DirectDraw returned an unspecified error condition.");
+                break;
+
+            case DDERR_INVALIDOBJECT:
+                throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Flip: DirectDraw received a pointer that was an invalid DirectDraw object.");
+                break;
+
+            case DDERR_INVALIDPARAMS:
+                throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Flip: one or more of the parameters passed to the method are incorrect.");
+                break;
+        
+            case DDERR_NOFLIPHW:
+                throw gcnew DirectDrawNoFlipHardwareException("IDirectDrawSurface7::Flip: flipping visible surfaces is not supported by the video hardware.");
+                break;
+
+            case DDERR_NOTFLIPPABLE:
+                throw gcnew DirectDrawNotFlippableException("IDirectDrawSurface7::Flip: attempting to flip a surface that cannot be flipped.");
+                break;
+
+            case DDERR_SURFACEBUSY:
+                throw gcnew DirectDrawSurfaceBusyException("IDirectDrawSurface7::Flip: access to the surface is refused because the surface is locked by another thread.");
+                break;
+
+            case DDERR_SURFACELOST:
+                throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Flip: access to the surface is refused because the surface memory is gone.");
+                break;
+
+            case DDERR_UNSUPPORTED:
+                throw gcnew DirectDrawUnsupportedException("IDirectDrawSurface7::Flip: the operation is not supported.");
+                break;
+
+            // probably won't throw this because of the DDFLIP_WAIT flag used in
+            // the call to IDirectDrawSurface7::Flip, but it's here for completeness.
+            case DDERR_WASSTILLDRAWING:
+                throw gcnew DirectDrawWasStillDrawingException("IDirectDrawSurface7::Flip: the previous blit operation is incomplete.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectDrawSurface7::Flip() failed.\n");
+                break;
+        }
+    }
+}
