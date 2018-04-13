@@ -1306,3 +1306,62 @@ void Video::Blit(int x, int y, Surface ^surface)
         }
     }
 }
+
+void Video::Restore()
+{
+    // the return values mentioned on MSDN for RestoreAllSurfaces() are wrong.
+    HRESULT result = lpDD->RestoreAllSurfaces();
+    if(result != DD_OK)
+    {
+        switch(result)
+        {
+            case DDERR_GENERIC:
+                throw gcnew DirectDrawGenericException("IDirectDraw7::RestoreAllSurfaces: DirectDraw "
+                    "returned an unspecified error condition.");
+                break;
+
+            case DDERR_IMPLICITLYCREATED:
+                throw gcnew DirectDrawImplicitlyCreatedException("IDirectDraw7::RestoreAllSurfaces: the "
+                    "surface cannot be restored because it is an implicitly created surface.");
+                break;
+
+            case DDERR_INCOMPATIBLEPRIMARY:
+                throw gcnew DirectDrawIncompatiblePrimarySurfaceException("IDirectDraw7::RestoreAllSurfaces: "
+                    "the primary surface creation request does not match the existing primary surface.");
+                break;
+
+            case DDERR_INVALIDOBJECT:
+                throw gcnew DirectDrawInvalidObjectException("IDirectDraw7::RestoreAllSurfaces: DirectDraw received a pointer that was an invalid DirectDraw object.");
+                break;
+
+            case DDERR_INVALIDPARAMS:
+                throw gcnew DirectDrawInvalidParametersException("IDirectDraw7::RestoreAllSurfaces: one or "
+                    "more of the parameters passed to the method are incorrect.");
+                break;
+
+            case DDERR_NOEXCLUSIVEMODE:
+                throw gcnew DirectDrawNoExclusiveModeException("IDirectDraw7::RestoreAllSurfaces: "
+                    "exclusive mode is required to complete the operation.");
+                break;
+
+            case DDERR_OUTOFMEMORY:
+                throw gcnew System::OutOfMemoryException("IDirectDraw7::RestoreAllSurfaces: there's not enough "
+                    "memory available to complete the operation.");
+                break;
+
+            case DDERR_UNSUPPORTED:
+                throw gcnew DirectDrawUnsupportedException("IDirectDraw7::RestoreAllSurfaces: the "
+                    "operation is not supported.");
+                break;
+
+            case DDERR_WRONGMODE:
+                throw gcnew DirectDrawWrongModeException("IDirectDraw7::RestoreAllSurfaces: the "
+                    "surface cannot be restored because it was created in a different mode.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectDraw7::RestoreAllSurfaces failed.", result);
+                break;
+        }
+    }
+}

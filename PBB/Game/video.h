@@ -90,7 +90,7 @@ private:
     /// <exception cref="DirectDrawNoAlphaHardwareException">the video device doesn't support alpha hardware acceleration or it's unavailable.</exception>
     /// <exception cref="DirectDrawNoCooperativeLevelSetException">attempting to create a surface without first setting the cooperative level.</exception>
     /// <exception cref="DirectDrawNoEmulationException">software emulation isn't available.</exception>
-    /// <exception cref="DirectDrawNoExclusiveModeException">exclusive mode required to complete the operation.</exception>
+    /// <exception cref="DirectDrawNoExclusiveModeException">exclusive mode is required to complete the operation.</exception>
     /// <exception cref="DirectDrawNoFlipHardwareException">flipping visible surfaces is not supported by the video hardware.</exception>
     /// <exception cref="DirectDrawNoHardwareException">the current device doesn't support hardware-only DirectDraw acceleration.</exception>
     /// <exception cref="DirectDrawNoMipMapHardwareException">unable to complete the operation because mipmapping isn't supported by the hardware or is not available.</exception>
@@ -287,4 +287,20 @@ public:
     /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     static void Blit(int x, int y, Surface ^surface);
+
+    /// <summary>
+    /// Attempts to restore the primary and secondary buffers. Video::Restore() should only be called when a Video function
+    /// throws DirectDrawSurfaceLostException. If the method fails, DirectDraw has to be shutdown and reinitialised.
+    /// </summary>
+    /// <exception cref="System::Runtime::InteropServices::COMException">An unspecified COM error was returned.</exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+    /// <exception cref="DirectDrawImplicitlyCreatedException">the surface cannot be restored because it is an implicitly created surface.</exception>
+    /// <exception cref="DirectDrawIncompatiblePrimarySurfaceException">the primary surface creation request does not match the existing primary surface.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawNoExclusiveModeException">exclusive mode is required to complete the operation.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawWrongModeException">surface cannot be restored because it was created in a different mode.</exception>
+    /// <exception cref="System::OutOfMemoryException">Not enough memory available to complete the operation.</exception>
+    static void Restore();
 };
