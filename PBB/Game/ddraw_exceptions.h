@@ -841,3 +841,21 @@ public:
         this->HResult = DDERR_WASSTILLDRAWING;
     }
 };
+
+/// <summary>
+/// thrown when DDERR_WRONGMODE is returned by a DirectDraw call, indicating the 
+/// surface cannot be restored because it was created in a different mode. 
+/// </summary>
+public ref class DirectDrawWrongModeException : public Exception
+{
+public:
+    DirectDrawWrongModeException() : Exception()
+    {
+        this->HResult = DDERR_WRONGMODE;
+    }
+
+    DirectDrawWrongModeException(String ^message) : Exception(message)
+    {
+        this->HResult = DDERR_WRONGMODE;
+    }
+};
