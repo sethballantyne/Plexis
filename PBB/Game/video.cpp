@@ -1091,7 +1091,7 @@ void Video::DrawLines(array<Line ^>^ lines)
                 break;
 
             case DDERR_OUTOFMEMORY:
-                throw gcnew OutOfMemoryException("IDirectDrawSurface7::Lock: ");
+                throw gcnew OutOfMemoryException("IDirectDrawSurface7::Lock: not enough memory available to complete the operation.");
                 break;
 
             case DDERR_SURFACEBUSY:
