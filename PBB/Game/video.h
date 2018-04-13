@@ -160,6 +160,19 @@ private:
     /// <remarks>Clip the line via Video::ClipLine() before using this method, else bad things will happen.</remarks>
     static void DrawLine(Line ^line, LPDDSURFACEDESC2 surfaceDescription);
 
+    /// <summary>
+    /// Internal function used to release DirectDraw objects.
+    /// </summary>
+    /// <param name="ddUnknown">the object to release.</param>
+    static void SafeRelease(IUnknown *ddUnknown)
+    {
+        if(ddUnknown != NULL)
+        {
+            ddUnknown->Release();
+            ddUnknown = NULL;
+        }
+    }
+
 public:
     /// <summary>
     /// Initialises DirectDraw. This method must be called before any other Video methods can
@@ -303,4 +316,27 @@ public:
     /// <exception cref="DirectDrawWrongModeException">surface cannot be restored because it was created in a different mode.</exception>
     /// <exception cref="System::OutOfMemoryException">Not enough memory available to complete the operation.</exception>
     static void Restore();
+
+    /// <summary>
+    /// Creates a fullscreen window at the specified resolution.
+    /// </summary>
+    /// <param name="hWnd">The handle of the window that's to be used.</param>
+    /// <param name="width">the desired width in pixels.</param>
+    /// <param name="height">the desired height in pixels.</param>
+    /// <param name="bitsPerPixel">the desired bit count.</param>
+    /// <exception cref="System::ArgumentNullException"><i>hWnd</i> is <b>null</b>.</exception>
+    /// <remarks>Video currently only supports 32 bit colour.</remarks>
+    static void SetDisplayMode(HWND hWnd, unsigned int width, unsigned int height, unsigned int bitsPerPixel = 32);
+    
+    /// <summary>
+    /// Shutsdown the video subsystem. Once this method has been called, Video::Initialise() must
+    /// be called again before any the methods in the Video class can be used.
+    /// </summary>
+    static void Shutdown()
+    {
+        SafeRelease(lpDDSPrimarySurface);
+        SafeRelease(lpDDSSecondarySurface);
+        SafeRelease(lpDDClipper);
+        SafeRelease(lpDD);
+    }
 };

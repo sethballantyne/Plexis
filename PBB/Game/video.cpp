@@ -1365,3 +1365,33 @@ void Video::Restore()
         }
     }
 }
+
+void Video::SetDisplayMode(HWND hWnd, unsigned int width, unsigned int height, unsigned int bitsPerPixel)
+{
+    if(!hWnd)
+    {
+        throw gcnew ArgumentNullException("hWnd");
+    }
+
+    // this method was originally supposed to support window and fullscreen modes.
+    // this is here as a temporary measure for when it windowed mode is (finally) added
+    bool fullscreen = true;
+
+    // free the surfaces on the off chance that the function is called by the user due to 
+    // DirectDrawWrongModeException being thrown(they have to be recreated if that's the case). 
+    SafeRelease(lpDDSPrimarySurface);
+    SafeRelease(lpDDSSecondarySurface);
+    SafeRelease(lpDDClipper);
+
+    try
+    {
+        if(fullscreen)
+        {
+            Video::CreateFullScreenWindow(hWnd, width, height, bitsPerPixel);
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
