@@ -16,21 +16,97 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#include "exceptions.h"
 #include "game.h"
+#include "logmanager.h"
+#include "video.h"
+
+void Game::RestoreSurfaces()
+{
+    try
+    {
+        Video::Restore();
+    }
+    catch(DirectDrawWrongModeException ^)
+    {
+        try
+        {
+            Video::SetDisplayMode(Game::gamehWnd, windowWidth, windowHeight, bitsPerPixel);
+        }
+        catch(...)
+        {
+            throw;
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
 
 void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 {
-   
+    if(!hWnd)
+    {
+        throw gcnew ArgumentNullException("hWnd");
+    }
+    else if(!hInstance)
+    {
+        throw gcnew ArgumentNullException("hInstance");
+    }
+    else
+    {
+        Game::gamehWnd = hWnd;
+    }
+
+    try
+    {
+        LogManager::WriteLine(LogType::Log, "Initialising Video\n");
+        Video::Initialise();
+
+        LogManager::WriteLine(LogType::Log,
+            "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bitsPerPixel);
+        Video::SetDisplayMode(hWnd, windowWidth, windowHeight, bitsPerPixel);
+    }
+    catch(...)
+    {
+        throw;
+    }
 }
 
 void Game::Render()
 {
-
+    try
+    {
+        Video::Clear(Color::Black);
+        Video::Flip();
+    }
+    catch(DirectDrawSurfaceLostException ^)
+    {
+        try
+        {
+            if(Game::IsRunning)
+                RestoreSurfaces();
+        }
+        catch(...)
+        {
+            // failed to restore surfaces, which means its time to either
+            // reload everything or pack up and go home.
+            throw;
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
 }
 
 void Game::Shutdown()
 {
     IsRunning = false;
+
+    LogManager::WriteLine(LogType::Log, "Shutting down Video\n");
+    Video::Shutdown();
 }
 
 void Game::Update()

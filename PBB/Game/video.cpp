@@ -220,8 +220,9 @@ void Video::CreateFullScreenWindow(HWND hWnd, unsigned int width, unsigned int h
 
     // create the primary surface
     DDSURFACEDESC2 ddSD;
-    SecureZeroMemory(&ddSD, sizeof(ddSD));
 
+    SecureZeroMemory(&ddSD, sizeof(ddSD));
+    ddSD.dwSize = sizeof(DDSURFACEDESC2);
     ddSD.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
     ddSD.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE | DDSCAPS_COMPLEX | DDSCAPS_FLIP;
     ddSD.dwBackBufferCount = 1;
@@ -899,7 +900,7 @@ void Video::Initialise()
     HRESULT result = DirectDrawCreateEx(
         NULL,                   // pointer to a devices GUID. NULL = use default device.
         (void **)pinnedlpDD,    // argument will be set to a valid DirectDraw7 interface pointer if the call succeeds.
-        IID_IDirectDraw7,       // must be IID_IDirectDraw7; function fails with DDERR_INVALIDPARAMS otherwise. 
+        IID_IDirectDraw7,           // must be IID_IDirectDraw7; function fails with DDERR_INVALIDPARAMS otherwise. 
         NULL);                  // reserved for future use, currently fails if NULL is not passed.
 
     if(result != DD_OK)
@@ -942,7 +943,8 @@ void Video::Clear(unsigned int R, unsigned int G, unsigned B)
 
     SecureZeroMemory(&ddBltFX, sizeof(DDBLTFX));
     ddBltFX.dwFillColor = ARGBTo32Bit(255, R, G, B);
-    
+    ddBltFX.dwSize = sizeof(DDBLTFX);
+
     HRESULT result = lpDDSSecondarySurface->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddBltFX);
     if(result != DD_OK)
     {
@@ -1366,7 +1368,7 @@ void Video::Restore()
     }
 }
 
-void Video::SetDisplayMode(HWND hWnd, unsigned int width, unsigned int height, unsigned int bitsPerPixel)
+void Video::SetDisplayMode(HWND hWnd, const unsigned int width, const unsigned int height, const unsigned int bitsPerPixel)
 {
     if(!hWnd)
     {

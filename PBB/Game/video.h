@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 #pragma once
+
 #include <ddraw.h>
 #include "line.h"
 #include "surface.h"
@@ -166,6 +167,7 @@ private:
     /// <param name="ddUnknown">the object to release.</param>
     static void SafeRelease(IUnknown *ddUnknown)
     {
+        //pin_ptr<IUnknown> pinnedPtr = ddUnknown;
         if(ddUnknown != NULL)
         {
             ddUnknown->Release();
@@ -326,7 +328,7 @@ public:
     /// <param name="bitsPerPixel">the desired bit count.</param>
     /// <exception cref="System::ArgumentNullException"><i>hWnd</i> is <b>null</b>.</exception>
     /// <remarks>Video currently only supports 32 bit colour.</remarks>
-    static void SetDisplayMode(HWND hWnd, unsigned int width, unsigned int height, unsigned int bitsPerPixel = 32);
+    static void SetDisplayMode(HWND hWnd, const unsigned int width, const unsigned int height, const unsigned int bitsPerPixel);
     
     /// <summary>
     /// Shutsdown the video subsystem. Once this method has been called, Video::Initialise() must
@@ -335,7 +337,7 @@ public:
     static void Shutdown()
     {
         SafeRelease(lpDDSPrimarySurface);
-        SafeRelease(lpDDSSecondarySurface);
+        //SafeRelease(lpDDSSecondarySurface);
         SafeRelease(lpDDClipper);
         SafeRelease(lpDD);
     }

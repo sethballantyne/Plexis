@@ -45,6 +45,8 @@
 #include "version.h"
 #include "vsoutputlogger.h"
 
+#define INITGUID
+
 #define WINDOW_CLASS_NAME L"WindowClass"
 
 using namespace System;
@@ -75,7 +77,16 @@ HRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
 
+    case WM_CLOSE:
+        // DirectDraw generates a DirectDrawSurfaceLostException when
+        // ALT+F4 is pressed, which causes Game to set about trying to restore the 
+        // surface. IsRunning is set to false to avoid restoring
+        // the Surface. See Game::Render().
+        Game::IsRunning = false;
+        break;
+
     default:
+        LogManager::WriteLine(LogType::Log, "message: {0}", uMsg);
         break;
     }
 
@@ -160,9 +171,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
     }
 
-    
-
-    LogManager::WriteLine(LogType::Error, "test!");
     try
     {
         Game::Initialise(hInstance, hWnd);

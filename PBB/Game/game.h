@@ -26,7 +26,19 @@
 /// </summary>
 public ref class Game abstract sealed
 {
+private:
+    // the game only supports this resolution, so these are hardcoded.
+    static const unsigned int windowWidth = 1024;
+    static const unsigned int windowHeight = 768;
+    static const unsigned int bitsPerPixel = 32;
 
+    static HWND gamehWnd;
+
+    /// <summary>
+    /// Internal function used to restore DirectDraw when the user alt-tabs back and forth.
+    /// </summary>
+    static void RestoreSurfaces();
+   
 public:
     static Game()
     {
@@ -40,6 +52,7 @@ public:
     /// </summary>
     /// <param name="hInstance">The application instance handle.</param>
     /// <param name="hWnd">the handle of the window the game will be played in.</param>
+    /// <exception cref="System::ArgumentNullException"><i>hInstance</i> or <i>hWnd</i> is <b>null</b>.</exception>
     static void Initialise(HINSTANCE hInstance, HWND hWnd);
 
     /// <summary>
