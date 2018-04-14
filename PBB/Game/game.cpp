@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#include "audio.h"
 #include "exceptions.h"
 #include "game.h"
 #include "logmanager.h"
@@ -64,6 +65,9 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
         LogManager::WriteLine(LogType::Log, "Initialising Video\n");
         Video::Initialise();
 
+        LogManager::WriteLine(LogType::Log, "Initialising Audio\n");
+        Audio::Initialise(hWnd);
+
         LogManager::WriteLine(LogType::Log,
             "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bitsPerPixel);
         Video::SetDisplayMode(hWnd, windowWidth, windowHeight, bitsPerPixel);
@@ -86,7 +90,9 @@ void Game::Render()
         try
         {
             if(Game::IsRunning)
+            {
                 RestoreSurfaces();
+            }
         }
         catch(...)
         {
@@ -105,8 +111,11 @@ void Game::Shutdown()
 {
     IsRunning = false;
 
-    LogManager::WriteLine(LogType::Log, "Shutting down Video\n");
+    LogManager::WriteLine(LogType::Log, "Shutting down Video");
     Video::Shutdown();
+
+    LogManager::WriteLine(LogType::Log, "Shutting down Audio");
+    Audio::Shutdown();
 }
 
 void Game::Update()

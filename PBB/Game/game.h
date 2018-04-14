@@ -19,6 +19,7 @@
 #pragma once
 
 #include <windows.h>
+#include "soundbuffer.h"
 
 /// <summary>
 /// Handles the game state, seperating it from the application layer. 

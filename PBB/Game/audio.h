@@ -49,5 +49,29 @@ private:
     /// <exception cref="System::OutOfMemoryException">there wasn't enough memory available to complete the operation.</exception>
     static LPDIRECTSOUNDBUFFER8 CreateDirectSoundBuffer(unsigned int bufferSize);
 public:
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="buffer"></param>
+    /// <returns></returns>
     static SoundBuffer ^CreateSoundBuffer(String ^buffer);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hWnd"></param>
+    static void Initialise(HWND hWnd);
+
+    /// <summary>
+    /// Shutsdown the audio subsystem. Once this method is called, Audio::Initialise() must be called again
+    /// before any other Audio methods can be used.
+    /// </summary>
+    static void Shutdown()
+    {
+        if(lpDS != NULL)
+        {
+            lpDS->Release();
+            lpDS = NULL;
+        }
+    }
 };
