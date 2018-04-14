@@ -86,7 +86,6 @@ HRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
 
     default:
-        LogManager::WriteLine(LogType::Log, "message: {0}", uMsg);
         break;
     }
 
@@ -194,7 +193,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             if(Game::IsWindowActive)
             {
                 Game::Update();
-                Game::Render();
+                //Game::Render();
             }
         }
     }

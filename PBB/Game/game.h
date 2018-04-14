@@ -19,7 +19,6 @@
 #pragma once
 
 #include <windows.h>
-#include "soundbuffer.h"
 
 /// <summary>
 /// Handles the game state, seperating it from the application layer. 
@@ -35,6 +34,7 @@ private:
 
     static HWND gamehWnd;
 
+    static DWORD lastTime;
     /// <summary>
     /// Internal function used to restore DirectDraw when the user alt-tabs back and forth.
     /// </summary>

@@ -79,10 +79,13 @@
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="ilog.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="keys.h" />
     <ClInclude Include="line.h" />
     <ClInclude Include="logmanager.h" />
     <ClInclude Include="logtype.h" />
     <ClInclude Include="messageboxlogger.h" />
+    <ClInclude Include="mouse.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="soundbuffer.h" />
     <ClInclude Include="surface.h" />
@@ -95,6 +98,8 @@
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="engine_exceptions.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="keys.cpp" />
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="messageboxlogger.cpp" />
@@ -109,6 +114,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

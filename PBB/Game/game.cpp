@@ -18,6 +18,7 @@
 
 #include "audio.h"
 #include "exceptions.h"
+#include "input.h"
 #include "game.h"
 #include "logmanager.h"
 #include "video.h"
@@ -67,6 +68,9 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
         LogManager::WriteLine(LogType::Log, "Initialising Audio\n");
         Audio::Initialise(hWnd);
+
+        LogManager::WriteLine(LogType::Log, "Ininitialising Input\n");
+        Input::Initialise(hInstance, hWnd);
 
         LogManager::WriteLine(LogType::Log,
             "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bitsPerPixel);
@@ -120,5 +124,19 @@ void Game::Shutdown()
 
 void Game::Update()
 {
+    DWORD currentTime = timeGetTime();
+    DWORD timeDifference = currentTime - lastTime;
 
+    if(timeDifference != 0)
+    {
+        Keys ^input = Input::ReadKeyboard();
+        if(input->KeyPressed(DIK_SPACE))
+        {
+            LogManager::WriteLine(LogType::Debug, "Space pressed.");
+        }
+
+        Game::Render();
+    }
+
+    lastTime = currentTime;
 }
