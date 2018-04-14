@@ -56,7 +56,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;dsound.lib;ddraw.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;dsound.lib;dxguid.lib;ddraw.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -71,6 +71,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="audio.h" />
     <ClInclude Include="ddraw_exceptions.h" />
     <ClInclude Include="dinput_exceptions.h" />
     <ClInclude Include="dsound_exceptions.h" />
@@ -83,6 +84,7 @@
     <ClInclude Include="logtype.h" />
     <ClInclude Include="messageboxlogger.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="soundbuffer.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="textfilelogger.h" />
     <ClInclude Include="version.h" />
@@ -90,11 +92,13 @@
     <ClInclude Include="vsoutputlogger.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="audio.cpp" />
     <ClCompile Include="engine_exceptions.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="messageboxlogger.cpp" />
+    <ClCompile Include="soundbuffer.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="textfilelogger.cpp" />
     <ClCompile Include="video.cpp" />
