@@ -100,6 +100,7 @@ public:
 /// </summary>
 public ref class DirectInputDeviceNotAcquiredException : public Exception
 {
+public:
     DirectInputDeviceNotAcquiredException() : Exception()
     {
         this->HResult = DIERR_NOTACQUIRED;
