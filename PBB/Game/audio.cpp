@@ -97,6 +97,15 @@ LPDIRECTSOUNDBUFFER8 Audio::CreateDirectSoundBuffer(unsigned int bufferSize)
 
 SoundBuffer ^Audio::CreateSoundBuffer(String ^filename)
 {
+    if(filename == nullptr)
+    {
+        throw gcnew ArgumentNullException("filename");
+    }
+    else if(filename == String::Empty)
+    {
+        throw gcnew ArgumentException("filename evaluates to String::Empty.");
+    }
+
     HMMIO hWav;  // handle to the wave file
     MMCKINFO parentChunk;
     MMCKINFO childChunk;
@@ -170,7 +179,7 @@ SoundBuffer ^Audio::CreateSoundBuffer(String ^filename)
     {
         mmioClose(hWav, 0);
 
-        throw gcnew IOException(String::Format("{0} is not a valid WAV file.", filename));
+        throw gcnew FileFormatException(String::Format("{0} is not a valid WAV file.", filename));
     }
 
     mmIOResult = mmioAscend(hWav, &childChunk, 0);
@@ -240,7 +249,7 @@ SoundBuffer ^Audio::CreateSoundBuffer(String ^filename)
         switch(result)
         {
             case DSERR_BUFFERLOST:
-                throw gcnew DirectSoundBufferLostException("IDirectSoundBuffer8::Lock: The buffer memory has been lost and must be restored.");
+                throw gcnew DirectSoundBufferLostException("IDirectSoundBuffer8::Lock: the buffer memory has been lost and must be restored.");
                 break;
 
             case DSERR_INVALIDCALL:
@@ -312,11 +321,11 @@ void Audio::Initialise(HWND hWnd)
         switch(result)
         {
             case DSERR_ALLOCATED:
-                throw gcnew DirectSoundAllocatedException("DirectSoundCreate8: DSAE");
+                throw gcnew DirectSoundAllocatedException("DirectSoundCreate8: the request failed because resources were already in use by another caller.");
                 break;
 
             case DSERR_INVALIDPARAM:
-                throw gcnew DirectSoundInvalidParameterException("DirectSoundCreate8: an invalid parameter was passed to the returning function.");
+                throw gcnew DirectSoundInvalidParameterException("DirectSoundCreate8: an invalid parameter was passed.");
                 break;
 
             case DSERR_NOAGGREGATION:
@@ -328,10 +337,11 @@ void Audio::Initialise(HWND hWnd)
                 break;
 
             case DSERR_OUTOFMEMORY:
-                throw gcnew OutOfMemoryException("DirectSoundCreate8: the DirectSound subsystem could not allocate suf");
+                throw gcnew OutOfMemoryException("DirectSoundCreate8: not enough memory available to complete the operation.");
                 break;
 
             default:
+                throw gcnew COMException("DirectSoundCreate8 failed.", result);
                 break;
         }
     }
@@ -342,22 +352,23 @@ void Audio::Initialise(HWND hWnd)
         switch(result)
         {
             case DSERR_ALLOCATED:
-                throw gcnew DirectSoundAllocatedException("SetCooperativeLevel: the request failed because resources, such as a priority level, were already in use by another caller.");
+                throw gcnew DirectSoundAllocatedException("IDirectSound8::SetCooperativeLevel: the request failed because resources, such as a priority level, were already in use by another caller.");
                 break;
 
             case DSERR_INVALIDPARAM:
-                throw gcnew DirectSoundInvalidParameterException("SetCooperativeLevel: an invalid parameter was passed to the returning function.");
+                throw gcnew DirectSoundInvalidParameterException("IDirectSound8::SetCooperativeLevel: an invalid parameter was passed to the returning function.");
                 break;
 
             case DSERR_UNINITIALIZED:
-                throw gcnew DirectSoundUninitializedException("SetCooperativeLevel: the IDirectSound8::Initialize method has not been called or has not been called successfully before other methods were called.");
+                throw gcnew DirectSoundUninitializedException("IDirectSound8::SetCooperativeLevel: the IDirectSound8::Initialize method has not been called or has not been called successfully before other methods were called.");
                 break;
+
             case DSERR_UNSUPPORTED:
-                throw gcnew DirectSoundUnsupportedException("SetCooperativeLevel: the function called is not supported.");
+                throw gcnew DirectSoundUnsupportedException("IDirectSound8::SetCooperativeLevel: the function called is not supported.");
                 break;
             
             default:
-                throw gcnew COMException("SetCooperativeLevel failed", result);
+                throw gcnew COMException("IDirectSoundd8::SetCooperativeLevel failed", result);
                 break;
         }
     }

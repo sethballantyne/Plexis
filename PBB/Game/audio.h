@@ -50,22 +50,57 @@ private:
     static LPDIRECTSOUNDBUFFER8 CreateDirectSoundBuffer(unsigned int bufferSize);
 public:
     /// <summary>
-    /// 
+    /// Opens a WAV file and attempts to load it into memory as a SoundBuffer object.
     /// </summary>
-    /// <param name="buffer"></param>
-    /// <returns></returns>
-    static SoundBuffer ^CreateSoundBuffer(String ^buffer);
+    /// <param name="filename">The name of the wav file to convert into a SoundBuffer object.</param>
+    /// <returns>The desired WAV file as a SoundBuffer object.</returns>
+    /// <exception cref="System::ArgumentException"><i>filename</i> evaluates to String::Empty.</exception>
+    /// <exception cref="System::ArgumentNullException"><i>filename</i> is <b>null</b>.</exception>
+    /// <exception cref="System::Runtime::InteropServices::COMException">DirectSound returned an unspecified COM+ exception.</exception>
+    /// <exception cref="DirectSoundAllocatedException">the request failed because audio resources were already in use by another caller.</exception>
+    /// <exception cref="DirectSoundBadFormatException">the specified wave format is not supported.</exception>
+    /// <exception cref="DirectSoundBufferLostException"the buffer memory has been lost and must be restored.</exception>
+    /// <exception cref="DirectSoundBufferTooSmallException">the buffer size is not big enough.</exception>
+    /// <exception cref="DirectSoundControlUnavailableException">the buffer control requested by the caller is not available.</exception>
+    /// <exception cref="DirectSoundInvalidCallException">this function is not valid for the current state of this object.</exception>
+    /// <exception cref="DirectSoundInvalidParameterException">an invalid parameter was passed to the returning function.</exception>
+    /// <exception cref="DirectSoundNoAggregationException">the object does not support aggregation.</exception>
+    /// <exception cref="DirectSoundPriorityLevelNeededException">A cooperative level of DSSCL_PRIORITY or higher is required.</exception>
+    /// <exception cref="DirectSoundUninitializedException">DirectSound hasn't been initialised.</exception>
+    /// <exception cref="DirectSoundUnsupportedException">the function called is not supported.</exception>
+    /// <exception cref="DirectSoundVersion8RequiredException">DirectSound8 is required to complete the operation.</exception>
+    /// <exception cref="System::IO::EndOfStreamException">the end of the file was reached prematurely.</exception>
+    /// <exception cref="System::IO::FileFormatException">the specified file isn't a PCM wav file.</exception>
+    /// <exception cref="System::IO::IOException">the method was unable to load the file specified in <i>filename</i> because it either couldn't be found or lacked the permissions to open it, or
+    /// the file was corrupt.</exception>
+    /// <exception cref="System::OutOfMemoryException">there isn't enough memory available to DirectSound to complete the operation.</exception>
+    /// <remarks>Audio::CreateSoundBuffer() currently only supports 11Khz, 8 bit mono. Attempting
+    /// to load audio with differing properties will result in disappointment.</remarks>
+    static SoundBuffer ^CreateSoundBuffer(String ^filename);
 
     /// <summary>
-    /// 
+    /// Initialises the audio subsystem. This method must be called before calling any other Audio methods.
     /// </summary>
-    /// <param name="hWnd"></param>
+    /// <param name="hWnd">the game window handle.</param>
+    /// <exception cref="System::Runtime::InteropServices::COMException">there wasn't enough memory available to DirectSound to complete the operation.</exception>
+    /// <exception cref="DirectSoundAllocatedException">the request failed because resources were already in use by another caller.</exception>
+    /// <exception cref="DirectSoundInvalidParameterException">an invalid parameter was passed to the returning function.</exception>
+    /// <exception cref="DirectSoundNoAggregationException">the object does not support aggregation.</exception>
+    /// <exception cref="DirectSoundNoDriverException">no sound driver is available for use, or the given GUID is not a valid DirectSound device ID.</exception>
+    /// <exception cref="DirectSoundUninitializedException">Audio::Initialise() attempted to set the cooperative level after DirectSoundCreate8 failed.</exception>
+    /// <exception cref="DirectSoundUnsupportedException">IDirectSound8::SetCooperativeLevel() is unsupported on this driver or implementation of DirectSound. Translation: no sound for you!</exception>
+    /// <exception cref="OutOfMemoryException">not enough memory available to complete the operation.</exception>
+    /// <remarks>Audio::Shutdown() releases the memory allocated by Audio::Initialise() and 
+    /// should be called when the Audio subsystem is no longer needed.</remarks>
     static void Initialise(HWND hWnd);
 
     /// <summary>
     /// Shutsdown the audio subsystem. Once this method is called, Audio::Initialise() must be called again
     /// before any other Audio methods can be used.
     /// </summary>
+    /// <remarks>When shutting down Audio, be sure to release any SoundBuffer objects that
+    /// have been created before calling Audio::Shutdown(). Failing to do so can cause 
+    /// a System::AccessViolation exception to be thrown.</remarks>
     static void Shutdown()
     {
         if(lpDS != NULL)
