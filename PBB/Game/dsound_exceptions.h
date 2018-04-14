@@ -62,6 +62,7 @@ public:
 /// </summary>
 public ref class DirectSoundBufferLostException : public Exception
 {
+public:
     DirectSoundBufferLostException() : Exception()
     {
         this->HResult = DSERR_BUFFERLOST;
