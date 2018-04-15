@@ -5,6 +5,34 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
+void Input::AcquireDevice(LPDIRECTINPUTDEVICE8 lpDIDevice)
+{
+    if(lpDIDevice != NULL)
+    {
+        HRESULT result = lpDIDevice->Acquire();
+        if(result != DI_OK)
+        {
+            switch(result)
+            {
+                case DIERR_INVALIDPARAM:
+                    throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                    break;
+
+                case DIERR_NOTINITIALIZED:
+                    throw gcnew DirectInputNotInitializedException("IDirectInputDevice8::Acquire: this object has not been initialized.");
+                    break;
+
+                case DIERR_OTHERAPPHASPRIO:
+                    throw gcnew DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: another application has a higher priority level, preventing this call from succeeding.");
+                    break;
+
+                default:
+                    throw gcnew COMException("IDirectInputDevice8::Acquire failed.", result);
+                    break;
+            }
+        }
+    }
+}
 void Input::InitKeyboard(HWND hWnd)
 {
     if(lpDIKeyboard != NULL)
@@ -88,7 +116,7 @@ void Input::InitKeyboard(HWND hWnd)
                 break;
 
             default:
-                COMException("IDirectInputDevice8::SetDataFormat: an unspecified COM+ error occured.\n", result);
+                COMException("IDirectInputDevice8::SetDataFormat: an unspecified COM+ error occured.", result);
                 break;
         }
     }
@@ -111,12 +139,119 @@ void Input::InitKeyboard(HWND hWnd)
                 break;
 
             default:
-                throw gcnew System::Runtime::InteropServices::COMException("IDirectInputDevice8::Acquire failed", result);
+                throw gcnew COMException("IDirectInputDevice8::Acquire failed.", result);
                 break;
         }
     }
 
     keyboardLayout = GetKeyboardLayout(0);
+}
+
+void Input::InitMouse(HWND hWnd)
+{
+    if(lpDIMouse != NULL)
+    {
+        lpDIMouse->Unacquire();
+        lpDIMouse->Release();
+        lpDIMouse = NULL;
+    }
+
+    pin_ptr<LPDIRECTINPUTDEVICE8> pinnedMouse = &lpDIMouse;
+    HRESULT result = lpDI->CreateDevice(GUID_SysMouse, pinnedMouse, NULL);
+    if(result != DI_OK)
+    {
+        switch(result)
+        {
+            case DIERR_DEVICENOTREG:
+                throw gcnew DirectInputDeviceNotRegisteredException("IDirectInput8::CreateDevice: the device or device instance is not registered with DirectInput.");
+                break;
+
+            case DIERR_INVALIDPARAM:
+                throw gcnew DirectInputInvalidParameterException("IDirectInput8::CreateDevice: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                break;
+
+            case DIERR_NOINTERFACE:
+                throw gcnew DirectInputNoInterfaceException("IDirectInput8::CreateDevice: the object does not support the specified interface.");
+                break;
+
+            case DIERR_NOTINITIALIZED:
+                throw gcnew DirectInputNotInitializedException("IDirectInput8::CreateDevice: this object has not been initialized.");
+                break;
+
+            case DIERR_OUTOFMEMORY:
+                throw gcnew OutOfMemoryException("IDirectInput8::CreateDevice: the DirectInput subsystem could not allocate sufficient memory to complete the call.");
+                break;
+
+            default:
+                throw gcnew COMException("IDIrectInput8::CreateDevice failed.\n", result);
+                break;
+        }
+    }
+
+    result = lpDIMouse->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+    if(result != DI_OK)
+    {
+        switch(result)
+        {
+            case DIERR_INVALIDPARAM:
+                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::SetCooperativeLevel: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                break;
+
+            case DIERR_NOTINITIALIZED:
+                throw gcnew DirectInputNotInitializedException("IDirectInputDevice8::SetCooperativeLevel: this object has not been initialized.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectInputDevice8::SetCooperativeLevel: ", result);
+                break;
+        }
+    }
+
+    result = lpDIMouse->SetDataFormat(&c_dfDIMouse2);
+    if(result != DI_OK)
+    {
+        switch(result)
+        {
+            case DIERR_ACQUIRED:
+                throw gcnew DirectInputAcquiredException("IDirectInputDevice8::SetDataFormat: ");
+                break;
+
+            case DIERR_INVALIDPARAM:
+                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::SetDataFormat: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                break;
+
+            case DIERR_NOTINITIALIZED:
+                throw gcnew DirectInputNotInitializedException("IDirectInputDevice8::SetDataFormat: this object has not been initialized.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectInputDevice8::SetDataFormat: ", result);
+                break;
+        }
+    }
+
+    result = lpDIMouse->Acquire();
+    if(result != DI_OK)
+    {
+        switch(result)
+        {
+            case DIERR_INVALIDPARAM:
+                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                break;
+
+            case DIERR_NOTINITIALIZED:
+                throw gcnew DirectInputNotInitializedException("IDirectInputDevice8::Acquire: this object has not been initialized.");
+                break;
+
+            case DIERR_OTHERAPPHASPRIO:
+                throw gcnew DirectInputOtherApplicationHasPriorityException("IDirectInputDevice8::Acquire: another application has a higher priority level, preventing this call from succeeding.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectInputDevice8::Acquire", result);
+                break;
+        }
+    }
 }
 
 void Input::Initialise(HINSTANCE hInstance, HWND hWnd)
@@ -159,3 +294,72 @@ void Input::Initialise(HINSTANCE hInstance, HWND hWnd)
         throw;
     }
 }
+
+Keys ^Input::ReadKeyboard()
+{
+    currentKeyboardState->CopyTo(previousKeyboardState, 0);
+
+    pin_ptr<UCHAR> pinnedCurrentKeyboardState = &currentKeyboardState[0];
+    HRESULT result = lpDIKeyboard->GetDeviceState(currentKeyboardState->Length, (LPVOID)pinnedCurrentKeyboardState);
+    if(result != DI_OK)
+    {
+        switch(result)
+        {
+            case DIERR_INPUTLOST:
+                throw gcnew DirectInputDeviceLostException("IDirectInputDevice8::GetDeviceState: ccess to the input device has been lost. It must be reacquired.");
+                break;
+
+            case DIERR_INVALIDPARAM:
+                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::GetDeviceState: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                break;
+
+            case DIERR_NOTACQUIRED:
+                throw gcnew DirectInputDeviceNotAcquiredException("IDirectInputDevice8::GetDeviceState: attempting to use the device when it hasn't been acquired.");
+                break;
+
+            case DIERR_NOTINITIALIZED:
+                throw gcnew DirectInputNotInitializedException("IDirectInputDevice8::GetDeviceState: object hasn't been initialised.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectInputDevice8::GetDeviceState failed.", result);
+                break;
+        }
+    }
+
+    return gcnew Keys(currentKeyboardState, previousKeyboardState);
+}
+
+Mouse ^Input::ReadMouse()
+{
+    LPDIMOUSESTATE2 mouseState;
+    HRESULT result = lpDIMouse->GetDeviceState(sizeof(mouseState), (LPVOID)mouseState);
+    if(result != DI_OK)
+    {
+        switch(result)
+        {
+            case DIERR_INPUTLOST:
+                throw gcnew DirectInputDeviceLostException("IDirectInputDevice8::GetDeviceState: ccess to the input device has been lost. It must be reacquired.");
+                break;
+
+            case DIERR_INVALIDPARAM:
+                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::GetDeviceState: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                break;
+
+            case DIERR_NOTACQUIRED:
+                throw gcnew DirectInputDeviceNotAcquiredException("IDirectInputDevice8::GetDeviceState: attempting to use the device when it hasn't been acquired.");
+                break;
+
+            case DIERR_NOTINITIALIZED:
+                throw gcnew DirectInputNotInitializedException("IDirectInputDevice8::GetDeviceState: object hasn't been initialised.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectInputDevice8::GetDeviceState failed.", result);
+                break;
+        }
+    }
+
+    return gcnew Mouse(mouseState);
+}
+

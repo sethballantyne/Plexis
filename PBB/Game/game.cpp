@@ -63,17 +63,18 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
     try
     {
-        LogManager::WriteLine(LogType::Log, "Initialising Video\n");
+        LogManager::WriteLine(LogType::Log, "***********************************");
+        LogManager::WriteLine(LogType::Log, "Initialising Video");
         Video::Initialise();
 
-        LogManager::WriteLine(LogType::Log, "Initialising Audio\n");
+        LogManager::WriteLine(LogType::Log, "Initialising Audio");
         Audio::Initialise(hWnd);
 
-        LogManager::WriteLine(LogType::Log, "Ininitialising Input\n");
+        LogManager::WriteLine(LogType::Log, "Ininitialising Input");
         Input::Initialise(hInstance, hWnd);
 
         LogManager::WriteLine(LogType::Log,
-            "Setting display mode to {0}x{1}@{2}bpp\n", windowWidth, windowHeight, bitsPerPixel);
+            "Setting display mode to {0}x{1}@{2}bpp", windowWidth, windowHeight, bitsPerPixel);
         Video::SetDisplayMode(hWnd, windowWidth, windowHeight, bitsPerPixel);
     }
     catch(...)
@@ -120,6 +121,9 @@ void Game::Shutdown()
 
     LogManager::WriteLine(LogType::Log, "Shutting down Audio");
     Audio::Shutdown();
+
+    LogManager::WriteLine(LogType::Log, "Shutting down Input");
+    Input::Shutdown();
 }
 
 void Game::Update()
@@ -132,9 +136,8 @@ void Game::Update()
         Keys ^input = Input::ReadKeyboard();
         if(input->KeyPressed(DIK_SPACE))
         {
-            LogManager::WriteLine(LogType::Debug, "Space pressed.");
+            LogManager::WriteLine(LogType::Log, "Space pressed.");
         }
-
         Game::Render();
     }
 

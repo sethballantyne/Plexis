@@ -21,6 +21,7 @@
 #include <dinput.h>
 #include "keys.h"
 #include "logmanager.h"
+#include "mouse.h"
 
 using namespace System;
 
@@ -45,8 +46,30 @@ private:
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="lpDIDevice"></param>
+    static void AcquireDevice(LPDIRECTINPUTDEVICE8 lpDIDevice);
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="hWnd"></param>
     static void InitKeyboard(HWND hWnd);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hWnd"></param>
+    static void InitMouse(HWND hWnd);
+
+    static void SafeRelease(LPDIRECTINPUTDEVICE8 device)
+    {
+        if(device != NULL)
+        {
+            device->Unacquire();
+            device->Release();
+            device = NULL;
+        }
+    }
 public:
     /// <summary>
     /// 
@@ -59,13 +82,44 @@ public:
     /// 
     /// </summary>
     /// <returns></returns>
-    static Keys ^ReadKeyboard()
+    static Keys ^ReadKeyboard();
+
+    static Mouse ^ReadMouse();
+
+    static void Release()
     {
-        currentKeyboardState->CopyTo(previousKeyboardState, 0);
+        SafeRelease(lpDIKeyboard);
+        SafeRelease(lpDIMouse);
 
-        pin_ptr<UCHAR> pinnedCurrentKeyboardState = &currentKeyboardState[0];
-        lpDIKeyboard->GetDeviceState(currentKeyboardState->Length, (LPVOID)pinnedCurrentKeyboardState);
-
-        return gcnew Keys(currentKeyboardState, previousKeyboardState);
+        if(lpDI != NULL)
+        {
+            lpDI->Release();
+            lpDI = NULL;
+        }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    static void Restore()
+    {
+        try
+        {
+            AcquireDevice(lpDIKeyboard);
+            AcquireDevice(lpDIMouse);
+        }
+        catch(...)
+        {
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    static void Shutdown()
+    {
+        Release();
+    }
+
 };
