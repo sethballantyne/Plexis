@@ -1225,6 +1225,11 @@ void Video::Blit(int x, int y, Surface ^surface)
     destRect.bottom = surface->Height;
     destRect.right = surface->Width;
 
+    srcRect.left = 0;
+    srcRect.top = 0;
+    srcRect.bottom = surface->Height;
+    srcRect.right = surface->Width;
+
     HRESULT result = lpDDSSecondarySurface->Blt(&destRect, surface->Data, &srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL);
     if(result != DD_OK)
     {
@@ -1382,8 +1387,9 @@ void Video::SetDisplayMode(HWND hWnd, const unsigned int width, const unsigned i
     // free the surfaces on the off chance that the function is called by the user due to 
     // DirectDrawWrongModeException being thrown(they have to be recreated if that's the case). 
     SafeRelease(lpDDSPrimarySurface);
-    SafeRelease(lpDDSSecondarySurface);
-    SafeRelease(lpDDClipper);
+   /* SafeRelease(lpDDClipper);
+    SafeRelease(lpDDSSecondarySurface);*/
+    //SafeRelease(lpDDClipper);
 
     try
     {
