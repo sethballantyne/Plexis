@@ -15,7 +15,7 @@ void Input::AcquireDevice(LPDIRECTINPUTDEVICE8 lpDIDevice)
             switch(result)
             {
                 case DIERR_INVALIDPARAM:
-                    throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                    throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::Acquire: an invalid parameter was passed or the object wasn't in a callable state (null).");
                     break;
 
                 case DIERR_NOTINITIALIZED:
@@ -35,13 +35,6 @@ void Input::AcquireDevice(LPDIRECTINPUTDEVICE8 lpDIDevice)
 }
 void Input::InitKeyboard(HWND hWnd)
 {
-    if(lpDIKeyboard != NULL)
-    {
-        lpDIKeyboard->Unacquire();
-        lpDIKeyboard->Release();
-        lpDIKeyboard = NULL;
-    }
-
     currentKeyboardState = gcnew array<UCHAR, 1>(256);
     previousKeyboardState = gcnew array<UCHAR, 1>(256);
     lpDIKeyboard = NULL;
@@ -74,7 +67,7 @@ void Input::InitKeyboard(HWND hWnd)
                 break;
 
             default:
-                throw gcnew COMException("IDirectInput8::CreateDevice: an unspecified", result);
+                throw gcnew COMException("IDirectInput8::CreateDevice failed.", result);
                 break;
         }
     }
@@ -248,7 +241,7 @@ void Input::InitMouse(HWND hWnd)
                 break;
 
             default:
-                throw gcnew COMException("IDirectInputDevice8::Acquire", result);
+                throw gcnew COMException("IDirectInputDevice8::Acquire failed.", result);
                 break;
         }
     }
@@ -275,7 +268,7 @@ void Input::Initialise(HINSTANCE hInstance, HWND hWnd)
                 break;
 
             default:
-                throw gcnew COMException("DirectInput8Create: ", result);
+                throw gcnew COMException("DirectInput8Create failed.", result);
                 break;
         }
     }
@@ -285,8 +278,9 @@ void Input::Initialise(HINSTANCE hInstance, HWND hWnd)
         if(lpDI != NULL)
         {
             InitKeyboard(hWnd);
+            InitMouse(hWnd);
         }
-        //InitMouse(hWnd);
+        
     }
     catch(...)
     {
@@ -306,11 +300,11 @@ Keys ^Input::ReadKeyboard()
         switch(result)
         {
             case DIERR_INPUTLOST:
-                throw gcnew DirectInputDeviceLostException("IDirectInputDevice8::GetDeviceState: ccess to the input device has been lost. It must be reacquired.");
+                throw gcnew DirectInputDeviceLostException("IDirectInputDevice8::GetDeviceState: access to the input device has been lost. It must be reacquired.");
                 break;
 
             case DIERR_INVALIDPARAM:
-                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::GetDeviceState: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::GetDeviceState: an invalid parameter was passed to the function, or the object is an invalid state.");
                 break;
 
             case DIERR_NOTACQUIRED:
@@ -327,7 +321,14 @@ Keys ^Input::ReadKeyboard()
         }
     }
 
-    return gcnew Keys(currentKeyboardState, previousKeyboardState);
+    try
+    {
+        return gcnew Keys(currentKeyboardState, previousKeyboardState);
+    }
+    catch(...)
+    {
+        throw;
+    }
 }
 
 Mouse ^Input::ReadMouse()
@@ -339,11 +340,11 @@ Mouse ^Input::ReadMouse()
         switch(result)
         {
             case DIERR_INPUTLOST:
-                throw gcnew DirectInputDeviceLostException("IDirectInputDevice8::GetDeviceState: ccess to the input device has been lost. It must be reacquired.");
+                throw gcnew DirectInputDeviceLostException("IDirectInputDevice8::GetDeviceState: access to the input device has been lost. It must be reacquired.");
                 break;
 
             case DIERR_INVALIDPARAM:
-                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::GetDeviceState: an invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.");
+                throw gcnew DirectInputInvalidParameterException("IDirectInputDevice8::GetDeviceState: an invalid parameter was passed to the function, or the object is an invalid state.");
                 break;
 
             case DIERR_NOTACQUIRED:
@@ -360,6 +361,13 @@ Mouse ^Input::ReadMouse()
         }
     }
 
-    return gcnew Mouse(mouseState);
+    try
+    {
+        return gcnew Mouse(mouseState);
+    }
+    catch(...)
+    {
+        throw;
+    }
 }
 
