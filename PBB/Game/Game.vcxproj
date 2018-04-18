@@ -77,6 +77,7 @@
     <ClInclude Include="dsound_exceptions.h" />
     <ClInclude Include="engine_exceptions.h" />
     <ClInclude Include="exceptions.h" />
+    <ClInclude Include="font.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="ilog.h" />
     <ClInclude Include="input.h" />
@@ -97,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="engine_exceptions.cpp" />
+    <ClCompile Include="font.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="keys.cpp" />

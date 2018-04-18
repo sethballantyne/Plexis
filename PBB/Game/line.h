@@ -18,7 +18,6 @@
 #pragma once
 
 using namespace System;
-using namespace System::Drawing;
 
 /// <summary>
 /// Stores two points and a colour that represent the position, length and colour of a line.
@@ -27,13 +26,13 @@ public ref class Line
 {
 private:
     // the lines starting position.
-    Point from;
+    System::Drawing::Point from;
 
     // the lines finishing position.
-    Point to;
+    System::Drawing::Point to;
 
     // the lines colour. Stick to facebook if I really need to explain this.
-    Color colour;
+    System::Drawing::Color colour;
 
 public:
     /// <summary>
@@ -42,7 +41,7 @@ public:
     /// <param name="colour">the lines colour... derp derp derp.</param>
     /// <param name="from">the lines starting point.</param>
     /// <param name="to">the lines finishing point.</param>
-    Line(Color colour, Point from, Point to)
+    Line(System::Drawing::Color colour, System::Drawing::Point from, System::Drawing::Point to)
     {
         this->from = from;
         this->to = to;
@@ -57,23 +56,23 @@ public:
     /// <param name="fromY">the lines starting y coordinate.</param>
     /// <param name="toX">the lines finishing x coordinate.</param>
     /// <param name="toY">the lines finishing y coordinate.</param>
-    Line(Color colour, int fromX, int fromY, int toX, int toY)
+    Line(System::Drawing::Color colour, int fromX, int fromY, int toX, int toY)
     {
-        this->from = Point(fromX, fromY);
-        this->to = Point(toX, toY);
+        this->from = System::Drawing::Point(fromX, fromY);
+        this->to = System::Drawing::Point(toX, toY);
         this->colour = colour;
     }
 
     /// <summary>
     /// Gets or sets the lines colour.
     /// </summary>
-    property Color Colour
+    property System::Drawing::Color Colour
     {
-        Color get()
+        System::Drawing::Color get()
         {
             return this->colour;
         }
-        void set(Color value)
+        void set(System::Drawing::Color value)
         {
             this->colour = value;
         }
@@ -82,13 +81,13 @@ public:
     /// <summary>
     /// Gets or sets the lines starting coordinates.
     /// </summary>
-    property Point From
+    property System::Drawing::Point From
     {
-        Point get()
+        System::Drawing::Point get()
         {
             return this->from;
         }
-        void set(Point value)
+        void set(System::Drawing::Point value)
         {
             this->from = value;
         }
@@ -97,13 +96,13 @@ public:
     /// <summary>
     /// Gets or sets the lines finishing coordinates.
     /// </summary>
-    property Point To
+    property System::Drawing::Point To
     {
-        Point get()
+        System::Drawing::Point get()
         {
             return this->to;
         }
-        void set(Point value)
+        void set(System::Drawing::Point value)
         {
             this->to = value;
         }

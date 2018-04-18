@@ -1042,6 +1042,9 @@ Surface ^Video::CreateSurface(String ^path)
 
     pin_ptr<const wchar_t> pinnedPath = PtrToStringChars(path);
 
+    // LoadImage fails when attempting to load bitmaps that contain colour space information.
+    // The gimp generates such bitmaps by default, disable it when exporting the bitmap
+    // or this will fail. 
     HBITMAP hBitmap = (HBITMAP) LoadImage(NULL, pinnedPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     if(!hBitmap)
     {
@@ -1229,6 +1232,104 @@ void Video::Blit(int x, int y, Surface ^surface)
     srcRect.top = 0;
     srcRect.bottom = surface->Height;
     srcRect.right = surface->Width;
+
+    HRESULT result = lpDDSSecondarySurface->Blt(&destRect, surface->Data, &srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL);
+    if(result != DD_OK)
+    {
+        switch(result)
+        {
+            case DDERR_GENERIC:
+                throw gcnew DirectDrawGenericException("IDirectDrawSurface7::Blt: DirectDraw reported an unspecified error.");
+                break;
+
+            case DDERR_INVALIDCLIPLIST:
+                throw gcnew DirectDrawInvalidClipListException("IDirectDrawSurface7::Blt: DirectDraw does not support the provided clip list.");
+                break;
+
+            case DDERR_INVALIDOBJECT:
+                throw gcnew DirectDrawInvalidObjectException("DirectDraw received a pointer that was an invalid DirectDraw object.");
+                break;
+
+            case DDERR_INVALIDPARAMS:
+                throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Blt: one or more of the parameters passed to the method are incorrect.");
+                break;
+
+            case DDERR_INVALIDRECT:
+                throw gcnew DirectDrawInvalidRectException("IDirectDrawSurface7::Blt: the provided rectangle was invalid.");
+                break;
+
+            case DDERR_NOALPHAHW:
+                throw gcnew DirectDrawNoAlphaHardwareException("IDirectDrawSurface7::Blt: no alpha acceleration hardware is present or available.");
+                break;
+
+            case DDERR_NOBLTHW:
+                throw gcnew DirectDrawNoBlitHardwareException("IDirectDrawSurface7::Blt: no blitter hardware is present.");
+                break;
+
+            case DDERR_NOCLIPLIST:
+                throw gcnew DirectDrawNoClipListException("IDirectDrawSurface7::Blt: no clip list is available.");
+                break;
+
+            case DDERR_NODDROPSHW:
+                throw gcnew DirectDrawNoDDRasterOperationHardwareException("IDirectDrawSurface7::Blt: no DirectDraw raster operation (ROP) hardware is available.");
+                break;
+
+            case DDERR_NOMIRRORHW:
+                throw gcnew DirectDrawNoMirrorHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no mirroring hardware is present or available.");
+                break;
+
+            case DDERR_NORASTEROPHW:
+                throw gcnew DirectDrawNoRasterOperationHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no appropriate raster operation hardware is present or available.");
+                break;
+
+            case DDERR_NOROTATIONHW:
+                throw gcnew DirectDrawNoRotationHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because no rotation hardware is present or available.");
+                break;
+
+            case DDERR_NOSTRETCHHW:
+                throw gcnew DirectDrawNoStretchHardwareException("IDirectDrawSurface7::Blt: the operation cannot be carried out because there is no hardware support for stretching.");
+                break;
+
+            case DDERR_NOZBUFFERHW:
+                throw gcnew DirectDrawNoZBufferHardwareException("IDirectDrawSurface7::Blt: the hardware doesn't have Z buffer support.");
+                break;
+
+            case DDERR_SURFACEBUSY:
+                throw gcnew DirectDrawSurfaceBusyException("IDirectDrawSurface7::Blt: the specified surface locked by another thread and access has been refused.");
+                break;
+
+            case DDERR_SURFACELOST:
+                throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Blt: access to the surface is refused because the surface memory is gone.");
+                break;
+
+            case DDERR_UNSUPPORTED:
+                throw gcnew DirectDrawUnsupportedException("IDirectDrawSurface7::Blt: the operation isn't supported.");
+                break;
+
+            case DDERR_WASSTILLDRAWING:
+                throw gcnew DirectDrawWasStillDrawingException("IDirectDrawSurface7::Blt: the previous blit operation that is transferring information to or from this surface is incomplete.");
+                break;
+
+            default:
+                throw gcnew COMException("IDirectDrawSurface7::Blt failed.", result);
+                break;
+        }
+    }
+}
+
+void Video::Blit(System::Drawing::Rectangle sourceRect, System::Drawing::Rectangle destinationRect, Surface ^surface)
+{
+    RECT srcRect;
+    srcRect.top = sourceRect.Top;
+    srcRect.bottom = sourceRect.Bottom;
+    srcRect.left = sourceRect.Left;
+    srcRect.right = sourceRect.Right;
+
+    RECT destRect;
+    destRect.top = destinationRect.Top;
+    destRect.left = destinationRect.Left;
+    destRect.bottom = destinationRect.Bottom;
+    destRect.right = destinationRect.Right;
 
     HRESULT result = lpDDSSecondarySurface->Blt(&destRect, surface->Data, &srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL);
     if(result != DD_OK)
