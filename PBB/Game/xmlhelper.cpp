@@ -56,6 +56,8 @@ int XmlHelper::GetAttributeValueAsInt32(XElement ^element, String ^attribute)
     {
         String ^initialValue = XmlHelper::GetAttributeValue(element, attribute);
         number = Convert::ToInt32(initialValue);
+
+        return number;
     }
     catch(FormatException ^)
     {
