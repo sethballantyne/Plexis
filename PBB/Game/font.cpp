@@ -33,6 +33,7 @@ void Font::Init(String ^name, Surface ^fontBitmap, unsigned int glyphWidth, unsi
     this->glyphWidth = glyphWidth;
     this->glyphHeight = glyphHeight;
     this->fontSurface = fontBitmap;
+    this->name = name;
 
     // A bitmap character only contains ASCII values 32 to 126.
     int glyphsPerSheet = 94;
@@ -71,8 +72,7 @@ void Font::Render(int x, int y, String ^text, ...array<Object ^> ^args)
             // subtracting 32 because the first character in a bitmap font
             // is the space character, which is decimal 32. A bitmap font contains
             // the characters decimal 32 (space)to decimal 126 (~).
-            unsigned char code = ascii[i];
-            int index = code - 32;
+            int index = ascii[i] - 32;
             srcRect.X = glyphPositions[index].X;
             srcRect.Y = 0;
             srcRect.Width = glyphWidth;
