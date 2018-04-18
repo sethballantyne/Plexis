@@ -94,6 +94,7 @@
     <ClInclude Include="version.h" />
     <ClInclude Include="video.h" />
     <ClInclude Include="vsoutputlogger.h" />
+    <ClInclude Include="xmlhelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="audio.cpp" />
@@ -109,6 +110,7 @@
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="textfilelogger.cpp" />
     <ClCompile Include="video.cpp" />
+    <ClCompile Include="xmlhelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
@@ -116,6 +118,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
