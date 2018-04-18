@@ -13,7 +13,7 @@ TextFileLogger::TextFileLogger(String ^path)
 
     try
     {
-        streamWriter = gcnew StreamWriter(path, true);
+        streamWriter = gcnew StreamWriter(path, false);
     }
     catch(...)
     {

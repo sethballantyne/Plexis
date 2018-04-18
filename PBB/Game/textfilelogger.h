@@ -32,8 +32,7 @@ private:
     StreamWriter ^streamWriter;
 public:
     /// <summary>
-    /// Puts the object into a state where it can write to the text file. If the text file already exists, 
-    /// all messages written to it will be appended to the existing data.
+    /// Puts the object into a state where it can write to the text file. 
     /// </summary>
     /// <param name="path">The path (including file name) of the file to use as the log.</param>
     /// <exception cref="System::ArgumentNullException"><i>path</i> is <b>null</b>.</exception>
@@ -43,6 +42,7 @@ public:
     /// <exception cref="System::IO::IOException"><i>path</i> contains illegal characters or is incorrectly formatted.</exception>
     /// <exception cref="System::IO::PathTooLongException">the path exceeds the maximum length defined by the operating system.</exception>
     /// <exception cref="System::Security::SecurityException">The application doesn't have the required permissions.</exception>
+    /// <remarks>if the log already exists when the constructor is called, its contents is cleared.</remarks>
     TextFileLogger(String ^path);
 
     /// <summary>
