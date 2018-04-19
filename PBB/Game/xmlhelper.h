@@ -60,7 +60,7 @@ public:
     /// <exception cref="System::ArgumentException"><i>attribute</i> evaluates to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException"><i>element</i> or <i>attribute</i> evaluates to <b>null</b>.</exception>
     /// <exception cref="System::Xml::XmlException">the specified attribute is missing from the element or its value evaluates to String::Empty.</exception>
-    static bool GetAttributeAsBoolean(XElement ^element, String ^attribute)
+    static bool GetAttributeValueAsBoolean(XElement ^element, String ^attribute)
     {
         try
         {
@@ -84,5 +84,5 @@ public:
     /// <exception cref="System::FormatException">the attributes value is non-numeric.</exception>
     /// <exception cref="System::OverflowException">the attributes value is greater than Double::MaxValue or less than Double::MinValue.</exception>
     /// <exception cref="System::Xml::XmlException">the specified attribute is missing from the element or its value evaluates to String::Empty.</exception>
-    static double GetAttributeAsDouble(XElement ^element, String ^attribute);
+    static double GetAttributeValueAsDouble(XElement ^element, String ^attribute);
 };

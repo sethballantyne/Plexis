@@ -73,7 +73,7 @@ int XmlHelper::GetAttributeValueAsInt32(XElement ^element, String ^attribute)
     }
 }
 
-double XmlHelper::GetAttributeAsDouble(XElement ^element, String ^attribute)
+double XmlHelper::GetAttributeValueAsDouble(XElement ^element, String ^attribute)
 {
     try
     {
