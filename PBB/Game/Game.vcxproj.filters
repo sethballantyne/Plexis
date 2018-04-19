@@ -87,6 +87,15 @@
     <ClInclude Include="xmlhelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fontfactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resourcemanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resourcepath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
