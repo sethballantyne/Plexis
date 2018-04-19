@@ -31,6 +31,7 @@ public ref class SoundBuffer
 private:
     LPDIRECTSOUNDBUFFER8 lpDSBuffer;
 
+    String ^path;
 public:
     SoundBuffer(LPDIRECTSOUNDBUFFER8 lpDSSoundBuffer)
     {
@@ -105,6 +106,31 @@ public:
             }
 
             return (status & DSBSTATUS_PLAYING);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the location of the audio file used to create the sound buffer instance.
+    /// </summary>
+    /// <exception cref="System::ArgumentException">attempting to assign an empty string or a string that contains all whitespace.</exception>
+    /// <exception cref="System::ArgumentNullException">attempting to assign a <b>null</b> value.</exception>
+    property String ^Path
+    {
+        String ^get()
+        {
+            return this->path;
+        }
+
+        void set(String ^value)
+        {
+            if(nullptr == value)
+            {
+                throw gcnew ArgumentNullException("value");
+            }
+            if(String::Empty == value || String::IsNullOrWhiteSpace(value))
+            {
+                throw gcnew ArgumentException("invalid path.");
+            }
         }
     }
 
