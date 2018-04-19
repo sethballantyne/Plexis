@@ -28,6 +28,22 @@ public ref class XmlHelper abstract sealed
 {
 public:
     /// <summary>
+    /// Counts the number of items XElement items within an IEnumberable collection.
+    /// </summary>
+    /// <param name="collection">the collection to count</param>
+    /// <returns></returns>
+    static int XmlHelper::Count(System::Collections::IEnumerable ^collection)
+    {
+        int count = 0;
+        for each(XElement ^element in collection)
+        {
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
     /// Gets the value of the specified attribute. 
     /// </summary>
     /// <param name="element">the element the attribute belongs to.</param>
