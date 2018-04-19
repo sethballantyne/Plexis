@@ -43,7 +43,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>game</TargetName>
+    <TargetName>game_debug</TargetName>
+    <OutDir>C:\projects\project ball buster\build</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -109,6 +110,7 @@
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="messageboxlogger.cpp" />
+    <ClCompile Include="resourcemanager.cpp" />
     <ClCompile Include="soundbuffer.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="textfilelogger.cpp" />
