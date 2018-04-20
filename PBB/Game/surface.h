@@ -94,22 +94,6 @@ public:
     }
 
     /// <summary>
-    /// Gets or sets the Surface's filename.
-    /// </summary>
-    property String ^Filename
-    {
-        String ^get()
-        {
-            return this->filename;
-        }
-
-        void set(String ^value)
-        {
-            this->filename = value;
-        }
-    }
-
-    /// <summary>
     /// Returns the height of the bitmap.
     /// </summary>
     /// <remarks>Note that this is the height of the bitmap, not the surface height.</remarks>
