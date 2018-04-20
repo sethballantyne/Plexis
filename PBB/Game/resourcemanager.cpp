@@ -92,7 +92,7 @@ void ResourceManager::ParsePaths(XElement ^resourceElement, List<ResourcePath ^>
 
             if(!Directory::Exists(workingDirectory + path))
             {
-                throw gcnew DirectoryNotFoundException(String::Format("the path {0} doesn't exist.", path));
+                throw gcnew DirectoryNotFoundException(String::Format("the path {0} doesn't exist or is invalid.", path));
             }
 
             if(!PathExists(pathList, path))
@@ -114,34 +114,41 @@ void ResourceManager::Initialise(String ^pathsFile)
         throw gcnew ArgumentException("pathsFile evaluates to String::Empty.");
     }
 
-    workingDirectory = Directory::GetCurrentDirectory();
-    XElement ^xmlPathsFile = XElement::Load(pathsFile);
-
-    System::Collections::Generic::IEnumerable<XElement ^> ^resourcesQuery = xmlPathsFile->Descendants("resource");
-    if(XmlHelper::Count(resourcesQuery) == 0)
+    try
     {
-        LogManager::WriteLine(LogType::Error, "{0} doesn't contain any <resource> elements!", pathsFile);
+        workingDirectory = Directory::GetCurrentDirectory();
+        XElement ^xmlPathsFile = XElement::Load(pathsFile);
+
+        System::Collections::Generic::IEnumerable<XElement ^> ^resourcesQuery = xmlPathsFile->Descendants("resource");
+        if(XmlHelper::Count(resourcesQuery) == 0)
+        {
+            LogManager::WriteLine(LogType::Error, "{0} doesn't contain any <resource> elements!", pathsFile);
+        }
+
+        for each(XElement ^resourceElement in resourcesQuery)
+        {
+            String ^type = XmlHelper::GetAttributeValue(resourceElement, "type");
+            if("bitmaps" == type)
+            {
+                ParsePaths(resourceElement, bitmapPaths);
+            }
+            else if("audio" == type)
+            {
+                ParsePaths(resourceElement, audioPaths);
+            }
+            else if("xml" == type)
+            {
+                ParsePaths(resourceElement, xmlPaths);
+            }
+            else
+            {
+                throw gcnew XmlException(String::Format("invalid attribute value {0} within a <resource> element.", type));
+            }
+        }
     }
-
-    for each(XElement ^resourceElement in resourcesQuery)
+    catch(...)
     {
-        String ^type = XmlHelper::GetAttributeValue(resourceElement, "type");
-        if("bitmaps" == type)
-        {
-            ParsePaths(resourceElement, bitmapPaths);
-        }
-        else if("audio" == type)
-        {
-            ParsePaths(resourceElement, audioPaths);
-        }
-        else if("xml" == type)
-        {
-            ParsePaths(resourceElement, xmlPaths);
-        }
-        else
-        {
-            throw gcnew XmlException(String::Format("invalid attribute value {0} within a <resource> element.", type));
-        }
+        throw;
     }
 }
 
