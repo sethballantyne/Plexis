@@ -20,8 +20,37 @@
 #include "resourcemanager.h"
 #include "xmlhelper.h"
 #include "logmanager.h"
+#include "video.h"
 
 using namespace System::IO;
+
+
+
+array<Font ^, 1> ^ResourceManager::CreateFonts(XElement ^fontsXmlFile)
+{
+    System::Collections::Generic::IEnumerable<XElement ^> ^fontElements = fontsXmlFile->Elements("font");
+
+    List<Font ^> ^parsedFonts = gcnew List<Font ^>();
+    try
+    {
+        for each(XElement ^fontElement in fontElements)
+        {
+            String ^name = XmlHelper::GetAttributeValue(fontElement, "name");
+            String ^bitmap = XmlHelper::GetAttributeValue(fontElement, "bitmap");
+            int glyphWidth = XmlHelper::GetAttributeValueAsInt32(fontElement, "glyphWidth");
+            int glyphHeight = XmlHelper::GetAttributeValueAsInt32(fontElement, "glyphHeight");
+
+            Surface ^fontSurface = ResourceManager::GetSurface(Path::GetFileNameWithoutExtension(bitmap));
+            parsedFonts->Add(gcnew Font(name, fontSurface, glyphWidth, glyphHeight));
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+
+    return parsedFonts->ToArray();
+}
 
 bool ResourceManager::PathExists(List<ResourcePath ^> ^pathList, String ^path)
 {
@@ -130,7 +159,7 @@ void ResourceManager::LoadFonts(String ^file)
     try
     {
         XElement ^fontFile = ResourceManager::GetXML("fonts");
-        array<Font ^, 1> ^loadedFonts = FontFactory::CreateFonts(fontFile);
+        array<Font ^, 1> ^loadedFonts = CreateFonts(fontFile);
 
         for(int i = 0; i < loadedFonts->Length; i++)
         {
@@ -145,26 +174,145 @@ void ResourceManager::LoadFonts(String ^file)
 
 void ResourceManager::LoadSoundBuffers()
 {
-    for each(ResourcePath ^path in audioPaths)
+    try
     {
-        array<String ^, 1> ^files;
-
-        if(path->IncludeSubDirectories)
+        for each(ResourcePath ^path in audioPaths)
         {
-            files = Directory::GetFiles(path->Path, "*.wav", SearchOption::AllDirectories);
-        }
-        else
-        {
-            files = Directory::GetFiles(path->Path, "*.wav", SearchOption::TopDirectoryOnly);
-        }
+            array<String ^, 1> ^files;
+            String ^pathToSearch = workingDirectory + path->Path;
 
-        for each(String ^file in files)
-        {
-            SoundBuffer ^soundBuffer = Audio::CreateSoundBuffer(file);
-            soundBuffer->Path = file;
-            String ^resourceName = Path::GetFileNameWithoutExtension(file);
+            if(path->IncludeSubDirectories)
+            {
+                files = Directory::GetFiles(pathToSearch, "*.wav", SearchOption::AllDirectories);
+            }
+            else
+            {
+                files = Directory::GetFiles(pathToSearch, "*.wav", SearchOption::TopDirectoryOnly);
+            }
 
-            sounds->Add(resourceName, soundBuffer);
+            for each(String ^file in files)
+            {
+                SoundBuffer ^soundBuffer = Audio::CreateSoundBuffer(file);
+                soundBuffer->Path = file;
+                String ^resourceName = Path::GetFileNameWithoutExtension(file);
+
+                sounds->Add(resourceName, soundBuffer);
+            }
         }
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
+void ResourceManager::LoadSurfaces()
+{
+    try
+    {
+        for each(ResourcePath ^path in bitmapPaths)
+        {
+            array<String ^, 1> ^files;
+            String ^pathToSearch = workingDirectory + path->Path;
+
+            if(path->IncludeSubDirectories)
+            {
+                files = Directory::GetFiles(pathToSearch, "*.bmp", SearchOption::AllDirectories);
+            }
+            else
+            {
+                files = Directory::GetFiles(pathToSearch, "*.bmp", SearchOption::TopDirectoryOnly);
+            }
+
+            for each(String ^file in files)
+            {
+                Surface ^surface = Video::CreateSurface(file);
+                surface->Path = file;
+                surface->Name = Path::GetFileNameWithoutExtension(file);
+
+                surfaces->Add(surface->Name, surface);
+            }
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
+void ResourceManager::LoadXML()
+{
+    try
+    {
+        for each(ResourcePath ^path in xmlPaths)
+        {
+            array<String ^, 1> ^files;
+
+            String ^pathToSearch = workingDirectory + path->Path;
+            if(path->IncludeSubDirectories)
+            {
+                files = Directory::GetFiles(pathToSearch, "*.xml", SearchOption::AllDirectories);
+            }
+            else
+            {
+                files = Directory::GetFiles(pathToSearch, "*.xml", SearchOption::TopDirectoryOnly);
+            }
+
+            for each(String ^file in files)
+            {
+                XElement ^xmlFile = XElement::Load(file);
+                String ^resourceName = Path::GetFileNameWithoutExtension(file);
+
+                xmlFiles->Add(resourceName, xmlFile);
+            }
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
+void ResourceManager::ReloadSurfaces()
+{
+    try
+    {
+        for each(KeyValuePair<String ^, Surface ^> ^keyValuePair in surfaces)
+        {
+            keyValuePair->Value->Release();
+
+            // when calling Surface::Release(), it frees the underlying DirectDraw surface but the
+            // actual Surface object remains. We don't need to recreate the Surface object, just update
+            // the DirectDraw surface it encapsulates.
+            surfaces[keyValuePair->Key]->Data = Video::CreateSurface(keyValuePair->Value->Path)->Data;
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+
+    //// now that each surface has been reloaded, the fonts have to be updated since they
+    //// each contain a Surface object.
+    //for each(KeyValuePair<String ^, Font ^> ^kvp in fonts)
+    //{
+    //    fonts[kvp->Key]->FontSurface->Data = ResourceManager::GetSurface(kvp->Value->FontSurface->Name)->Data;
+    //}
+}
+
+void ResourceManager::ReloadSoundBuffers()
+{
+    try
+    {
+        for each(KeyValuePair<String ^, SoundBuffer ^> ^kvp in sounds)
+        {
+            kvp->Value->Release();
+
+            sounds[kvp->Key]->Data = Audio::CreateSoundBuffer(kvp->Value->Path)->Data;
+        }
+    }
+    catch(...)
+    {
+        throw;
     }
 }

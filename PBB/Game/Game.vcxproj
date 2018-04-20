@@ -79,7 +79,6 @@
     <ClInclude Include="engine_exceptions.h" />
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="font.h" />
-    <ClInclude Include="fontfactory.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="ilog.h" />
     <ClInclude Include="input.h" />

@@ -19,9 +19,11 @@
 #include "audio.h"
 #include "exceptions.h"
 #include "input.h"
+#include "font.h"
 #include "game.h"
 #include "logmanager.h"
 #include "video.h"
+#include "resourcemanager.h"
 
 void Game::RestoreSurfaces()
 {
@@ -34,6 +36,8 @@ void Game::RestoreSurfaces()
         try
         {
             Video::SetDisplayMode(Game::gamehWnd, windowWidth, windowHeight, bitsPerPixel);
+
+            ResourceManager::ReloadSurfaces();
         }
         catch(...)
         {
@@ -63,19 +67,24 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
     try
     {
-        LogManager::WriteLine(LogType::Log, "***********************************");
-        LogManager::WriteLine(LogType::Log, "Initialising Video");
+        LogManager::WriteLine(LogType::Log, "Initialising video");
         Video::Initialise();
 
-        LogManager::WriteLine(LogType::Log, "Initialising Audio");
+        LogManager::WriteLine(LogType::Log, "Initialising audio");
         Audio::Initialise(hWnd);
 
-        LogManager::WriteLine(LogType::Log, "Ininitialising Input");
+        LogManager::WriteLine(LogType::Log, "Ininitialising input");
         Input::Initialise(hInstance, hWnd);
+
+        LogManager::WriteLine(LogType::Log, "Ininitialising the resource manager.");
+        ResourceManager::Initialise("paths.xml");
 
         LogManager::WriteLine(LogType::Log,
             "Setting display mode to {0}x{1}@{2}bpp", windowWidth, windowHeight, bitsPerPixel);
         Video::SetDisplayMode(hWnd, windowWidth, windowHeight, bitsPerPixel);
+
+        LogManager::WriteLine(LogType::Log, "Loading resources");
+        ResourceManager::LoadResources();
     }
     catch(...)
     {
@@ -87,7 +96,7 @@ void Game::Render()
 {
     try
     {
-        Video::Clear(Color::Black);
+        Video::Clear(System::Drawing::Color::Black);
         Video::Flip();
     }
     catch(DirectDrawSurfaceLostException ^)
@@ -116,13 +125,16 @@ void Game::Shutdown()
 {
     IsRunning = false;
 
-    LogManager::WriteLine(LogType::Log, "Shutting down Video");
+    LogManager::WriteLine(LogType::Log, "Shutting down the resource manager");
+    ResourceManager::Shutdown();
+
+    LogManager::WriteLine(LogType::Log, "Shutting down video");
     Video::Shutdown();
 
-    LogManager::WriteLine(LogType::Log, "Shutting down Audio");
+    LogManager::WriteLine(LogType::Log, "Shutting down audio");
     Audio::Shutdown();
 
-    LogManager::WriteLine(LogType::Log, "Shutting down Input");
+    LogManager::WriteLine(LogType::Log, "Shutting down input");
     Input::Shutdown();
 }
 
@@ -136,8 +148,9 @@ void Game::Update()
         Keys ^input = Input::ReadKeyboard();
         if(input->KeyPressed(DIK_SPACE))
         {
-            LogManager::WriteLine(LogType::Log, "Space pressed.");
+            ResourceManager::GetSoundBuffer("test_wav")->Play();
         }
+
         Game::Render();
     }
 

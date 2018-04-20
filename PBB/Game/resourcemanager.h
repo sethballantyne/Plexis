@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 #pragma once
 #include "font.h"
-#include "fontfactory.h"
 #include "soundbuffer.h"
 #include "resourcepath.h"
 #include "surface.h"
@@ -62,7 +61,27 @@ private:
     /// <param name="pathList"></param>
     static void ParsePaths(XElement ^resourceElement, List<ResourcePath ^> ^%pathList);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="pathList"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
     static bool PathExists(List<ResourcePath ^> ^pathList, String ^path);
+
+    /// <summary>
+    /// Creates a Font object from each <font> element read in fonts.xml
+    /// </summary>
+    /// <param name="fontsXmlFile">the xml file containing font information.</param>
+    /// <returns>the parsed the fonts as Font instances.</returns>
+    /// <exception cref="System::ArgumentException">the value of the <i>glyphWidth</i> attribute is greater 
+    /// than the width of the bitmap, or the value of the <i>glyphHeight</i> attribute is greater than the
+    /// height of the bitmap.</exception>
+    /// <exception cref="System::FormatException">the <i>glyphWidth</i> or <i>glyphHeight</i> attributes contain values that aren't numbers.</exception>
+    /// <exception cref="System::OverflowException">the <i>glyphWidth</i> or <i>glyphHeight</i> attributes contain a value greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::Xml::XmlException">a font element is missing a required attribute or an attribute evaluates to String::Empty.</exception>
+    static array<Font ^, 1> ^CreateFonts(XElement ^fontsXmlFile);
+
 public:
     static ResourceManager()
     {
@@ -174,10 +193,83 @@ public:
     /// Creates the fonts based on the settings within the fonts file.
     /// </summary>
     /// <param name="file"></param>
+    /// <remarks>this method can be called only after both the xml files and surfaces have been loaded
+    /// as it depends on both having been completed successfully in order to execute correctly.</remarks>
     static void LoadFonts(String ^file);
+
+    /// <summary>
+    /// Helper function that loads each resource type in the appropriate order. 
+    /// Calling this is the same as calling LoadXML(), LoadSurfaces(), 
+    /// LoadSoundBuffers() and LoadFonts() in that order.
+    /// </summary>
+    static void LoadResources()
+    {
+        try
+        {
+            ResourceManager::LoadXML();
+            ResourceManager::LoadSurfaces();
+            ResourceManager::LoadSoundBuffers();
+            ResourceManager::LoadFonts("fonts");
+        }
+        catch(...)
+        {
+            throw;
+        }
+    }
 
     /// <summary>
     /// 
     /// </summary>
     static void LoadSoundBuffers();
+
+    /// <summary>
+    /// Loads each Bitmap located at the path(s) specified in the paths file as Surface objects.
+    /// </summary>
+    static void LoadSurfaces();
+
+    /// <summary>
+    /// Loads each XML file located at the path(s) specified in the paths file as XElement objects.
+    /// </summary>
+    static void LoadXML();
+
+    /// <summary>
+    /// Releases all the Surfaces and SoundObjects contained within the resource manager. 
+    /// Once released, these resources have to be reloaded before they can be used again.
+    /// </summary>
+    static void Release()
+    {
+        for each(KeyValuePair<String ^, Surface ^> ^kvp in surfaces)
+        {
+            kvp->Value->Release();
+        }
+
+        for each(KeyValuePair<String ^, SoundBuffer ^> ^kvp in sounds)
+        {
+            kvp->Value->Release();
+        }
+
+        surfaces->Clear();
+        sounds->Clear();
+    }
+
+    /// <summary>
+    /// Reloads each Surface object if restoring failed after the user alt-tabbed.
+    /// </summary>
+    static void ReloadSurfaces();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    static void ReloadSoundBuffers();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    static void Shutdown()
+    {
+        fonts->Clear();
+        xmlFiles->Clear();
+
+        Release();
+    }
 };
