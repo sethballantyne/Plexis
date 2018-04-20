@@ -43,6 +43,8 @@ public:
     /// <param name="path">the path containing the resources, relative to the game binary.</param>
     /// <param name="includeSubDirs"><b>true</b> if the resource manager should scan the subdirectories of the directory
     /// specified in <i>path</i> for resources, otherwise <b>false</b>.</param>
+    /// <exception cref="System::ArgumentException"><i>path</i> evaluates to String::Empty or contains only whitespace.</exception>
+    /// <exception cref="System::ArgumentNullException"><i>path</i> is <b>null</b></exception>
     ResourcePath(String ^path, bool includeSubDirs)
     {
         if(nullptr == path)
