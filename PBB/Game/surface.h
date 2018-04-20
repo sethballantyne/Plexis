@@ -91,6 +91,10 @@ public:
         {
             return this->lpDDSurface;
         }
+        void set(LPDIRECTDRAWSURFACE7 value)
+        {
+            this->lpDDSurface = value;
+        }
     }
 
     /// <summary>
@@ -135,7 +139,7 @@ public:
     }
 
     /// <summary>
-    /// Gets or sets the Surface's path.
+    /// Gets or sets the Surface's path, including the filename for the bitmap it originates from.
     /// </summary>
     property String ^Path
     {
