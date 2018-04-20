@@ -59,14 +59,18 @@ private:
     /// </summary>
     /// <param name="resourceElement"></param>
     /// <param name="pathList"></param>
+    /// <exception cref="System::ArgumentNullException"><i>resourceElement</i> or <i>pathList</i> are <b>null</b>.</exception>
+    /// <exception cref="System::IO::DirectoryNotFoundException">a path specified in the xml file doesn't exist or is invalid: the path is too long or the application doesn't have the correct permissions to access the location.</exception>
+    /// <exception cref="System::Xml::XmlException">an xml element is missing a required attribute.</exception>
     static void ParsePaths(XElement ^resourceElement, List<ResourcePath ^> ^%pathList);
 
     /// <summary>
-    /// 
+    /// Searches a list of ResourcePath instances for the specified path.
     /// </summary>
-    /// <param name="pathList"></param>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <param name="pathList">the list to search.</param>
+    /// <param name="path">the search for in <i>pathList</i>.</param>
+    /// <returns></b>true</b> if <i>pathList</i> contains a ResourcePath instance that points to the specified path,
+    /// else returns <b>false.</b></returns>
     static bool PathExists(List<ResourcePath ^> ^pathList, String ^path);
 
     /// <summary>
@@ -74,9 +78,9 @@ private:
     /// </summary>
     /// <param name="fontsXmlFile">the xml file containing font information.</param>
     /// <returns>the parsed the fonts as Font instances.</returns>
-    /// <exception cref="System::ArgumentException">the value of the <i>glyphWidth</i> attribute is greater 
-    /// than the width of the bitmap, or the value of the <i>glyphHeight</i> attribute is greater than the
-    /// height of the bitmap.</exception>
+    /// <exception cref="System::ArgumentException">the <i>glyphWidth</i> or <i>glyphHeight</i> attribute in a <i>path</i> 
+    /// element contains a value that's greater than the width (for <i>glyphWidth</i>) or height (for <i>glyphHeight</i>)
+    /// of the fonts bitmap.</exception>
     /// <exception cref="System::FormatException">the <i>glyphWidth</i> or <i>glyphHeight</i> attributes contain values that aren't numbers.</exception>
     /// <exception cref="System::OverflowException">the <i>glyphWidth</i> or <i>glyphHeight</i> attributes contain a value greater than Int32::MaxValue.</exception>
     /// <exception cref="System::Xml::XmlException">a font element is missing a required attribute or an attribute evaluates to String::Empty.</exception>
@@ -98,14 +102,19 @@ public:
     /// <summary>
     /// Initialises the resource manager with the paths in the specified XML file.
     /// </summary>
-    /// <param name="paths"></param>
-    static void Initialise(String ^paths);
+    /// <param name="pathsFile">the xml file that contains path information.</param>
+    /// <exception cref="System::ArgumentException"><i>pathsFile</i> evaluates to String::Empty.</exception>
+    /// <exception cref="System::ArgumentNullException"><i>pathsFile</i> is <b>null</b>.</exception>
+    /// <exception cref="System::Xml::XmlException">a required attribute is missing or contains an invalid value.</exception>
+    static void Initialise(String ^pathsFile);
 
     /// <summary>
     /// Retrieves the specified font from the font resource pool.
     /// </summary>
-    /// <param name="fontName"></param>
-    /// <returns></returns>
+    /// <param name="fontName">the name of the desired font; this will be the value specified in the 
+    /// fonts <i>name</i> attribute in fonts.xml.</param>
+    /// <returns>The desired bitmap font.</returns>
+    /// <exception cref="ResourceNotFoundException">the resource manager received a request for a font that it doesn't have.</exception>
     static Font ^GetFont(String ^fontName)
     {
         try
@@ -126,8 +135,9 @@ public:
     /// <summary>
     /// Retrieves the specified sound from the sound resource pool.
     /// </summary>
-    /// <param name="soundName"></param>
-    /// <returns></returns>
+    /// <param name="soundName">the name of the desired sound effect; this will be the name of the originating *.wav file, minus the file extension.</param>
+    /// <returns>the desired sound effect as a SoundBuffer instance.</returns>
+    /// <exception cref="ResourceNotFoundException">the resource manager received a request for a sound effect that it doesn't have.</exception>
     static SoundBuffer ^GetSoundBuffer(String ^soundName)
     {
         try
@@ -148,8 +158,10 @@ public:
     /// <summary>
     /// Retrieves the specified surface from the surface resource pool.
     /// </summary>
-    /// <param name="surfaceName"></param>
-    /// <returns></returns>
+    /// <param name="surfaceName">the name of the surface to search for; this will be the filename of the originating bitmap,
+    /// minus the .bmp extension.</param>
+    /// <returns>the desired bitmap as a surface object.</returns>
+    /// <exception cref="ResourceNotFoundException">the resource manager received a request for a surface that it doesn't have.</exception>
     static Surface ^GetSurface(String ^surfaceName)
     {
         try
@@ -170,8 +182,9 @@ public:
     /// <summary>
     /// Retrieves the specified file from the xml resource pool.
     /// </summary>
-    /// <param name="documentName"></param>
-    /// <returns></returns>
+    /// <param name="documentName">the name of the xml document to search for.</param>
+    /// <returns>the desired XML document as an XElement object.</returns>
+    /// <exception cref="ResourceNotFoundException">the resource manager received a request for an xml document that it doesn't have.</exception>
     static XElement ^GetXML(String ^documentName)
     {
         try
