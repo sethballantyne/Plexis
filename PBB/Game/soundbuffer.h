@@ -78,6 +78,20 @@ public:
     void Stop();
 
     /// <summary>
+    /// Gets or sets the underlying IDirectSoundBuffer8 instance.
+    /// </summary>
+    property LPDIRECTSOUNDBUFFER8 Data
+    {
+        LPDIRECTSOUNDBUFFER8 get()
+        {
+            return this->lpDSBuffer;
+        }
+        void set(LPDIRECTSOUNDBUFFER8 value)
+        {
+            this->lpDSBuffer = value;
+        }
+    }
+    /// <summary>
     /// Returns true if the buffer is currently playing, otherwise false.
     /// </summary>
     /// <exception cref="System::Runtime::InteropServices::COMException">DirectSound returned an unspecified error while querying the status of the buffer.</exception>
@@ -114,6 +128,7 @@ public:
     /// </summary>
     /// <exception cref="System::ArgumentException">attempting to assign an empty string or a string that contains all whitespace.</exception>
     /// <exception cref="System::ArgumentNullException">attempting to assign a <b>null</b> value.</exception>
+    /// <remarks>includes the filename of the originating .wav file.</remarks>
     property String ^Path
     {
         String ^get()
