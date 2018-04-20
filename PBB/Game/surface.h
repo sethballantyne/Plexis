@@ -35,6 +35,7 @@ private:
     // these are used when the surface has to be restored by DirectDraw.
     String ^path;
     String ^filename;
+    String ^name;
 
 public:
     /// <summary>
@@ -104,7 +105,7 @@ public:
 
         void set(String ^value)
         {
-            this->filename;
+            this->filename = value;
         }
     }
 
@@ -117,6 +118,35 @@ public:
         unsigned int get()
         {
             return this->bitmapHeight;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the surface. 
+    /// </summary>
+    /// <exception cref="System::ArgumentException">the property was assigned a string consisting of whitespace or String::Empty.</exception>
+    /// <exception cref="System::ArgumentNullException">the property was assigned a <b>null</b> value.</exception>
+    property String ^Name
+    {
+        String ^get()
+        {
+            return this->name;
+        }
+
+        void set(String ^value)
+        {
+            if(nullptr == value)
+            {
+                throw gcnew ArgumentNullException("value");
+            }
+            else if(String::IsNullOrWhiteSpace(value))
+            {
+                throw gcnew ArgumentException("the name of the surface can't be a null or whitespace.");
+            }
+            else
+            {
+                this->name = value;
+            }
         }
     }
 
