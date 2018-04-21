@@ -59,7 +59,7 @@ public:
     /// <exception cref="System::Runtime::InteropServices::COMException">DirectSound returned an unspecified COM+ exception.</exception>
     /// <exception cref="DirectSoundAllocatedException">the request failed because audio resources were already in use by another caller.</exception>
     /// <exception cref="DirectSoundBadFormatException">the specified wave format is not supported.</exception>
-    /// <exception cref="DirectSoundBufferLostException"the buffer memory has been lost and must be restored.</exception>
+    /// <exception cref="DirectSoundBufferLostException">the buffer memory has been lost and must be restored.</exception>
     /// <exception cref="DirectSoundBufferTooSmallException">the buffer size is not big enough.</exception>
     /// <exception cref="DirectSoundControlUnavailableException">the buffer control requested by the caller is not available.</exception>
     /// <exception cref="DirectSoundInvalidCallException">this function is not valid for the current state of this object.</exception>
