@@ -36,7 +36,7 @@ void GameOptions::Initialise(String ^path)
     {
         XElement ^xmlFile = XElement::Load(path);
 
-        IEnumerable<XElement ^> ^xmlOptions = xmlFile->Descendants("options");
+        IEnumerable<XElement ^> ^xmlOptions = xmlFile->Descendants("option");
 
         for each(XElement ^element in xmlOptions)
         {
