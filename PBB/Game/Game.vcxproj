@@ -80,6 +80,7 @@
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="font.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="gameoptions.h" />
     <ClInclude Include="ilog.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="keys.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="engine_exceptions.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="gameoptions.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="keys.cpp" />
     <ClCompile Include="logmanager.cpp" />
