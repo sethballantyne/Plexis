@@ -29,11 +29,7 @@ using namespace System::Collections::Generic;
 
 /// <summary>
 /// The resource manager creates, manages and destroys all the games assets. 
-/// All objects created by the resource manager must be destroyed by the resource manager.
-/// When you request a resource via the 3 Get* methods, you're not getting a copy of a resource but 
-/// rather the address of the resource stored in the pool, thus multiple requests for the same resource
-/// by multiple objects get the same address to the same resource.DO NOT FREE THE RESOURCE UNTIL
-/// IT'S TIME TO TERMINATE. Doing so makes the resource unavailable to any other object that needs it. 
+/// All objects created by the resource manager must be destroyed by the resource manager. 
 /// </summary>
 public ref class ResourceManager abstract sealed
 {
@@ -205,9 +201,12 @@ public:
     /// <summary>
     /// Creates the fonts based on the settings within the fonts file.
     /// </summary>
-    /// <param name="file"></param>
+    /// <param name="file">the name of the XML file that contains font information, minus the .xml extension.</param>
     /// <remarks>this method can be called only after both the xml files and surfaces have been loaded
     /// as it depends on both having been completed successfully in order to execute correctly.</remarks>
+    /// <exception cref="System::ArgumentException"><i>file</i> evaluates to String::Empty.</exception>
+    /// <exception cref="System::ArgumentNullException"><i>file</i> is <b>null</b>.</exception>
+    /// <exception cref="ResourceNotFoundException">the resource manager doesn't have the requested XML file.</exception>
     static void LoadFonts(String ^file);
 
     /// <summary>
@@ -233,16 +232,66 @@ public:
     /// <summary>
     /// 
     /// </summary>
+    /// <exception cref="System::Runtime::InteropServices::COMException">DirectSound returned an unspecified COM+ exception.</exception>
+    /// <exception cref="System::IO::DirectoryNotFoundException">paths.xml contains a path for audio resources that doesn't exist.</exception>
+    /// <exception cref="DirectSoundAllocatedException">the request failed because audio resources were already in use by another caller.</exception>
+    /// <exception cref="DirectSoundBadFormatException">the specified wave format is not supported.</exception>
+    /// <exception cref="DirectSoundBufferLostException">the buffer memory has been lost and must be restored.</exception>
+    /// <exception cref="DirectSoundBufferTooSmallException">the buffer size is not big enough.</exception>
+    /// <exception cref="DirectSoundControlUnavailableException">the buffer control requested by the caller is not available.</exception>
+    /// <exception cref="DirectSoundInvalidCallException">this function is not valid for the current state of this object.</exception>
+    /// <exception cref="DirectSoundInvalidParameterException">an invalid parameter was passed to the returning function.</exception>
+    /// <exception cref="DirectSoundNoAggregationException">the object does not support aggregation.</exception>
+    /// <exception cref="DirectSoundPriorityLevelNeededException">A cooperative level of DSSCL_PRIORITY or higher is required.</exception>
+    /// <exception cref="DirectSoundUninitializedException">DirectSound hasn't been initialised.</exception>
+    /// <exception cref="DirectSoundUnsupportedException">the DirectSound function called is not supported.</exception>
+    /// <exception cref="DirectSoundVersion8RequiredException">DirectSound8 is required to complete the operation.</exception>
+    /// <exception cref="System::IO::EndOfStreamException">the end of the file was reached prematurely.</exception>
+    /// <exception cref="System::IO::FileFormatException">the specified file isn't a PCM wav file.</exception>
+    /// <exception cref="System::IO::PathTooLongException">paths.xml contains a path for audio resources 
+    /// that's longer than the OS-defined maximum length for a path.</exception>
     static void LoadSoundBuffers();
 
     /// <summary>
     /// Loads each Bitmap located at the path(s) specified in the paths file as Surface objects.
     /// </summary>
+    /// <exception cref="DirectDrawDCAlreadyCreatedException">a device context has already been returned for this surface.</exception>
+    /// <exception cref="DirectDrawGenericException">generic error occured, fucked if I know what's going on.</exception>
+    /// <exception cref="DirectDrawIncompatiblePrimarySurfaceException">the image surface is incompatible with the format of the existing primary surface.</exception>
+    /// <exception cref="DirectDrawInvalidCapsException">one or more of the capability bits is incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidPixelFormatException">an invalid pixel format was specified.</exception>
+    /// <exception cref="DirectDrawInvalidSurfaceTypeException">the requested operation could not be performed because the surface was of the wrong type.</exception>
+    /// <exception cref="DirectDrawNoAlphaHardwareException">the video device doesn't support alpha hardware acceleration or it's unavailable.</exception>
+    /// <exception cref="DirectDrawNoCooperativeLevelSetException">attempting to create a surface without first setting the cooperative level.</exception>
+    /// <exception cref="DirectDrawNoHardwareException">the current device doesn't support hardware-only DirectDraw acceleration.</exception>
+    /// <exception cref="DirectDrawNoEmulationException">software emulation isn't available.</exception>
+    /// <exception cref="DirectDrawNoExclusiveModeException">exclusive mode required to complete the operation.</exception>
+    /// <exception cref="DirectDrawNoFlipHardwareException">flipping visible surfaces is not supported by the video hardware.</exception>
+    /// <exception cref="DirectDrawNoMipMapHardwareException">unable to complete the operation because mipmapping isn't supported by the hardware or is not available.</exception>
+    /// <exception cref="DirectDrawNoOverlayHardwareException">unable to complete the operation because no hardware support for overlay is available.</exception>
+    /// <exception cref="DirectDrawNoZBufferHardwareException">unable to complete the operation because no hardware support for Z-ordering overlays is available.</exception>
+    /// <exception cref="DirectDrawOutOfVideoMemoryException">DirectDraw does not have enough display memory available to perform the operation.</exception>
+    /// <exception cref="DirectDrawPrimarySurfaceAlreadyExistsException">a primary surface already exists.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone. Call IDirectDrawSurface7::Restore to restore the memory associated with it.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawUnsupportedModeException">unable to create a surface for the current display mode, it's unsupported.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+    /// <exception cref="System::IO::DirectoryNotFoundException">paths.xml contains a path for bitmap resources that doesn't exist.</exception>
+    /// <exception cref="OutOfMemoryException">DirectDraw does not have enough memory to perform the operation.</exception>
+    /// <exception cref="System::IO::PathTooLongException">paths.xml contains a path for bitmap resources 
+    /// that's longer than the OS-defined maximum length for a path.</exception>
+    /// <exception cref="Win32Exception">The function was unable to load the image at the specified path.</exception>
     static void LoadSurfaces();
 
     /// <summary>
     /// Loads each XML file located at the path(s) specified in the paths file as XElement objects.
     /// </summary>
+    /// <exception cref="System::IO::DirectoryNotFoundException">paths.xml contains a path for bitmap resources that doesn't exist.</exception>
+    /// <exception cref="System::IO::PathTooLongException">paths.xml contains a path for xml resources 
+    /// that's longer than the OS-defined maximum length for a path.</exception>
+    /// <exception cref="System::Xml::XmlException">An error occured while parsing an XML file.</exception>
     static void LoadXML();
 
     /// <summary>
@@ -268,15 +317,59 @@ public:
     /// <summary>
     /// Reloads each Surface object if restoring failed after the user alt-tabbed.
     /// </summary>
+    /// <exception cref="DirectDrawDCAlreadyCreatedException">a device context has already been returned for this surface.</exception>
+    /// <exception cref="DirectDrawGenericException">generic error occured, fucked if I know what's going on.</exception>
+    /// <exception cref="DirectDrawIncompatiblePrimarySurfaceException">the image surface is incompatible with the format of the existing primary surface.</exception>
+    /// <exception cref="DirectDrawInvalidCapsException">one or more of the capability bits is incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidPixelFormatException">an invalid pixel format was specified.</exception>
+    /// <exception cref="DirectDrawInvalidSurfaceTypeException">the requested operation could not be performed because the surface was of the wrong type.</exception>
+    /// <exception cref="DirectDrawNoAlphaHardwareException">the video device doesn't support alpha hardware acceleration or it's unavailable.</exception>
+    /// <exception cref="DirectDrawNoCooperativeLevelSetException">attempting to create a surface without first setting the cooperative level.</exception>
+    /// <exception cref="DirectDrawNoHardwareException">the current device doesn't support hardware-only DirectDraw acceleration.</exception>
+    /// <exception cref="DirectDrawNoEmulationException">software emulation isn't available.</exception>
+    /// <exception cref="DirectDrawNoExclusiveModeException">exclusive mode required to complete the operation.</exception>
+    /// <exception cref="DirectDrawNoFlipHardwareException">flipping visible surfaces is not supported by the video hardware.</exception>
+    /// <exception cref="DirectDrawNoMipMapHardwareException">unable to complete the operation because mipmapping isn't supported by the hardware or is not available.</exception>
+    /// <exception cref="DirectDrawNoOverlayHardwareException">unable to complete the operation because no hardware support for overlay is available.</exception>
+    /// <exception cref="DirectDrawNoZBufferHardwareException">unable to complete the operation because no hardware support for Z-ordering overlays is available.</exception>
+    /// <exception cref="DirectDrawOutOfVideoMemoryException">DirectDraw does not have enough display memory available to perform the operation.</exception>
+    /// <exception cref="DirectDrawPrimarySurfaceAlreadyExistsException">a primary surface already exists.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone. Call IDirectDrawSurface7::Restore to restore the memory associated with it.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawUnsupportedModeException">unable to create a surface for the current display mode, it's unsupported.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+    /// <exception cref="System::OutOfMemoryException">DirectDraw does not have enough memory to perform the operation.</exception>
+    /// <exception cref="Win32Exception">The function was unable to load the image at the specified path.</exception>
     static void ReloadSurfaces();
 
     /// <summary>
-    /// 
+    /// Reloads all the audio resources on the event DirectSound loses them due to alt-tabbing etc.
     /// </summary>
+    /// <exception cref="System::Runtime::InteropServices::COMException">DirectSound returned an unspecified COM+ exception.</exception>
+    /// <exception cref="DirectSoundAllocatedException">the request failed because audio resources were already in use by another caller.</exception>
+    /// <exception cref="DirectSoundBadFormatException">the specified wave format is not supported.</exception>
+    /// <exception cref="DirectSoundBufferLostException">the buffer memory has been lost and must be restored.</exception>
+    /// <exception cref="DirectSoundBufferTooSmallException">the buffer size is not big enough.</exception>
+    /// <exception cref="DirectSoundControlUnavailableException">the buffer control requested by the caller is not available.</exception>
+    /// <exception cref="DirectSoundInvalidCallException">this function is not valid for the current state of this object.</exception>
+    /// <exception cref="DirectSoundInvalidParameterException">an invalid parameter was passed to the returning function.</exception>
+    /// <exception cref="DirectSoundNoAggregationException">the object does not support aggregation.</exception>
+    /// <exception cref="DirectSoundPriorityLevelNeededException">A cooperative level of DSSCL_PRIORITY or higher is required.</exception>
+    /// <exception cref="DirectSoundUninitializedException">DirectSound hasn't been initialised.</exception>
+    /// <exception cref="DirectSoundUnsupportedException">the function called is not supported.</exception>
+    /// <exception cref="DirectSoundVersion8RequiredException">DirectSound8 is required to complete the operation.</exception>
+    /// <exception cref="System::IO::EndOfStreamException">the end of the file was reached prematurely.</exception>
+    /// <exception cref="System::IO::FileFormatException">the specified file isn't a PCM wav file.</exception>
+    /// <exception cref="System::IO::IOException">the method was unable to load the file specified in <i>filename</i> because it either couldn't be found or lacked the permissions to open it, or
+    /// the file was corrupt.</exception>
     static void ReloadSoundBuffers();
 
     /// <summary>
-    /// 
+    /// Frees the memory allocated by the resources and destroys all Surface and SoundBuffer objects.
+    /// Once this is called, ResourceManager can't be used until ResourceManager::Initialise() is called
+    /// again.
     /// </summary>
     static void Shutdown()
     {
