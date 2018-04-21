@@ -165,7 +165,7 @@ void ResourceManager::LoadFonts(String ^file)
 
     try
     {
-        XElement ^fontFile = ResourceManager::GetXML("fonts");
+        XElement ^fontFile = ResourceManager::GetXML(file);
         array<Font ^, 1> ^loadedFonts = CreateFonts(fontFile);
 
         for(int i = 0; i < loadedFonts->Length; i++)
