@@ -47,11 +47,12 @@ public:
     static void Initialise(String ^path);
 
     /// <summary>
-    /// 
+    /// Gets the value of a specified option as a string.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="default"></param>
-    /// <returns></returns>
+    /// <param name="id">the option whose value should be returned.</param>
+    /// <param name="default">the value to return if the specified option doesn't exist.</param>
+    /// <returns>the value associated with the setting <i>id</id>. If the specified option
+    /// doesn't exist, <i>default</i> is returned.</returns>
     static String ^GetValue(String ^id, String ^default)
     {
         String ^value;
@@ -69,11 +70,12 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// Gets the value of a specified option as an Int32 value.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="default"></param>
-    /// <returns></returns>
+    /// <param name="id">the option whose value should be returned.</param>
+    /// <param name="default">the value to return if the specified option doesn't exist, or it can't be converted to an Int32 value.</param>
+    /// <returns>the value associated with the setting <i>id</id> as an Int32. If the specified option
+    /// doesn't exist or the associated value coulnd't be converted to a Int32, <i>default</i> is returned.</returns>
     static int GetValue(String ^id, int default)
     {
         int value;
@@ -90,11 +92,12 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// Gets the value of a specified option as a double.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="default"></param>
-    /// <returns></returns>
+    /// <param name="id">the option whose value should be returned.</param>
+    /// <param name="default">the value to return if the specified option doesn't exist, or it can't be converted to a double.</param>
+    /// <returns>the value associated with the setting <i>id</id> as a double. If the specified option
+    /// doesn't exist or the associated value coulnd't be converted to a double, <i>default</i> is returned.</returns>
     static double GetValue(String ^id, double default)
     {
         double value;
@@ -113,7 +116,7 @@ public:
     /// <summary>
     /// Writes the game settings back out to the XML file the GameOptions was initialised with.
     /// </summary>
-    /// <exception cref=""></exception>
+    /// <exception cref="System::UnauthorizedAccessException">the application doesn't have permission to write to the XML file.</exception>
     static void Save();
 
     /// <summary>
