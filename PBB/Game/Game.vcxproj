@@ -81,6 +81,8 @@
     <ClInclude Include="font.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="gameoptions.h" />
+    <ClInclude Include="highscorerecord.h" />
+    <ClInclude Include="highscores.h" />
     <ClInclude Include="ilog.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="keys.h" />

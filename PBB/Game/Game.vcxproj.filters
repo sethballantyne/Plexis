@@ -96,6 +96,12 @@
     <ClInclude Include="gameoptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="highscores.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="highscorerecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
