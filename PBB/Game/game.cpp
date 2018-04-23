@@ -21,9 +21,11 @@
 #include "input.h"
 #include "font.h"
 #include "game.h"
+#include "gameoptions.h"
 #include "logmanager.h"
 #include "video.h"
 #include "resourcemanager.h"
+#include "highscores.h"
 
 void Game::RestoreSurfaces()
 {
@@ -76,6 +78,9 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
         LogManager::WriteLine(LogType::Log, "Ininitialising input");
         Input::Initialise(hInstance, hWnd);
 
+        LogManager::WriteLine(LogType::Log, "Loading the games settings.");
+        GameOptions::Initialise("options.xml");
+
         LogManager::WriteLine(LogType::Log, "Ininitialising the resource manager.");
         ResourceManager::Initialise("paths.xml");
 
@@ -85,6 +90,9 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
         LogManager::WriteLine(LogType::Log, "Loading resources");
         ResourceManager::LoadResources();
+
+        LogManager::WriteLine(LogType::Log, "loading high scores");
+        HighScores::Initialise("highscores.dat");
     }
     catch(...)
     {
@@ -124,6 +132,9 @@ void Game::Render()
 void Game::Shutdown()
 {
     IsRunning = false;
+
+    LogManager::WriteLine(LogType::Log, "closing the high scores file");
+    HighScores::Shutdown();
 
     LogManager::WriteLine(LogType::Log, "Shutting down the resource manager");
     ResourceManager::Shutdown();

@@ -38,7 +38,7 @@ private:
     static BinaryReader ^binaryReader;
     static BinaryWriter ^binaryWriter;
 public:
-    HighScores()
+    static HighScores()
     {
         HighScores::highScores = gcnew List<HighScoreRecord ^>();
     }
@@ -57,4 +57,87 @@ public:
     /// <exception cref="System::IO::PathTooLongException">the length of <i>filename</i> exceeds the maximum length allowed for a path.</exception>
     /// <exception cref="System::UnauthorizedAccessException">access to the specified path was denied by the operating system.</exception>
     static void Initialise(String ^filename);
+
+    /// <summary>
+    /// Places the specified player name and score at the specified position 
+    /// </summary>
+    /// <param name="row">the desired position of the new entry on the high score table.</param>
+    /// <param name="playerName">the player name to associate with the high score.</param>
+    /// <param name="newHighScore">the high score to display.</param>
+    /// <exception cref="System::ArgumentNullException"><i>playerName</i> is <b>null</b>.</exception>
+    /// <exception cref="System::ArgumentOutOfRangeException"><i>row</i> is greater than the number of entries on the high score table.</exception>
+    /// <exception cref="System::IO::IOException">an unspecified I/O error occured while writing to disk.</exception>
+    static void Update(unsigned int row, String ^playerName, unsigned int newHighScore);
+
+    /// <summary>
+    /// Returns the score on the specified position of the high score table.
+    /// </summary>
+    /// <param name="position">the position of the desired score on the table.</param>
+    /// <returns>the score by the looks of things.</returns>
+    /// <exception cref="System::ArgumentOutOfRangeException"><i>position</i> is greater than the number of entries on the high score table.</exception>
+    static unsigned int GetHighScore(unsigned int position)
+    {
+        if(position < highScores->Count)
+        {
+            return highScores[position]->Score;
+        }
+        else
+        {
+            throw gcnew ArgumentOutOfRangeException("position");
+        }
+    }
+
+    /// <summary>
+    /// Returns the player name belonging to the specified position on the high score table.
+    /// </summary>
+    /// <param name="row">the desired names position on the high score table.</param>
+    /// <returns>the player name as a string.</returns>
+    /// <exception cref="System::ArgumentOutOfRangeException"><i>row</i> is greater than the number 
+    /// of positions on the high score table.</exception>
+    static String ^GetPlayerName(unsigned int row)
+    {
+        if(row < highScores->Count)
+        {
+            return highScores[row]->PlayerNameAsString();
+        }
+        else
+        {
+            throw gcnew ArgumentOutOfRangeException("row");
+        }
+    }
+
+    /// <summary>
+    /// Checks if a score is greater than any of the existing scores on the high score table, from 
+    /// the top down.
+    /// </summary>
+    /// <param name="score">the score to verify.</param>
+    /// <returns>-1 if the score isn't a high score, else the position on the high score table where
+    /// the score belongs.</returns>
+    static int IsAHighScore(unsigned int score)
+    {
+        for(int i = 0; i < highScores->Count; i++)
+        {
+            if(score > highScores[i]->Score)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Closes the highscores file and frees the memory allocated by the class. When this function is called,
+    /// none of HighScore's methods can be called until the object is reinitialised via HighScores::Initialise().
+    /// </summary>
+    static void Shutdown()
+    {
+        binaryWriter->Close();
+        binaryReader->Close();
+        fileStream->Close();
+
+        delete binaryWriter;
+        delete binaryReader;
+        delete fileStream;
+    }
 };
