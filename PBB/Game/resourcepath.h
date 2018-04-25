@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 #pragma once 
 
-using namespace System;
 
 /// <summary>
 /// Represents a single <path> element in paths.xml.

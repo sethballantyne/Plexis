@@ -21,7 +21,6 @@
 #include "resourcepath.h"
 #include "surface.h"
 
-using namespace System;
 using namespace System::Xml;
 using namespace System::Xml::Linq;
 using namespace System::Collections;

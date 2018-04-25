@@ -20,7 +20,6 @@
 #include <dsound.h>
 #include "soundbuffer.h"
 
-using namespace System;
 
 /// <summary>
 /// Wrapper around DirectSound 8. Audio handles the initialisation and shutting down of DirectSound

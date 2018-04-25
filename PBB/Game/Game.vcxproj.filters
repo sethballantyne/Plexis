@@ -102,6 +102,33 @@
     <ClInclude Include="highscorerecord.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="selectablecontrol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scenemanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scenefactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="label.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="menuitem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="menuitemcontainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="containercontrol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -150,6 +177,30 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gameoptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="highscores.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="selectablecontrol.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scenemanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scenefactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="menuitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="label.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="menuitemcontainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

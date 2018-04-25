@@ -26,6 +26,7 @@
 #include "video.h"
 #include "resourcemanager.h"
 #include "highscores.h"
+#include "scenemanager.h"
 
 void Game::RestoreSurfaces()
 {
@@ -93,6 +94,9 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
         LogManager::WriteLine(LogType::Log, "loading high scores");
         HighScores::Initialise("highscores.dat");
+
+        LogManager::WriteLine(LogType::Log, "loading scenes");
+        SceneManager::Initialise(ResourceManager::GetXML("scenes"));
     }
     catch(...)
     {
@@ -105,6 +109,7 @@ void Game::Render()
     try
     {
         Video::Clear(System::Drawing::Color::Black);
+        SceneManager::CurrentScene->Render();
         Video::Flip();
     }
     catch(DirectDrawSurfaceLostException ^)
@@ -156,11 +161,15 @@ void Game::Update()
 
     if(timeDifference != 0)
     {
-        Keys ^input = Input::ReadKeyboard();
-        if(input->KeyPressed(DIK_SPACE))
+        Keys ^keyboardState = Input::ReadKeyboard();
+        Mouse ^mouseState;
+
+        if(GameOptions::GetValue("mouseMovesPaddle", false))
         {
-            ResourceManager::GetSoundBuffer("test_wav")->Play();
+            mouseState = Input::ReadMouse();
         }
+
+        SceneManager::CurrentScene->Update(keyboardState, mouseState);
 
         Game::Render();
     }

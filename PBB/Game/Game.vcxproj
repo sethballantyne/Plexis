@@ -44,7 +44,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>game_debug</TargetName>
-    <OutDir>C:\projects\project ball buster\build</OutDir>
+    <OutDir>C:\projects\project ball buster\build\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -73,6 +73,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="audio.h" />
+    <ClInclude Include="containercontrol.h" />
+    <ClInclude Include="control.h" />
     <ClInclude Include="ddraw_exceptions.h" />
     <ClInclude Include="dinput_exceptions.h" />
     <ClInclude Include="dsound_exceptions.h" />
@@ -86,14 +88,21 @@
     <ClInclude Include="ilog.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="keys.h" />
+    <ClInclude Include="label.h" />
     <ClInclude Include="line.h" />
     <ClInclude Include="logmanager.h" />
     <ClInclude Include="logtype.h" />
+    <ClInclude Include="menuitem.h" />
+    <ClInclude Include="menuitemcontainer.h" />
     <ClInclude Include="messageboxlogger.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resourcemanager.h" />
     <ClInclude Include="resourcepath.h" />
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="scenefactory.h" />
+    <ClInclude Include="scenemanager.h" />
+    <ClInclude Include="selectablecontrol.h" />
     <ClInclude Include="soundbuffer.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="textfilelogger.h" />
@@ -108,12 +117,20 @@
     <ClCompile Include="font.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameoptions.cpp" />
+    <ClCompile Include="highscores.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="keys.cpp" />
+    <ClCompile Include="label.cpp" />
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="menuitem.cpp" />
+    <ClCompile Include="menuitemcontainer.cpp" />
     <ClCompile Include="messageboxlogger.cpp" />
     <ClCompile Include="resourcemanager.cpp" />
+    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="scenefactory.cpp" />
+    <ClCompile Include="scenemanager.cpp" />
+    <ClCompile Include="selectablecontrol.cpp" />
     <ClCompile Include="soundbuffer.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="textfilelogger.cpp" />

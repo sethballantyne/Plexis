@@ -20,6 +20,16 @@
 using namespace System;
 
 /// <summary>
+/// thrown when scenes.xml is parsed and found to contain no scenes.
+/// </summary>
+public ref class NoScenesAvailableException : public Exception
+{
+public:
+    NoScenesAvailableException() : Exception() {}
+    NoScenesAvailableException(String ^message) : Exception(message) {}
+};
+
+/// <summary>
 /// the exception that's thrown when the resource manager has received a request for a particular
 /// resource that it doesn't have.
 /// </summary>

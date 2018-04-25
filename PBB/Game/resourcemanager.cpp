@@ -24,8 +24,6 @@
 
 using namespace System::IO;
 
-
-
 array<Font ^, 1> ^ResourceManager::CreateFonts(XElement ^fontsXmlFile)
 {
     System::Collections::Generic::IEnumerable<XElement ^> ^fontElements = fontsXmlFile->Elements("font");

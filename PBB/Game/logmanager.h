@@ -20,7 +20,6 @@
 #include "ilog.h"
 #include "logtype.h"
 
-using namespace System;
 using namespace System::Collections::Generic;
 
 /// <summary>

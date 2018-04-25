@@ -1225,8 +1225,8 @@ void Video::Blit(int x, int y, Surface ^surface)
 
     destRect.left = x;
     destRect.top = y;
-    destRect.bottom = surface->Height;
-    destRect.right = surface->Width;
+    destRect.bottom = destRect.top + surface->Height;
+    destRect.right = destRect.left + surface->Width;
 
     srcRect.left = 0;
     srcRect.top = 0;

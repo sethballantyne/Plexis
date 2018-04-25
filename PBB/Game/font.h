@@ -18,8 +18,6 @@
 #pragma once
 #include "surface.h"
 
-using namespace System;
-
 /// <summary>
 /// Class for loading and rendering fixed-width bitmap fonts. 1 instance encapsulates 1 font, so for multiple fonts
 /// you'll be needing multiple instances.
@@ -141,6 +139,17 @@ public:
         String ^get()
         {
             return this->name;
+        }
+    }
+
+    /// <summary>
+    /// Gets the Surface containing the bitmap font.
+    /// </summary>
+    property Surface ^FontSurface
+    {
+        Surface ^get()
+        {
+            return this->fontSurface;
         }
     }
 };
