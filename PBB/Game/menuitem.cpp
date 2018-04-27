@@ -19,7 +19,8 @@
 #include "scenemanager.h"
 #include "game.h"
 
-MenuItem::MenuItem(int x, int y, String ^font, String ^text, int selectedIndex, String ^navigateTo, MenuItemContainer ^parentContainer) : ContainerControl(x, y, selectedIndex, parentContainer)
+MenuItem::MenuItem(int x, int y, String ^font, String ^text, int selectedIndex, String ^navigateTo, 
+    MenuItemContainer ^parentContainer) : ContainerControl(x, y, selectedIndex, parentContainer)
 {
     if(nullptr == font)
     {
@@ -78,6 +79,8 @@ void MenuItem::Update(Keys ^keyboardState, Mouse ^mouseState)
                 Game::IsRunning = false;
                 return;
             }
+
+            // "caller" means that when selected, navigate back to the previous scene.
             else if("caller" == navigateTo)
             {
                 if(nullptr != receivedArgs)
@@ -87,7 +90,15 @@ void MenuItem::Update(Keys ^keyboardState, Mouse ^mouseState)
             }
 
             array<Object ^, 1> ^args = gcnew array<Object ^, 1> { (Object ^)outboundArgs };
-            SceneManager::SetActiveScene(navigateTo, args);
+
+            try
+            {
+                SceneManager::SetActiveScene(navigateTo, args);
+            }
+            catch(...)
+            {
+                throw;
+            }
         }
 
     }
