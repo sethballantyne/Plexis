@@ -19,7 +19,7 @@
 #include "menuitemcontainer.h"
 
 /// <summary>
-/// 
+/// Base class for controls that are contained within a MenuItemContainer.
 /// </summary>
 public ref class ContainerControl abstract : public SelectableControl
 {
@@ -28,12 +28,13 @@ private:
 
 public:
     /// <summary>
-    /// 
+    /// Initialises an instance of ContainerControl
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="selectedIndex"></param>
-    /// <param name="parentContainer"></param>
+    /// <param name="x">the controls x coordinate.</param>
+    /// <param name="y">the controls y coordinate.</param>
+    /// <param name="selectedIndex">the controls position in the control list.</param>
+    /// <param name="parentContainer">the MenuItemContainer instance the control belongs to.</param>
+    /// <exception cref="System::ArgumentNullException"><i>parentContainer</i> is <b>null</b>.</exception>
     ContainerControl(int x, int y, int selectedIndex, MenuItemContainer ^parentContainer) : SelectableControl(x, y, selectedIndex, parentContainer->CursorSize)
     {
         if(nullptr == parentContainer)
@@ -45,8 +46,9 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// Gets or sets the instance of MenuItemContainer the control belongs to.
     /// </summary>
+    /// <exception cref="System::ArgumentNullException">attempted to assign a <b>null</b> value to the property.</exception>
     property MenuItemContainer ^ParentContainer
     {
         MenuItemContainer ^get()
