@@ -26,10 +26,10 @@ public ref class Line
 {
 private:
     // the lines starting position.
-    System::Drawing::Point from;
+    System::Drawing::Point ^from;
 
     // the lines finishing position.
-    System::Drawing::Point to;
+    System::Drawing::Point ^to;
 
     // the lines colour. Stick to facebook if I really need to explain this.
     System::Drawing::Color colour;
@@ -41,7 +41,7 @@ public:
     /// <param name="colour">the lines colour... derp derp derp.</param>
     /// <param name="from">the lines starting point.</param>
     /// <param name="to">the lines finishing point.</param>
-    Line(System::Drawing::Color colour, System::Drawing::Point from, System::Drawing::Point to)
+    Line(System::Drawing::Color colour, System::Drawing::Point ^from, System::Drawing::Point ^to)
     {
         this->from = from;
         this->to = to;
@@ -58,8 +58,8 @@ public:
     /// <param name="toY">the lines finishing y coordinate.</param>
     Line(System::Drawing::Color colour, int fromX, int fromY, int toX, int toY)
     {
-        this->from = System::Drawing::Point(fromX, fromY);
-        this->to = System::Drawing::Point(toX, toY);
+        this->from = gcnew System::Drawing::Point(fromX, fromY);
+        this->to = gcnew System::Drawing::Point(toX, toY);
         this->colour = colour;
     }
 
@@ -81,13 +81,13 @@ public:
     /// <summary>
     /// Gets or sets the lines starting coordinates.
     /// </summary>
-    property System::Drawing::Point From
+    property System::Drawing::Point ^From
     {
-        System::Drawing::Point get()
+        System::Drawing::Point ^get()
         {
             return this->from;
         }
-        void set(System::Drawing::Point value)
+        void set(System::Drawing::Point ^value)
         {
             this->from = value;
         }
@@ -96,13 +96,13 @@ public:
     /// <summary>
     /// Gets or sets the lines finishing coordinates.
     /// </summary>
-    property System::Drawing::Point To
+    property System::Drawing::Point ^To
     {
-        System::Drawing::Point get()
+        System::Drawing::Point ^get()
         {
             return this->to;
         }
-        void set(System::Drawing::Point value)
+        void set(System::Drawing::Point ^value)
         {
             this->to = value;
         }
