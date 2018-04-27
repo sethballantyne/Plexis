@@ -20,6 +20,7 @@
 #include "label.h"
 #include "menuitem.h"
 #include "menuitemcontainer.h"
+#include "slider.h"
 #include "logmanager.h"
 
 using namespace System::Xml::Linq;
@@ -59,6 +60,8 @@ private:
     /// <param name="sceneID"></param>
     /// <returns></returns>
     MenuItem ^ParseMenuItem(XElement ^element, MenuItemContainer ^parentContainer, String ^sceneID);
+
+    Slider ^ParseSlider(XElement ^element, MenuItemContainer ^parentContainer);
 
 public:
     array<Scene ^, 1> ^Read(XElement ^sceneXML);

@@ -50,13 +50,11 @@ private:
     // This is used to determine which control is to be selected next,
     // based on whether the user presses up (select previous control) or down (select the next control).
     int currentSelectedItem;
-
-    const int sizeOfGapBetweenCursorAndMenuItems = 12;
 public:
     /// <summary>
     /// 
     /// </summary>
-    MenuItemContainer(Surface ^cursor) : SelectableControl(0, 0, 0)
+    MenuItemContainer(Surface ^cursor) : SelectableControl(0, 0, 0, gcnew System::Drawing::Size())
     {
         this->items = gcnew List<SelectableControl ^>();
         this->IsSelected = true;
@@ -68,7 +66,7 @@ public:
     /// </summary>
     /// <param name="control"></param>
     void AddControl(SelectableControl ^control);
-   
+
 
     /// <summary>
     /// Stores and forwards the arguments passed by the Scene to each control located within the container.
@@ -102,9 +100,7 @@ public:
             {
                 if(this->items[i]->IsSelected && items[i]->ShowMenuCursor)
                 {
-                    //LogManager::WriteLine(LogType::Log, "render :{0}", this->items[i]->SelectedIndex);
-                    int cursorXPos = this->items[i]->Position.X - this->menuItemCursor->Width - sizeOfGapBetweenCursorAndMenuItems;
-                    Video::Blit(cursorXPos, this->items[i]->Position.Y, this->menuItemCursor);
+                    Video::Blit(items[i]->CursorPosition->X, items[i]->CursorPosition->Y, this->menuItemCursor);
                 }
 
                 this->items[i]->Render();
@@ -128,5 +124,13 @@ public:
         }
 
         this->items[this->currentSelectedItem]->Update(keyboardState, mouseState);
+    }
+
+    property System::Drawing::Size ^CursorSize
+    {
+        System::Drawing::Size ^get()
+        {
+            return gcnew System::Drawing::Size(menuItemCursor->Width, menuItemCursor->Height);
+        }
     }
 };

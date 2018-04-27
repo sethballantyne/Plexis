@@ -103,6 +103,7 @@
     <ClInclude Include="scenefactory.h" />
     <ClInclude Include="scenemanager.h" />
     <ClInclude Include="selectablecontrol.h" />
+    <ClInclude Include="slider.h" />
     <ClInclude Include="soundbuffer.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="textfilelogger.h" />
@@ -131,6 +132,7 @@
     <ClCompile Include="scenefactory.cpp" />
     <ClCompile Include="scenemanager.cpp" />
     <ClCompile Include="selectablecontrol.cpp" />
+    <ClCompile Include="slider.cpp" />
     <ClCompile Include="soundbuffer.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="textfilelogger.cpp" />

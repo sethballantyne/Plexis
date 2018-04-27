@@ -72,6 +72,7 @@ public:
         this->outboundArgs = navigationArgs;
     }
 
+    
     /// <summary>
     /// 
     /// </summary>

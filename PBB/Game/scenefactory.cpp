@@ -83,6 +83,36 @@ MenuItem ^SceneFactory::ParseMenuItem(XElement ^element, MenuItemContainer ^pare
     }
 }
 
+Slider ^SceneFactory::ParseSlider(XElement ^element, MenuItemContainer ^parentContainer)
+{
+    if(nullptr == element)
+    {
+        throw gcnew ArgumentNullException("element");
+    }
+    else if(nullptr == parentContainer)
+    {
+        throw gcnew ArgumentNullException("parentContainer");
+    }
+
+    try
+    {
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        unsigned int length = XmlHelper::GetAttributeValueAsInt32(element, "length");
+        int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
+        double minimum = XmlHelper::GetAttributeValueAsDouble(element, "minimum");
+        double maximum = XmlHelper::GetAttributeValueAsDouble(element, "maximum");
+        double stepValue = XmlHelper::GetAttributeValueAsDouble(element, "stepValue");;
+        String ^optionsKey = XmlHelper::GetAttributeValue(element, "optionsKey");
+
+        return gcnew Slider(x, y, length, selectedIndex, minimum, maximum, stepValue, optionsKey, parentContainer);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
 {
     List<Scene ^> ^sceneList = gcnew List<Scene ^>();
@@ -121,6 +151,11 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                         {
                             MenuItem ^menuItem = ParseMenuItem(containerItem, menuItemContainer, newScene->Name);
                             menuItemContainer->AddControl(menuItem);
+                        }
+                        else if(containerItemType == "slider")
+                        {
+                            Slider ^slider = ParseSlider(containerItem, menuItemContainer);
+                            menuItemContainer->AddControl(slider);
                         }
                     }
 

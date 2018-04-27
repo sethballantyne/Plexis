@@ -34,7 +34,7 @@ public:
     /// <param name="y"></param>
     /// <param name="selectedIndex"></param>
     /// <param name="parentContainer"></param>
-    ContainerControl(int x, int y, int selectedIndex, MenuItemContainer ^parentContainer) : SelectableControl(x, y, selectedIndex)
+    ContainerControl(int x, int y, int selectedIndex, MenuItemContainer ^parentContainer) : SelectableControl(x, y, selectedIndex, parentContainer->CursorSize)
     {
         if(nullptr == parentContainer)
         {

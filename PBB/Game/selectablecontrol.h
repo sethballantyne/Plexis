@@ -40,12 +40,24 @@ protected:
     bool selected;
 
     bool showMenuCursor;
+
+    static int sizeOfGapBetweenCursorAndMenuItems = 12;
+
+    System::Drawing::Point ^cursorPosition;
+
+    System::Drawing::Size ^cursorSize;
+
 public:
-    SelectableControl(int x, int y, int selectedIndex) : Control(x, y)
+    SelectableControl(int x, int y, int selectedIndex, System::Drawing::Size ^cursorSize) : Control(x, y)
     {
         this->selectedIndex = selectedIndex;
         this->enabled = true;
         this->showMenuCursor = true;
+
+        this->cursorSize = cursorSize;
+        this->cursorPosition = gcnew System::Drawing::Point();
+        this->cursorPosition->X = this->Position.X - cursorSize->Width - sizeOfGapBetweenCursorAndMenuItems;
+        this->cursorPosition->Y = this->Position.Y;
     }
 
     /// <summary>
@@ -55,6 +67,11 @@ public:
     /// <returns></returns>
     virtual int CompareTo(Object ^obj);
  
+    virtual System::Drawing::Point ^GetCursorPosition()
+    {
+        return this->cursorPosition;
+    }
+
     /// <summary>
     /// abstract method for handling arguments passed to the control via its parent scene.
     /// </summary>
@@ -135,6 +152,18 @@ public:
         void set(bool value)
         {
             this->showMenuCursor = value;
+        }
+    }
+
+    property System::Drawing::Point ^CursorPosition
+    {
+        System::Drawing::Point ^get()
+        {
+            return this->cursorPosition;
+        }
+        void set(System::Drawing::Point ^value)
+        {
+            this->cursorPosition = value;
         }
     }
 };

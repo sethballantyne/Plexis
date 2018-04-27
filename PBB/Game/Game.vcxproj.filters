@@ -129,6 +129,9 @@
     <ClInclude Include="containercontrol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="slider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -201,6 +204,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="menuitemcontainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="slider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
