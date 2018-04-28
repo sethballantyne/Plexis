@@ -63,13 +63,13 @@ private:
     /// Searches a list of ResourcePath instances for the specified path.
     /// </summary>
     /// <param name="pathList">the list to search.</param>
-    /// <param name="path">the search for in <i>pathList</i>.</param>
-    /// <returns></b>true</b> if <i>pathList</i> contains a ResourcePath instance that points to the specified path,
+    /// <param name="path">the path to search for in <i>pathList</i>.</param>
+    /// <returns><b>true</b> if <i>pathList</i> contains a ResourcePath instance that points to the specified path,
     /// else returns <b>false.</b></returns>
     static bool PathExists(List<ResourcePath ^> ^pathList, String ^path);
 
     /// <summary>
-    /// Creates a Font object from each <font> element read in fonts.xml
+    /// Creates a Font object from each &lt;font&gt; element read in fonts.xml
     /// </summary>
     /// <param name="fontsXmlFile">the xml file containing font information.</param>
     /// <returns>the parsed the fonts as Font instances.</returns>

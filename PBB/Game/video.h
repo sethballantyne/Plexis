@@ -153,8 +153,8 @@ private:
     /// doesn't attempt to access invalid regions of memory when drawing the line.
     /// </summary>
     /// <param name="line">the line to be clipped.</param>
-    /// <param name="surfaceDescription"></param>
-    /// <returns>A clipped version of <i>line. If the line didn't need to be clipped, <i>line</i> is 
+    /// <param name="surfaceDescription">a DDSURFACEDESC2 instance queried against the backbuffer.</param>
+    /// <returns>A clipped version of <i>line</i>. If the line didn't need to be clipped, <i>line</i> is 
     /// returned unmodified.</returns>
     /// <exception cref="System::ArgumemtException">The lines From and To points are the same, or
     /// the line is located off the screen and can't be clipped.</exception>

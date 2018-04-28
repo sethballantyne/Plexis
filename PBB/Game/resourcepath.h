@@ -19,8 +19,8 @@
 
 
 /// <summary>
-/// Represents a single <path> element in paths.xml.
-/// For every <path> element parsed by the resource manager, one resulting instance of this
+/// Represents a single &lt;path&gt; element in paths.xml.
+/// For every &lt;path&gt; element parsed by the resource manager, one resulting instance of this
 /// class will be created. Resources can have multiple instances of this class, each instance
 /// pointing to a different directory location.
 /// </summary>
