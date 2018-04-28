@@ -165,10 +165,10 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// handles user input and for the currently selected control.
     /// </summary>
-    /// <param name="keyboardState"></param>
-    /// <param name="mouseState"></param>
+    /// <param name="keyboardState">current state of the keyboard.</param>
+    /// <param name="mouseState">current state of the mouse.</param>
     void Update(Keys ^keyboardState, Mouse ^mouseState) override
     {
         if(nullptr == keyboardState)
