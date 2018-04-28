@@ -21,7 +21,10 @@ using namespace System;
 using namespace System::Collections::Generic;
 
 /// <summary>
-/// 
+/// GameOptions is queried by the other classes whenever they need information
+/// on one of the games settings. Its job is to load the settings in from disk, 
+/// make them available to any other class that needs them and write them back out
+/// to disk when they're updated.
 /// </summary>
 public ref class GameOptions abstract sealed
 {
@@ -41,7 +44,7 @@ public:
     /// <param name="path">the XML file that contains the games settings.</param>
     /// <exception cref="System::ArgumentException"><i>path</i> evaluates to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException"><i>path</i> is <b>null</b>.</exception>
-    /// <exception cref="System::IO::FileNotFoundException">the file specified in <i>path</path> doesn't exist.</exception>
+    /// <exception cref="System::IO::FileNotFoundException">the file specified in <i>path</i> doesn't exist.</exception>
     /// <exception cref="System::Security::SecurityException">the application doesn't have the correct permissions to acccess the file specified in <i>path</i>.</exception>
     /// <exception cref="System::Xml::XmlException">an error occured while parsing the XML file.</exception>
     static void Initialise(String ^path);
@@ -51,7 +54,7 @@ public:
     /// </summary>
     /// <param name="id">the option whose value should be returned.</param>
     /// <param name="default">the value to return if the specified option doesn't exist.</param>
-    /// <returns>the value associated with the setting <i>id</id>. If the specified option
+    /// <returns>the value associated with the setting <i>id</i>. If the specified option
     /// doesn't exist, <i>default</i> is returned.</returns>
     static String ^GetValue(String ^id, String ^default)
     {
@@ -74,7 +77,7 @@ public:
     /// </summary>
     /// <param name="id">the option whose value should be returned.</param>
     /// <param name="default">the value to return if the specified option doesn't exist, or it can't be converted to an Int32 value.</param>
-    /// <returns>the value associated with the setting <i>id</id> as an Int32. If the specified option
+    /// <returns>the value associated with the setting <i>id</i> as an Int32. If the specified option
     /// doesn't exist or the associated value coulnd't be converted to a Int32, <i>default</i> is returned.</returns>
     static int GetValue(String ^id, int default)
     {
@@ -96,7 +99,7 @@ public:
     /// </summary>
     /// <param name="id">the option whose value should be returned.</param>
     /// <param name="default">the value to return if the specified option doesn't exist, or it can't be converted to a double.</param>
-    /// <returns>the value associated with the setting <i>id</id> as a double. If the specified option
+    /// <returns>the value associated with the setting <i>id</i> as a double. If the specified option
     /// doesn't exist or the associated value coulnd't be converted to a double, <i>default</i> is returned.</returns>
     static double GetValue(String ^id, double default)
     {
