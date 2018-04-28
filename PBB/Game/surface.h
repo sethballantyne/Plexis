@@ -37,6 +37,7 @@ private:
     String ^filename;
     String ^name;
 
+    System::Drawing::Size ^size;
 public:
     /// <summary>
     /// Wraps a new instance of surface around the supplied DirectDraw surface.
@@ -58,6 +59,8 @@ public:
         this->lpDDSurface = lpDDSurface;
         this->bitmapWidth = width;
         this->bitmapHeight = height;
+
+        this->size = gcnew System::Drawing::Size(bitmapWidth, bitmapHeight);
     }
 
     /// <summary>
@@ -135,6 +138,17 @@ public:
             {
                 this->name = value;
             }
+        }
+    }
+
+    /// <summary>
+    /// Gets the width and height of the bitmap.
+    /// </summary>
+    property System::Drawing::Size ^Size
+    {
+        System::Drawing::Size ^get()
+        {
+            return this->size;
         }
     }
 
