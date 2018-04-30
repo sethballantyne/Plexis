@@ -113,6 +113,26 @@ Slider ^SceneFactory::ParseSlider(XElement ^element, MenuItemContainer ^parentCo
     }
 }
 
+ToggleLabel ^SceneFactory::ParseToggleLabel(XElement ^element, MenuItemContainer ^parentContainer)
+{
+    try
+    {
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
+        String ^font = XmlHelper::GetAttributeValue(element, "font");
+        String ^optionsKey = XmlHelper::GetAttributeValue(element, "optionsKey");
+        String ^falseCaption = XmlHelper::GetAttributeValue(element, "falseCaption");
+        String ^trueCaption = XmlHelper::GetAttributeValue(element, "trueCaption");
+
+        return gcnew ToggleLabel(x, y, font, trueCaption, falseCaption, selectedIndex, optionsKey, parentContainer);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
 {
     List<Scene ^> ^sceneList = gcnew List<Scene ^>();
@@ -156,6 +176,11 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                         {
                             Slider ^slider = ParseSlider(containerItem, menuItemContainer);
                             menuItemContainer->AddControl(slider);
+                        }
+                        else if(containerItemType == "toggleLabel")
+                        {
+                            ToggleLabel ^toggleLabel = ParseToggleLabel(containerItem, menuItemContainer);
+                            menuItemContainer->AddControl(toggleLabel);
                         }
                     }
 

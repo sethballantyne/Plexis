@@ -54,6 +54,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -107,6 +108,7 @@
     <ClInclude Include="soundbuffer.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="textfilelogger.h" />
+    <ClInclude Include="togglelabel.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="video.h" />
     <ClInclude Include="vsoutputlogger.h" />
@@ -136,6 +138,7 @@
     <ClCompile Include="soundbuffer.cpp" />
     <ClCompile Include="surface.cpp" />
     <ClCompile Include="textfilelogger.cpp" />
+    <ClCompile Include="togglelabel.cpp" />
     <ClCompile Include="video.cpp" />
     <ClCompile Include="xmlhelper.cpp" />
   </ItemGroup>
