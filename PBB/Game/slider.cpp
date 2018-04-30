@@ -64,7 +64,13 @@ Slider::Slider(int x, int y, unsigned int length, int selectedIndex, double mini
   
     xmlMinimumValue = minimum;
     xmlMaximumValue = maximum;
+
+    // it's possible for minimum to be something other than 0.
+    // it might be dealing with, say, minimum = 245 and maximum = 250.
+    // it's essentially doing a conversion here so we can calculate our percentages when it's time
+    // to position and move the track box.
     sliderMaximumValue = maximum - minimum;
+
     stepValue = step;
     trackLength = length;
     this->optionsKey = optionsKey;
@@ -99,6 +105,7 @@ void Slider::Render()
 {
     try
     {
+        // TODO: Get this crap out of the render method!
         double progress = currentValue / sliderMaximumValue;
 
         int pixelOffset = (int)Math::Truncate(progress * trackLength) - (trackBoxLines->Length / 2);
