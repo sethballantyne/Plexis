@@ -21,7 +21,10 @@
 #include "label.h"
 
 /// <summary>
-/// 
+///  A ToggleLabel is a label that acts like a toggle switch. When the user presses enter, the label alternates
+/// between the two strings specified in its "trueCaption" and "falseCaption" XML attributes.
+/// When the control alternates between these two values, it automatically updates the setting referenced
+/// by its XML attribute "optionsKey". 
 /// </summary>
 public ref class ToggleLabel : ContainerControl
 {
