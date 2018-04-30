@@ -87,7 +87,7 @@ public:
 
     
     /// <summary>
-    /// Handles user input and updates the state of the control.
+    /// Handles user input related to the state of the control.
     /// </summary>
     /// <param name="keyboardState">current state of the keyboard.</param>
     /// <param name="mouseState">current state of the mouse.</param>
