@@ -39,15 +39,25 @@ protected:
     // specifies whether the control has the menu cursor adjacent to it.
     bool selected;
 
+    // if true, the menu cursor is shown when the item is selected; otherwise it's hidden.
     bool showMenuCursor;
 
     static int sizeOfGapBetweenCursorAndMenuItems = 12;
 
+    // where the cursor should be rendered on the screen when this control is selected.
     System::Drawing::Point ^cursorPosition;
 
+    // cursor dimensions required for calculating the position above.
     System::Drawing::Size ^cursorSize;
 
 public:
+    /// <summary>
+    /// Initialises SelectableControl.
+    /// </summary>
+    /// <param name="x">the controls screen coordinate on the x axis.</param>
+    /// <param name="y">the controls screen coordinate on the y axis.</param>
+    /// <param name="selectedIndex">the controls position in the control list.</param>
+    /// <param name="cursorSize">the width and height of the cursor that'll be displayed when the control is selected.</param>
     SelectableControl(int x, int y, int selectedIndex, System::Drawing::Size ^cursorSize) : Control(x, y)
     {
         this->selectedIndex = selectedIndex;
@@ -55,7 +65,10 @@ public:
         this->showMenuCursor = true;
 
         this->cursorSize = cursorSize;
+
         this->cursorPosition = gcnew System::Drawing::Point();
+
+        // default position
         this->cursorPosition->X = this->Position.X - cursorSize->Width - sizeOfGapBetweenCursorAndMenuItems;
         this->cursorPosition->Y = this->Position.Y;
     }
@@ -63,14 +76,13 @@ public:
     /// <summary>
     /// compares the current instance of SelectableControl against another.
     /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
+    /// <param name="obj">the object to compare against.</param>
+    /// <returns><b>-1</b> if <i>obj</i> is not a instance of SelectableControl or <i>obj</i> evaluates to <b>null</b>, or 
+    /// the selected index of the calling object is less than that of <i>obj</i>.
+    /// <b>0</b> if the value returned by the SelectedIndex property of <i>obj</i> matches the selected index of the calling object. 
+    /// <b>1</b> if the selected index is greater than that of <i>obj</i>.</returns>
+    /// <exception cref="System::ArgumentException"><i>obj</i> isn't of a type that inherits from SelectableControl.</exception>
     virtual int CompareTo(Object ^obj);
- 
-    virtual System::Drawing::Point ^GetCursorPosition()
-    {
-        return this->cursorPosition;
-    }
 
     /// <summary>
     /// abstract method for handling arguments passed to the control via its parent scene.
@@ -125,8 +137,12 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// Specifies whether the control is enabled.
     /// </summary>
+    /// <remarks>
+    /// a control that's not enabled cannot be selected and is ignored by the MenuItemContainer 
+    /// it belongs to when determining which control to select next.
+    /// </remarks>
     property bool Enabled
     {
         bool get()
@@ -140,7 +156,7 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// Determines whether the cursor should be displayed when the controls is selected.
     /// </summary>
     property bool ShowMenuCursor
     {
@@ -155,6 +171,9 @@ public:
         }
     }
 
+    /// <summary>
+    /// Gets or sets the position the cursor should be rendered at when the control is selected.
+    /// </summary>
     property System::Drawing::Point ^CursorPosition
     {
         System::Drawing::Point ^get()
@@ -164,6 +183,28 @@ public:
         void set(System::Drawing::Point ^value)
         {
             this->cursorPosition = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the cursors width and height.
+    /// </summary>
+    /// <exception cref="System::ArgumentNullException">attempting to assign a <b>null</b> value.</exception>
+    property System::Drawing::Size ^CursorSize
+    {
+        System::Drawing::Size ^get()
+        {
+            return this->cursorSize;
+        }
+
+        void set(System::Drawing::Size ^value)
+        {
+            if(nullptr == value)
+            {
+                throw gcnew ArgumentNullException("value");
+            }
+
+            this->cursorSize = value;
         }
     }
 };
