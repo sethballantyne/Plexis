@@ -22,7 +22,9 @@
 
 using namespace System;
 
-// encapsulates a snapshot of the keyboard state.
+///<summary>
+///encapsulates a snapshot of the keyboard state.
+///</summary>
 public ref class Keys
 {
 private:
