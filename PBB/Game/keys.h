@@ -83,5 +83,22 @@ public:
         }
     }
 
+    /// <summary>
+    /// Returns the last key that was pressed, or -1 if no key was pressed.
+    /// </summary>
+    property int PressedKey
+    {
+        int get()
+        {
+            for(int i = 0; i < 256; i++)
+            {
+                if(KeyPressed(i))
+                {
+                    return i;
+                }
+            }
 
+            return -1;
+        }
+    }
 };
