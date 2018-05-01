@@ -47,6 +47,7 @@ private:
         toggleState = !toggleState;
 
         GameOptions::SetValue(optionsKey, toggleState);
+        GameOptions::Save();
         label->Text = captions[toggleState];
     }
 
