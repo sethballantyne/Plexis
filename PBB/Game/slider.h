@@ -70,10 +70,8 @@ private:
     /// </summary>
     void Decrement()
     {
-        LogManager::WriteLine(LogType::Debug, "verifying if we can decrement {0}", currentValue);
         if(currentValue > sliderMinimumValue)
         {
-            LogManager::WriteLine(LogType::Debug, "Decrementing.");
             currentValue -= stepValue;
             if(currentValue < sliderMinimumValue)
             {
@@ -135,15 +133,12 @@ public:
         double step, String ^optionsKey, MenuItemContainer ^parentContainer);
  
     /// <summary>
-    /// Called when the controls parent Scene has been activated by the scene manager.
-    /// The slider control doesn't have any arguments to receive but since it's called only
-    /// when the scene has been activated, it's a good place to update the control during 
-    /// runtime so it's displaying the correct information when it's displayed. 
+    /// Not used by Slider.
     /// </summary>
     /// <param name="sceneArgs"></param>
     void ReceiveSceneArgs(array<Object ^, 1> ^sceneArgs) override
     {
-        static bool firstRun = true;
+        /*static bool firstRun = true;
         try
         {
             if(firstRun)
@@ -155,7 +150,7 @@ public:
         catch(...)
         {
 
-        }
+        }*/
     }
 
     /// <summary>
