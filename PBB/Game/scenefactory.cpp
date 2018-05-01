@@ -38,6 +38,24 @@ Label ^SceneFactory::ParseLabel(XElement ^element)
     }
 }
 
+KeyConfigLabel ^SceneFactory::ParseKeyConfigLabel(XElement ^element, MenuItemContainer ^parentContainer)
+{
+    try
+    {
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        String ^font = XmlHelper::GetAttributeValue(element, "font");
+        int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
+        String ^optionsKey = XmlHelper::GetAttributeValue(element, "optionsKey");
+
+        return gcnew KeyConfigLabel(x, y, font, selectedIndex, optionsKey, parentContainer);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 MenuItem ^SceneFactory::ParseMenuItem(XElement ^element, MenuItemContainer ^parentContainer, String ^sceneID)
 {
     try
@@ -181,6 +199,11 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                         {
                             ToggleLabel ^toggleLabel = ParseToggleLabel(containerItem, menuItemContainer);
                             menuItemContainer->AddControl(toggleLabel);
+                        }
+                        else if(containerItemType == "keyConfigLabel")
+                        {
+                            KeyConfigLabel ^keyConfigLabel = ParseKeyConfigLabel(containerItem, menuItemContainer);
+                            menuItemContainer->AddControl(keyConfigLabel);
                         }
                     }
 

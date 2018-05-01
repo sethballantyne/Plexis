@@ -20,7 +20,9 @@
 #include "label.h"
 #include "menuitem.h"
 #include "menuitemcontainer.h"
+#include "keyconfiglabel.h"
 #include "slider.h"
+#include "togglelabel.h"
 #include "logmanager.h"
 
 using namespace System::Xml::Linq;
@@ -61,8 +63,34 @@ private:
     /// <returns></returns>
     MenuItem ^ParseMenuItem(XElement ^element, MenuItemContainer ^parentContainer, String ^sceneID);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <param name="parentContainer"></param>
+    /// <returns></returns>
     Slider ^ParseSlider(XElement ^element, MenuItemContainer ^parentContainer);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <param name="parentContainer"></param>
+    /// <returns></returns>
+    KeyConfigLabel ^ParseKeyConfigLabel(XElement ^element, MenuItemContainer ^parentContainer);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <param name="parentContainer"></param>
+    /// <returns></returns>
+    ToggleLabel ^ParseToggleLabel(XElement ^element, MenuItemContainer ^parentContainer);
 public:
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sceneXML"></param>
+    /// <returns></returns>
     array<Scene ^, 1> ^Read(XElement ^sceneXML);
 };
