@@ -249,6 +249,8 @@ void Input::InitMouse(HWND hWnd)
 
 void Input::Initialise(HINSTANCE hInstance, HWND hWnd)
 {
+    InitLookupTable();
+
     pin_ptr<LPDIRECTINPUT8> pinnedPtr = &lpDI;
     HRESULT result = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)pinnedPtr, NULL);
     if(result != DI_OK)
