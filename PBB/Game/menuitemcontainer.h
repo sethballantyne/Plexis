@@ -79,6 +79,14 @@ public:
     /// <exception cref="System::ArgumentNullException"><i>control</i> is <b>null</b>.</exception>
     void AddControl(SelectableControl ^control);
 
+    /// <summary>
+    /// Gets the controls assigned to the container.
+    /// </summary>
+    /// <returns>An array containing references to all the controls attached to the container.</returns>
+    array<SelectableControl ^, 1> ^GetControls()
+    {
+        return items->ToArray();
+    }
 
     /// <summary>
     /// Stores and forwards the arguments passed by the Scene to each control located within the container.
