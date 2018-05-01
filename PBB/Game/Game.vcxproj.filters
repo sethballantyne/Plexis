@@ -135,6 +135,9 @@
     <ClInclude Include="togglelabel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="keyconfiglabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -213,6 +216,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="togglelabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="keyconfiglabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
