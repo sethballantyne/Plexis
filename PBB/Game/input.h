@@ -38,6 +38,9 @@ private:
     static LPDIRECTINPUTDEVICE8 lpDIKeyboard;
     static LPDIRECTINPUTDEVICE8 lpDIMouse;
 
+    // holds string descriptions of keys
+    static Dictionary<int, String ^> ^lookupTable = gcnew Dictionary<int, String ^>();
+
     // the previous state of the keyboard is stored because it's required when
     // checking to see if a key has been pressed: previous state to see if it was down the last time
     // the keyboard state was retrieved and the current state to see if it's now up.
@@ -71,6 +74,113 @@ private:
     static void InitKeyboard(HWND hWnd);
 
     /// <summary>
+    /// Populates the table with string descriptions of specific keys.
+    /// </summary>
+    static void InitLookupTable()
+    {
+        lookupTable->Add(DIK_ESCAPE, "ESCAPE");
+        lookupTable->Add(DIK_1, "1");
+        lookupTable->Add(DIK_2, "2");
+        lookupTable->Add(DIK_3,"3");
+        lookupTable->Add(DIK_4, "4");
+        lookupTable->Add(DIK_5, "5");
+        lookupTable->Add(DIK_6, "6");
+        lookupTable->Add(DIK_7, "7");
+        lookupTable->Add(DIK_8, "8");
+        lookupTable->Add(DIK_9, "9");
+        lookupTable->Add(DIK_0, "0");
+        lookupTable->Add(DIK_MINUS, "-");
+        lookupTable->Add(DIK_EQUALS, "=");
+        lookupTable->Add(DIK_BACK, "BACKSPACE");
+        lookupTable->Add(DIK_TAB, "TAB");
+        lookupTable->Add(DIK_Q, "Q");
+        lookupTable->Add(DIK_W,  "W");
+        lookupTable->Add(DIK_E, "E");
+        lookupTable->Add(DIK_R, "R");
+        lookupTable->Add(DIK_T, "T");
+        lookupTable->Add(DIK_Y, "Y");
+        lookupTable->Add(DIK_U, "U");
+        lookupTable->Add(DIK_I, "I");
+        lookupTable->Add(DIK_O, "O");
+        lookupTable->Add(DIK_P, "P"); 
+        lookupTable->Add(DIK_LBRACKET, "[");
+        lookupTable->Add(DIK_RBRACKET, "]");
+        lookupTable->Add(DIK_RETURN, "ENTER"); // Enter on main keyboard
+        lookupTable->Add(DIK_LCONTROL, "LEFT CTRL");
+        lookupTable->Add(DIK_A, "A");
+        lookupTable->Add(DIK_S, "S");
+        lookupTable->Add(DIK_D, "D");
+        lookupTable->Add(DIK_F, "F");
+        lookupTable->Add(DIK_G, "G");
+        lookupTable->Add(DIK_H, "H");
+        lookupTable->Add(DIK_J, "J");
+        lookupTable->Add(DIK_K, "K");
+        lookupTable->Add(DIK_L, "L");
+        lookupTable->Add(DIK_SEMICOLON, ";");
+        lookupTable->Add(DIK_APOSTROPHE, "\'");
+        lookupTable->Add(DIK_GRAVE, "`");
+        lookupTable->Add(DIK_LSHIFT, "LEFT SHIFT");
+        lookupTable->Add(DIK_BACKSLASH, "\\");
+        lookupTable->Add(DIK_Z, "Z");
+        lookupTable->Add(DIK_X, "X");
+        lookupTable->Add(DIK_C, "C");
+        lookupTable->Add(DIK_V, "V");
+        lookupTable->Add(DIK_B, "B");
+        lookupTable->Add(DIK_N, "N");
+        lookupTable->Add(DIK_M, "M");
+        lookupTable->Add(DIK_COMMA, ",");
+        lookupTable->Add(DIK_PERIOD, "."); //.on main keyboard
+        lookupTable->Add(DIK_SLASH, "/"); // / on main keyboard
+        lookupTable->Add(DIK_RSHIFT, "RIGHT SHIFT");
+        lookupTable->Add(DIK_MULTIPLY, "*"); // * on numeric keypad
+        lookupTable->Add(DIK_LMENU, "LEFT ALT"); //left Alt
+        lookupTable->Add(DIK_SPACE, "SPACE");
+        lookupTable->Add(DIK_CAPITAL, "CAPS LOCK");
+        lookupTable->Add(DIK_F1, "F1");
+        lookupTable->Add(DIK_F2, "F2");
+        lookupTable->Add(DIK_F3, "F3");
+        lookupTable->Add(DIK_F4, "F4");
+        lookupTable->Add(DIK_F5, "F5");
+        lookupTable->Add(DIK_F6, "F6");
+        lookupTable->Add(DIK_F7, "F7");
+        lookupTable->Add(DIK_F8, "F8");
+        lookupTable->Add(DIK_F9, "F9");
+        lookupTable->Add(DIK_F10, "F10");
+        lookupTable->Add(DIK_NUMLOCK, "NUM LOCK");
+        lookupTable->Add(DIK_NUMPAD7, "NUMPAD 7");
+        lookupTable->Add(DIK_NUMPAD8, "NUMPAD 8");
+        lookupTable->Add(DIK_NUMPAD9, "NUMPAD 9");
+        lookupTable->Add(DIK_SUBTRACT, "NUMPAD -"); // - on numeric keypad
+        lookupTable->Add(DIK_NUMPAD4, "NUMPAD 4");
+        lookupTable->Add(DIK_NUMPAD5, "NUMPAD 5");
+        lookupTable->Add(DIK_NUMPAD6, "NUMPAD 6");
+        lookupTable->Add(DIK_ADD, "NUMPAD +"); // + on numeric keypad
+        lookupTable->Add(DIK_NUMPAD1, "NUMPAD 1");
+        lookupTable->Add(DIK_NUMPAD2, "NUMPAD 2");
+        lookupTable->Add(DIK_NUMPAD3, "NUMPAD 3");
+        lookupTable->Add(DIK_NUMPAD0, "NUMPAD 0");
+        lookupTable->Add(DIK_DECIMAL, "NUMPAD ."); //.on numeric keypad
+        lookupTable->Add(DIK_F11, "F11");
+        lookupTable->Add(DIK_F12, "F12");
+        lookupTable->Add(DIK_NUMPADENTER, "NUMPAD ENTER"); //Enter on numeric keypad
+        lookupTable->Add(DIK_DIVIDE, "NUMPAD /"); // / on numeric keypad
+        lookupTable->Add(DIK_RMENU, "RIGHT ALT"); //right Alt
+        lookupTable->Add(DIK_PAUSE, "PAUSE");
+        lookupTable->Add(DIK_HOME, "HOME"); //Home on arrow keypad
+        lookupTable->Add(DIK_UP, "UP"); //up arrow
+        lookupTable->Add(DIK_PRIOR, "PAGE UP");
+        lookupTable->Add(DIK_LEFT, "LEFT"); //left arrow
+        lookupTable->Add(DIK_RIGHT, "RIGHT"); //right arrow
+        lookupTable->Add(DIK_END, "END");
+        lookupTable->Add(DIK_DOWN, "DOWN"); //down arrow
+        lookupTable->Add(DIK_NEXT, "PAGE DOWN");
+        lookupTable->Add(DIK_INSERT, "INSERT");
+        lookupTable->Add(DIK_DELETE, "DELETE");
+        lookupTable->Add(DIMOUSE_BUTTON0, "LEFT MOUSE BUTTON");
+        lookupTable->Add(DIMOUSE_BUTTON1, "RIGHT MOUSE BUTTON");
+    }
+
+    /// <summary>
     /// Puts the mouse into a useable state.
     /// </summary>
     /// <param name="hWnd">handle of the window that will be capturing input.</param>
@@ -98,6 +208,24 @@ private:
         }
     }
 public:
+    /// <summary>
+    /// Returns a string desciption of the specified DIK_* key code.
+    /// </summary>
+    /// <param name="dikCode">the DIK_* code of the desired description.</param>
+    /// <returns>the description of the specified DIK_* code, or <b>null</b> if the keycode isn't present
+    /// within the lookup table.</returns>
+    static String ^GetDIKAsString(unsigned char dikCode)
+    {
+        try
+        {
+            return lookupTable[dikCode];
+        }
+        catch(...)
+        {
+            return nullptr;
+        }
+    }
+
     /// <summary>
     /// Initialises DirectInput and puts the mouse and keyboard into a useable state. Initialise() must be called before
     /// any other methods in the Input class. Once you're done with the Input class, call Shutdown() to release the resources
@@ -178,5 +306,4 @@ public:
     {
         Release();
     }
-
 };
