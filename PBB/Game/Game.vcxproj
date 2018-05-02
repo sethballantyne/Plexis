@@ -85,7 +85,9 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="gameoptions.h" />
     <ClInclude Include="highscorerecord.h" />
+    <ClInclude Include="highscorerow.h" />
     <ClInclude Include="highscores.h" />
+    <ClInclude Include="highscoretable.h" />
     <ClInclude Include="ilog.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="keyconfiglabel.h" />
@@ -121,7 +123,9 @@
     <ClCompile Include="font.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="gameoptions.cpp" />
+    <ClCompile Include="highscorerow.cpp" />
     <ClCompile Include="highscores.cpp" />
+    <ClCompile Include="highscoretable.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="keyconfiglabel.cpp" />
     <ClCompile Include="keys.cpp" />
