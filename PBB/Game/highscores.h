@@ -61,7 +61,7 @@ public:
     /// <summary>
     /// Places the specified player name and score at the specified position 
     /// </summary>
-    /// <param name="row">the desired position of the new entry on the high score table.</param>
+    /// <param name="row">the desired zero-based position of the new entry on the high score table.</param>
     /// <param name="playerName">the player name to associate with the high score.</param>
     /// <param name="newHighScore">the high score to display.</param>
     /// <exception cref="System::ArgumentNullException"><i>playerName</i> is <b>null</b>.</exception>
