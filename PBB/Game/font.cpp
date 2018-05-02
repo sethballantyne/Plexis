@@ -1,5 +1,6 @@
 #include "font.h"
 #include "video.h"
+#include "logmanager.h"
 
 using namespace System::Text;
 using namespace System::Collections::Generic;
@@ -73,6 +74,12 @@ void Font::Render(int x, int y, String ^text, ...array<Object ^> ^args)
             // is the space character, which is decimal 32. A bitmap font contains
             // the characters decimal 32 (space)to decimal 126 (~).
             int index = ascii[i] - 32;
+            if(index < 0)
+            {
+                // probably just processed a null character, lets ignore it.
+                continue;
+            }
+
             srcRect.X = glyphPositions[index].X;
             srcRect.Y = 0;
             srcRect.Width = glyphWidth;
