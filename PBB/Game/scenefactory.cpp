@@ -151,6 +151,67 @@ ToggleLabel ^SceneFactory::ParseToggleLabel(XElement ^element, MenuItemContainer
     }
 }
 
+HighScoreTable ^SceneFactory::ParseHighScoreTable(XElement ^element)
+{
+    try
+    {
+        // reading <control>
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        int numberOfRows = XmlHelper::GetAttributeValueAsInt32(element, "rows");
+
+        // reading <row>
+        XElement ^rowElement = element->Element("rows");
+        int verticalSpacing = XmlHelper::GetAttributeValueAsInt32(rowElement, "verticalSpacing");
+
+        // reading <column>
+        System::Collections::Generic::IEnumerable<XElement ^> ^columnQuery = rowElement->Elements("column");
+        if(XmlHelper::Count(columnQuery) < 3)
+        {
+            throw gcnew XmlException("HighScoreTable: not enough <column> elements defined.");
+        }
+
+        int indexXPosition;
+        int playerNameXPosition;
+        int scoreXPosition;
+        String ^indexFont;
+        String ^playerNameFont;
+        String ^scoreFont;
+
+        for each(XElement ^element in columnQuery)
+        {
+            String ^id = XmlHelper::GetAttributeValue(element, "id");
+
+            if("index" == id)
+            {
+                indexXPosition = XmlHelper::GetAttributeValueAsInt32(element, "x");
+                indexFont = XmlHelper::GetAttributeValue(element, "font");
+            }
+            else if("playerName" == id)
+            {
+                playerNameXPosition = XmlHelper::GetAttributeValueAsInt32(element, "x");
+                playerNameFont = XmlHelper::GetAttributeValue(element, "font");
+            }
+            else if("score" == id)
+            {
+                scoreXPosition = XmlHelper::GetAttributeValueAsInt32(element, "x");
+                scoreFont = XmlHelper::GetAttributeValue(element, "font");
+            }
+            else
+            {
+                throw gcnew XmlException("HighScoreTable: id attribute in column element has an illegal value.");
+            }
+        }
+
+        return gcnew HighScoreTable(x, y, numberOfRows, verticalSpacing, indexXPosition, indexFont,
+            playerNameXPosition, playerNameFont, scoreXPosition, scoreFont);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
 {
     List<Scene ^> ^sceneList = gcnew List<Scene ^>();
@@ -175,6 +236,13 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                 {
                     Label ^label = ParseLabel(controlElement);
                     newScene->GetControlList()->Add(label);
+                }
+                else if(typeAttribute == "highScoreTable")
+                {
+                    HighScoreTable ^highScoreTable = ParseHighScoreTable(controlElement);
+                    newScene->GetControlList()->Add(highScoreTable);
+
+
                 }
                 else if(typeAttribute == "menuItemContainer")
                 {
@@ -205,6 +273,7 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                             KeyConfigLabel ^keyConfigLabel = ParseKeyConfigLabel(containerItem, menuItemContainer);
                             menuItemContainer->AddControl(keyConfigLabel);
                         }
+                        
                     }
 
                     newScene->GetControlList()->Add(menuItemContainer);
