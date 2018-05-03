@@ -29,33 +29,51 @@ private:
 
 public:
     /// <summary>
-    /// 
+    /// Initialises a new instance of HighScoreTable with the specified fonts and X coordinates
+    /// for each row member.
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="selectedIndex"></param>
-    /// <param name="numberOfRows"></param>
-    /// <param name="vertialSpacing"></param>
-    /// <param name="indexXPosition"></param>
-    /// <param name="rowNumberFont"></param>
-    /// <param name="PlayerNameXPosition"></param>
-    /// <param name="playerNameFont"></param>
-    /// <param name="scoreXPosition"></param>
-    /// <param name="scoreFont"></param>
-    /// <param name="parentContainer"></param>
+    /// <param name="x">the controls screen position on the X axis.</param>
+    /// <param name="y">the controls screen position on the Y axis.</param>
+    /// <param name="numberOfRows">the number of ranks the table will consist of. This value should'nt be greater than the number of entries in highscores.dat.</param>
+    /// <param name="vertialSpacing">the amount of space between rows in pixels.</param>
+    /// <param name="indexXPosition">the position on the X axis where each rank should be rendered.</param>
+    /// <param name="rowNumberFont">the name of the font that will be used to render each rank.</param>
+    /// <param name="PlayerNameXPosition">the position on the X axis where each player name should be rendered.</param>
+    /// <param name="playerNameFont">the name of the font that will be used to render each player name.</param>
+    /// <param name="scoreXPosition">the position on the X axis where each score should be rendered.</param>
+    /// <param name="scoreFont">the name of the font that will be used to render each score.</param>
+    /// <exception cref="System::ArgumentException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>,
+    ///  or <i>scoreFont</i> evaluate to String::Empty.</exception></exception>
+    /// <exception cref="System::ArgumentNullException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>,
+    ///  or <i>scoreFont</i> is <b>null</b>.</exception>
+    /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>,
+    ///  or < i>playerNameFont</i>, or <i>scoreFont/i> doesn't exist within the resource manager.</exception>
     HighScoreTable(int x, int y, int numberOfRows, int vertialSpacing,
         int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
         int scoreXPosition, String ^scoreFont);
 
-    void ReceiveSceneArgs(array<Object ^, 1> ^args) override
-    {
-    }
-
-    void Update(Keys ^keyboardState, Mouse ^mouseState) override
-    {
-
-    }
-
+    /// <summary>
+    /// Blits each row in the highscore table to the backbuffer.
+    /// </summary>
+    /// <exception cref="System::Runtime::InteropServices::COMException">An unspecified COM error was returned.</exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+    /// <exception cref="DirectDrawInvalidClipListException">DirectDraw does not support the provided clip list.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidRectException">the rectangle coordinates used by the surface were invalid.</exception>
+    /// <exception cref="DirectDrawNoAlphaHardwareException">no alpha acceleration hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoBlitHardwareException">no blitter hardware is present.</exception>
+    /// <exception cref="DirectDrawNoClipListException">no clip list is available.</exception>
+    /// <exception cref="DirectDrawNoDDRasterOperationHardwareException">no DirectDraw raster operation (ROP) hardware is available.</exception>
+    /// <exception cref="DirectDrawNoMirrorHardwareException">the operation cannot be carried out because no mirroring hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRasterOperationHardwareException">the operation cannot be carried out because no appropriate raster operation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRotationHardwareException">the operation cannot be carried out because no rotation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoStretchHardwareException">the operation cannot be carried out because there is no hardware support for stretching.</exception>
+    /// <exception cref="DirectDrawNoZBufferHardwareException">the operation cannot be carried out because there is no hardware support for Z-buffers.</exception>
+    /// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     void Render() override
     {
         for(int i = 0; i < rows->Count; i++)
