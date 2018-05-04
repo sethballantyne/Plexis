@@ -72,18 +72,19 @@ public:
         {
             this->lpDDSurface->Release();
             this->lpDDSurface = NULL;
+            /*GC::SuppressFinalize(this);*/
         }
     }
 
-    !Surface()
+    /*!Surface()
     {
         Release();
     }
 
     ~Surface()
     {
-        Release();
-    }
+        this->!Surface();
+    }*/
 
     /// <summary>
     /// Returns a pointer to the underlying DirectDraw surface.
