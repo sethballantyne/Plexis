@@ -37,7 +37,7 @@ void Font::Init(String ^name, Surface ^fontBitmap, unsigned int glyphWidth, unsi
     this->name = name;
 
     // A bitmap character only contains ASCII values 32 to 126.
-    int glyphsPerSheet = 94;
+    int glyphsPerSheet = 95;
     this->glyphPositions = gcnew array<System::Drawing::Point, 1>(glyphsPerSheet);
 
     for(int i = 0; i < glyphsPerSheet; i++)
