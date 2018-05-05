@@ -208,8 +208,31 @@ private:
         }
     }
 public:
+
     /// <summary>
-    /// Returns a string desciption of the specified DIK_* key code.
+    /// 
+    /// </summary>
+    /// <param name="dikCode"></param>
+    /// <returns></returns>
+    static unsigned int DIKToASCII(unsigned int dikCode)
+    {
+        UCHAR state[256];
+        USHORT result[2] = { 0, 0 };
+
+        // I'm cheating, this keeps track of whether shift is pressed
+        // so we get capitals and other shift-based characters for "free", so to speak.
+        if(!GetKeyboardState(state))
+        {
+            return 0;
+        }
+        
+        int scanCode = MapVirtualKeyEx(dikCode, 1, keyboardLayout);
+        ToAsciiEx(scanCode, dikCode, state, result, 0, GetKeyboardLayout(0));
+        return result[0];
+    }
+
+    /// <summary>
+    /// Returns a string description of the specified DIK_* key code.
     /// </summary>
     /// <param name="dikCode">the DIK_* code of the desired description.</param>
     /// <returns>the description of the specified DIK_* code, or <b>null</b> if the keycode isn't present
