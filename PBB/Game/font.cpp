@@ -47,6 +47,50 @@ void Font::Init(String ^name, Surface ^fontBitmap, unsigned int glyphWidth, unsi
     }
 }
 
+void Font::Render(int x, int y, array<unsigned char, 1> ^str)
+{
+    System::Drawing::Rectangle destRect;
+    System::Drawing::Rectangle srcRect;
+
+    if(nullptr == str)
+    {
+        throw gcnew ArgumentNullException("str");
+    }
+
+    try
+    {
+        for(int i = 0; i < str->Length; i++)
+        {
+            // subtracting 32 because the first character in a bitmap font
+            // is the space character, which is decimal 32. A bitmap font contains
+            // the characters decimal 32 (space)to decimal 126 (~).
+            int index = str[i] - 32;
+            if(index < 0)
+            {
+                // probably just processed a null character, which are being used
+                // as terminators.
+                return;
+            }
+
+            destRect.X = x + (i * (glyphWidth - 1));
+            destRect.Y = y;
+            destRect.Width = glyphWidth;
+            destRect.Height = glyphHeight;
+
+            srcRect.X = glyphPositions[index].X;
+            srcRect.Y = 0;
+            srcRect.Width = glyphWidth;
+            srcRect.Height = glyphHeight;
+
+            Video::Blit(srcRect, destRect, fontSurface);
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 void Font::Render(int x, int y, String ^text, ...array<Object ^> ^args)
 {
     if(nullptr == text)
@@ -57,36 +101,9 @@ void Font::Render(int x, int y, String ^text, ...array<Object ^> ^args)
     String ^formattedText = String::Format(text, args);
 
     array<unsigned char, 1> ^ascii = Encoding::ASCII->GetBytes(formattedText);
-
-    System::Drawing::Rectangle destRect;
-    System::Drawing::Rectangle srcRect;
-
     try
     {
-        for(int i = 0; i < ascii->Length; i++)
-        {
-            destRect.X = x + (i * (glyphWidth - 1));
-            destRect.Y = y;
-            destRect.Width = glyphWidth;
-            destRect.Height = glyphHeight;
-
-            // subtracting 32 because the first character in a bitmap font
-            // is the space character, which is decimal 32. A bitmap font contains
-            // the characters decimal 32 (space)to decimal 126 (~).
-            int index = ascii[i] - 32;
-            if(index < 0)
-            {
-                // probably just processed a null character, lets ignore it.
-                continue;
-            }
-
-            srcRect.X = glyphPositions[index].X;
-            srcRect.Y = 0;
-            srcRect.Width = glyphWidth;
-            srcRect.Height = glyphHeight;
-
-            Video::Blit(srcRect, destRect, fontSurface);
-        }
+        Render(x, y, ascii);
     }
     catch(...)
     {

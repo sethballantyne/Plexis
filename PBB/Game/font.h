@@ -131,6 +131,7 @@ public:
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     void Render(int x, int y, String ^text, ...array<Object ^> ^args);
 
+    void Render(int x, int y, array<unsigned char, 1> ^str);
     /// <summary>
     /// Gets the fonts name.
     /// </summary>
