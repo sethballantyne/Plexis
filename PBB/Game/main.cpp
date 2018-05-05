@@ -199,8 +199,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
     catch(Exception ^e)
     {
-        LogManager::WriteLine(LogType::Error | LogType::Debug,
-            "Fatal Error: {0}\n\nStack trace: {1}", e->Message, e->StackTrace);
+        LogManager::WriteLine(LogType::Error,
+            "Fatal Error: {0} thrown. {1}{2}Stack trace: {3}{4}\n", 
+            e->GetType()->ToString(), e->Message, Environment::NewLine, Environment::NewLine, e->StackTrace);
     }
     finally
     {
