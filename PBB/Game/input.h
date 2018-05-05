@@ -210,24 +210,30 @@ private:
 public:
 
     /// <summary>
-    /// 
+    /// Converts the specified key in the form of a DIK_* scancode to an ASCII value.
     /// </summary>
-    /// <param name="dikCode"></param>
-    /// <returns></returns>
+    /// <param name="dikCode">the scancode of the key.</param>
+    /// <returns><b>0</b> if the specified scancode can't be converted, otherwise the ASCII value of the key.</returns>
+    /// <remarks>DIKtoASCII queries the keyboard and takes the shift keys into account when converting to ASCII so on a standard US Keyboard,
+    /// specifying DIK_2 with the shift key not pressed down will return '2', while
+    /// specifying the same value with the shift key pressed will return '@'.</remarks>
     static unsigned int DIKToASCII(unsigned int dikCode)
     {
-        UCHAR state[256];
-        USHORT result[2] = { 0, 0 };
+        UCHAR keyboardState[256];
+        USHORT result[2] = { 0, 0 }; 
 
-        // I'm cheating, this keeps track of whether shift is pressed
-        // so we get capitals and other shift-based characters for "free", so to speak.
-        if(!GetKeyboardState(state))
+        // I'm cheating, when passing it to ToAsciiEx(), it'll take into 
+        // account whether shift is pressed, returning the correct ascii code.
+        // Using this->currentKeyboardState means extra work, as it doesn't take shift into account.
+        // (and somewhat shows that DirectInput is redundant for run-of-the-mill keyboard input).
+        if(!GetKeyboardState(keyboardState))
         {
             return 0;
         }
         
-        int scanCode = MapVirtualKeyEx(dikCode, 1, keyboardLayout);
-        ToAsciiEx(scanCode, dikCode, state, result, 0, GetKeyboardLayout(0));
+        int scanCode = MapVirtualKeyEx(dikCode, MAPVK_VSC_TO_VK, keyboardLayout);
+        ToAsciiEx(scanCode, dikCode, keyboardState, result, 0, keyboardLayout);
+
         return result[0];
     }
 
