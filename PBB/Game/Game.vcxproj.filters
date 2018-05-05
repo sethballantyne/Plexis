@@ -144,6 +144,9 @@
     <ClInclude Include="highscoretable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="editablelabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -162,9 +165,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="video.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="engine_exceptions.cpp">
@@ -231,6 +231,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="highscoretable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="editablelabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

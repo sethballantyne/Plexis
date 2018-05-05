@@ -212,6 +212,24 @@ HighScoreTable ^SceneFactory::ParseHighScoreTable(XElement ^element)
     }
 }
 
+EditableLabel ^SceneFactory::ParseEditableLabel(XElement ^element, MenuItemContainer ^parentContainer)
+{
+    try
+    {
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
+        int length = XmlHelper::GetAttributeValueAsInt32(element, "length");
+        String ^font = XmlHelper::GetAttributeValue(element, "font");
+
+        return gcnew EditableLabel(x, y, selectedIndex, font, length, parentContainer);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
 {
     List<Scene ^> ^sceneList = gcnew List<Scene ^>();
@@ -273,7 +291,11 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                             KeyConfigLabel ^keyConfigLabel = ParseKeyConfigLabel(containerItem, menuItemContainer);
                             menuItemContainer->AddControl(keyConfigLabel);
                         }
-                        
+                        else if(containerItemType == "editableLabel")
+                        {
+                            EditableLabel ^editableLabel = ParseEditableLabel(containerItem, menuItemContainer);
+                            menuItemContainer->AddControl(editableLabel);
+                        }            
                     }
 
                     newScene->GetControlList()->Add(menuItemContainer);

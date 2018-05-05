@@ -79,6 +79,7 @@
     <ClInclude Include="ddraw_exceptions.h" />
     <ClInclude Include="dinput_exceptions.h" />
     <ClInclude Include="dsound_exceptions.h" />
+    <ClInclude Include="editablelabel.h" />
     <ClInclude Include="engine_exceptions.h" />
     <ClInclude Include="exceptions.h" />
     <ClInclude Include="font.h" />
@@ -119,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="audio.cpp" />
+    <ClCompile Include="editablelabel.cpp" />
     <ClCompile Include="engine_exceptions.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="game.cpp" />
@@ -142,7 +144,6 @@
     <ClCompile Include="selectablecontrol.cpp" />
     <ClCompile Include="slider.cpp" />
     <ClCompile Include="soundbuffer.cpp" />
-    <ClCompile Include="surface.cpp" />
     <ClCompile Include="textfilelogger.cpp" />
     <ClCompile Include="togglelabel.cpp" />
     <ClCompile Include="video.cpp" />

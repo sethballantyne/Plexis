@@ -25,6 +25,7 @@
 #include "togglelabel.h"
 #include "logmanager.h"
 #include "highscoretable.h"
+#include "editablelabel.h"
 
 using namespace System::Xml::Linq;
 
@@ -39,6 +40,13 @@ private:
     {
         LogManager::WriteLine(LogType::Debug, message, args);
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <returns></returns>
+    EditableLabel ^ParseEditableLabel(XElement ^element, MenuItemContainer ^parentContainer);
 
     /// <summary>
     /// Parses a control element whose value of its <i>type</i> attribute is "highScoreTable".
