@@ -17,6 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 #include "editablelabel.h"
 #include "input.h"
+#include "scenemanager.h"
+#include "highscores.h"
 
 EditableLabel::EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, MenuItemContainer ^parentContainer)
     : ContainerControl(x, y, selectedIndex, parentContainer)
@@ -91,6 +93,18 @@ void EditableLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
 
                     case DIK_RETURN:
                         editMode = false;
+                        if(nullptr != navigateTo)
+                        {
+                            // TEST CODE FOR PASSING PLAYER NAME AND A SCORE
+                            // TO THE HIGHSCORE TABLE.
+                            // VERY MUCH TEMPORARY.
+                            int newScoreRank = 0;
+                            HighScores::Update(0, text, 99999);
+                            array<Object ^, 1> ^args = gcnew array<Object ^, 1>(1);
+                            args[0] = newScoreRank;
+                            // END TEST CODE.
+                            SceneManager::SetActiveScene(navigateTo, args);
+                        }
                         break;
                     default:
                         break;

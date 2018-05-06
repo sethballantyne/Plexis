@@ -45,6 +45,9 @@ private:
     const unsigned int KEY_TILDE = 126;
 
     ::Font ^font;
+
+    String ^navigateTo;
+
 public:
     /// <summary>
     /// 
@@ -55,9 +58,31 @@ public:
     /// <param name="length"></param>
     EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, MenuItemContainer ^parentContainer);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="selectedIndex"></param>
+    /// <param name="font"></param>
+    /// <param name="length"></param>
+    /// <param name="navigateTo"></param>
+    /// <param name="parentContainer"></param>
+    EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, String ^navigateTo, MenuItemContainer ^parentContainer) :
+        EditableLabel(x, y, selectedIndex, font, length, parentContainer)
+    {
+        if(nullptr == navigateTo)
+        {
+            throw gcnew ArgumentNullException("navigateTo");
+        }
+        
+        this->navigateTo = navigateTo;
+    }
+
     void ReceiveSceneArgs(array<Object ^, 1> ^args) override
     {
     }
+
     /// <summary>
     /// 
     /// </summary>
