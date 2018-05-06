@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 #pragma once
 #include "highscores.h"
+#include "logmanager.h"
 
 void HighScores::Initialise(String ^filename)
 {
@@ -49,8 +50,41 @@ void HighScores::Initialise(String ^filename)
 
                 highScoreRecord->Score = binaryReader->ReadUInt32();
 
+                LogManager::WriteLine(LogType::Debug, "Name: {0} Score: {1}", highScoreRecord->PlayerNameAsString(), highScoreRecord->Score);
                 highScores->Add(highScoreRecord);
             }
+        }
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
+void HighScores::Update(unsigned int row, array<unsigned char, 1> ^playerName, unsigned int newHighScore)
+{
+    if(nullptr == playerName)
+    {
+        throw gcnew ArgumentNullException("playerName");
+    }
+    else if(row >= highScores->Count)
+    {
+        throw gcnew ArgumentOutOfRangeException("row");
+    }
+
+    highScores[row]->SetPlayerName(playerName);
+    highScores[row]->Score = newHighScore;
+
+    try
+    {
+        fileStream->Flush();
+        fileStream->SetLength(0);
+        binaryWriter->Write(highScores->Count);
+
+        for(int i = 0; i < highScores->Count; i++)
+        {
+            binaryWriter->Write(highScores[i]->GetPlayerName());
+            binaryWriter->Write(highScores[i]->Score);
         }
     }
     catch(...)
