@@ -19,7 +19,7 @@
 #include "containercontrol.h"
 #include "highscorerow.h"
 
-public ref class HighScoreTable : Control
+public ref class HighScoreTable : SelectableControl
 {
 private:
     // each row that makes up the table. A list is being used instead of an array
@@ -43,7 +43,7 @@ public:
     /// <param name="scoreXPosition">the position on the X axis where each score should be rendered.</param>
     /// <param name="scoreFont">the name of the font that will be used to render each score.</param>
     /// <exception cref="System::ArgumentException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>,
-    ///  or <i>scoreFont</i> evaluate to String::Empty.</exception></exception>
+    ///  or <i>scoreFont</i> evaluate to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>,
     ///  or <i>scoreFont</i> is <b>null</b>.</exception>
     /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>,
@@ -51,6 +51,12 @@ public:
     HighScoreTable(int x, int y, int numberOfRows, int vertialSpacing,
         int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
         int scoreXPosition, String ^scoreFont);
+
+    /// <summary>
+    ///  
+    /// </summary>
+    /// <param name="args"></param>
+    void ReceiveSceneArgs(array<Object ^, 1> ^args) override;
 
     /// <summary>
     /// Blits each row in the highscore table to the backbuffer.
@@ -80,5 +86,9 @@ public:
         {
             rows[i]->Render();
         }
+    }
+
+    void Update(Keys ^keyboardState, Mouse ^mouseState) override
+    {
     }
 };

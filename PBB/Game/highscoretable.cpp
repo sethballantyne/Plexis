@@ -20,7 +20,7 @@
 
 HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpacing,
     int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
-    int scoreXPosition, String ^scoreFont) : Control(x, y)
+    int scoreXPosition, String ^scoreFont) : SelectableControl(x, y, -1, gcnew System::Drawing::Size(0, 0))
 {
     if(nullptr == rowNumberFont)
     {
@@ -47,6 +47,9 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
     {
         throw gcnew ArgumentException("scoreFont evaluates to String::Empty.");
     }
+
+    this->Enabled = false;
+    this->IsSelected = false;
 
     rows = gcnew List<HighScoreRow ^>();
     int yStep = 0;
@@ -100,6 +103,23 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
         catch(...)
         {
             throw;
+        }
+    }
+}
+
+void HighScoreTable::ReceiveSceneArgs(array<Object ^, 1> ^args)
+{
+    if(nullptr != args && args->Length >= 1)
+    {
+        try
+        {
+            int arg = Convert::ToInt32(args[0]);
+            rows[arg]->PlayerName->Text = HighScores::GetPlayerName(arg);
+            rows[arg]->Score->Text = Convert::ToString(HighScores::GetHighScore(arg));
+        }
+        catch(...)
+        {
+            LogManager::WriteLine(LogType::Debug, "Error converting the 0th scene argument in HighScoreTable.");
         }
     }
 }
