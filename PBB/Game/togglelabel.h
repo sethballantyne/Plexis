@@ -49,6 +49,8 @@ private:
         GameOptions::SetValue(optionsKey, toggleState);
         GameOptions::Save();
         label->Text = captions[toggleState];
+
+        ResourceManager::GetSoundBuffer("toggle")->Play();
     }
 
 public:

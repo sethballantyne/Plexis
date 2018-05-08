@@ -54,6 +54,8 @@ void MenuItemContainer::SelectPreviousControl()
     this->items[this->currentSelectedItem]->IsSelected = false;
     this->items[newSelectedItem]->IsSelected = true;
     this->currentSelectedItem = newSelectedItem;
+
+    ResourceManager::GetSoundBuffer("menu_nav")->Play();
 }
 
 void MenuItemContainer::SelectNextControl()
@@ -84,5 +86,6 @@ void MenuItemContainer::SelectNextControl()
     this->items[this->currentSelectedItem]->IsSelected = false;
     this->items[newSelectedItem]->IsSelected = true;
     this->currentSelectedItem = newSelectedItem;
-    LogManager::WriteLine(LogType::Debug, "currentSelectedItem: {0}", this->currentSelectedItem);
+
+    ResourceManager::GetSoundBuffer("menu_nav")->Play();
 }
