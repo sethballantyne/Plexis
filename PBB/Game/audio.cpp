@@ -30,10 +30,18 @@ LPDIRECTSOUNDBUFFER8 Audio::CreateDirectSoundBuffer(unsigned int bufferSize)
     waveFormat.wFormatTag = WAVE_FORMAT_PCM;
     waveFormat.nChannels = 1; // mono
     waveFormat.nSamplesPerSec = 11025;
-    waveFormat.nBlockAlign = 1;
+    waveFormat.nBlockAlign = waveFormat.nChannels * 2;
     waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
-    waveFormat.wBitsPerSample = 8;
+    waveFormat.wBitsPerSample = 16;
     waveFormat.cbSize = 0;    // always set to zero
+
+    //waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+    //waveFormat.nChannels = 1; // mono
+    //waveFormat.nSamplesPerSec = 11025;
+    //waveFormat.nBlockAlign = 1;
+    //waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+    //waveFormat.wBitsPerSample = 8;
+    //waveFormat.cbSize = 0;    // always set to zero
 
     DSBUFFERDESC dsBD;
     SecureZeroMemory(&dsBD, sizeof(DSBUFFERDESC));
