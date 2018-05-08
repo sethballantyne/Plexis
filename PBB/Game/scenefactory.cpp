@@ -247,6 +247,36 @@ EditableLabel ^SceneFactory::ParseEditableLabel(XElement ^element, MenuItemConta
     }
 }
 
+VolumeSlider ^SceneFactory::ParseVolumeSlider(XElement ^element, MenuItemContainer ^parentContainer)
+{
+    if(nullptr == element)
+    {
+        throw gcnew ArgumentNullException("element");
+    }
+    else if(nullptr == parentContainer)
+    {
+        throw gcnew ArgumentNullException("parentContainer");
+    }
+
+    try
+    {
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        unsigned int length = XmlHelper::GetAttributeValueAsInt32(element, "length");
+        int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
+        double minimum = XmlHelper::GetAttributeValueAsDouble(element, "minimum");
+        double maximum = XmlHelper::GetAttributeValueAsDouble(element, "maximum");
+        double stepValue = XmlHelper::GetAttributeValueAsDouble(element, "stepValue");;
+        String ^optionsKey = XmlHelper::GetAttributeValue(element, "optionsKey");
+
+        return gcnew VolumeSlider(x, y, length, selectedIndex, minimum, maximum, stepValue, optionsKey, parentContainer);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
 {
     List<Scene ^> ^sceneList = gcnew List<Scene ^>();
@@ -312,7 +342,12 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                         {
                             EditableLabel ^editableLabel = ParseEditableLabel(containerItem, menuItemContainer);
                             menuItemContainer->AddControl(editableLabel);
-                        }            
+                        }
+                        else if(containerItemType == "volumeSlider")
+                        {
+                            VolumeSlider ^volumeSlider = ParseVolumeSlider(containerItem, menuItemContainer);
+                            menuItemContainer->AddControl(volumeSlider);
+                        }
                     }
 
                     newScene->GetControlList()->Add(menuItemContainer);

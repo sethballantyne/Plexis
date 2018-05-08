@@ -377,4 +377,23 @@ public:
 
         Release();
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="volume"></param>
+    static void UpdateVolume(unsigned int volume)
+    {
+        if(volume > 100)
+            volume = 100;
+
+        for each(KeyValuePair<String ^, SoundBuffer ^> ^keyValuePair in sounds)
+        {
+            if(keyValuePair->Value->Volume != volume)
+            {
+                sounds[keyValuePair->Key]->Volume = volume;
+                //keyValuePair->Value->Volume = volume;
+            }
+        }
+    }
 };

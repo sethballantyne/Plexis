@@ -188,4 +188,15 @@ public:
             ParentContainer->SelectNextControl();
         }
     }
+
+    /// <summary>
+    /// Gets the current value of the slider.
+    /// </summary>
+    property virtual double Value
+    {
+        double get()
+        {
+            return this->currentValue;
+        }
+    }
 };

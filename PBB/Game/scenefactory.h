@@ -26,6 +26,7 @@
 #include "logmanager.h"
 #include "highscoretable.h"
 #include "editablelabel.h"
+#include "volumeslider.h"
 
 using namespace System::Xml::Linq;
 
@@ -41,6 +42,7 @@ private:
         LogManager::WriteLine(LogType::Debug, message, args);
     }
 
+    VolumeSlider ^ParseVolumeSlider(XElement ^element, MenuItemContainer ^parentContainer);
     /// <summary>
     /// 
     /// </summary>
