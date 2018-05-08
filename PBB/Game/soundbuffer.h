@@ -19,6 +19,7 @@
 
 #include <dsound.h>
 #include "exceptions.h"
+#include "logmanager.h"
 
 using namespace System::Runtime::InteropServices; // COMException
 
@@ -150,7 +151,7 @@ public:
 
     /// <summary>
     /// Gets and sets the buffer volume in the range of 0  - 100, 0 being silent and 100 being full volume.
-    /// DirectSound treats 0 as being full volume, -10, 000 is silent.
+    /// DirectSound treats 0 as being full volume, -10,000 is silent.
     /// </summary>
     /// <exception cref="System::Runtime::InteropServices::COMException">A unspecified COM+ error was returned.</exception>
     /// <exception cref="DirectSoundControlUnavailableException">the volume buffer control requested by the caller is unavailable.</exception>
@@ -193,6 +194,7 @@ public:
         void set(unsigned int value)
         {
             LONG volume = 10000 - (value * 100);
+            volume = -volume;
 
             HRESULT result = lpDSBuffer->SetVolume(volume);
             if(result != DS_OK)
