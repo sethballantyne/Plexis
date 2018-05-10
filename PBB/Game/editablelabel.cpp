@@ -20,7 +20,7 @@
 #include "scenemanager.h"
 #include "highscores.h"
 
-EditableLabel::EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, MenuItemContainer ^parentContainer)
+EditableLabel::EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, bool allowEmptyInput, MenuItemContainer ^parentContainer)
     : ContainerControl(x, y, selectedIndex, parentContainer)
 {
     if(nullptr == font)
@@ -41,6 +41,7 @@ EditableLabel::EditableLabel(int x, int y, int selectedIndex, String ^font, unsi
     text = gcnew array<unsigned char, 1>(maxLength);
     cursorPosition = 0;
     editMode = true;
+    this->allowEmptyInput = allowEmptyInput;
 
     try
     {
@@ -92,18 +93,25 @@ void EditableLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
                         break;
 
                     case DIK_RETURN:
-                        editMode = false;
-                        if(nullptr != navigateTo)
+                        if(text[0] == 0 && !allowEmptyInput)
                         {
-                            // TEST CODE FOR PASSING PLAYER NAME AND A SCORE
-                            // TO THE HIGHSCORE TABLE.
-                            // VERY MUCH TEMPORARY.
-                            int newScoreRank = 0;
-                            HighScores::Update(0, text, 99999);
-                            array<Object ^, 1> ^args = gcnew array<Object ^, 1>(1);
-                            args[0] = newScoreRank;
-                            // END TEST CODE.
-                            SceneManager::SetActiveScene(navigateTo, args);
+                            ResourceManager::GetSoundBuffer("error3")->Play();
+                        }
+                        else
+                        {
+                            editMode = false;
+                            if(nullptr != navigateTo)
+                            {
+                                // TEST CODE FOR PASSING PLAYER NAME AND A SCORE
+                                // TO THE HIGHSCORE TABLE.
+                                // VERY MUCH TEMPORARY.
+                                int newScoreRank = 0;
+                                HighScores::Update(0, text, 99999);
+                                array<Object ^, 1> ^args = gcnew array<Object ^, 1>(1);
+                                args[0] = newScoreRank;
+                                // END TEST CODE.
+                                SceneManager::SetActiveScene(navigateTo, args);
+                            }
                         }
                         break;
                     default:

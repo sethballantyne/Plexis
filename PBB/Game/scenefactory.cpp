@@ -221,6 +221,7 @@ EditableLabel ^SceneFactory::ParseEditableLabel(XElement ^element, MenuItemConta
         int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
         int length = XmlHelper::GetAttributeValueAsInt32(element, "length");
         String ^font = XmlHelper::GetAttributeValue(element, "font");
+        bool allowEmptyInput = XmlHelper::GetAttributeValueAsBoolean(element, "allowEmptyInput");
 
         String ^navigateTo;
         try
@@ -234,11 +235,11 @@ EditableLabel ^SceneFactory::ParseEditableLabel(XElement ^element, MenuItemConta
 
         if(nullptr == navigateTo)
         {
-            return gcnew EditableLabel(x, y, selectedIndex, font, length, parentContainer);
+            return gcnew EditableLabel(x, y, selectedIndex, font, length, allowEmptyInput, parentContainer);
         }
         else
         {
-            return gcnew EditableLabel(x, y, selectedIndex, font, length, navigateTo, parentContainer);
+            return gcnew EditableLabel(x, y, selectedIndex, font, length, allowEmptyInput, navigateTo, parentContainer);
         }
     }
     catch(...)

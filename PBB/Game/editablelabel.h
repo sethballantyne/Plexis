@@ -46,6 +46,7 @@ private:
 
     String ^navigateTo;
 
+    bool allowEmptyInput;
 public:
     /// <summary>
     /// Creates a new instance of EditableLabel.
@@ -59,7 +60,7 @@ public:
     /// <exception cref="System::ArgumentException"><i>font</i> evaluates to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException"><i>font</i> or <i>parentContainer</i> evaluate to <b>null</b></exception>
     /// <exception cref="ResourceNotFoundException">the font specified in <i>font</i> doesn't exist within the resource manager.</exception>
-    EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, MenuItemContainer ^parentContainer);
+    EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, bool allowEmptyInput, MenuItemContainer ^parentContainer);
 
     /// <summary>
     /// Creates a new instance of EditableLabel.
@@ -74,8 +75,8 @@ public:
     /// <exception cref="System::ArgumentException"><i>font</i> evaluates to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException"><i>font</i>, <i>parentContainer</i> or <i>navigateTo</i> evaluate to <b>null</b></exception>
     /// <exception cref="ResourceNotFoundException">the font specified in <i>font</i> doesn't exist within the resource manager.</exception>
-    EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, String ^navigateTo, MenuItemContainer ^parentContainer) :
-        EditableLabel(x, y, selectedIndex, font, length, parentContainer)
+    EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, bool allowEmptyInput, String ^navigateTo, MenuItemContainer ^parentContainer) :
+        EditableLabel(x, y, selectedIndex, font, length, allowEmptyInput, parentContainer)
     {
         if(nullptr == navigateTo)
         {
