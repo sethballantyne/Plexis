@@ -128,6 +128,12 @@ void KeyConfigLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
                 UpdateConfig(pressedKey);
                 changingKey = false;
             }
+            else
+            {
+                // attempted to assign a key that's already in bound
+                // to another option. Play a prompt indicating the error.
+                ResourceManager::GetSoundBuffer("error3")->Play();
+            }
         }
         else if(nullptr != mouseState)
         {
