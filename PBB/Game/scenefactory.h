@@ -42,16 +42,35 @@ private:
         LogManager::WriteLine(LogType::Debug, message, args);
     }
 
-    VolumeSlider ^ParseVolumeSlider(XElement ^element, MenuItemContainer ^parentContainer);
     /// <summary>
-    /// 
+    /// Parses a control element whose value of its <i>type</i> attribute is <b>volumeSlider</b>.
     /// </summary>
-    /// <param name="element"></param>
-    /// <returns></returns>
+    /// <param name="element">the element to parse.</param>
+    /// <param name="parentContainer"></param>
+    /// <returns>an instance of <i>VolumeSlider</i> which has been initialised with the parsed values.</returns>
+    /// <exception cref="System::ArgumentNullException">either <i>element</i> or <i>parentContainer</i> is <b>null</b>.</exception>
+    /// <exception cref="System::FormatException">one of the attributes that takes a numeric argument contains a non-integer value.</exception>
+    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
+    VolumeSlider ^ParseVolumeSlider(XElement ^element, MenuItemContainer ^parentContainer);
+
+    /// <summary>
+    /// Parses a control element whose value of its <i>type</i> attribute is <b>editableLabel</b>.
+    /// </summary>
+    /// <param name="element">the element to parse.</param>
+    /// <param name="parentContainer"></param>
+    /// <returns>an instance of <i>EditableLabel</i> which has been initialised with the parsed values.</returns>
+    /// <exception cref="System::ArgumentNullException"><i>element</i> is <b>null</b>.</exception>
+    /// <exception cref="System::Xml::XmlException">the element or one of its children is missing a required 
+    /// attribute or the value of an attribute evaluates to String::Empty.</exception>
+    /// <exception cref="System::OverflowException">one of the attributes that takes a numberic value contains a value that's 
+    /// less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::FormatException">the value of an attribute that takes a numeric argument 
+    /// contains a non-integer value.</exception>
     EditableLabel ^ParseEditableLabel(XElement ^element, MenuItemContainer ^parentContainer);
 
     /// <summary>
-    /// Parses a control element whose value of its <i>type</i> attribute is "highScoreTable".
+    /// Parses a control element whose value of its <i>type</i> attribute is <b>highScoreTable</b>.
     /// </summary>
     /// <param name="element">the element to parse.</param>
     /// <returns>an instance of <i>HighScoreTable</i> which has been initialised with the parsed values.</returns>
@@ -68,7 +87,7 @@ private:
     HighScoreTable ^ParseHighScoreTable(XElement ^element);
 
     /// <summary>
-    /// Parses a control element whose value of its <i>type</i> attribute is "label".
+    /// Parses a control element whose value of its <i>type</i> attribute is <b>label</b>.
     /// that was created using the parsed settings.
     /// </summary>
     /// <param name="element">the element to parse.</param>
@@ -84,7 +103,7 @@ private:
     Label ^ParseLabel(XElement ^element);
 
     /// <summary>
-    /// Parses a containerItemElement element whose value of its <i>type</i> attribute is "menuItem".
+    /// Parses a containerItemElement element whose value of its <i>type</i> attribute is <b>menuItem</b>.
     /// </summary>
     /// <param name="element">the element to parse.</param>
     /// <param name="parentContainer">the menu item container the control will be attached to.</param>
@@ -139,10 +158,16 @@ private:
     ToggleLabel ^ParseToggleLabel(XElement ^element, MenuItemContainer ^parentContainer);
 public:
     /// <summary>
-    /// 
+    /// Parses the specified XML document that contains scene information.
     /// </summary>
-    /// <param name="sceneXML"></param>
-    /// <returns></returns>
-    /// <exception cref=""></exception>
+    /// <param name="sceneXML">the XML document that contains scene information.</param>
+    /// <returns>an array of parsed Scene objects. If the scenes XML contained a &lt;controls&gt; element and one or more
+    /// &lt;control&gt; elements, the scene will contain controls that have been instantiated and are ready to use.
+    /// If the document contains no Scene objects, an empty array is returned.</returns>
+    /// <exception cref="System::ArgumentNullException">either <i>element</i> or <i>parentContainer</i> is <b>null</b>.</exception>
+    /// <exception cref="System::FormatException">one of the XML attributes contains an invalid value.</exception>
+    /// <exception cref="System::OverflowException">one of the XML attributes that takes an integer argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue, or
+    /// if a double value expected, it's value is less than Double::MinValue or Double::MaxValue.</exception>
+    /// <exception cref="System::Xml::XmlException">the element being parsed is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     array<Scene ^, 1> ^Read(XElement ^sceneXML);
 };
