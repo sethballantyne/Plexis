@@ -19,24 +19,25 @@
 #include "slider.h"
 
 /// <summary>
-/// 
+/// Slider control for manipulating audio volume.
 /// </summary>
 public ref class VolumeSlider :  Slider
 {
     int lastValue;
 public:
     /// <summary>
-    /// 
+    /// Initialises an instance of VolumeSlider.
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="length"></param>
-    /// <param name="selectedIndex"></param>
-    /// <param name="minimum"></param>
-    /// <param name="maximum"></param>
-    /// <param name="step"></param>
-    /// <param name="optionsKey"></param>
-    /// <param name="parentContainer"></param>
+    /// <param name="x">the controls screen coordinate on the x axis.</param>
+    /// <param name="y">the controls screen coordinate on the y axis.</param>
+    /// <param name="length">the length of the controls track, in pixels.</param>
+    /// <param name="selectedIndex"the controls position in the control list.></param>
+    /// <param name="minimum">the lower bound value.</param>
+    /// <param name="maximum">the upper bound value.</param>
+    /// <param name="step">the amount the sliders value increases by when moving to the right, or decreases when moving to the left.</param>
+    /// <param name="optionsKey">the option in GameOptions that should be revised each time the sliders value changes.</param>
+    /// <param name="parentContainer">the menu item container the control belongs to.</param>
+    /// <exception cref="System::ArgumentNullException"><i>optionsKey</i> is <b>null</b>.</exception>
     VolumeSlider(int x, int y, unsigned int length, int selectedIndex, double minimum, double maximum,
         double step, String ^optionsKey, MenuItemContainer ^parentContainer)
         : Slider(x, y, length, selectedIndex, minimum, maximum, step, optionsKey, parentContainer)
@@ -45,20 +46,22 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// Updates the state of the control. If the track box is moved by the player,
+    /// this plays a sound demonstrating the new volume setting.
     /// </summary>
-    /// <param name="keyboardState"></param>
-    /// <param name="mouseState"></param>
+    /// <param name="keyboardState">current state of the keyboard.</param>
+    /// <param name="mouseState">current state of the mouse.</param>
     void Update(Keys ^keyboardState, Mouse ^mouseState) override
     { 
         try
         {
-            lastValue  = Slider::Value;
+            lastValue = Slider::Value;
             Slider::Update(keyboardState, mouseState);
             
             if(lastValue != Slider::Value)
             {
-                //LogManager::WriteLine(LogType::Debug, "lastValue: {0} Slider::Value: {1}", lastValue, Slider::Value);
+                // track box has been moved by the player.
+                // play a sound so they can hear the new volume setting.
                 ResourceManager::UpdateVolume(Slider::Value);
                 ResourceManager::GetSoundBuffer("volume_conf")->Play();
             }
