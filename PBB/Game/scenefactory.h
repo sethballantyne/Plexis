@@ -27,6 +27,8 @@
 #include "highscoretable.h"
 #include "editablelabel.h"
 #include "volumeslider.h"
+#include "imagecontrol.h"
+#include "versionlabel.h"
 
 using namespace System::Xml::Linq;
 
@@ -85,6 +87,13 @@ private:
     /// <exception cref="System::FormatException">the value of an attribute that takes a numeric argument 
     /// contains a non-integer value.</exception>
     HighScoreTable ^ParseHighScoreTable(XElement ^element);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <returns></returns>
+    ImageControl ^ParseImageControl(XElement ^element);
 
     /// <summary>
     /// Parses a control element whose value of its <i>type</i> attribute is <b>label</b>.
@@ -156,6 +165,8 @@ private:
     /// <exception cref="ResourceNotFoundException">the resource manager doesn't have the specified font.</exception>
     /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     ToggleLabel ^ParseToggleLabel(XElement ^element, MenuItemContainer ^parentContainer);
+
+    VersionLabel ^ParseVersionLabel(XElement ^element);
 public:
     /// <summary>
     /// Parses the specified XML document that contains scene information.

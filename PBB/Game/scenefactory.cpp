@@ -212,6 +212,22 @@ HighScoreTable ^SceneFactory::ParseHighScoreTable(XElement ^element)
     }
 }
 
+ImageControl ^SceneFactory::ParseImageControl(XElement ^element)
+{
+    try
+    {
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        String ^imageName = XmlHelper::GetAttributeValue(element, "image");
+
+        return gcnew ImageControl(x, y, imageName);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 EditableLabel ^SceneFactory::ParseEditableLabel(XElement ^element, MenuItemContainer ^parentContainer)
 {
     try
@@ -278,6 +294,22 @@ VolumeSlider ^SceneFactory::ParseVolumeSlider(XElement ^element, MenuItemContain
     }
 }
 
+VersionLabel ^SceneFactory::ParseVersionLabel(XElement ^element)
+{
+    try
+    {
+        int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
+        int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
+        String ^font = XmlHelper::GetAttributeValue(element, "font");
+
+        return gcnew VersionLabel(x, y, font);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
 {
     List<Scene ^> ^sceneList = gcnew List<Scene ^>();
@@ -307,8 +339,16 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                 {
                     HighScoreTable ^highScoreTable = ParseHighScoreTable(controlElement);
                     newScene->GetControlList()->Add(highScoreTable);
-
-
+                }
+                else if(typeAttribute == "imageControl")
+                {
+                    ImageControl ^imageControl = ParseImageControl(controlElement);
+                    newScene->GetControlList()->Add(imageControl);
+                }
+                else if(typeAttribute == "versionLabel")
+                {
+                    VersionLabel ^versionLabel = ParseVersionLabel(controlElement);
+                    newScene->GetControlList()->Add(versionLabel);
                 }
                 else if(typeAttribute == "menuItemContainer")
                 {
