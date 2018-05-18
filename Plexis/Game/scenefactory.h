@@ -89,10 +89,18 @@ private:
     HighScoreTable ^ParseHighScoreTable(XElement ^element);
 
     /// <summary>
-    /// 
+    /// Parses a &lt;control&gt; element whose value of its <i>type</i> attribute is <b>imageControl</b>.
     /// </summary>
-    /// <param name="element"></param>
-    /// <returns></returns>
+    /// <param name="element">the element to parse.</param>
+    /// <returns>an ImageControl instance containing the image specified in the XML element.</returns>
+    /// <exception cref="System::ArgumentNullException"><i>element</i> is <b>null</b>.</exception>
+    /// <exception cref="System::FormatException">the value  of the element's <i>x</i> or <i>y</i>
+    ///  attributes contain non-integer values.</exception>
+    /// <exception cref="System::OverflowException">either the <i>x</i> or <i>y</i> attribute contains a value 
+    /// that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="ResourceNotFoundException">the resource manager doesn't have the image specified by the &lt;image&gt; attribute.</exception>
+    /// <exception cref="System::Xml::XmlException">the element is missing a required 
+    /// attribute or the value of an attribute evaluates to String::Empty.</exception>
     ImageControl ^ParseImageControl(XElement ^element);
 
     /// <summary>

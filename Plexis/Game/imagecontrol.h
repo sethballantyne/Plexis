@@ -22,28 +22,27 @@
 #include "video.h"
 
 /// <summary>
-/// 
+/// GUI control for display Bitmap images.
 /// </summary>
 public ref class ImageControl : public Control
 {
 private:
-    /// <summary>
-    /// 
-    /// </summary>
+    // the image to display.
     Surface ^image;
 
-    /// <summary>
-    /// 
-    /// </summary>
+    // position where the image is going to be rendered on the screen.
     System::Drawing::Point ^location;
 
 public:
     /// <summary>
-    /// 
+    /// Initialises a new instance of ImageControl with the specified screen coordinates and image.
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="imageName"></param>
+    /// <param name="x">the images screen position on the x axis.</param>
+    /// <param name="y">the images screen position on the y axis.</param>
+    /// <param name="imageName">the name of the image to use, minus file extension.</param>
+    /// <exception cref="System::ArgumentException"><i>imageName</i> evaluates to String::Empty.</exception>
+    /// <exception cref="System::ArgumentNullException"><i>imageName</i> is <b>null</b>.</exception>
+    /// <exception cref="ResourceNotFoundException">a surface with the name specified in <i>imageName</i> doesn't exist within the resource manager.</exception>
     ImageControl(int x, int y, String ^imageName) : Control(x, y)
     {
         if(nullptr == imageName)
@@ -69,8 +68,27 @@ public:
     }
 
     /// <summary>
-    /// 
+    /// Renders the image to the backbuffer.
     /// </summary>
+    /// <exception cref="System::Runtime::InteropServices::COMException">An unspecified COM error was returned.</exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+    /// <exception cref="DirectDrawInvalidClipListException">DirectDraw does not support the provided clip list.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidRectException">the rectangle coordinates used by the surface were invalid.</exception>
+    /// <exception cref="DirectDrawNoAlphaHardwareException">no alpha acceleration hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoBlitHardwareException">no blitter hardware is present.</exception>
+    /// <exception cref="DirectDrawNoClipListException">no clip list is available.</exception>
+    /// <exception cref="DirectDrawNoDDRasterOperationHardwareException">no DirectDraw raster operation (ROP) hardware is available.</exception>
+    /// <exception cref="DirectDrawNoMirrorHardwareException">the operation cannot be carried out because no mirroring hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRasterOperationHardwareException">the operation cannot be carried out because no appropriate raster operation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRotationHardwareException">the operation cannot be carried out because no rotation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoStretchHardwareException">the operation cannot be carried out because there is no hardware support for stretching.</exception>
+    /// <exception cref="DirectDrawNoZBufferHardwareException">the operation cannot be carried out because there is no hardware support for Z-buffers.</exception>
+    /// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     void Render() override
     {
         try
