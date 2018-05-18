@@ -20,17 +20,17 @@
 #include "version.h"
 
 /// <summary>
-/// 
+/// Label that displays a the current version of the game.
 /// </summary>
 public ref class VersionLabel : public Label
 {
 public:
     /// <summary>
-    /// 
+    /// Initialises a new instance of VersionLabel with the specified position and font.
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <param name="font"></param>
+    /// <param name="x">the labels screen position on the x axis.</param>
+    /// <param name="y">the labels screen position on the y axis.</param>
+    /// <param name="font">the name of the font to use when rendering the labels text.</param>
     VersionLabel(int x, int y, String ^font) : Label(x, y, font, nullptr)
     {
         this->Text = gcnew String(VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_REVISION);

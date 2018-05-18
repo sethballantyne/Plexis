@@ -166,6 +166,19 @@ private:
     /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     ToggleLabel ^ParseToggleLabel(XElement ^element, MenuItemContainer ^parentContainer);
 
+    /// <summary>
+    /// Parses a &lt;control&gt; element whose value of its <i>type</i> attribute is <b>versionLabel</b>.
+    /// </summary>
+    /// <param name="element">the element to parse.</param>
+    /// <returns>an instance of <i>VersionLabel</i> which has been initialised using the parsed values.</returns>
+    /// <exception cref="System::ArgumentNullException"><i>element</i> is <b>null</b>.</exception>
+    /// <exception cref="System::FormatException">the value  of the element's <i>x</i> or <i>y</i>
+    ///  attributes contain non-integer values.</exception>
+    /// <exception cref="System::OverflowException">either the <i>x</i> or <i>y</i> attribute contains a value 
+    /// that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="ResourceNotFoundException">the resource manager doesn't have the specified font.</exception>
+    /// <exception cref="System::Xml::XmlException">the element is missing a required 
+    /// attribute or the value of an attribute evaluates to String::Empty.</exception>
     VersionLabel ^ParseVersionLabel(XElement ^element);
 public:
     /// <summary>
