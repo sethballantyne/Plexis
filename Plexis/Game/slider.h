@@ -79,6 +79,7 @@ private:
             }
         }
         
+        UpdateTrackBox();
         GameOptions::SetValue(optionsKey, currentValue + xmlMinimumValue);
         GameOptions::Save();
     }
@@ -101,6 +102,7 @@ private:
             }
         }
 
+        UpdateTrackBox();
         GameOptions::SetValue(optionsKey, currentValue + xmlMinimumValue);
         GameOptions::Save();
     }
@@ -188,6 +190,8 @@ public:
             ParentContainer->SelectNextControl();
         }
     }
+
+    void UpdateTrackBox();
 
     /// <summary>
     /// Gets the current value of the slider.

@@ -89,41 +89,29 @@ Slider::Slider(int x, int y, unsigned int length, int selectedIndex, double mini
     trackLines[1] = gcnew Line(System::Drawing::Color::FromArgb(0, 127, 127, 127), 
         gcnew System::Drawing::Point(x, y + 1), gcnew System::Drawing::Point(x + length, y + 1));
 
+    // creating the lines that make up the trackbox
     for(int i = 0; i < trackBoxLines->Length; i++)
     {
-        // x is a place holder, it'll be updated to the correct value when the slider is rendered.
+        // the Y values are unmodified outside of the constructor, the X value is modified in
+        // UpdateTrackBox() (i.e, whenever the control is manipulated. Makes sense.)
         System::Drawing::Point ^fromPoint = gcnew System::Drawing::Point(x, y - (scrollBoxHeight / 2));
         System::Drawing::Point ^toPoint = gcnew System::Drawing::Point(x, y + (scrollBoxHeight / 2));
 
         trackBoxLines[i] = gcnew Line(System::Drawing::Color::White, fromPoint, toPoint);
     }
 
+    // trackbox shadow
     trackBoxLines[trackBoxLines->Length - 1]->Colour = System::Drawing::Color::FromArgb(0, 83, 83, 83);
+
+    // position the trackbox.
+    UpdateTrackBox();
 }
 
 void Slider::Render()
 {
     try
     {
-        // TODO: Get this crap out of the render method!
-        double progress = currentValue / sliderMaximumValue;
-
-        int pixelOffset = (int)Math::Truncate(progress * trackLength) - (trackBoxLines->Length / 2);
-      
-        for(int i = 0; i < trackBoxLines->Length; i++)
-        {
-            // updating the position of the track box before rendering.
-            trackBoxLines[i]->From->X = Position.X + pixelOffset;
-            trackBoxLines[i]->To->X = trackBoxLines[i]->From->X;
-
-            //LogManager::WriteLine(LogType::Debug, "{0}", pixelOffset);
-            //LogManager::WriteLine(LogType::Debug, "trackBoxLines[{0}]->To.X = {1}", i, trackBoxLines[i]->To->X);*/
-            pixelOffset++;
-        }
-
-        // the track box shadow.
-        trackLines[trackLines->Length - 1]->From->X = Position.X + (trackBoxLines->Length / 2);
-        trackLines[trackLines->Length - 1]->To->X = trackLines[trackLines->Length - 1]->From->X;
+        
 
         Video::DrawLines(trackLines);
         Video::DrawLines(trackBoxLines);
@@ -133,4 +121,25 @@ void Slider::Render()
     {
         throw;
     }
+}
+
+void Slider::UpdateTrackBox()
+{
+    // TODO: Get this crap out of the render method!
+    double progress = currentValue / sliderMaximumValue;
+
+    int pixelOffset = (int)Math::Truncate(progress * trackLength) - (trackBoxLines->Length / 2);
+
+    for(int i = 0; i < trackBoxLines->Length; i++)
+    {
+        // updating the position of the track box before rendering.
+        trackBoxLines[i]->From->X = Position.X + pixelOffset;
+        trackBoxLines[i]->To->X = trackBoxLines[i]->From->X;
+
+        pixelOffset++;
+    }
+
+    // the track box shadow.
+    trackLines[trackLines->Length - 1]->From->X = Position.X + (trackBoxLines->Length / 2);
+    trackLines[trackLines->Length - 1]->To->X = trackLines[trackLines->Length - 1]->From->X;
 }
