@@ -19,6 +19,8 @@
 #include "containercontrol.h"
 #include "highscorerow.h"
 
+using namespace System::Text;
+
 public ref class HighScoreTable : SelectableControl
 {
 private:
@@ -51,6 +53,28 @@ public:
     HighScoreTable(int x, int y, int numberOfRows, int vertialSpacing,
         int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
         int scoreXPosition, String ^scoreFont);
+
+    /// <summary>
+    /// Returns the specified score as a right-aligned string. 
+    /// </summary>
+    /// <param name="score"></param>
+    /// <returns><i>score</i> as a right-aligned 5 charater string. If <i>score</i> is less than 5 decimal places in length, the string is padded with whitespace.</returns>
+    /// <remarks>The alignment is achieved by padding numbers less than 5 digits with an empty space on the left
+    /// for each digit missing.
+    /// when displaying highscores, we want this:
+    /// 99999
+    ///   999
+    /// not this:
+    /// 99999
+    /// 999</remarks>
+    String ^RightAlignScore(unsigned int score)
+    {
+        StringBuilder ^sb = gcnew StringBuilder(Convert::ToString(score));
+
+        int numberOfSpacesToInsert = 5 - sb->Length;
+        sb->Insert(0, " ", numberOfSpacesToInsert);
+        return sb->ToString();
+    }
 
     /// <summary>
     ///  
