@@ -38,8 +38,8 @@ public:
     /// <param name="optionsKey">the option in GameOptions that should be revised each time the sliders value changes.</param>
     /// <param name="parentContainer">the menu item container the control belongs to.</param>
     /// <exception cref="System::ArgumentNullException"><i>optionsKey</i> is <b>null</b>.</exception>
-    VolumeSlider(int x, int y, unsigned int length, int selectedIndex, double minimum, double maximum,
-        double step, String ^optionsKey, MenuItemContainer ^parentContainer)
+    VolumeSlider(int x, int y, unsigned int length, int selectedIndex, int minimum, int maximum,
+        int step, String ^optionsKey, MenuItemContainer ^parentContainer)
         : Slider(x, y, length, selectedIndex, minimum, maximum, step, optionsKey, parentContainer)
     {
 
