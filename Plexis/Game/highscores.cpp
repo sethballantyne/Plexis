@@ -56,7 +56,7 @@ void HighScores::Initialise(String ^filename)
                 highScoreRecord->Score = binaryReader->ReadUInt32();
 
                 LogManager::WriteLine(LogType::Debug, "Name: {0} Score: {1}", highScoreRecord->PlayerNameAsString(), highScoreRecord->Score);
-                highScores->Add(highScoreRecord);
+                highScores[i] = highScoreRecord;
             }
         }
     }
