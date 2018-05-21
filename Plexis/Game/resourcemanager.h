@@ -34,7 +34,7 @@ public ref class ResourceManager abstract sealed
 {
 private:
     // pools for each resource type.
-    static Dictionary<String ^, Font ^> ^fonts;
+    static Dictionary<String ^, ::Font ^> ^fonts;
     static Dictionary<String ^, SoundBuffer ^> ^sounds;
     static Dictionary<String ^, Surface ^> ^surfaces;
     static Dictionary<String ^, XElement ^> ^xmlFiles;
@@ -110,7 +110,7 @@ public:
     /// fonts <i>name</i> attribute in fonts.xml.</param>
     /// <returns>The desired bitmap font.</returns>
     /// <exception cref="ResourceNotFoundException">the resource manager received a request for a font that it doesn't have.</exception>
-    static Font ^GetFont(String ^fontName)
+    static ::Font ^GetFont(String ^fontName)
     {
         try
         {
