@@ -17,8 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 #include "slider.h"
 
-Slider::Slider(int x, int y, unsigned int length, int selectedIndex, double minimum, double maximum,
-    double step, String ^optionsKey, MenuItemContainer ^parentContainer) : ContainerControl(x, y, selectedIndex, parentContainer)
+Slider::Slider(int x, int y, unsigned int length, int selectedIndex, int minimum, int maximum,
+    int step, String ^optionsKey, MenuItemContainer ^parentContainer) : ContainerControl(x, y, selectedIndex, parentContainer)
 {
     if(nullptr == optionsKey)
     {
@@ -65,10 +65,10 @@ Slider::Slider(int x, int y, unsigned int length, int selectedIndex, double mini
     xmlMinimumValue = minimum;
     xmlMaximumValue = maximum;
 
-    // it's possible for minimum to be something other than 0.
-    // it might be dealing with, say, minimum = 245 and maximum = 250.
-    // it's essentially doing a conversion here so we can calculate our percentages when it's time
-    // to position and move the track box.
+    // it's possible for minimum to be something other than 0; it might be dealing with, say, minimum = 245 
+    // and maximum = 250. sliderMaximumValue *really* represents the amount of times the trackbox can be 
+    // slid to the left. UpdateTrackBox() will factor this in when calculating the percentage based on 
+    // the trackbox's new position and place it in the aprorpriate place.
     sliderMaximumValue = maximum - minimum;
 
     stepValue = step;
@@ -129,7 +129,7 @@ void Slider::UpdateTrackBox()
     double progress = currentValue / sliderMaximumValue;
 
     int pixelOffset = (int)Math::Truncate(progress * trackLength) - (trackBoxLines->Length / 2);
-
+    
     for(int i = 0; i < trackBoxLines->Length; i++)
     {
         // updating the position of the track box before rendering.

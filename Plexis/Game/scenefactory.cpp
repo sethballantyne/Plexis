@@ -118,9 +118,9 @@ Slider ^SceneFactory::ParseSlider(XElement ^element, MenuItemContainer ^parentCo
         int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
         unsigned int length = XmlHelper::GetAttributeValueAsInt32(element, "length");
         int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
-        double minimum = XmlHelper::GetAttributeValueAsDouble(element, "minimum");
-        double maximum = XmlHelper::GetAttributeValueAsDouble(element, "maximum");
-        double stepValue = XmlHelper::GetAttributeValueAsDouble(element, "stepValue");;
+        double minimum = XmlHelper::GetAttributeValueAsInt32(element, "minimum");
+        double maximum = XmlHelper::GetAttributeValueAsInt32(element, "maximum");
+        double stepValue = XmlHelper::GetAttributeValueAsInt32(element, "stepValue");;
         String ^optionsKey = XmlHelper::GetAttributeValue(element, "optionsKey");
 
         return gcnew Slider(x, y, length, selectedIndex, minimum, maximum, stepValue, optionsKey, parentContainer);
