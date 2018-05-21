@@ -68,7 +68,7 @@ Slider::Slider(int x, int y, unsigned int length, int selectedIndex, int minimum
     // it's possible for minimum to be something other than 0; it might be dealing with, say, minimum = 245 
     // and maximum = 250. sliderMaximumValue *really* represents the amount of times the trackbox can be 
     // slid to the left. UpdateTrackBox() will factor this in when calculating the percentage based on 
-    // the trackbox's new position and place it in the aprorpriate place.
+    // the trackbox's new position and place it in the approrpriate place.
     sliderMaximumValue = maximum - minimum;
 
     stepValue = step;
