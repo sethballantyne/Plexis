@@ -43,6 +43,15 @@ public:
     /// <param name="to">the lines finishing point.</param>
     Line(System::Drawing::Color colour, System::Drawing::Point ^from, System::Drawing::Point ^to)
     {
+        if(nullptr == from)
+        {
+            throw gcnew ArgumentNullException("from");
+        }
+        else if(nullptr == to)
+        {
+            throw gcnew ArgumentNullException("to");
+        }
+
         this->from = from;
         this->to = to;
         this->colour = colour;
