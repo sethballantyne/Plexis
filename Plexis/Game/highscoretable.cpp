@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 #include "highscoretable.h"
 #include "highscores.h"
+#include "resourcemanager.h"
 
 HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpacing,
     int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
@@ -53,12 +54,14 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
 
     rows = gcnew List<HighScoreRow ^>();
     int yStep = 0;
+    int fontHeight = ResourceManager::GetFont(rowNumberFont)->FontSurface->Height;
+
     for(int i = 0; i < numberOfRows; i++)
     {
         // 18 is the height of the font; replace so it's calculated based on the
         // actual font being used.
         int rowYPosition = y + yStep;
-        yStep = ((i + 1) * (18 + verticalSpacing));
+        yStep = ((i + 1) * (fontHeight + verticalSpacing));
 
         Point ^indexPosition = gcnew Point(indexXPosition, rowYPosition);
         Point ^playerNamePosition = gcnew Point(PlayerNameXPosition, rowYPosition);

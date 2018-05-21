@@ -50,6 +50,9 @@ public:
     ///  or <i>scoreFont</i> is <b>null</b>.</exception>
     /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>,
     ///  or < i>playerNameFont</i>, or <i>scoreFont/i> doesn't exist within the resource manager.</exception>
+    /// <remarks>When HighScoreTable calculates the spacing between rows, it uses the height of the font specified in <i>rowNumberFont</i>
+    /// and assumes the fonts specified in <i>playerNameFont</i> and <i>scoreFont</i> are the same height. If the heights
+    /// differ, the rows are going to be displayed incorrectly.</remarks>
     HighScoreTable(int x, int y, int numberOfRows, int vertialSpacing,
         int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
         int scoreXPosition, String ^scoreFont);
