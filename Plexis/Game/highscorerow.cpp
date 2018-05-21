@@ -32,7 +32,20 @@ HighScoreRow::HighScoreRow(String ^rowNumberFont, Point ^indexPosition, String ^
     {
         throw gcnew ArgumentNullException("scoreFont");
     }
-   
+    else if(nullptr == indexPosition)
+    {
+        throw gcnew ArgumentNullException("indexPosition");
+    }
+    else if(nullptr == playerNamePosition)
+    {
+        throw gcnew ArgumentNullException("playerNamePosition");
+    }
+    else if(nullptr == scorePosition)
+    {
+        throw gcnew ArgumentNullException("scorePosition");
+    }
+
+
     if(String::Empty == rowNumberFont)
     {
         throw gcnew ArgumentException("rowNumberFont evaluates to String::Empty.");

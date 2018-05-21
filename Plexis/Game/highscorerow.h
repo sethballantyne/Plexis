@@ -42,7 +42,7 @@ public:
     /// <exception cref="System::ArgumentException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>, 
     /// or <i>scoreFont</i> evaluate to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>, 
-    /// or <i>scoreFont</i> are <b>null</b>.</exception>
+    /// <i>scoreFont</i>, <i>indexPosition</i>, <i>playerNamePosition</i> or <i>scorePosition</i> are <b>null</b>.</exception>
     /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>, or <i>playerNameFont</i>, 
     /// or <i>scoreFont</i> doesn't exist within the resource manager.</exception>
     HighScoreRow(String ^rowNumberFont, Point ^indexPosition, String ^playerNameFont,
@@ -107,7 +107,7 @@ public:
     }
 
     /// <summary>
-    /// Gets the label used to display the score on the high score table.
+    /// Gets or sets the label used to display the score on the high score table.
     /// </summary>
     property Label ^Score
     {
