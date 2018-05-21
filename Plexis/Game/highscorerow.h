@@ -26,8 +26,13 @@ using namespace System::Drawing;
 public ref class HighScoreRow
 {
 private:
-    Label ^rowIndexLabel;
+    // the scores rank on the highscore table.
+    Label ^rankLabel;
+    
+    // the name of the player who achieved the score.
     Label ^playerNameLabel;
+
+    // the score probably.
     Label ^scoreLabel;
 public:
     /// <summary>
@@ -45,7 +50,7 @@ public:
     /// <i>scoreFont</i>, <i>indexPosition</i>, <i>playerNamePosition</i> or <i>scorePosition</i> are <b>null</b>.</exception>
     /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>, or <i>playerNameFont</i>, 
     /// or <i>scoreFont</i> doesn't exist within the resource manager.</exception>
-    HighScoreRow(String ^rowNumberFont, Point ^indexPosition, String ^playerNameFont,
+    HighScoreRow(String ^rowNumberFont, Point ^rankPosition, String ^playerNameFont,
         Point ^playerNamePosition, String ^scoreFont, Point ^scorePosition);
 
     /// <summary>
@@ -74,7 +79,7 @@ public:
     {
         try
         {
-            rowIndexLabel->Render();
+            rankLabel->Render();
             playerNameLabel->Render();
             scoreLabel->Render();
         }
@@ -87,11 +92,11 @@ public:
     /// <summary>
     /// Gets the label used to display the scores rank on the high score table. 
     /// </summary>
-    property Label ^Index
+    property Label ^Rank
     {
         Label ^get()
         {
-            return rowIndexLabel;
+            return rankLabel;
         }
     }
 

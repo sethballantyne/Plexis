@@ -83,7 +83,7 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
                 indexText = String::Format("{0})", i + 1);
             }
 
-            newHighScoreRow->Index->Text = indexText;
+            newHighScoreRow->Rank->Text = indexText;
             newHighScoreRow->PlayerName->Text = HighScores::GetPlayerName(i);
 
             // the score text is right aligned, calculating how many spaces need to be

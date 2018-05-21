@@ -17,7 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 #include "highscorerow.h"
 
-HighScoreRow::HighScoreRow(String ^rowNumberFont, Point ^indexPosition, String ^playerNameFont,
+HighScoreRow::HighScoreRow(String ^rowNumberFont, Point ^rankPosition, String ^playerNameFont,
     Point ^playerNamePosition, String ^scoreFont, Point ^scorePosition)
 {
     if(nullptr == rowNumberFont)
@@ -32,7 +32,7 @@ HighScoreRow::HighScoreRow(String ^rowNumberFont, Point ^indexPosition, String ^
     {
         throw gcnew ArgumentNullException("scoreFont");
     }
-    else if(nullptr == indexPosition)
+    else if(nullptr == rankPosition)
     {
         throw gcnew ArgumentNullException("indexPosition");
     }
@@ -61,7 +61,7 @@ HighScoreRow::HighScoreRow(String ^rowNumberFont, Point ^indexPosition, String ^
 
     try
     {
-        rowIndexLabel = gcnew Label(indexPosition->X, indexPosition->Y, rowNumberFont, nullptr);
+        rankLabel = gcnew Label(rankPosition->X, rankPosition->Y, rowNumberFont, nullptr);
         scoreLabel = gcnew Label(scorePosition->X, scorePosition->Y, scoreFont, nullptr);
         playerNameLabel = gcnew Label(playerNamePosition->X, playerNamePosition->Y, playerNameFont, nullptr);
     }
