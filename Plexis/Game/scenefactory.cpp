@@ -116,7 +116,7 @@ Slider ^SceneFactory::ParseSlider(XElement ^element, MenuItemContainer ^parentCo
     {
         int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
         int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
-        unsigned int length = XmlHelper::GetAttributeValueAsInt32(element, "length");
+        unsigned int length = XmlHelper::GetAttributeValueAsUInt32(element, "length");
         int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
         double minimum = XmlHelper::GetAttributeValueAsInt32(element, "minimum");
         double maximum = XmlHelper::GetAttributeValueAsInt32(element, "maximum");
@@ -279,7 +279,7 @@ VolumeSlider ^SceneFactory::ParseVolumeSlider(XElement ^element, MenuItemContain
     {
         int x = XmlHelper::GetAttributeValueAsInt32(element, "x");
         int y = XmlHelper::GetAttributeValueAsInt32(element, "y");
-        unsigned int length = XmlHelper::GetAttributeValueAsInt32(element, "length");
+        unsigned int length = XmlHelper::GetAttributeValueAsUInt32(element, "length");
         int selectedIndex = XmlHelper::GetAttributeValueAsInt32(element, "selectedIndex");
         double minimum = XmlHelper::GetAttributeValueAsInt32(element, "minimum");
         double maximum = XmlHelper::GetAttributeValueAsInt32(element, "maximum");

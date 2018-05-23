@@ -52,7 +52,7 @@ private:
     /// <returns>an instance of <i>VolumeSlider</i> which has been initialised with the parsed values.</returns>
     /// <exception cref="System::ArgumentNullException">either <i>element</i> or <i>parentContainer</i> is <b>null</b>.</exception>
     /// <exception cref="System::FormatException">one of the attributes that takes a numeric argument contains a non-integer value.</exception>
-    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue or is less than UInt32::MinValue or greater than UInt32::MaxValue.</exception>
     /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     VolumeSlider ^ParseVolumeSlider(XElement ^element, MenuItemContainer ^parentContainer);
 
@@ -141,7 +141,7 @@ private:
     /// <returns>an instance of Slider created from the parsed XML.</returns>
     /// <exception cref="System::ArgumentNullException">either <i>element</i> or <i>parentContainer</i> is <b>null</b>.</exception>
     /// <exception cref="System::FormatException">one of the attributes that takes a numeric argument contains a non-integer value.</exception>
-    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue or is less than UInt32::MinValue or greater than UInt32::MaxValue.</exception>
     /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     Slider ^ParseSlider(XElement ^element, MenuItemContainer ^parentContainer);
 
