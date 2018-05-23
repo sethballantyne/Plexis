@@ -72,7 +72,6 @@ public:
         {
             this->lpDDSurface->Release();
             this->lpDDSurface = NULL;
-            /*GC::SuppressFinalize(this);*/
         }
     }
 
@@ -98,18 +97,6 @@ public:
         void set(LPDIRECTDRAWSURFACE7 value)
         {
             this->lpDDSurface = value;
-        }
-    }
-
-    /// <summary>
-    /// Returns the height of the bitmap.
-    /// </summary>
-    /// <remarks>Note that this is the height of the bitmap, not the surface height.</remarks>
-    property unsigned int Height
-    {
-        unsigned int get()
-        {
-            return this->bitmapHeight;
         }
     }
 
@@ -166,18 +153,6 @@ public:
         void set(String ^value)
         {
             this->path = value;
-        }
-    }
-
-    /// <summary>
-    /// Returns the width of the bitmap.
-    /// </summary>
-    /// <remarks>Note that this is the width of the bitmap, not the surface width.</remarks>
-    property unsigned int Width
-    {
-        unsigned int get()
-        {
-            return this->bitmapWidth;
         }
     }
 };

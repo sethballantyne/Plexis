@@ -54,7 +54,7 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
 
     rows = gcnew List<HighScoreRow ^>();
     int yStep = 0;
-    int fontHeight = ResourceManager::GetFont(rowNumberFont)->FontSurface->Height;
+    int fontHeight = ResourceManager::GetFont(rowNumberFont)->FontSurface->Size->Height;
 
     for(int i = 0; i < numberOfRows; i++)
     {

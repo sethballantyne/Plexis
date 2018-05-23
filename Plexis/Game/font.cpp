@@ -20,12 +20,12 @@ void Font::Init(String ^name, Surface ^fontBitmap, unsigned int glyphWidth, unsi
     {
         throw gcnew ArgumentException("name evaluates to String::Empty.");
     }
-    else if(glyphWidth > fontBitmap->Width)
+    else if(glyphWidth > fontBitmap->Size->Width)
     {
         throw gcnew ArgumentException("the specified width of the glyph is greater than the width "
             "of the font surface.");
     }
-    else if(glyphHeight > fontBitmap->Height)
+    else if(glyphHeight > fontBitmap->Size->Height)
     {
         throw gcnew ArgumentException("the specified height of the glyph is greater than the hieght"
             " of the font surface.");
