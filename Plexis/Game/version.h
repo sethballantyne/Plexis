@@ -4,7 +4,7 @@
 #define STRINGIZE(s) STRINGIZE2(s)
 
 #define VERSION_MAJOR            0
-#define VERSION_MINOR            4
+#define VERSION_MINOR            5
 #define VERSION_REVISION         0
 #define VERSION_BUILD            0
 
@@ -16,7 +16,7 @@
                                     "." STRINGIZE(VERSION_BUILD) \
 
 
-#define VER_PRODUCTNAME_STR      "Project Ball Buster"
+#define VER_PRODUCTNAME_STR      "Plexis"
 #define VER_PRODUCT_VERSION      VER_FILE_VERSION
 #define VER_PRODUCT_VERSION_STR  VER_FILE_VERSION_STR
 #define VER_ORIGINAL_FILENAME_STR   VER_PRODUCTNAME_STR ".exe"

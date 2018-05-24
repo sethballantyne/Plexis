@@ -37,10 +37,24 @@ private:
     static FileStream ^fileStream;
     static BinaryReader ^binaryReader;
     static BinaryWriter ^binaryWriter;
+
+    static const int defaultNumberOfEntries = 10;
 public:
     static HighScores()
     {
         HighScores::highScores = gcnew List<HighScoreRecord ^>();
+        array<unsigned char, 1> ^asciiString = Encoding::ASCII->GetBytes("DEFAULT");
+
+        // initialise the highscore list to defaults; this will be used if there's
+        // any problems reading in the highscores from the highscores file.
+        for(int i = 0; i < defaultNumberOfEntries; i++)
+        {
+            HighScoreRecord ^defaultRecord = gcnew HighScoreRecord();
+            defaultRecord->Score = 0;
+            defaultRecord->SetPlayerName(asciiString);
+
+            highScores->Add(defaultRecord);
+        }
     }
 
     /// <summary>
@@ -48,14 +62,6 @@ public:
     /// game, unless Highscores::Shutdown() is called.
     /// </summary>
     /// <param name="filename">the path of the highscores file.</param>
-    /// <exception cref="System::ArgumentException"><i>filename</i> evaluates to String::Empty.</exception>
-    /// <exception cref="System::ArgumentNullException"><i>filename</i> is <b>null</b>.</exception>
-    /// <exception cref="System::IO::DirectoryNotFoundException">the specified path is invalid.</exception>
-    /// <exception cref="System::IO::EndOfStreamException">prematurely reached the end of the file while trying to read the highscores into memory.</exception>
-    /// <exception cref="System::IO::IOException">an unspecified I/O error occured.</exception>
-    /// <exception cref="System::NotSupportedException"><i>filename</i> refers to a non-file device.</exception>
-    /// <exception cref="System::IO::PathTooLongException">the length of <i>filename</i> exceeds the maximum length allowed for a path.</exception>
-    /// <exception cref="System::UnauthorizedAccessException">access to the specified path was denied by the operating system.</exception>
     static void Initialise(String ^filename);
 
     /// <summary>

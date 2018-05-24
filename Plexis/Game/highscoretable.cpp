@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 #include "highscoretable.h"
 #include "highscores.h"
+#include "resourcemanager.h"
 
 HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpacing,
     int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
@@ -53,12 +54,14 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
 
     rows = gcnew List<HighScoreRow ^>();
     int yStep = 0;
+    int fontHeight = ResourceManager::GetFont(rowNumberFont)->FontSurface->Size->Height;
+
     for(int i = 0; i < numberOfRows; i++)
     {
         // 18 is the height of the font; replace so it's calculated based on the
         // actual font being used.
         int rowYPosition = y + yStep;
-        yStep = ((i + 1) * (18 + verticalSpacing));
+        yStep = ((i + 1) * (fontHeight + verticalSpacing));
 
         Point ^indexPosition = gcnew Point(indexXPosition, rowYPosition);
         Point ^playerNamePosition = gcnew Point(PlayerNameXPosition, rowYPosition);
@@ -71,6 +74,7 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
                 playerNameFont, playerNamePosition, scoreFont, scorePosition);
 
             String ^indexText;
+            // setting the entries position.
             // adding 1 to i because the range used to indicate a players position
             // on the highscore table needs to be 1 to 10, not 0 to 9.
             if(i < 9)
@@ -82,7 +86,7 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
                 indexText = String::Format("{0})", i + 1);
             }
 
-            newHighScoreRow->Index->Text = indexText;
+            newHighScoreRow->Rank->Text = indexText;
             newHighScoreRow->PlayerName->Text = HighScores::GetPlayerName(i);
 
             // the score text is right aligned, calculating how many spaces need to be
@@ -93,10 +97,7 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
             // not this:
             // 99999
             // 999
-            StringBuilder ^sb = gcnew StringBuilder(Convert::ToString(HighScores::GetHighScore(i)));
-            int numberOfSpacesToInsert = 5 - sb->Length;
-            sb->Insert(0, " ", numberOfSpacesToInsert);
-            newHighScoreRow->Score->Text = sb->ToString();
+            newHighScoreRow->Score->Text = RightAlignScore(HighScores::GetHighScore(i));
 
             rows->Add(newHighScoreRow);
         }
@@ -113,9 +114,16 @@ void HighScoreTable::ReceiveSceneArgs(array<Object ^, 1> ^args)
     {
         try
         {
-            int arg = Convert::ToInt32(args[0]);
-            rows[arg]->PlayerName->Text = HighScores::GetPlayerName(arg);
-            rows[arg]->Score->Text = Convert::ToString(HighScores::GetHighScore(arg));
+            // bug: doesn't format the score correctly: it's left aligned when it should be right.
+            // also, check if args[0] is nullptr, else it'll convert null to an int and assume you're
+            // setting the high score.
+            if(args[0] != nullptr)
+            {
+                int arg = Convert::ToInt32(args[0]);
+                rows[arg]->PlayerName->Text = HighScores::GetPlayerName(arg);
+                rows[arg]->Score->Text = RightAlignScore(arg);
+            }
+
         }
         catch(...)
         {

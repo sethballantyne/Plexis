@@ -38,8 +38,13 @@ void HighScores::Initialise(String ^filename)
 
         if(fileStream->Length != 0)
         {
+            
             unsigned int numberOfEntries = binaryReader->ReadUInt32();
-
+            if(numberOfEntries != defaultNumberOfEntries)
+            {
+                LogManager::WriteLine(LogType::Debug, "Highscores.cpp: the number of entries being read from "
+                    "the highscores file differs from defaultNumberOfEntries.");
+            }
             for(int i = 0; i < numberOfEntries; i++)
             {
                 HighScoreRecord ^highScoreRecord = gcnew HighScoreRecord();
@@ -51,13 +56,17 @@ void HighScores::Initialise(String ^filename)
                 highScoreRecord->Score = binaryReader->ReadUInt32();
 
                 LogManager::WriteLine(LogType::Debug, "Name: {0} Score: {1}", highScoreRecord->PlayerNameAsString(), highScoreRecord->Score);
-                highScores->Add(highScoreRecord);
+                highScores[i] = highScoreRecord;
             }
         }
     }
+    catch(Exception ^e)
+    {
+        LogManager::WriteLine(LogType::Debug, "Exception {0} caught while attempting to read from highscores.dat. Defaults will be used.", e->GetType()->ToString());
+    }
     catch(...)
     {
-        throw;
+        LogManager::WriteLine(LogType::Debug, "Unmanaged exception caught while attempting to read from highscores.dat. Defaults will be used.");
     }
 }
 

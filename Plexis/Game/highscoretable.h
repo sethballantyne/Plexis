@@ -19,6 +19,8 @@
 #include "containercontrol.h"
 #include "highscorerow.h"
 
+using namespace System::Text;
+
 public ref class HighScoreTable : SelectableControl
 {
 private:
@@ -48,9 +50,34 @@ public:
     ///  or <i>scoreFont</i> is <b>null</b>.</exception>
     /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>,
     ///  or < i>playerNameFont</i>, or <i>scoreFont/i> doesn't exist within the resource manager.</exception>
+    /// <remarks>When HighScoreTable calculates the spacing between rows, it uses the height of the font specified in <i>rowNumberFont</i>
+    /// and assumes the fonts specified in <i>playerNameFont</i> and <i>scoreFont</i> are the same height. If the heights
+    /// differ, the rows are going to be displayed incorrectly.</remarks>
     HighScoreTable(int x, int y, int numberOfRows, int vertialSpacing,
         int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
         int scoreXPosition, String ^scoreFont);
+
+    /// <summary>
+    /// Returns the specified score as a right-aligned string. 
+    /// </summary>
+    /// <param name="score"></param>
+    /// <returns><i>score</i> as a right-aligned 5 charater string. If <i>score</i> is less than 5 decimal places in length, the string is padded with whitespace.</returns>
+    /// <remarks>The alignment is achieved by padding numbers less than 5 digits with an empty space on the left
+    /// for each digit missing.
+    /// when displaying highscores, we want this:
+    /// 99999
+    ///   999
+    /// not this:
+    /// 99999
+    /// 999</remarks>
+    String ^RightAlignScore(unsigned int score)
+    {
+        StringBuilder ^sb = gcnew StringBuilder(Convert::ToString(score));
+
+        int numberOfSpacesToInsert = 5 - sb->Length;
+        sb->Insert(0, " ", numberOfSpacesToInsert);
+        return sb->ToString();
+    }
 
     /// <summary>
     ///  

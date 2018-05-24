@@ -28,8 +28,15 @@ bool KeyConfigLabel::KeyInUse(unsigned char key)
         {
             KeyConfigLabel ^keyConfigLabel = dynamic_cast<KeyConfigLabel ^>(controls[i]);
             String ^keyText = Input::GetDIKAsString(key);
-            if(keyConfigLabel->label->Text == keyText)
+
+            // is the key in use?
+            if(nullptr == keyText || keyConfigLabel->label->Text == keyText)
             {
+                // if keyText evaluates to nullptr, the user has pressed a key that's not in the 
+                // lookup table used by GetDIKAsString() to retrieve the string representation of the key.
+                // If it's not in the table, it's an invalid key for our purposes, so pretend
+                // it's already in use; this'll force them to bind another key and play the error
+                // sound effect.
                 return true;
             }
         }

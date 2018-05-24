@@ -28,9 +28,10 @@ public ref class Slider : ContainerControl
 private:
     // the amout that's added or subtracted from the currentValu, based on whether
     // the scroll box is being moved to the left (decrease) or right (increase).
-    double stepValue;
+    int stepValue;
 
     // the sliders value; the scroll box's position on the track is relative to this value.
+    // the algorithm used to plot the trackbox relies on this being a double, it breaks if it's an int.
     double currentValue;
 
     // a slider is essentially a progress bar, it operates around a percentage. 
@@ -41,10 +42,13 @@ private:
     // where the track bar should be positioned each time it slides to the left or right
     // or whether it should move at all. The internal ranges (slider*Value) are simply conversions
     // of the xml*Value ranges.
-    double xmlMinimumValue;
-    double xmlMaximumValue;
-    const double sliderMinimumValue = 0;
-    double sliderMaximumValue;
+    int xmlMinimumValue;
+    int xmlMaximumValue;
+    const int sliderMinimumValue = 0;
+
+    // not a const like sliderMinimumValue because this is computed in the constructor.
+    // we don't assume we're dealing with a 0 - 100 range.
+    int sliderMaximumValue;
 
     // height of the scroll box in pixels
     int scrollBoxHeight = 12;
@@ -79,6 +83,7 @@ private:
             }
         }
         
+        UpdateTrackBox();
         GameOptions::SetValue(optionsKey, currentValue + xmlMinimumValue);
         GameOptions::Save();
     }
@@ -101,6 +106,7 @@ private:
             }
         }
 
+        UpdateTrackBox();
         GameOptions::SetValue(optionsKey, currentValue + xmlMinimumValue);
         GameOptions::Save();
     }
@@ -129,8 +135,8 @@ public:
     /// the sliders step value is less than Int32::MinValue.
     /// </exception>
     /// <exception cref="System::ArgumentNullException"><i>optionsKey</i> is <b>null</b>.</exception>
-    Slider(int x, int y, unsigned int length, int selectedIndex, double minimum, double maximum,
-        double step, String ^optionsKey, MenuItemContainer ^parentContainer);
+    Slider(int x, int y, unsigned int length, int selectedIndex, int minimum, int maximum,
+        int step, String ^optionsKey, MenuItemContainer ^parentContainer);
  
     /// <summary>
     /// Not used by Slider.
@@ -188,6 +194,8 @@ public:
             ParentContainer->SelectNextControl();
         }
     }
+
+    void UpdateTrackBox();
 
     /// <summary>
     /// Gets the current value of the slider.

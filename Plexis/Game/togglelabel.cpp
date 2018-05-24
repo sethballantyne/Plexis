@@ -57,10 +57,9 @@ ToggleLabel::ToggleLabel(int x, int y, String ^font, String ^trueCaption, String
     this->optionsKey = optionsKey;
     try
     {
-        // the caption passed here is a default. When the scene is displayd, the control
-        // will query GameOptions and update the labels text.
-        int optionValue = GameOptions::GetValue(optionsKey, 0);
-        label = gcnew Label(x, y, font, captions[optionValue]);
+        // set the initial state of the control
+        toggleState = (bool)GameOptions::GetValue(optionsKey, false);
+        label = gcnew Label(x, y, font, captions[toggleState]);
     }
     catch(...)
     {

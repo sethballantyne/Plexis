@@ -335,8 +335,8 @@ Keys ^Input::ReadKeyboard()
 
 Mouse ^Input::ReadMouse()
 {
-    LPDIMOUSESTATE2 mouseState;
-    HRESULT result = lpDIMouse->GetDeviceState(sizeof(mouseState), (LPVOID)mouseState);
+    DIMOUSESTATE2 mouseState;
+    HRESULT result = lpDIMouse->GetDeviceState(sizeof(mouseState), &mouseState);
     if(result != DI_OK)
     {
         switch(result)
@@ -365,7 +365,7 @@ Mouse ^Input::ReadMouse()
 
     try
     {
-        return gcnew Mouse(mouseState);
+        return gcnew Mouse(&mouseState);
     }
     catch(...)
     {

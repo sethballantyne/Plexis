@@ -52,7 +52,7 @@ private:
     /// <returns>an instance of <i>VolumeSlider</i> which has been initialised with the parsed values.</returns>
     /// <exception cref="System::ArgumentNullException">either <i>element</i> or <i>parentContainer</i> is <b>null</b>.</exception>
     /// <exception cref="System::FormatException">one of the attributes that takes a numeric argument contains a non-integer value.</exception>
-    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue or is less than UInt32::MinValue or greater than UInt32::MaxValue.</exception>
     /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     VolumeSlider ^ParseVolumeSlider(XElement ^element, MenuItemContainer ^parentContainer);
 
@@ -89,10 +89,18 @@ private:
     HighScoreTable ^ParseHighScoreTable(XElement ^element);
 
     /// <summary>
-    /// 
+    /// Parses a &lt;control&gt; element whose value of its <i>type</i> attribute is <b>imageControl</b>.
     /// </summary>
-    /// <param name="element"></param>
-    /// <returns></returns>
+    /// <param name="element">the element to parse.</param>
+    /// <returns>an ImageControl instance containing the image specified in the XML element.</returns>
+    /// <exception cref="System::ArgumentNullException"><i>element</i> is <b>null</b>.</exception>
+    /// <exception cref="System::FormatException">the value  of the element's <i>x</i> or <i>y</i>
+    ///  attributes contain non-integer values.</exception>
+    /// <exception cref="System::OverflowException">either the <i>x</i> or <i>y</i> attribute contains a value 
+    /// that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="ResourceNotFoundException">the resource manager doesn't have the image specified by the &lt;image&gt; attribute.</exception>
+    /// <exception cref="System::Xml::XmlException">the element is missing a required 
+    /// attribute or the value of an attribute evaluates to String::Empty.</exception>
     ImageControl ^ParseImageControl(XElement ^element);
 
     /// <summary>
@@ -133,7 +141,7 @@ private:
     /// <returns>an instance of Slider created from the parsed XML.</returns>
     /// <exception cref="System::ArgumentNullException">either <i>element</i> or <i>parentContainer</i> is <b>null</b>.</exception>
     /// <exception cref="System::FormatException">one of the attributes that takes a numeric argument contains a non-integer value.</exception>
-    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::OverflowException">one of the attributes that takes a numeric argument contains a value that's less than Int32::MinValue or greater than Int32::MaxValue or is less than UInt32::MinValue or greater than UInt32::MaxValue.</exception>
     /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     Slider ^ParseSlider(XElement ^element, MenuItemContainer ^parentContainer);
 
@@ -166,6 +174,19 @@ private:
     /// <exception cref="System::Xml::XmlException">the element is missing a required attribute or the value of an attribute evaluates to String::Empty.</exception>
     ToggleLabel ^ParseToggleLabel(XElement ^element, MenuItemContainer ^parentContainer);
 
+    /// <summary>
+    /// Parses a &lt;control&gt; element whose value of its <i>type</i> attribute is <b>versionLabel</b>.
+    /// </summary>
+    /// <param name="element">the element to parse.</param>
+    /// <returns>an instance of <i>VersionLabel</i> which has been initialised using the parsed values.</returns>
+    /// <exception cref="System::ArgumentNullException"><i>element</i> is <b>null</b>.</exception>
+    /// <exception cref="System::FormatException">the value  of the element's <i>x</i> or <i>y</i>
+    ///  attributes contain non-integer values.</exception>
+    /// <exception cref="System::OverflowException">either the <i>x</i> or <i>y</i> attribute contains a value 
+    /// that's less than Int32::MinValue or greater than Int32::MaxValue.</exception>
+    /// <exception cref="ResourceNotFoundException">the resource manager doesn't have the specified font.</exception>
+    /// <exception cref="System::Xml::XmlException">the element is missing a required 
+    /// attribute or the value of an attribute evaluates to String::Empty.</exception>
     VersionLabel ^ParseVersionLabel(XElement ^element);
 public:
     /// <summary>

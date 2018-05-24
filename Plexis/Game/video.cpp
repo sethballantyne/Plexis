@@ -1225,13 +1225,13 @@ void Video::Blit(int x, int y, Surface ^surface)
 
     destRect.left = x;
     destRect.top = y;
-    destRect.bottom = destRect.top + surface->Height;
-    destRect.right = destRect.left + surface->Width;
+    destRect.bottom = destRect.top + surface->Size->Height;
+    destRect.right = destRect.left + surface->Size->Width;
 
     srcRect.left = 0;
     srcRect.top = 0;
-    srcRect.bottom = surface->Height;
-    srcRect.right = surface->Width;
+    srcRect.bottom = surface->Size->Height;
+    srcRect.right = surface->Size->Width;
 
     HRESULT result = lpDDSSecondarySurface->Blt(&destRect, surface->Data, &srcRect, DDBLT_WAIT | DDBLT_KEYSRC, NULL);
     if(result != DD_OK)
