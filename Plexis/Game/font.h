@@ -94,8 +94,14 @@ public:
     /// <exception cref="System::ArgumentNullException">either <i>name</i> or <i>fontBitmap</i> are <b>null</b>.</exception>
     Font(String ^name, Surface ^fontBitmap, System::Drawing::Size glyphSize)
     {
+        glyphSize.Height = -1;
         try
         {
+            if(glyphSize.Width < 0 || glyphSize.Height < 0)
+            {
+                throw gcnew ArgumentOutOfRangeException("glyphSize", "Width or Height property is less than 0.");
+            }
+
             Init(name, fontBitmap, glyphSize.Width, glyphSize.Height);
         }
         catch(...)
