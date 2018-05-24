@@ -77,12 +77,26 @@ Slider::Slider(int x, int y, unsigned int length, int selectedIndex, int minimum
 
     cursorPosition->Y = this->position.Y - (cursorSize->Height / 2);
 
-    // sliderMinimumValue isn't used for the default because xmlMinimumValue still
-    // needs to be subtracted from the value returned by GetValue. If, for example,
-    // xmlMinimumValue is 1, and sliderMinimumValue is returned by GetValue, 
-    // currentValue will be < 0, which isn't what we want. Setting the default to xmlMinimumValue
-    // is a round about way of getting 0, which we do want if defaults need to be used. 
-    currentValue = GameOptions::GetValue(optionsKey, xmlMinimumValue) - xmlMinimumValue;
+    // If the option specified in optionsKey doesn't exist, we want currentValue to default to 0 when 
+    // xmlMinimumValue is subtracted from optionsValue further down.
+    // xmlMinimumValue is being specified instead of just putting 0 because obviously its possible
+    // 0 - xmlMinimumValue != 0; if a default value is being assigned to currentValue, it must be 0.
+    int optionValue = GameOptions::GetValue(optionsKey, xmlMinimumValue);
+    if(optionValue < xmlMinimumValue || optionValue > xmlMaximumValue)
+    {
+        // optionsKey refers to a garbage value
+        LogManager::WriteLine(LogType::Debug, "slider.cpp: options key {0} contains a value not within the bounds "
+            "specified by the minimum and maximum XML attributes. Setting the optionKey value to the value specified by "
+            "the minimum XML attribute.", optionsKey);
+
+        // fix the problem so it doesn't happen again (hopefully).
+        optionValue = xmlMinimumValue;
+        GameOptions::SetValue(optionsKey, xmlMinimumValue);
+        GameOptions::Save();
+    }
+
+    currentValue = optionValue - xmlMinimumValue;
+    
 
     trackLines[0] = gcnew Line(System::Drawing::Color::White, 
         gcnew System::Drawing::Point(x, y), gcnew System::Drawing::Point(x + length, y));
