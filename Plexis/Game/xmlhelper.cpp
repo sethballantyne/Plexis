@@ -65,7 +65,7 @@ int XmlHelper::GetAttributeValueAsInt32(XElement ^element, String ^attribute)
     }
     catch(OverflowException ^)
     {
-        throw gcnew OverflowException(String::Format("the {0} attribute contains a number that's greater than {1}", attribute, Int32::MaxValue));
+        throw gcnew OverflowException(String::Format("the {0} attribute contains a number that's less than {1} or greater than {2}", attribute, Int32::MinValue, Int32::MaxValue));
     }
     catch(...)
     {

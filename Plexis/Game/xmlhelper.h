@@ -63,7 +63,7 @@ public:
     /// <exception cref="System::ArgumentException"><i>attribute</i> evaluates to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException"><i>element</i> or <i>attribute</i> evaluates to <b>null</b>.</exception>
     /// <exception cref="System::FormatException">the attributes value is non-numeric.</exception>
-    /// <exception cref="System::OverflowException">the attributes value is greater than Int32::MaxValue.</exception>
+    /// <exception cref="System::OverflowException">the attributes value is less than Int32::MinValue or greater than Int32::MaxValue.</exception>
     /// <exception cref="System::Xml::XmlException">the specified attribute is missing from the element or its value evaluates to String::Empty.</exception>
     static int GetAttributeValueAsInt32(XElement ^element, String ^attribute);
 
