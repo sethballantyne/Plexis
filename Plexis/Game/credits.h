@@ -20,12 +20,31 @@
 #include "label.h"
 
 /// <summary>
-/// 
+/// Quick and dirty means of grouping credit information for easy rendering.
+/// </summary>
+private ref class Data
+{
+public:
+    int X;
+    int Y;
+    String ^Text;
+
+    Data(int x, int y, String ^text)
+    {
+        X = x; Y = y; Text = text;
+    }
+};
+
+/// <summary>
+/// Displays the game credits.
 /// </summary>
 public ref class Credits : public Control
 {
+private:
     Label ^greenText;
     Label ^whiteText;
+    List<Data ^> ^nameData;
+    List<Data ^> ^descriptionData;
 
 public:
     Credits(String ^nameFont, String ^descriptionFont) : Control(0, 0)
@@ -51,6 +70,15 @@ public:
         {
             greenText = gcnew Label(0, 0, descriptionFont, nullptr);
             whiteText = gcnew Label(0, 0, nameFont, nullptr);
+
+            descriptionData = gcnew List<Data ^>();
+            nameData = gcnew List<Data ^>();
+
+            descriptionData->Add(gcnew Data(53, 242, "DESIGN / PROGRAMMING / SHIT SFX / CRAPPIER ART / QA"));
+            descriptionData->Add(gcnew Data(17, 450, "PLEXIS IS FREE SOFTWARE RELEASED UNDER THE MIT LICENSE"));
+            descriptionData->Add(gcnew Data(260, 484, "SEE LICENSE.TXT FOR DETAILS"));
+
+            nameData->Add(gcnew Data(377, 276, "SETH BALLANTYNE"));
         }
         catch(...)
         {
@@ -60,24 +88,20 @@ public:
 
     void Render() override
     {
-        greenText->Position->X = 53;
-        greenText->Position->Y = 242;
-        greenText->Text = "DESIGN / PROGRAMMING / SHIT SFX / CRAPPIER ART / QA";
-        greenText->Render();
+        for(int i = 0; i < descriptionData->Count; i++)
+        {
+            greenText->Position->X = descriptionData[i]->X;
+            greenText->Position->Y = descriptionData[i]->Y;
+            greenText->Text = descriptionData[i]->Text;
+            greenText->Render();
+        }
 
-        whiteText->Position->X = 377;
-        whiteText->Position->Y = 276;
-        whiteText->Text = "SETH BALLANTYNE";
-        whiteText->Render();
-
-        greenText->Position->X = 17;
-        greenText->Position->Y = 450;
-        greenText->Text = "PLEXIS IS FREE SOFTWARE RELEASED UNDER THE MIT LICENSE";
-        greenText->Render();
-
-        greenText->Position->X = 260;
-        greenText->Position->Y = 484;
-        greenText->Text = "SEE LICENSE.TXT FOR DETAILS";
-        greenText->Render();
+        for(int i = 0; i < nameData->Count; i++)
+        {
+            whiteText->Position->X = nameData[i]->X;
+            whiteText->Position->Y = nameData[i]->Y;
+            whiteText->Text = nameData[i]->Text;
+            whiteText->Render();
+        }
     }
 };
