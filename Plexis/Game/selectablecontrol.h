@@ -69,8 +69,8 @@ public:
         this->cursorPosition = gcnew System::Drawing::Point();
 
         // default position
-        this->cursorPosition->X = this->Position.X - cursorSize->Width - sizeOfGapBetweenCursorAndMenuItems;
-        this->cursorPosition->Y = this->Position.Y;
+        this->cursorPosition->X = this->Position->X - cursorSize->Width - sizeOfGapBetweenCursorAndMenuItems;
+        this->cursorPosition->Y = this->Position->Y;
     }
 
     /// <summary>

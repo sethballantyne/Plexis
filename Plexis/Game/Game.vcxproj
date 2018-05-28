@@ -74,6 +74,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="audio.h" />
+    <ClInclude Include="credits.h" />
     <ClInclude Include="imagecontrol.h" />
     <ClInclude Include="versionlabel.h" />
     <ClInclude Include="volumeslider.h" />

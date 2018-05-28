@@ -126,12 +126,12 @@ void EditableLabel::Render()
 {
     try
     {
-        font->Render(position.X, position.Y, text);
+        font->Render(position->X, position->Y, text);
         
-        int x = position.X + (cursorPosition * 17);
+        int x = position->X + (cursorPosition * 17);
         if(editMode)
         {
-            font->Render(x, position.Y, "_");
+            font->Render(x, position->Y, "_");
         }
     }
     catch(...)

@@ -21,6 +21,21 @@
 
 using namespace System::Collections::Generic;
 
+Credits ^SceneFactory::ParseCredits(XElement ^element)
+{
+    try
+    {
+        String ^descFont = XmlHelper::GetAttributeValue(element, "descriptionFont");
+        String ^nameFont = XmlHelper::GetAttributeValue(element, "nameFont");
+
+        return gcnew Credits(nameFont, descFont);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
 Label ^SceneFactory::ParseLabel(XElement ^element)
 {
     try
@@ -349,6 +364,11 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                 {
                     VersionLabel ^versionLabel = ParseVersionLabel(controlElement);
                     newScene->GetControlList()->Add(versionLabel);
+                }
+                else if(typeAttribute == "credits")
+                {
+                    Credits ^credits = ParseCredits(controlElement);
+                    newScene->GetControlList()->Add(credits);
                 }
                 else if(typeAttribute == "menuItemContainer")
                 {

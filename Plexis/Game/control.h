@@ -23,12 +23,12 @@
 public ref class Control abstract
 {
 protected:
-    System::Drawing::Point position;
+    System::Drawing::Point ^position;
 
 public:
     Control(int x, int y)
     {
-        this->position = System::Drawing::Point(x, y);
+        this->position = gcnew System::Drawing::Point(x, y);
     }
 
     Control(System::Drawing::Point location)
@@ -36,14 +36,14 @@ public:
         this->position = location;
     }
 
-    property System::Drawing::Point Position
+    property System::Drawing::Point ^Position
     {
-        System::Drawing::Point get()
+        System::Drawing::Point ^get()
         {
             return this->position;
         }
 
-        void set(System::Drawing::Point value)
+        void set(System::Drawing::Point ^value)
         {
             this->position = value;
         }

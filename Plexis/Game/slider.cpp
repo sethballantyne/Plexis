@@ -75,7 +75,7 @@ Slider::Slider(int x, int y, unsigned int length, int selectedIndex, int minimum
     trackLength = length;
     this->optionsKey = optionsKey;
 
-    cursorPosition->Y = this->position.Y - (cursorSize->Height / 2);
+    cursorPosition->Y = this->position->Y - (cursorSize->Height / 2);
 
     // If the option specified in optionsKey doesn't exist, we want currentValue to default to 0 when 
     // xmlMinimumValue is subtracted from optionsValue further down.
@@ -147,13 +147,13 @@ void Slider::UpdateTrackBox()
     for(int i = 0; i < trackBoxLines->Length; i++)
     {
         // updating the position of the track box before rendering.
-        trackBoxLines[i]->From->X = Position.X + pixelOffset;
+        trackBoxLines[i]->From->X = Position->X + pixelOffset;
         trackBoxLines[i]->To->X = trackBoxLines[i]->From->X;
 
         pixelOffset++;
     }
 
     // the track box shadow.
-    trackLines[trackLines->Length - 1]->From->X = Position.X + (trackBoxLines->Length / 2);
+    trackLines[trackLines->Length - 1]->From->X = Position->X + (trackBoxLines->Length / 2);
     trackLines[trackLines->Length - 1]->To->X = trackLines[trackLines->Length - 1]->From->X;
 }

@@ -29,6 +29,7 @@
 #include "volumeslider.h"
 #include "imagecontrol.h"
 #include "versionlabel.h"
+#include "credits.h"
 
 using namespace System::Xml::Linq;
 
@@ -43,6 +44,13 @@ private:
     {
         LogManager::WriteLine(LogType::Debug, message, args);
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <returns></returns>
+    Credits ^ParseCredits(XElement ^element);
 
     /// <summary>
     /// Parses a control element whose value of its <i>type</i> attribute is <b>volumeSlider</b>.

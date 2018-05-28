@@ -20,6 +20,7 @@
 #include "font.h"
 #include "logmanager.h"
 
+
 /// <summary>
 /// A non-interactive (from the users perspective) string of text that's displayed in a scene.
 /// </summary>
@@ -27,7 +28,7 @@ public ref class Label : public Control
 {
 private:
     // the font used to render the text.
-    Font ^font;
+    ::Font ^font;
 
     // the text that's displayed to the user.
     String ^text;
@@ -71,7 +72,7 @@ public:
     {
         try
         {
-            this->font->Render(this->position.X, this->position.Y, this->text);
+            this->font->Render(this->position->X, this->position->Y, this->text);
         }
         catch(...)
         {
@@ -82,9 +83,9 @@ public:
     /// <summary>
     /// Gets the font used by label to render text.
     /// </summary>
-    property Font ^LabelFont
+    property ::Font ^LabelFont
     {
-        Font ^get()
+        ::Font ^get()
         {
             return this->font;
         }
