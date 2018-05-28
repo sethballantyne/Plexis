@@ -336,7 +336,16 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
         for each(XElement ^sceneElement in sceneQuery)
         {
             String ^id = XmlHelper::GetAttributeValue(sceneElement, "id");
-            bool initialScene = XmlHelper::GetAttributeValueAsBoolean(sceneElement, "initialScene");
+            bool initialScene = false;
+            try
+            {
+                initialScene = XmlHelper::GetAttributeValueAsBoolean(sceneElement, "initialScene");
+            }
+            catch(...)
+            {
+                // the initialScene attribute is optional; failure to parse this attribute just means we use
+                // the initialScene variables default value.
+            }
 
             Scene ^newScene = gcnew Scene(id, initialScene);
 
