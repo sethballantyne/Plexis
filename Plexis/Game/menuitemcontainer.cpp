@@ -16,12 +16,16 @@ void MenuItemContainer::AddControl(SelectableControl ^control)
 
     if(this->items->Count > 1)
     {
+        // de-select the currently selected item. Based on the sort, the 0th element will always
+        // be the item with the lowest selectedIndex value in the xml file. It's not gauranteed
+        // the items in the xml file are in order, so we have to assume we're getting an item
+        // that has a lower selectedIndex value than the current selected item.
+        this->items[0]->IsSelected = false;
+
         this->items->Sort(gcnew Comparison<SelectableControl ^>(SortMethod));
     }
-    else
-    {
-        this->items[0]->IsSelected = true;
-    }
+   
+    this->items[0]->IsSelected = true;
 }
 
 void MenuItemContainer::SelectPreviousControl()
