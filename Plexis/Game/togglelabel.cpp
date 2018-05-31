@@ -57,8 +57,9 @@ ToggleLabel::ToggleLabel(int x, int y, String ^font, String ^trueCaption, String
     this->optionsKey = optionsKey;
     try
     {
-        // set the initial state of the control
-        toggleState = (bool)GameOptions::GetValue(optionsKey, false);
+        //// set the initial state of the control
+        //toggleState = (bool)GameOptions::GetValue(optionsKey, false);
+        //label = gcnew Label(x, y, font, captions[toggleState]);
         label = gcnew Label(x, y, font, captions[toggleState]);
     }
     catch(...)

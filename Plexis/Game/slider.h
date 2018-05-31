@@ -66,6 +66,37 @@ private:
     array<Line ^, 1> ^trackBoxLines = gcnew array<Line ^, 1>(6);
 
     /// <summary>
+    /// Calculates what currentValue should be, based on the range 0 to xmlMaximumValue. 
+    /// </summary>
+    // You'd think it could just read from disk and call it a day, but you'd be wrong.
+    // Externally in the XML, it's possible to specify crazy ranges; xmlMinimumValue could be
+    // 245, xmlMaximumValue could be 300. Internally, however, this is treated as minimum = 0, maximum = 5.
+    // This takes the value stored in the options file and converts it into the internal range used 
+    // by the control.
+    void CalculateCurrentValue()
+    {
+        // If the option specified in optionsKey doesn't exist, we want currentValue to default to 0 when 
+        // xmlMinimumValue is subtracted from optionsValue further down.
+        // xmlMinimumValue is being specified instead of just putting 0 because obviously it's possible
+        // 0 - xmlMinimumValue != 0; if a default value is being assigned to currentValue, it must be 0.
+        int optionValue = GameOptions::GetValue(optionsKey, xmlMinimumValue);
+        if(optionValue < xmlMinimumValue || optionValue > xmlMaximumValue)
+        {
+            // optionsKey refers to a garbage value
+            LogManager::WriteLine(LogType::Debug, "slider.cpp: options key {0} contains a value not within the bounds "
+                "specified by the minimum and maximum XML attributes. Setting the optionKey value to the value specified by "
+                "the minimum XML attribute.", optionsKey);
+
+            // fix the problem so it doesn't happen again (hopefully).
+            optionValue = xmlMinimumValue;
+            GameOptions::SetValue(optionsKey, xmlMinimumValue);
+            GameOptions::Save();
+        }
+
+        currentValue = optionValue - xmlMinimumValue;
+    }
+
+    /// <summary>
     /// Decreases the currentValue by the step amount specified at construction and updates
     /// the value of the controls option key with the new value.
     /// This also causes the controls track box to slide to the left if currentValue
@@ -144,19 +175,8 @@ public:
     /// <param name="sceneArgs"></param>
     void ReceiveSceneArgs(array<Object ^, 1> ^sceneArgs) override
     {
-        /*static bool firstRun = true;
-        try
-        {
-            if(firstRun)
-            {
-                currentValue = GameOptions::GetValue(optionsKey, sliderMinimumValue);
-                firstRun = false;
-            }
-        }
-        catch(...)
-        {
-
-        }*/
+        CalculateCurrentValue();
+        UpdateTrackBox();
     }
 
     /// <summary>
