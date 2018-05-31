@@ -72,12 +72,11 @@ public:
     /// handles arguments passed to the control via its parent scene.
     /// </summary>
     /// <param name="sceneArgs">the argments to pass to the control.</param>
-    /// <remarks>
-    /// a toggle label doesn't require or parse arguments so this does nothing.
-    /// </remarks>
     void ReceiveSceneArgs(array<Object ^, 1> ^sceneArgs) override
     {
-        // this control doesn't take any arguments.
+        // set the initial state of the control
+        toggleState = (bool)GameOptions::GetValue(optionsKey, false);
+        label->Text = captions[toggleState];
     }
 
     /// <summary>
