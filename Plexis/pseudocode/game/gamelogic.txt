@@ -1,0 +1,16 @@
+class GameLogic
+private
+    Level currentLevel
+public
+    function Update(Keys keyboardState, Mouse mouseState)
+        switch(gameState)
+            GameState::NewLevel:
+                currentLevel = LevelFactory->GetNextLevel();
+            break;
+        end switch
+    end function
+
+    function Render()
+      
+    end function
+end class

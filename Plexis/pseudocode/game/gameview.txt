@@ -1,0 +1,38 @@
+enum GameState
+    // level has been loaded and ball is attached to paddle. 
+    // The game is waiting for the player to hit the fire button.
+    Start,     
+
+    // Ball is in motion, not attached to paddle.
+    Playing,
+
+    // Pause key has been pressed, the game is on hold until it's pressed again.
+    Paused
+end enum
+
+class GameView
+private
+   // Entity player
+    //Entity ball
+    //Surface gamePaused
+    //GameState gameState
+
+    //int keyMovePaddleLeft
+    //int keyMovePaddleRight
+    //int keyPause
+    new GameLogic gameLogic
+public
+    function Update(Keys keyboardState, Mouse mouseState)
+        gameLogic->Update(keyboardState, mouseState)
+    end function
+
+    function ReceiveSceneArgs(object[] sceneArgs)
+       -- scene is being made visible; update the input variables
+       -- in case they've been changed in the options menu
+       gameLogic->ReadInputSettings()
+    end function
+
+    function Render()
+       gameLogic->Render()
+    end function
+end class

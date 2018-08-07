@@ -1,0 +1,164 @@
+class Entity : abstract, IEquatable
+private
+    Sprite sprite
+    Vector2D velocity
+    Rectangle boundingBox
+    List<Entity> attachments
+    float speed
+    bool attached
+    string name
+    // UPDATE GETHASHCODE, EQUALS WHEN ADDING/REMOVING VARIABLES
+
+    function UpdatePosition(Entity e, Vector2 newPosition)
+        e->sprite->Position->X += newPosition.X;
+        e->sprite->Position->Y += newPosition.Y;
+        e->BoundingBox->X += newPosition.X;
+        e->BoundingBox->Y += newPosition.Y;
+    end function
+
+public
+    constructor(Sprite sprite, Vector2D velocity, Rectangle boundingBox)
+        if(sprite = nullptr)
+            throw ArgumentNullException("sprite")
+        else if(velocity = nullptr)
+            throw ArgumentNullException("velocity")
+        else if(boundingBox = nullptr)
+            throw ArgumentNullException("boundingBox")
+        end if
+
+        self->sprite = sprite
+        self->velocity = velocity
+        self->boundingBoxes = gcnew List<Rectangle>() { boundingBox }
+    end constructor
+
+    function Attach(Entity entityToAttach, int x, int y)
+        
+        assert(nullptr != attachments, "attachments isn't initialised.")
+
+        if(nullptr = entityToAttach)
+            throw ArgumentNullException("entityToAttach")
+        else if(attachments->Contains(entityToAttach))
+            throw ArgumentException("attaching an entity that's already attached.")
+        end if
+
+        entityToAttach->Velocity := self->Velocity
+        entityToAttach->Sprite->Position->X = x;
+        entityToAttach->Sprite->Position->Y = y;
+
+        self->attachments->Add(entityToAttach)
+        entityToAttach->Attached := true
+    end function
+
+    function UnAttach(Entity entityToUnAttach)
+        assert(nullptr != attachments, "attachments is unitialised.")
+        
+        if(attachments->Remove(entityToUnAttach))
+            entityToUnAttach->Attached := false
+        end if
+        
+    end function
+
+    function Rectangle[] GetBoundingBoxes()
+        return self->boundingBoxes
+    end function
+
+    function Object Clone() override
+        return MemberwiseClone()
+    end function
+
+    function Update() : abstract
+
+    function int GetHashCode() override
+        // bassed on the code provided in Josh Bloch's Effective Java
+        int hash := 7
+
+        hash *= 37 + sprite::GetHashCode()
+        hash *= 37 + velocity::GetHashCode()
+        hash *= 37 + boundingBox::GetHashCode()
+        hash *= 37 + attachments::GetHashCode()
+        hash *= 37 + speed::GetHashCode()
+        hash *= 37 + attached::GetHashCode()
+        hash *= 37 + id::GetHashCode()
+        return hash
+    end function
+
+    function bool Equals(Object obj) override
+        if(nullptr == obj)
+            return false
+        end if
+
+        if(obj->GetType() != GetType())
+            return false
+        end if
+
+        return Equals(safe_cast<Entity>(obj))
+    end function
+    
+    function bool Equals(Entity ^entity) 
+        if(entity->Sprite == sprite && 
+           entity->Velocity == velocity &&
+           entity->BoundingBox == boundingBox && 
+           entity->Attachments == attachments &&
+           entity->Speed == speed &&
+           entity->Attached == attached &&
+           entity->Name == name)
+                return true
+        end if
+
+        return false
+    end function
+
+    function void Move()
+        -- Vector2 newPosition := self->Velocity->Normalise() * self->speed;
+        UpdatePosition(self, newPosition.X, newPosition.Y)
+        
+        if(nullptr != attachments)
+            foreach(Entity e in attachments)
+                UpdatePosition(e, newPosition.X, newPosition.Y)
+            end foreach
+        end if
+    end function
+
+    bool operator != (Entity entity)
+        return !Equals(entity)
+    end operator
+
+    bool operator == (Entity entity)
+        return Equals(entity)
+    end operator
+
+    property ::Sprite Sprite
+        get
+            return self->sprite
+    end property
+
+    property Vector2D Velocity
+        get
+            return velocity
+        set
+            if(value = nullptr)
+                throw ArgumentNullException("value")
+            else
+                self->velocity = value
+            end if
+    end property
+
+    property float Speed 
+        get
+            return speed
+        set 
+            speed := value
+    end property
+
+    property bool Attached
+        get 
+            return attached
+        set
+            attached := value
+    end property
+
+    property string Name
+        get
+            return name
+    end property
+end class

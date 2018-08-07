@@ -1,0 +1,49 @@
+class Sprite
+private
+    Point position
+    Rectangle[] frames
+    Surface image
+    uint currentFrame
+public
+    constructor(int x, int y, Rectangle[] frames, Surface image)
+        if(frames = nullptr)
+            throw ArgumentNullException("frames")
+        else if(image = nullptr)
+            throw ArgumentNullException("image")
+        end if
+
+        self->position := new Point(x, y)
+        self->image := image
+        self->frames = frames
+        currentFrame := 0
+    end constructor
+
+    function Render()
+        try
+            Video::Blit(position, frame[currentFrame], image)
+        catch
+            throw
+        end try
+    end function
+
+    property uint FrameCount
+        get
+            return frames->Length
+    end property
+
+    property uint CurrentFrame
+        get
+            return currentFrame
+    end property
+
+    property Point Position
+        get
+            return position
+        set
+            if(value = nullptr)
+                throw ArgumentNullException("value")
+            else 
+                position := value
+            end if
+    end property
+end class

@@ -1,0 +1,103 @@
+public class EntityFactory : static
+private
+    new List<Entity> parsedEntities;
+    
+    function Rectangle ParseBoundingBox(XElement element, Size imageSize)
+        try
+            int fromX := XmlHelper::GetAttributeValueAsInt32(element, "fromX")
+            int fromY := XmlHelper::GetAttributeValueAsInt32(element, "fromY")
+            string toX   := XmlHelper::GetAttributeValue(element, "toX")
+            string toY   := XmlHelper::GetAttributeValue(element, "toY")
+            int theRealToX := 0
+            int theRealToY := 0
+
+            if("width" = toX->ToLower())
+                theRealToX := imageSize->Width
+            else
+                theRealToX := Convert::ToInt32(toX)
+            end if
+
+            if("height" = toY->ToLower())
+                theRealToY := imageSize->Height
+            else
+                theRealToY := Convert::ToInt32(toY)
+            end if
+            
+            return Rectangle(fromX, fromY, theRealToX, theRealToY)
+        catch
+            throw
+        end try
+    end function
+
+    function ParsePaddle(XElement element)
+        try
+            string name := XmlHelper::GetAttributeValue(element, "name")
+            string image := XmlHelper::GetAttributeValue(element, "image")
+
+            if(self->GetEntity<Paddle>(name) != nullptr)
+                LogManager::WriteLine(LogType::Debug, "A paddle with the name {0} already exists in the entities list; skipping.")
+                return
+            end if
+
+            XElement boundingBoxQuery := element->Element((string)"boundingBox")
+            Size surfaceSize := ResourceManager::GetSurface(name)->Size;
+
+            Rectangle boundingBox := ParseBoundingBox(boundingBoxQuery, surfaceSize);
+
+            return new Paddle(boundingBox, ResourceManager::GetSurface(name))
+        catch
+            throw
+        end try
+    end function
+public
+    -- warnings are not generated if type is being added that has the same name and the same type as
+    -- an existing object; this is by design. 
+    function Read(XElement entitiesFile)
+        try
+            System::Collections::Generic::IEnumerable<XElement> sceneQuery := sceneXML->Elements((string)"entity")
+            
+            if(XmlHelper::Count(sceneQuery) == 0)
+                LogManager::WriteLine(LogType::Debug, "the entities file doesn't contain any entity tags!")
+                return
+            end if
+
+            foreach(XElement e in sceneQuery)
+                string entityType := XmlHelper::GetAttributeValue(e, "name")
+
+                if(entityType = "paddle")
+                    ParsePaddle(e)
+                end if
+
+            end foreach
+        catch
+        end try
+    end function
+
+    -- returns the entity of the specified type and name.
+    generic function <class T> where T : ref class T GetEntity(String name)
+        
+        for(int i := 0; i < entities->Count; i++)
+            if(entities[i]->Name = name && entities[i]->GetType() = T::typeid)
+                return safe_cast<T>(entities[i]->Clone())
+            end if
+        end for
+
+        return T()
+    end function
+
+    -- returns an array of specified type
+    generic function <class T> where T : ref class array<T, 1>^ GetEntities()
+
+        List<T> ^items := new List<T>()
+
+        for(int i := 0; i < entities->Count; i++)
+            if(entities[i]->GetType() == T::typeid)
+                items->Add(safe_cast<T>(entities[i]->Clone()))
+            end if
+        end if
+
+        return items->ToArray()
+
+    end function
+
+end class

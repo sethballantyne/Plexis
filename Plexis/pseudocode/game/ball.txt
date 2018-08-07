@@ -1,0 +1,4 @@
+class Ball : Entity
+public
+
+end class

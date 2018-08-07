@@ -1,0 +1,22 @@
+class Paddle : Entity
+private
+
+public
+    constructor(Rectangle boundingBox, Sprite paddleSprite) 
+        : Entity(paddleSprite, Vector(0, 0), boundingBox)
+        
+    end constructor
+
+    function AttachBall(Ball ball)
+        int entityWidth := entity->Sprite->Surface->Size->Width
+
+        // make the ball look like it's centered
+        int ballX = self->Sprite->Position->X + ((entityWidth / 2) - (ball->Sprite->Surface->Size->Width / 2));
+        int ballY = self->Sprite->Position->Y - ball->Sprite->Surface->Size->Height;
+
+        self->Attach(ball, ballX, ballY);
+    end function
+
+    function Update() override
+    end function
+end class

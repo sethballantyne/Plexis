@@ -1,0 +1,32 @@
+class LevelFactory
+private
+    string[] levels = nullptr;
+    uint currentLevel = 0;
+public
+    constructor LevelFactory(XMLElement xmlLevelList)
+        System::Collections::Generic::IEnumerable<XElement> sceneQuery := sceneXML->Elements((string)"entity")
+        if(XmlHelper::Count(sceneQuery) = 0)
+            throw Exception("no levels to load!");
+        end if
+
+        new List<String ^>() temp
+        foreach(XElement levelElement in sceneQuery)
+            if(levelElement->Value != nullptr)
+                temp->Add(levelElement->Value)
+            end if
+        end foreach
+
+        levels = temp->ToArray()
+    end constructor
+    
+    function Level GetNextLevel()
+        currentLevel++
+
+        if(currentLevel >= levels->Length)
+            currentLevel = 0
+        end if
+
+        LevelReader lr := LevelReader()
+        return Level newLevel = lr.Read(levels[currentLevel]);
+    end function
+end class

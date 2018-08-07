@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<entities>
+    <entity type="paddle" name="defaultPaddle" image="default_paddle">
+        <boundingBoxes>
+            <boundingBox fromX="0" fromY="0" toX="width" toY="height" />
+        </boundingBoxes>
+    </entity>
+</entities>
