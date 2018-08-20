@@ -2,7 +2,7 @@ class Paddle : Entity
 private
 
 public
-    constructor(Rectangle boundingBox, Sprite paddleSprite) 
+    constructor(Sprite paddleSprite, Rectangle boundingBox) 
         : Entity(paddleSprite, Vector(0, 0), boundingBox)
         
     end constructor
@@ -15,6 +15,14 @@ public
         int ballY = self->Sprite->Position->Y - ball->Sprite->Surface->Size->Height;
 
         self->Attach(ball, ballX, ballY);
+    end function
+
+
+    function void ResetPosition()
+        -- put the paddle in the middle of the screens x axis
+        int x := (Video::ScreenWidth / 2) - (self->Sprite->CurrentFrame->Width / 2)
+        
+        self->SetPosition(x, self->Sprite->Position->Y)
     end function
 
     function Update() override

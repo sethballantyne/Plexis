@@ -1,13 +1,58 @@
 class GameLogic
 private
     Level currentLevel
+    Paddle player
+    GameState gameState := GameState::NewLevel
+    string gameInProgressMenu
+    string highScorePrompt
+
+    -- keys that alter the game state and can be pressed, regardless
+    -- of what the current game state is.
+    function HandleGameStateInput(Keys keyboardState, Mouse mouseState)
+        if(keyboardState->KeyPressed(DIK_ESCAPE))
+            gameState := GameState::Paused
+            SceneManager::SetActiveScene(gameInProgressMenu, nullptr)
+        else if(KeyboardState->KeyPressed(DIK_P))
+            if(gameState != GameState::Paused)
+                gameState := GameState::Paused
+            else
+                gameState := GameState::Playing
+            end if
+        end if
+    end function
+
+    -- Input that's only handled when the game isn't paused.
+    function HandleGameInput(Keys keyboardState, Mouse mouseState)
+      
+    end function
 public
+    constructor GameLogic(string gameInProgressMenu, string highScorePrompt)
+        self->gameInProgressMenu
+        self->highScorePrompt
+
+        self->paddle := EntityFactory::GetEntity("defaultPaddle")
+    end constructor
+
     function Update(Keys keyboardState, Mouse mouseState)
         switch(gameState)
             GameState::NewLevel:
                 currentLevel = LevelFactory->GetNextLevel();
+
+                player->ResetPosition()
+                player->AttachBall(ball)
+                gameState := GameStat::Playing
             break;
+
+            GameState::Playing:
+                
+            break:
         end switch
+
+        HandeMenuInput(keyboardState)
+
+        if(GameState != GameState::Paused)
+            HandleGameInput(keyboardState, mouseState)
+        end if
     end function
 
     function Render()

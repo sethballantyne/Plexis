@@ -1,7 +1,11 @@
 enum GameState
     // level has been loaded and ball is attached to paddle. 
     // The game is waiting for the player to hit the fire button.
-    Start,     
+    --Start,     
+
+    -- starting a new game, or the current level has been finished.
+    -- A new level needs to be loaded.
+    NewLevel,
 
     // Ball is in motion, not attached to paddle.
     Playing,
@@ -20,10 +24,11 @@ private
     //int keyMovePaddleLeft
     //int keyMovePaddleRight
     //int keyPause
-    new GameLogic gameLogic
+    GameLogic gameLogic
+
 public
-    constructor GameView(...)
-        
+    constructor GameView(String gameInProgressMenu, String highScorePrompt) : SelectableControl(0, 0, 0, System::Drawing::Size(0, 0))
+        gameLogic := new GameLogic(gameInProgressMenu, highScorePrompt) 
     end constructor
 
     function Update(Keys keyboardState, Mouse mouseState)

@@ -3,7 +3,7 @@ private
     Point position
     Frame[] frames
     Surface image
-    uint currentFrame
+    uint currentFrameIndex := 0
 public
     constructor(int x, int y, Frame[] frames, string image)
         if(frames = nullptr)
@@ -15,7 +15,6 @@ public
         self->position := new Point(x, y)
         self->image := ResourceManager::GetSurface(image)
         self->frames = frames
-        currentFrame := 0
     end constructor
 
     function Render()
@@ -31,11 +30,15 @@ public
             return frames->Length
     end property
 
-    property uint CurrentFrame
+    property uint CurrentFrameIndex
         get
-            return currentFrame
+            return currentFrameIndex
     end property
 
+    propert Frame% CurrentFrame
+        get
+            return self->GetFrames()[currentFrameIndex]
+    prop
     property Point Position
         get
             return position
