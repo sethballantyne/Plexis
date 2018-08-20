@@ -1,0 +1,8 @@
+<!-- with and height are in bricks; using dummy values here as an example. -->
+<level width="30" height="20">
+    <brick id="default_red">
+        <!-- positions within the dimensions specified in width and height.
+             NOT screen positions. x=3 means 3rd brick on x axis, y=3 3rd brick on the y axis. -->
+        <position x="3" y="3" />
+    </brick>
+</level>

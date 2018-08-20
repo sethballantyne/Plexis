@@ -1,8 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <entities>
     <entity type="paddle" name="defaultPaddle" image="default_paddle">
-        <boundingBoxes>
+        <frames>
+            <frame x="0" y="0" width="32" height="32"/>
             <boundingBox fromX="0" fromY="0" toX="width" toY="height" />
-        </boundingBoxes>
+        </frames>
+    </entity>
+    <entity type="brick" name="redBrick" image="red_brick" hitCount="1" chanceOfPowerUp="15" points="50">
+        <frame x="0" y="0" width="41" height="20">
+            <boundingBox x="0" y="0" width="41" height="20"/>
+        </frame>
+    </entity>
+    <entity type="brick" name="greenBrick" image="green_brick" hitCount="1" chanceOfPowerUp="25" points="50">
+        <frames>
+            <frame x="0" y="0" width="32" height="32"/>
+        </frames>
+    </entity>
+    <entity type="brick" name="yellowBrick" image="yellow_brick" hitCount="1" chanceOfPowerUp="35" points="50">
+        <frames>
+            <frame x="0" y="0" width="32" height="32"/>
+        </frames>
+    </entity>
+    <entity type="doubleHitBrick" name="doubleHitBrick" image="double_hit_brick" hitCount="2" chanceOfPowerUp="35" score="100">
+        <frames>
+            <frame x="0" y="0" width="32" height="32"/>
+            <frame x="33" y="0" width="32" height="32"/>
+        </frames>
+    </entity>
+    <entity type="invisibleBrick" name="invisibleBrick" image="invisible_brick" hitCount="2" chanceOfPowerUp="30" score="100">
+        <frames>
+            <frame x="0" y="0" width="32" height="32"/>
+            <frame x="33" y="0" width="32" height="32"/>
+        </frames>
+    </entity>
+    <entity type="brick" name="explosiveBrick" image="explosive_brick" hitCount="1" chanceOfPowerUp="0" score="75">
+        <frames>
+            <frame x="0" y="0" width="32" height="32"/>
+        </frames>
     </entity>
 </entities>

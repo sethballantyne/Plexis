@@ -1,9 +1,49 @@
 class LevelFactory
 private
-    string[] levels = nullptr;
-    uint currentLevel = 0;
+    string[] levels := nullptr;
+    uint currentLevel := 0;
+
+    function Level ReadLevel(string levelFile)
+        XElement levelXML := ResourceManager::GetXML(levelFile)
+        
+        System::Collections::Generic::IEnumerable<XElement> levelQuery := levelXML->Elements((string)"level")
+        if(XmlHelper::Count(levelQuery = 0))
+            throw Exception("Not a valid level XML file.")
+        end if
+
+        -- <level> is the root element, dont' loop like we do everywhere else.
+        XElement element := levelQuery->GetEnumerator()->Current
+        uint levelBricksWide := XMLHelper::GetAttributeValueAsUInt32(element, "width")
+        uint levelBricksHigh := XMLHelper::GetAttributeValueAsUInt32(element, "height")
+
+        Level newLevel(levelBricksWide, levelBricksHigh)
+
+        -- parse each brick type in the level and its associated coordinates
+        System::Collections::Generic::IEnumerable<XElement> brickQuery := levelXML->Elements((string)"brick")
+        if(XmlHelper::Count(brickQuery = 0))
+            throw Exception("No bricks in the level file!")
+        end if
+
+        foreach(XElement brickElement in brickQuery)
+            string brickID := XMLHelper::GetAttributeValue(brickElement, "id")
+            
+            System::Collections::Generic::IEnumerable<XElement> brickPositionQuery := levelXML->Elements((string)"position")
+            foreach(XElement brickPostion in brickPositionQuery)
+                int brickXPosition := XmlHelper::GetAttributeValueAsInt32(brickPosition, "x")
+                int brickYPosition := XmlHelper::GetAttributeValueAsInt32(brickPosition, "y")
+
+                if(brickXPosition < 0 || brickYPosition < 0 || brickXPosition >= levelBricksWide || brickYPosition >= levelBricksHigh)
+                    throw Exception("invalid brick position!")
+                end if
+
+                newLevel->PutBrickAt(brickXPosition, brickYPosition, brickID)
+            end foreach
+        end foreach
+
+        return newLevel
+    end function
 public
-    constructor LevelFactory(XMLElement xmlLevelList)
+    constructor LevelFactory(XElement xmlLevelList)
         System::Collections::Generic::IEnumerable<XElement> sceneQuery := sceneXML->Elements((string)"entity")
         if(XmlHelper::Count(sceneQuery) = 0)
             throw Exception("no levels to load!");
@@ -16,7 +56,11 @@ public
             end if
         end foreach
 
-        levels = temp->ToArray()
+        levels := temp->ToArray()
+
+        -- when GetNextLevel() is called, currentLevel will be set to 0
+        -- and the first level loaded.
+        currentLevel := levels->Length
     end constructor
     
     function Level GetNextLevel()
@@ -26,7 +70,6 @@ public
             currentLevel = 0
         end if
 
-        LevelReader lr := LevelReader()
-        return Level newLevel = lr.Read(levels[currentLevel]);
+        return self->ReadLevel(levels[currentLevel]);
     end function
 end class

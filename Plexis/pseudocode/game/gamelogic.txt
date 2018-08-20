@@ -11,6 +11,6 @@ public
     end function
 
     function Render()
-      
+      currentLevel->Render()
     end function
 end class

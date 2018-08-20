@@ -1,0 +1,23 @@
+class Frame
+Private
+    -- coordinates on the sprite sheet
+    Rectangle frame
+
+    -- the bounding box uses sprite coordinates!
+    Rectangle boundingBox 
+
+Public
+    constructor Frame(Rectangle frame, Rectangle boundingBox)
+        self->frame := frame
+        self->boundingBox := boundingBox
+    end constructor
+
+    property Rectangle% Frame
+        get
+            return frame
+    end property
+
+    property Rectangle% BoundingBox
+        get
+            return boundingBox
+end class

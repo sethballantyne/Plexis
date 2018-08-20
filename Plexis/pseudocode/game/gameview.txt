@@ -22,6 +22,10 @@ private
     //int keyPause
     new GameLogic gameLogic
 public
+    constructor GameView(...)
+        
+    end constructor
+
     function Update(Keys keyboardState, Mouse mouseState)
         gameLogic->Update(keyboardState, mouseState)
     end function

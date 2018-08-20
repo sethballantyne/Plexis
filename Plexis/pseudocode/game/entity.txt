@@ -2,7 +2,6 @@ class Entity : abstract, IEquatable
 private
     Sprite sprite
     Vector2D velocity
-    Rectangle boundingBox
     List<Entity> attachments
     float speed
     bool attached
@@ -17,18 +16,14 @@ private
     end function
 
 public
-    constructor(Sprite sprite, Vector2D velocity, Rectangle boundingBox)
+    constructor(Sprite sprite, Vector2D velocity)
         if(sprite = nullptr)
             throw ArgumentNullException("sprite")
         else if(velocity = nullptr)
             throw ArgumentNullException("velocity")
-        else if(boundingBox = nullptr)
-            throw ArgumentNullException("boundingBox")
-        end if
 
         self->sprite = sprite
         self->velocity = velocity
-        self->boundingBoxes = gcnew List<Rectangle>() { boundingBox }
     end constructor
 
     function Attach(Entity entityToAttach, int x, int y)
@@ -58,8 +53,8 @@ public
         
     end function
 
-    function Rectangle[] GetBoundingBoxes()
-        return self->boundingBoxes
+    function Frame[] GetFrames()
+        return self->frames
     end function
 
     function Object Clone() override
@@ -74,7 +69,6 @@ public
 
         hash *= 37 + sprite::GetHashCode()
         hash *= 37 + velocity::GetHashCode()
-        hash *= 37 + boundingBox::GetHashCode()
         hash *= 37 + attachments::GetHashCode()
         hash *= 37 + speed::GetHashCode()
         hash *= 37 + attached::GetHashCode()
@@ -97,7 +91,6 @@ public
     function bool Equals(Entity ^entity) 
         if(entity->Sprite == sprite && 
            entity->Velocity == velocity &&
-           entity->BoundingBox == boundingBox && 
            entity->Attachments == attachments &&
            entity->Speed == speed &&
            entity->Attached == attached &&

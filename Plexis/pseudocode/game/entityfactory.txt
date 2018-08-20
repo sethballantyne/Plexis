@@ -1,7 +1,8 @@
 public class EntityFactory : static
 private
-    new List<Entity> parsedEntities;
-    
+    --new List<Entity> parsedEntities;
+    new Dictionary<String, Entity> parsedEntities;
+
     function Rectangle ParseBoundingBox(XElement element, Size imageSize)
         try
             int fromX := XmlHelper::GetAttributeValueAsInt32(element, "fromX")
@@ -29,6 +30,29 @@ private
         end try
     end function
 
+    function Frame ParseFrame(XElement frame)
+        Rectangle frame
+        Rectangle boundingBox
+            
+        frame.X := XmlHelper::GetAttributeValueAsInt32(frame, "x")
+        frame.Y := XmlHelper::GetAttributeValueAsInt32(frame, "y")
+        frame.Height := XmlHelper::GetAttributeValueAsInt32(frame, "width")
+        frame.Width := XmlHelpe::GetAttributeValueAsInt32(frame, "height")
+
+        XElement boundingBoxElement := frame->Element((string)"boundingBox")
+        if(boundingBox != nullptr)
+            boundingBox.X := XmlHelper::GetAttributeValueAsInt32(boundingBoxElement, "x")
+            boundingBox.Y := XmlHelper::GetAttributeValueAsInt32(boundingBoxElement, "y")
+            boundingBox.Width := XmlHelper::GetAttributeValueAsInt32(boundingBoxElement, "width")
+            boundingBox.Height := XmlHelper::GetAttributeValueAsInt32(boundingBoxElement, "height")
+        end if
+
+        return new Frame(frame, boundingBox)
+    end function
+
+    -------------------------------------------
+    -- OUT OF DATE! 
+    -------------------------------------------
     function ParsePaddle(XElement element)
         try
             string name := XmlHelper::GetAttributeValue(element, "name")
@@ -44,13 +68,44 @@ private
 
             Rectangle boundingBox := ParseBoundingBox(boundingBoxQuery, surfaceSize);
 
-            return new Paddle(boundingBox, ResourceManager::GetSurface(name))
+            -- 
+            -- INCORRECTLY USING NAME. 
+            -- BOUNDINGBOXES ARE NOW PART OF SPRITE
+            Paddle paddle(boundingBox, ResourceManager::GetSurface(name))
+
+            parsedEntities[name] := paddle
         catch
             throw
         end try
     end function
+
+    function Brick ParseBrick(XElement element)
+        string name := XmlHelper::GetAttributeValue(element, "name")
+        string image := XmlHelper::GetAttributeValue(element, "image")
+        uint hitCount := XmlHelper::GetAttributeValueAsUint32(element, "hitCount")
+        uint chanceOfPowerUp := XmlHelper::GetAttributeValueAsUint32(element, "chanceOfPowerUp")
+        uint points := XmlHelper::GetAttributeValueAsUint32(element, "points")
+
+        System::Collections::Generic::IEnumerable<XElement> frameQuery := sceneXML->Elements((string)"frame")
+        if(XmlHelper::Count(frameQuery) == 0)
+            throw Exception("No frames specified for {0}", name)
+        end if
+
+        List<Frame> frames
+        foreach(XElement frame in frameQuery)
+            frames->Add(ParseFrame(frame))
+        end foreach
+
+        Sprite brickSprite(0, 0, frames->ToArray(), image)
+
+        -- bricks are stationary
+        Vector2D velocity()
+        Brick brick(brickSprite, velocity, hitCount, chanceOfPowerUp, points)
+        parsedEntities[name] := brick
+    end function
+
 public
-    -- warnings are not generated if type is being added that has the same name and the same type as
+    -- warnings are not generated if a type is being added that has the same name and the same type as
     -- an existing object; this is by design. 
     function Read(XElement entitiesFile)
         try
@@ -66,38 +121,43 @@ public
 
                 if(entityType = "paddle")
                     ParsePaddle(e)
+                else if(entityType = "brick")
+                    ParseBrick(e)
                 end if
-
             end foreach
         catch
         end try
     end function
 
     -- returns the entity of the specified type and name.
-    generic function <class T> where T : ref class T GetEntity(String name)
+    --generic function <class T> where T : ref class T GetEntity(String name)
         
-        for(int i := 0; i < entities->Count; i++)
-            if(entities[i]->Name = name && entities[i]->GetType() = T::typeid)
-                return safe_cast<T>(entities[i]->Clone())
-            end if
-        end for
+     --   for(int i := 0; i < entities->Count; i++)
+     --       if(entities[i]->Name = name && entities[i]->GetType() = T::typeid)
+     --           return safe_cast<T>(entities[i]->Clone())
+     --       end if
+     --   end for
 
         return T()
     end function
 
+    function Entity GetEntity(String name)
+        return parsedEntities[name]->Clone()
+    end funtion
+
     -- returns an array of specified type
-    generic function <class T> where T : ref class array<T, 1>^ GetEntities()
+    --generic function <class T> where T : ref class array<T, 1>^ GetEntities()
 
-        List<T> ^items := new List<T>()
+    --    List<T> ^items := new List<T>()
 
-        for(int i := 0; i < entities->Count; i++)
-            if(entities[i]->GetType() == T::typeid)
-                items->Add(safe_cast<T>(entities[i]->Clone()))
-            end if
-        end if
+     --   for(int i := 0; i < entities->Count; i++)
+     --       if(entities[i]->GetType() == T::typeid)
+     --           items->Add(safe_cast<T>(entities[i]->Clone()))
+     --       end if
+     --  end if
 
-        return items->ToArray()
+     --   return items->ToArray()
 
-    end function
+    --end function
 
 end class

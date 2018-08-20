@@ -1,11 +1,11 @@
 class Sprite
 private
     Point position
-    Rectangle[] frames
+    Frame[] frames
     Surface image
     uint currentFrame
 public
-    constructor(int x, int y, Rectangle[] frames, Surface image)
+    constructor(int x, int y, Frame[] frames, string image)
         if(frames = nullptr)
             throw ArgumentNullException("frames")
         else if(image = nullptr)
@@ -13,14 +13,14 @@ public
         end if
 
         self->position := new Point(x, y)
-        self->image := image
+        self->image := ResourceManager::GetSurface(image)
         self->frames = frames
         currentFrame := 0
     end constructor
 
     function Render()
         try
-            Video::Blit(position, frame[currentFrame], image)
+            Video::Blit(position, frames[currentFrame].Frame, image)
         catch
             throw
         end try
@@ -46,4 +46,8 @@ public
                 position := value
             end if
     end property
+
+    function Frames[] GetFrames()
+        return frames
+    end function
 end class

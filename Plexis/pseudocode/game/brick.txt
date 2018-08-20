@@ -1,0 +1,29 @@
+class Brick inherits Entity
+Private
+    uint numberOfHitsToDestroyBrick := 0
+    uint chanceOfPowerUpSpawning := 0
+    uint pointsAwardedOnDeath := 0
+
+Public
+    constructor Brick(Sprite sprite, Vector2D velocity, uint numberOfHits, uint chanceOfPowerUpSpawning, uint pointsAwarded) :
+                    Entity(sprite, velocity)
+        this->numberOfHitsToDestroyBrick := numberOfHits
+        this->chanceOfPowerUpSpawning := chanceOfPowerUpSpawning
+        this->pointsAwardedOnDeath := pointsAwarded
+    end constructor
+
+    property uint HitCount
+        get
+            return numberOfHitsToDestroyBrick := 0
+    end property
+
+    property uint PowerUpSpawnPercentage
+        get
+            return chanceOfPowerUpSpawning
+    end property
+
+    property uint PointValue
+        get
+            return pointsAwardedOnDeath
+    property
+end class

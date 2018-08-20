@@ -1,0 +1,26 @@
+class Level
+Private
+    Brick[] level
+Public
+    constructor Level(uint width, uint height)
+        level = new Brick[width][height]
+
+        level->Clear(level, nullptr, level->Length)
+    end constructor
+
+    function PutBrickAt(uint x, int y, string brickName)
+        level[x,y] := EntityFactory::GetEntity(brickName))
+    end function
+
+    function Brick GetBrickAt(uint x, uint y)
+            return level[x,y]
+    end function
+
+    function void Render()
+        for(int i := 0; i < level->GetLength(0); i++)
+            for(int j := 0; j < level->GetLength(1); j++)
+                level[i,j]->Sprite->Render()
+            end for
+        end for
+    end function
+end class
