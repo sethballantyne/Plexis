@@ -19,7 +19,7 @@
 #include "level.h"
 
 /// <summary>
-/// 
+/// Used to retrieve levels during gameplay.
 /// </summary>
 public ref class LevelManager abstract sealed
 {
@@ -31,22 +31,32 @@ private:
     static unsigned int currentLevel = 0;
 
     /// <summary>
-    /// 
+    /// Generates the specified level.
     /// </summary>
-    /// <param name="levelFile"></param>
-    /// <returns></returns>
+    /// <param name="levelFile">the name of the level to generate.</param>
+    /// <returns>A <see cref="Level"/> instance containing the specified level.</returns>
+    /// <exception cref="System::FormatException">An attribute was supposed to have a numeric value but instead contains a non-numeric value.</exception>
+    /// <exception cref="System::OverflowException">An attribute was contains a numeric value that's outside its types range.</exception>
+    /// <exception cref="System::Xml::XmlException">A required attribute is missing, or the value of an 
+    /// attribute evaluates to String::Empty, or the specified coordinate for a brick is outside the bounds 
+    /// specified by the levels <c>width</c> and <c>height</c> attributes.</exception>
     static Level ^ReadLevel(String ^levelFile);
 public:
     /// <summary>
-    /// 
+    /// Parses the XML containing the names of each level to played in the game.
     /// </summary>
-    /// <param name="xmlLevelList"></param>
+    /// <param name="xmlLevelList">The XML containing the level names.</param>
     static void Initialise(XElement ^xmlLevelList);
 
     /// <summary>
-    /// 
+    /// Retrieves the next the level to played after the current one.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A <see cref="Level"/> instance containing the next level to be played.</returns>
+    /// <exception cref="System::FormatException">An attribute in the levels XML is supposed to contain a numeric value but it's non-numeric.</exception>
+    /// <exception cref="System::OverflowException">An attribute in the levels XML contains a numeric value that exceeds the bounds of the type it's being converted to.</exception>
+    /// <exception cref="System::Xml::XmlException">A required attribute is missing, or the value of an 
+    /// attribute evaluates to String::Empty, or the specified coordinate for a brick is outside the bounds 
+    /// specified by the levels <c>width</c> and <c>height</c> attributes.</exception>
     static Level ^GetNextLevel()
     {
         currentLevel++;
@@ -56,6 +66,13 @@ public:
             currentLevel = 0;
         }
 
-        return ReadLevel(levels[currentLevel]);
+        try
+        {
+            return ReadLevel(levels[currentLevel]);
+        }
+        catch(...)
+        {
+            throw;
+        }
     }
 };
