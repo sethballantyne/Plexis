@@ -30,6 +30,7 @@ private:
     static System::Collections::Generic::Dictionary<String ^, Entity ^> parsedEntities;
 
     /// <summary>
+    /// Parses a &gt;frame&lt; element.
     /// </summary>
     /// <param name="frameElement">The element to parse.</param>
     /// <returns>An instance of <see cref="Frame"/> based on the elements parsed attributes.</returns>
