@@ -31,7 +31,7 @@ public:
     /// <param name="x">the controls screen coordinate on the x axis.</param>
     /// <param name="y">the controls screen coordinate on the y axis.</param>
     /// <param name="length">the length of the controls track, in pixels.</param>
-    /// <param name="selectedIndex"the controls position in the control list.></param>
+    /// <param name="selectedIndex">the controls position in the control list.></param>
     /// <param name="minimum">the lower bound value.</param>
     /// <param name="maximum">the upper bound value.</param>
     /// <param name="step">the amount the sliders value increases by when moving to the right, or decreases when moving to the left.</param>

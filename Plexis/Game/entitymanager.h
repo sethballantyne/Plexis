@@ -30,7 +30,7 @@ private:
     static System::Collections::Generic::Dictionary<String ^, Entity ^> parsedEntities;
 
     /// <summary>
-    /// Parses a &gt;frame&lt; element.
+    /// Parses a &lt;frame&gt; element.
     /// </summary>
     /// <param name="frameElement">The element to parse.</param>
     /// <returns>An instance of <see cref="Frame"/> based on the elements parsed attributes.</returns>
@@ -40,7 +40,7 @@ private:
     static Frame ^ParseFrame(XElement ^frameElement);
    
     /// <summary>
-    /// Parses a &gt;entity&lt; element whose <c>name</c> attribute is "brick".
+    /// Parses a &lt;entity&gt; element whose <c>name</c> attribute is "brick".
     /// </summary>
     /// <param name="brickElement">The element to parse.</param>
     /// <returns>An instance of <see cref="Brick"/> based on the elements parsed attributes.</returns>

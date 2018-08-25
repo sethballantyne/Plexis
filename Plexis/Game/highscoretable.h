@@ -51,7 +51,7 @@ public:
     ///  or <i>scoreFont</i> is <b>null</b>.
     /// </exception>
     /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>,
-    ///  or <i>playerNameFont</i>, or <i>scoreFont/i> doesn't exist within the resource manager.
+    ///  or <i>playerNameFont</i>, or <i>scoreFont</i> doesn't exist within the resource manager.
     /// </exception>
     /// <remarks>When HighScoreTable calculates the spacing between rows, it uses the height of the font specified in <i>rowNumberFont</i>
     /// and assumes the fonts specified in <i>playerNameFont</i> and <i>scoreFont</i> are the same height. If the heights
