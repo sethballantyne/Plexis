@@ -365,6 +365,46 @@ public:
     static void Blit(System::Drawing::Rectangle sourceRect, System::Drawing::Rectangle destinationRect, Surface ^surface);
 
     /// <summary>
+    /// Draws the specified surface to the backbuffer at the specified location.
+    /// Surfaces can use the system-wide colour key for the blit mask.
+    /// </summary>
+    /// <param name="sourceRect">specifies which section of <i>surface</i> to blit to the backbuffer.</param>
+    /// <param name="destination">where on the backbuffer the image should be drawn to.</param>
+    /// <param name="surface">the surface that contains the data to be drawn.</param>
+    /// <exception cref="System::Runtime::InteropServices::COMException">An unspecified COM error was returned.</exception>
+    /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+    /// <exception cref="DirectDrawInvalidClipListException">DirectDraw does not support the provided clip list.</exception>
+    /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+    /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+    /// <exception cref="DirectDrawInvalidRectException">the rectangle coordinates used by the surface were invalid.</exception>
+    /// <exception cref="DirectDrawNoAlphaHardwareException">no alpha acceleration hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoBlitHardwareException">no blitter hardware is present.</exception>
+    /// <exception cref="DirectDrawNoClipListException">no clip list is available.</exception>
+    /// <exception cref="DirectDrawNoDDRasterOperationHardwareException">no DirectDraw raster operation (ROP) hardware is available.</exception>
+    /// <exception cref="DirectDrawNoMirrorHardwareException">the operation cannot be carried out because no mirroring hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRasterOperationHardwareException">the operation cannot be carried out because no appropriate raster operation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoRotationHardwareException">the operation cannot be carried out because no rotation hardware is present or available.</exception>
+    /// <exception cref="DirectDrawNoStretchHardwareException">the operation cannot be carried out because there is no hardware support for stretching.</exception>
+    /// <exception cref="DirectDrawNoZBufferHardwareException">the operation cannot be carried out because there is no hardware support for Z-buffers.</exception>
+    /// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+    /// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+    /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
+    /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+    static void Blit(System::Drawing::Rectangle sourceRect, System::Drawing::Point destination, Surface ^surface)
+    {
+        try
+        {
+            System::Drawing::Rectangle destRect(destination.X, destination.Y, sourceRect.Width, sourceRect.Height);
+
+            Blit(sourceRect, destRect, surface);
+        }
+        catch(...)
+        {
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Attempts to restore the primary and secondary buffers. Video::Restore() should only be called when a Video function
     /// throws DirectDrawSurfaceLostException. If the method fails, DirectDraw has to be shutdown and reinitialised.
     /// </summary>

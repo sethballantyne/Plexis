@@ -27,6 +27,8 @@
 #include "resourcemanager.h"
 #include "highscores.h"
 #include "scenemanager.h"
+#include "entitymanager.h"
+#include "levelmanager.h"
 
 void Game::RestoreSurfaces()
 {
@@ -91,12 +93,19 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
         LogManager::WriteLine(LogType::Log, "Loading resources");
         ResourceManager::LoadResources();
+        ResourceManager::UpdateVolume(GameOptions::GetValue("soundVolume", 50));
 
         LogManager::WriteLine(LogType::Log, "loading high scores");
         HighScores::Initialise("highscores.dat");
 
         LogManager::WriteLine(LogType::Log, "loading scenes");
         SceneManager::Initialise(ResourceManager::GetXML("scenes"));
+
+        LogManager::WriteLine(LogType::Log, "loading entities.");
+        EntityManager::Initialise(ResourceManager::GetXML("entities"));
+
+        LogManager::WriteLine(LogType::Log, "loading levels list.");
+        LevelManager::Initialise(ResourceManager::GetXML("levels"));
     }
     catch(...)
     {
@@ -109,6 +118,7 @@ void Game::Render()
     try
     {
         Video::Clear(System::Drawing::Color::Black);
+        //Video::Blit(0, 0, ResourceManager::GetSurface("green_font"));
         SceneManager::CurrentScene->Render();
         Video::Flip();
     }
@@ -164,10 +174,10 @@ void Game::Update()
         Keys ^keyboardState = Input::ReadKeyboard();
         Mouse ^mouseState;
 
-        if(GameOptions::GetValue("mouseMovesPaddle", false))
+        /*if(GameOptions::GetValue("mouseMovesPaddle", false))
         {
             mouseState = Input::ReadMouse();
-        }
+        }*/
 
         SceneManager::CurrentScene->Update(keyboardState, mouseState);
 
