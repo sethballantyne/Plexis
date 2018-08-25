@@ -20,7 +20,8 @@
 #include "xmlhelper.h"
 
 /// <summary>
-/// 
+/// Acts a pool for each entity parsed from entities.xml. 
+/// Calling GetEntity() performs a deep clone of the specified entity for use during gameplay.
 /// </summary>
 public ref class EntityManager abstract sealed
 {
@@ -29,31 +30,41 @@ private:
     static System::Collections::Generic::Dictionary<String ^, Entity ^> parsedEntities;
 
     /// <summary>
-    /// 
     /// </summary>
-    /// <param name="frameElement"></param>
-    /// <returns></returns>
+    /// <param name="frameElement">The element to parse.</param>
+    /// <returns>An instance of <see cref="Frame"/> based on the elements parsed attributes.</returns>
+    /// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+    /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+    /// <exception cref="System::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
     static Frame ^ParseFrame(XElement ^frameElement);
    
     /// <summary>
-    /// 
+    /// Parses a &gt;entity&lt; element whose <c>name</c> attribute is "brick".
     /// </summary>
-    /// <param name="brickElement"></param>
-    /// <returns></returns>
+    /// <param name="brickElement">The element to parse.</param>
+    /// <returns>An instance of <see cref="Brick"/> based on the elements parsed attributes.</returns>
+    /// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+    /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+    /// <exception cref="System::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
     static void ParseBrick(XElement ^brickElement);
 
 public:
     /// <summary>
-    /// 
+    /// Parses the XML containing entity information, creating instances of each entity which can 
+    /// then be requested during gameplay.
     /// </summary>
-    /// <param name="entitiesFile"></param>
+    /// <param name="entitiesFile">The XML contents of the file containing entity information.</param>
+    /// <exception cref="System::FormatException">An attribute belonging to an element contains an invalid value.</exception>
+    /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+    /// <exception cref="System::XmlException">A required attribute is missing from an element, or the value of the attribute evaluates to String::Empty.</exception>
     static void Initialise(XElement ^entitiesFile);
 
     /// <summary>
-    /// 
+    /// Returns the specified entity as a deep clone of the copy stored in the entity pool.
     /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
+    /// <param name="name">The name of the entity to return.</param>
+    /// <returns>A deep cloned instance of the entity with the specified name, 
+    /// or <b>nullptr</b> if the desired entity doesn't exist within the entity pool.</returns>
     generic <class T> where T : ref class T static GetEntity(String ^name)
     {
         try
