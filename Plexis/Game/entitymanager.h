@@ -36,7 +36,7 @@ private:
     /// <returns>An instance of <see cref="Frame"/> based on the elements parsed attributes.</returns>
     /// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
     /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
-    /// <exception cref="System::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+    /// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
     static Frame ^ParseFrame(XElement ^frameElement);
    
     /// <summary>
@@ -46,7 +46,7 @@ private:
     /// <returns>An instance of <see cref="Brick"/> based on the elements parsed attributes.</returns>
     /// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
     /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
-    /// <exception cref="System::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+    /// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
     static void ParseBrick(XElement ^brickElement);
 
 public:
@@ -57,7 +57,7 @@ public:
     /// <param name="entitiesFile">The XML contents of the file containing entity information.</param>
     /// <exception cref="System::FormatException">An attribute belonging to an element contains an invalid value.</exception>
     /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
-    /// <exception cref="System::XmlException">A required attribute is missing from an element, or the value of the attribute evaluates to String::Empty.</exception>
+    /// <exception cref="System::Xml::XmlException">A required attribute is missing from an element, or the value of the attribute evaluates to String::Empty.</exception>
     static void Initialise(XElement ^entitiesFile);
 
     /// <summary>
