@@ -1,0 +1,73 @@
+class EditorLogic
+Private
+	
+Public
+	function LoadXMLData()
+
+	end function
+
+	function SetGUIState(GuiState state)
+		switch(state)
+			GuiState::Default
+			    -----------------------------------------
+				-- FILE MENU
+				-----------------------------------------
+				saveLevelToolStripButton.Enabled := false
+				saveToolStripMenuItem.Enabled := false
+				saveAsToolStripMenuItem.Enabled := false
+
+				previewLevelToolStripButton.Enabled := false
+				previewToolStripMenuItem.Enabled := false
+
+				------------------------------------------
+				-- EDIT MENU
+				------------------------------------------
+				undoToolStripMenuItem.Enabled := false
+				undoToolStripButton.Enabled := false
+				redoToolStripMenuItem.Enabled := false
+				redoToolStripButton.Enabled := false
+
+				-------------------------------------------
+				-- VIEW MENU
+				-------------------------------------------
+				toggleGridToolStripButton.Enabled := false
+				toggleGridToolStripMenuItem.Enabled := false
+
+				-------------------------------------------
+				-- TOOLS MENU
+				-------------------------------------------
+				eraserToolStripMenuItem.Enabled := false
+				eraserToolStripButton.Enabled := false
+
+				brushToolStripMenuItem.Enabled := false
+				brushToolStripButton.Enabled := false
+
+			GuiState::Editing
+				-----------------------------------------
+				-- FILE MENU
+				-----------------------------------------
+				saveLevelToolStripButton.Enabled := true
+				saveToolStripMenuItem.Enabled := true
+				saveAsToolStripMenuItem.Enabled := true
+
+				previewLevelToolStripButton.Enabled := true
+				previewToolStripMenuItem.Enabled := true
+
+				-------------------------------------------
+				-- VIEW MENU
+				-------------------------------------------
+				toggleGridToolStripButton.Enabled := true
+				toggleGridToolStripMenuItem.Enabled := true
+
+				-------------------------------------------
+				-- TOOLS MENU
+				-------------------------------------------
+				eraserToolStripMenuItem.Enabled := true
+				eraserToolStripButton.Enabled := true
+
+				brushToolStripMenuItem.Enabled := true
+				brushToolStripButton.Enabled := true
+		end switch
+
+	end function
+end class

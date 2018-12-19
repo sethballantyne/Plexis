@@ -1,0 +1,62 @@
+private class XML
+Private
+
+    -----------------------------------------------------------------------------------------
+	-- Loads the paths specified in the provided XML, storing them in pathList.
+	-- Only meant to be used by LoadPaths().
+	-- Exceptions:
+	-- System::FormatException: the value for a parsed includeSubDirectories attribute is not "true" or "false".
+	-----------------------------------------------------------------------------------------
+	function LoadPathElements(IEnumerable<XElement> elementCollection, ref List<Path> pathList)
+		foreach(xmlPathNode in elementCollection)
+			Path resourcePath
+			XAttribute bitmapAttribute := xmlPathNode->Attribute("includeSubDirectories")
+			if(bitmapAttribute != null)
+				try
+					resourcePath->includeSubDirectories := Convert::ToBoolean(bitmapAttribute.Value)
+					resourcePath->path := xmlPathNode->Value
+					pathList->Add(resourcePath)
+				catch
+					throw
+			end if
+		end foreach
+	end function
+
+Public
+    -----------------------------------------------------------------------------------------
+	-- Retrieves the paths for the required XML and bitmap resources used by the editor.
+	-- Exceptions:
+	-- System::ArgumentNullException: filename is null.
+	-- System::ArgumentException: filename evaluates to String::Empty.
+	-- System::FormatException: the value for a parsed includeSubDirectories attribute is not "true" or "false".
+	function Paths LoadPaths(string filename)
+		new List<Path> xmlPaths
+		new List<Path> bitmapPaths
+
+		XElement xmlFile := XElement->Load(filename)
+		if(filename = null)
+			throw gcnew System::ArgumentNullException("filename")
+		else if(filename = String::Empty)
+			throw gcnew System::ArgumentException("filename")
+		end if
+
+		IEnumerable<XElement> pathData := xmlFile.Descendants()
+		
+		foreach(node in pathData)
+			XAttribute attribute := node->Attribute("type")
+			if(attrib != nullptr && attribute.Value = "xml")
+				IEnumerable<XElement> xmlPathData := node->Descendants()
+				LoadPathElements("xml", xmlPathData, xmlPaths)
+
+			else if(attribute != nullptr && attribute.Value = "bitmaps")
+				IEnumerable<XElement> xmlPathData := node->Descendants()
+				LoadPathElements("bitmaps", xmlPathData, bitmapPaths)
+				
+			end if
+		end foreach
+
+			Paths paths
+			paths->xmlPaths := xmlPaths->ToArray()
+			paths->bitmapPaths := bitmapPaths->ToArray()
+	end function
+end class
