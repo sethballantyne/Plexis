@@ -59,4 +59,36 @@ Public
 			paths->xmlPaths := xmlPaths->ToArray()
 			paths->bitmapPaths := bitmapPaths->ToArray()
 	end function
+
+
+	function Bricks[] ReadBrickData(string path)
+		if(path = null)
+			throw ArgumentNullException("path")
+		else if(path = String::Empty)
+			throw ArgumentException("path")
+		end if
+
+		XElement entitiesFile := XElement->Load(path)
+		
+		IEnumerable<XElement> entitiesData := xmlFile.Descendants()
+
+		new List<Brick> bricks
+		foreach(node in entitiesData)
+			XAttribute attribute := node->Attribute("type")
+
+			if(attrib != nullptr && attribute.Value = "brick")
+				string brickName := ReadAttribute("name")
+				string brickSpriteSheet := ReadAttribute("image")
+
+				XElement firstFrameElement := node.Element("frame")
+				if(firstFrameElement = nullptr)
+					-- error, frame elements missing
+				end if
+
+				bricks->Add(new Brick(brickName, imageName, frameX, frameY, frameWidth, frameHeight))
+			end if
+		end foreach
+
+		return bricks->ToArray()
+	end function
 end class

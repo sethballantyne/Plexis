@@ -1,9 +1,61 @@
 class EditorLogic
 Private
-	
+	-- holds brick information read from entities.xml
+	Bricks[] bricks
+
 Public
 	function LoadXMLData()
+		-----------------------------------------------------------------
+		-- First step: attempt load paths.xml.
+		-- this file contains the locations of the resources
+		-- used by the game. We need to access some of the games
+		-- XML files and bitmap resources (the bricks)
+		-- in order for the editor to do its job. The game is designed
+		-- so certain XML and bitmap resources don't have to be in a 
+		-- hardcoded, fixed location.
+		-----------------------------------------------------------------
+		Paths paths := XML::LoadPaths("paths.xml")
 
+		if(paths->XMLPaths->Length = 0)
+			-- throw exception
+		end if
+
+		-- enumerate all the locations we'll be searching for bitmaps.
+		-- it's possible to set an attribute in the XML that specifies
+		-- that the provided path and all its subdirectories should be included
+		-- when searching for resources, so we have to factor this in.
+		new List<string> dictionaryList
+
+		foreach(string directory in paths->BitmapPaths)
+		-- it's possible to add multiple entries of the same directory, fix if there's time.
+			directory.Add(directory);
+
+			if(directory->includeSubDirectories)
+				IEnumerable<string> enumeratedDirectories := Directory.EnumerateDirectories(directory)
+				if(enumeratedDirectories != null)
+					dictionarylist->AddRange(enumeratedDirectories)
+				end if
+			end if
+		end foreach
+		-----------------------------------------------------------------
+		-- Next step: we've located where the XML files are stored.
+		-- Now we need to open entities.xml, which contains all the configuration
+		-- data for the games assets. We're only interested in the bricks.
+		------------------------------------------------------------------
+		this->bricks := ReadBrickData(absolutePath)
+
+		-- configuration information for the bricks has been read.
+		-- Now attempt to load the first frame of each brick so it
+		-- can be displayed in the editor. 
+		for(int i = 0, i < bricks->Length, bricks++)
+			foreach(string directory in directoryList)
+				string path := directory + brick->spriteSheet
+				if(File.Exists(path))
+					this->bricks[i]->spriteSheet := new Bitmap(path)
+					break
+				end if
+			end foreach
+		end for
 	end function
 
 	function SetGUIState(GuiState state)
