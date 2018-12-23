@@ -1,6 +1,35 @@
 private class XML
 Private
 
+	function string GetAttributeValue(XElement element, String attribute)
+		-- rip from XMLHelper
+	end function
+
+	function int GetAttributeValueAsInt32(XElement element, string attribute)
+		-- rip from XMLHelper
+	end function
+
+	function int BrickExists(Brick[] bricks)
+		for(int i := 0, i < bricks->Length, i++)
+			if(bricks[i]->name = brickName)
+				return i
+		end for
+
+		return -1
+	end function
+
+	function Point[][] OrderBricksByType(Level level, bricks[] bricks)
+		new List<List<Point>> temp
+
+		for(int i := 0, i < level->Width, i++)
+			for(int y := 0, y < level->Height, y++)
+				int index := level->GetArray()[i,y]
+				temp[index]->Add(new Point(i, y))
+			end for
+		end for
+		
+		return temp->Select(Korn := Korn->ToArray()).ToArray()
+	end function
     -----------------------------------------------------------------------------------------
 	-- Loads the paths specified in the provided XML, storing them in pathList.
 	-- Only meant to be used by LoadPaths().
@@ -90,5 +119,79 @@ Public
 		end foreach
 
 		return bricks->ToArray()
+	end function
+
+	function Level ReadLevel(string path, Brick[] bricks)
+		if(path = null)
+			throw ArgumentNullException("path")
+		else if(path = String::Empty)
+			throw ArgumentException("path")
+		end if
+
+		XElement levelFile := XElement->Load(path)
+		
+		int width := GetAttributeAsInt32(levelFile, "width")
+		int height := GetAttributeAsInt32(levelFile, "height")
+		
+		new Level level(width, height)
+
+		IEnumerable<XElement> brickNodes := levelFile->Descendants()
+		foreach(XElement brickElement in brickNodes)
+			string brickName := GetAttribute(brickElement, "name")
+			int index = BrickExists(name)
+			if(index != -1)
+				-- read the position nodes for this brick
+				IEnumerable<XElement> brickPositions := brickElement->Elements("position")
+				foreach(XElement position in brickPositions)
+					int x := GetAttributeAsInt32(position, "x")
+					int y := GetAttributeAsInt32(position, "y")
+
+
+					level->SetBrick( x, y, index)
+				end foreach
+
+				break
+			else
+				-- error, the brick isn't present within the players assets
+			end if
+		end foreach
+	end function
+
+	function WriteLevel(Level level, Brick[] bricks, string path)
+		new XmlWriterSettings xmlWriterSettings
+
+		xmlWriterSettings->Indent := true
+		xmlWriterSettings->CloseOutput := true
+		xmlWriterSettings->WriteEndDocumentOnClose := true
+
+		try
+			using(XmlWriter xmlWriter := XmlWriter::Create(path, xmlWriterSettings))
+				xmlWriter->WriteStartElement("level")
+				xmlWriter->WriteAttributeString("width", level->Width)
+				xmlWriter->WriteAttributeString("height", level->Height)
+
+				Dictionary<string, List<Point>> formattedLevelData = level->BuildDictionary(bricks)
+				foreach(KeyValuePair kvp in formattedLevelData)
+					if(kvp->Value->Length > 0)
+						XmlWriter->WriteStartElement("brick")
+						XmlWriter->WriteAttributeString("name", kvp->Key)
+						for(int j := 0, j < kvp->Value->Length, j++)
+							XmlWriter->WriteStartElement("position")
+							XmlWriter->WriteAttributeString("x", kvp->Value[j]->X)
+							XmlWriter->WriteAttributeString("y", kvp->Value[j]->Y)
+							XmlWriter->WriteEndElement()
+						end for
+					end if
+				
+					XmlWriter->WriteEndElement()
+				end foreach
+				
+				XmlWriter->WriteEndElement()
+				XmlWriter->WriteEndDocument()
+				XmlWriter->Close()
+			end using
+		catch
+			throw
+		end try
 	end function
 end class

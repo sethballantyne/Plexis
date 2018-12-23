@@ -1,0 +1,30 @@
+class Level
+	-- every time a new level is opened or created, 
+	-- this is populated with every brick as a key.
+	Dictionary<string, List<Point>> levelData
+
+	int[,] levelData
+	constructor(int width, int height)
+	end constructor
+
+	function SetBrick(int x, int y, index)
+		levelData[x,y] := index
+	end function
+
+	function Dictionary<string, Point[]> BuildDictionary(Brick[] bricks)
+		Dictionary<string, List<Point>> output
+
+		for(int i = 0, i < bricks->Length, i++)
+			output[bricks[i]->Name] := new List<Point>()
+		end for
+
+		for(int j = 0, i < width, j++)
+			for(int k = 0, i < height, k++)
+				int index = levelData[j,k]
+				output[bricks[index]->Name]->Value->Add(new Point(j, k))
+			end for
+		end for
+		
+		return output
+	end function
+end class

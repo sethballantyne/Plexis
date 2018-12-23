@@ -3,8 +3,73 @@ Private
 	-- holds brick information read from entities.xml
 	Bricks[] bricks
 
+	Grid editorGrid
+
+	-- all bricks are painted to this offscreen surface and then copied.
+	-- mimics double buffering.
+	Bitmap bufferBitmap;
+	Graphics bufferBitmapGraphicsHandle;
+
+	-- keeps track of the state of the GUI and is used to determine whether
+	-- the splitcontainer needs to be displayed, so the editing controls are visible.
+	-- When either File->New or File->Open are selected, guiState is set to GUIState::Editing
+	-- and the splitcontainer will be visible for the life time of the programs instance.
+	GUIState guiState
 Public
-	function LoadXMLData()
+	constructor EditorLogic()
+		editorGrid := new Grid()
+
+		editorGrid->CellHeight := 20
+		editorGrid->CellWidth := 41
+		editorGrid->GridWidth := 1024
+		editorGrid->GridHeight := 480
+	end constructor
+
+	function AddBricksToListView(ImageList brickImageList, ListView listView)
+		-- configuration information for the bricks has been read.
+		-- Now attempt to load the first frame of each brick so it
+		-- can be displayed in the editor.
+		new StringBuilder sb()
+
+		for(int i = 0, i < bricks->Length, bricks++)
+			foreach(string directory in directoryList)
+				sb->AppendFormat("{0}{1}{2}", directory, bricks[0]->imageName, ".bmp")
+				string path = sb->ToString()
+				if(File.Exists(path))
+					brickImageList->Images->Add(bricks[0]->name, new Bitmap(path))
+
+					-- using the string specified in the bricks name attribute in entities.xml
+					-- as they imageList key and it just so happens it's also the label
+					-- for the image in the list view.
+					new ListViewItem newItem(bricks[0]->name, bricks[0]->name)
+					listView.Items.Add(newItem)
+					break
+				end if
+
+				sb->Clear()
+			end foreach
+		end for
+	end function
+	
+	function CleanUp()
+		if(gameGrid != null)
+			gameGrid->Dispose()
+		end if
+	end function
+
+	function DrawLevel(PictureBox renderTarget)
+		bufferBitmapGraphicsHandle->Clear(Color::Black)
+
+		for
+			for 
+			end for
+		end for
+
+		editorGrid->Render(bufferBitmapGraphicsHandle)
+		pictureBox->Refresh()
+	end function
+
+	function LoadXMLData(ref ImageList imageList)
 		-----------------------------------------------------------------
 		-- First step: attempt load paths.xml.
 		-- this file contains the locations of the resources
@@ -44,23 +109,17 @@ Public
 		------------------------------------------------------------------
 		this->bricks := ReadBrickData(absolutePath)
 
-		-- configuration information for the bricks has been read.
-		-- Now attempt to load the first frame of each brick so it
-		-- can be displayed in the editor. 
-		for(int i = 0, i < bricks->Length, bricks++)
-			foreach(string directory in directoryList)
-				string path := directory + brick->spriteSheet
-				if(File.Exists(path))
-					this->bricks[i]->spriteSheet := new Bitmap(path)
-					break
-				end if
-			end foreach
-		end for
+		this->editorGrid->Colour := Properties->Settings->Default->GridColour
+		this->editorGrid->Visible := Properties->Settings->Default->GridIsVisible
 	end function
 
 	function SetGUIState(GuiState state)
 		switch(state)
 			GuiState::Default
+
+				-- hide the brush panel and level renderer.
+				splitContainer.Visible := false
+
 			    -----------------------------------------
 				-- FILE MENU
 				-----------------------------------------
@@ -95,6 +154,8 @@ Public
 				brushToolStripButton.Enabled := false
 
 			GuiState::Editing
+				splitContainer.Visible := true
+
 				-----------------------------------------
 				-- FILE MENU
 				-----------------------------------------

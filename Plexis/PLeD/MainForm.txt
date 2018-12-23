@@ -1,0 +1,21 @@
+class MainForm
+Private
+	-- mouse cursor when the eraser tool is selected.
+	Cursor eraserCursor
+
+	function MainForm_Close()
+		EditorLogic->CleanUp()
+	end function
+
+	function MainForm_Load()
+		try
+			eraserCursor := new Cursor(GetType(), "Resources.Eraser.cur")
+
+			EditorLogic->SetGUIState(GUIState::Default)
+
+			EditorLogic->LoadXMLData(brickImageList)
+			EditorLogic->AddBricksToListView(brickImageList, listView)
+		catch
+			throw
+	end function
+end class
