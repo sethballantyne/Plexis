@@ -7,15 +7,25 @@ Private
 		EditorLogic->CleanUp()
 	end function
 
+	function MainForm_Closing()
+		e->Cancel := EditorLogic->ApplicationClosing()
+	end function
+
 	function MainForm_Load()
 		try
 			eraserCursor := new Cursor(GetType(), "Resources.Eraser.cur")
 
-			EditorLogic->SetGUIState(GUIState::Default)
-
-			EditorLogic->LoadXMLData(brickImageList)
-			EditorLogic->AddBricksToListView(brickImageList, listView)
+			EditorLogic->Initialize(pictureBox, brickImageList, listView)
+			EditorLogic->SetUndoGUIItems(/* pass undo menus */)
+			EditorLogic->SetRedoGUIItems(/* pass redo menus */)
 		catch
 			throw
+	end function
+
+	function ListView_SelectedIndexChanged()
+		if(listView->SelectedItems->Count > 0)
+			EditorLogic->SetEditingMode(EditingMode::Brush)
+			EditorLogic->SetSelectedBrick(listView->Items->IndexOf(listView->SelectedItems[0]))
+		end if
 	end function
 end class
