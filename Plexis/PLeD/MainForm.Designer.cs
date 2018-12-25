@@ -1,4 +1,22 @@
-﻿namespace PLeD
+﻿// Copyright(c) 2018 Seth Ballantyne <seth.ballantyne@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files(the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and / or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions :
+//
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+namespace PLeD
 {
     partial class MainForm
     {
@@ -60,7 +78,7 @@
             this.redoToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toggleGridToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.brickListView = new System.Windows.Forms.ListView();
             this.brickImageList = new System.Windows.Forms.ImageList(this.components);
@@ -73,9 +91,9 @@
             this.gridColourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.paletteToolStrip.SuspendLayout();
             this.SuspendLayout();
@@ -91,7 +109,7 @@
             this.helpToolStripMenuItem});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(918, 24);
+            this.mainMenuStrip.Size = new System.Drawing.Size(921, 24);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip";
             // 
@@ -258,7 +276,7 @@
             this.toggleGridToolStripButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(918, 25);
+            this.toolStrip.Size = new System.Drawing.Size(921, 25);
             this.toolStrip.TabIndex = 1;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -348,24 +366,24 @@
             this.toggleGridToolStripButton.Text = "Toggle Grid";
             this.toggleGridToolStripButton.ToolTipText = "Toggle Grid";
             // 
-            // splitContainer1
+            // splitContainer
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 49);
-            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer.Location = new System.Drawing.Point(0, 49);
+            this.splitContainer.Name = "splitContainer";
             // 
-            // splitContainer1.Panel1
+            // splitContainer.Panel1
             // 
-            this.splitContainer1.Panel1.BackColor = System.Drawing.Color.Black;
-            this.splitContainer1.Panel1.Controls.Add(this.pictureBox);
+            this.splitContainer.Panel1.BackColor = System.Drawing.Color.Black;
+            this.splitContainer.Panel1.Controls.Add(this.pictureBox);
             // 
-            // splitContainer1.Panel2
+            // splitContainer.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.brickListView);
-            this.splitContainer1.Panel2.Controls.Add(this.paletteToolStrip);
-            this.splitContainer1.Size = new System.Drawing.Size(918, 297);
-            this.splitContainer1.SplitterDistance = 736;
-            this.splitContainer1.TabIndex = 2;
+            this.splitContainer.Panel2.Controls.Add(this.brickListView);
+            this.splitContainer.Panel2.Controls.Add(this.paletteToolStrip);
+            this.splitContainer.Size = new System.Drawing.Size(921, 297);
+            this.splitContainer.SplitterDistance = 738;
+            this.splitContainer.TabIndex = 2;
             // 
             // pictureBox
             // 
@@ -382,7 +400,7 @@
             this.brickListView.LargeImageList = this.brickImageList;
             this.brickListView.Location = new System.Drawing.Point(0, 25);
             this.brickListView.Name = "brickListView";
-            this.brickListView.Size = new System.Drawing.Size(178, 272);
+            this.brickListView.Size = new System.Drawing.Size(179, 272);
             this.brickListView.TabIndex = 0;
             this.brickListView.UseCompatibleStateImageBehavior = false;
             // 
@@ -400,7 +418,7 @@
             this.brushToolStripButton});
             this.paletteToolStrip.Location = new System.Drawing.Point(0, 0);
             this.paletteToolStrip.Name = "paletteToolStrip";
-            this.paletteToolStrip.Size = new System.Drawing.Size(178, 25);
+            this.paletteToolStrip.Size = new System.Drawing.Size(179, 25);
             this.paletteToolStrip.TabIndex = 1;
             this.paletteToolStrip.Text = "toolStrip1";
             // 
@@ -465,8 +483,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(918, 346);
-            this.Controls.Add(this.splitContainer1);
+            this.ClientSize = new System.Drawing.Size(921, 346);
+            this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.mainMenuStrip);
             this.MainMenuStrip = this.mainMenuStrip;
@@ -476,10 +494,10 @@
             this.mainMenuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
-            this.splitContainer1.ResumeLayout(false);
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel2.ResumeLayout(false);
+            this.splitContainer.Panel2.PerformLayout();
+            this.splitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.paletteToolStrip.ResumeLayout(false);
             this.paletteToolStrip.PerformLayout();
@@ -520,7 +538,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripButton previewLevelToolStripButton;
-        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.ListView brickListView;
         private System.Windows.Forms.ImageList brickImageList;

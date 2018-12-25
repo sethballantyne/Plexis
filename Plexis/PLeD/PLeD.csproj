@@ -61,6 +61,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Brick.cs" />
+    <Compile Include="Grid.cs" />
+    <Compile Include="GUIState.cs" />
+    <Compile Include="Level.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

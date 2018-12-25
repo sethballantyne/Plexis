@@ -1,4 +1,9 @@
-﻿// Copyright(c) 2018 Seth Ballantyne <seth.ballantyne@gmail.com>
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+// Copyright(c) 2018 Seth Ballantyne <seth.ballantyne@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files(the "Software"), to deal in the Software
@@ -16,24 +21,23 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-
 namespace PLeD
 {
-    static class Program
+    /// <summary>
+    /// Specifies the state of the Editors GUI.
+    /// </summary>
+    internal enum GUIState
     {
         /// <summary>
-        /// The main entry point for the application.
+        /// The initial state when the editor is executed. 
+        /// Buttons and menu items related to saving and editing the map are disabled. 
         /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
-        }
+        Default,
+
+        /// <summary>
+        /// The state the GUI is placed in when the user creates a new map
+        /// or opens an existing one.
+        /// </summary>
+        Editing
     }
 }
