@@ -65,6 +65,10 @@ namespace PLeD
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toggleGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eraserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.brushToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.gridColourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
@@ -85,10 +89,6 @@ namespace PLeD
             this.paletteToolStrip = new System.Windows.Forms.ToolStrip();
             this.eraserToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.brushToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.brushToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.eraserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.gridColourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.splitContainer.Panel1.SuspendLayout();
@@ -137,6 +137,7 @@ namespace PLeD
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.newToolStripMenuItem.Text = "&New";
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -208,7 +209,7 @@ namespace PLeD
             this.undoToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.undoToolStripMenuItem.Text = "&Undo";
             // 
             // redoToolStripMenuItem
@@ -217,7 +218,7 @@ namespace PLeD
             this.redoToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.redoToolStripMenuItem.Text = "&Redo";
             // 
             // viewToolStripMenuItem
@@ -246,6 +247,42 @@ namespace PLeD
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
             // 
+            // eraserToolStripMenuItem
+            // 
+            this.eraserToolStripMenuItem.CheckOnClick = true;
+            this.eraserToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("eraserToolStripMenuItem.Image")));
+            this.eraserToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.eraserToolStripMenuItem.Name = "eraserToolStripMenuItem";
+            this.eraserToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.eraserToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.eraserToolStripMenuItem.Text = "&Eraser";
+            // 
+            // brushToolStripMenuItem
+            // 
+            this.brushToolStripMenuItem.CheckOnClick = true;
+            this.brushToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("brushToolStripMenuItem.Image")));
+            this.brushToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.brushToolStripMenuItem.Name = "brushToolStripMenuItem";
+            this.brushToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.B)));
+            this.brushToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.brushToolStripMenuItem.Text = "&Brush";
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gridColourToolStripMenuItem});
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(61, 20);
+            this.toolStripMenuItem3.Text = "&Options";
+            // 
+            // gridColourToolStripMenuItem
+            // 
+            this.gridColourToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("gridColourToolStripMenuItem.Image")));
+            this.gridColourToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.gridColourToolStripMenuItem.Name = "gridColourToolStripMenuItem";
+            this.gridColourToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.gridColourToolStripMenuItem.Text = "Grid &Colour...";
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -257,7 +294,7 @@ namespace PLeD
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "&About";
             // 
             // toolStrip
@@ -443,42 +480,6 @@ namespace PLeD
             this.brushToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.brushToolStripButton.Text = "Brush";
             // 
-            // brushToolStripMenuItem
-            // 
-            this.brushToolStripMenuItem.CheckOnClick = true;
-            this.brushToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("brushToolStripMenuItem.Image")));
-            this.brushToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.brushToolStripMenuItem.Name = "brushToolStripMenuItem";
-            this.brushToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.B)));
-            this.brushToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.brushToolStripMenuItem.Text = "&Brush";
-            // 
-            // eraserToolStripMenuItem
-            // 
-            this.eraserToolStripMenuItem.CheckOnClick = true;
-            this.eraserToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("eraserToolStripMenuItem.Image")));
-            this.eraserToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.eraserToolStripMenuItem.Name = "eraserToolStripMenuItem";
-            this.eraserToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.eraserToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.eraserToolStripMenuItem.Text = "&Eraser";
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.gridColourToolStripMenuItem});
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(61, 20);
-            this.toolStripMenuItem3.Text = "&Options";
-            // 
-            // gridColourToolStripMenuItem
-            // 
-            this.gridColourToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("gridColourToolStripMenuItem.Image")));
-            this.gridColourToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.gridColourToolStripMenuItem.Name = "gridColourToolStripMenuItem";
-            this.gridColourToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.gridColourToolStripMenuItem.Text = "Grid &Colour...";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -490,6 +491,8 @@ namespace PLeD
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "MainForm";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
             this.toolStrip.ResumeLayout(false);

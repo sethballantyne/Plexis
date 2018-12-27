@@ -41,7 +41,7 @@ namespace PLeD
         Color gridColor;
 
         // used to draw the grid.
-        Pen gridPen;
+        Pen gridPen = new Pen(Color.Black);
 
         // true if the grid is visible and being rendered, otherwise false.
         bool visible;
@@ -55,7 +55,7 @@ namespace PLeD
                 return;
             }
 
-            if(disposing)
+            if(disposing && gridPen != null)
             {
                 gridPen.Dispose();
             }
@@ -93,7 +93,7 @@ namespace PLeD
         /// <summary>
         /// Gets or sets the height of the cells within the grid.
         /// </summary>
-        int CellHeight
+        public int CellHeight
         {
             get
             {
@@ -109,7 +109,7 @@ namespace PLeD
         /// <summary>
         /// Gets or sets the width of the cells within the grid.
         /// </summary>
-        int CellWidth
+        public int CellWidth
         {
             get
             {
@@ -124,7 +124,7 @@ namespace PLeD
         /// <summary>
         /// Gets or sets the colour of the grid.
         /// </summary>
-        Color Colour
+        public Color Colour
         {
             get
             {
@@ -139,7 +139,7 @@ namespace PLeD
         /// <summary>
         /// Gets or sets the total height of the grid in pixels.
         /// </summary>
-        int Height
+        public int Height
         {
             get
             {
@@ -152,9 +152,23 @@ namespace PLeD
         }
 
         /// <summary>
+        /// Gets or sets the total width of the grid.
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                return this.gridWidth;
+            }
+            set
+            {
+                this.gridWidth = value;
+            }
+        }
+        /// <summary>
         /// Gets or sets whether the grid is visible.
         /// </summary>
-        bool Visible
+        public bool Visible
         {
             get
             {

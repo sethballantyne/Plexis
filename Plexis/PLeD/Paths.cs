@@ -23,39 +23,10 @@ using System.Text;
 
 namespace PLeD
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    internal struct Brick
+
+    struct Paths
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public int FrameX;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int FrameY;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int FrameWidth;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int FrameHeight;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Name;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string ImageName;
+        public Path[] BitmapPaths;
+        public Path[] XMLPaths;
     }
 }

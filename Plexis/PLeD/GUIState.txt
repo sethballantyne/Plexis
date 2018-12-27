@@ -1,4 +1,0 @@
-public enum GUIState
-	Default,
-	Editing
-end enum

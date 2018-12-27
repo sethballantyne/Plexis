@@ -22,5 +22,29 @@ namespace PLeD.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Lime")]
+        public global::System.Drawing.Color GridColour {
+            get {
+                return ((global::System.Drawing.Color)(this["GridColour"]));
+            }
+            set {
+                this["GridColour"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool GridIsVisible {
+            get {
+                return ((bool)(this["GridIsVisible"]));
+            }
+            set {
+                this["GridIsVisible"] = value;
+            }
+        }
     }
 }

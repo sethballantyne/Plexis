@@ -32,5 +32,124 @@ namespace PLeD
         {
             InitializeComponent();
         }
+
+        private void DisplayErrorMessage(string message)
+        {
+            string errorMessage = String.Format("An error occured while initialising the editor: {0}\n\nAdios!", message);
+                MessageBox.Show(errorMessage, "ERRAWR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.Initialise(this, pictureBox, brickImageList, brickListView);
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        internal void SetGUIState(GUIState guiState)
+        {
+            switch(guiState)
+            {
+                case GUIState.Default:
+
+                    // hide the brush panel and level renderer.
+                    splitContainer.Visible = false;
+
+                    //-----------------------------------------
+				    // FILE MENU
+				    //-----------------------------------------
+				    saveLevelToolStripButton.Enabled = false;
+				    saveToolStripMenuItem.Enabled = false;
+				    saveAsToolStripMenuItem.Enabled = false;
+
+				    previewLevelToolStripButton.Enabled = false;
+				    previewToolStripMenuItem.Enabled = false;
+
+				    //------------------------------------------
+				    // EDIT MENU
+				    //------------------------------------------
+				    undoToolStripMenuItem.Enabled = false;
+				    undoToolStripButton.Enabled = false;
+				    redoToolStripMenuItem.Enabled = false;
+				    redoToolStripButton.Enabled = false;
+
+				    //-------------------------------------------
+				    // VIEW MENU
+				    //-------------------------------------------
+				    toggleGridToolStripButton.Enabled = false;
+				    toggleGridToolStripMenuItem.Enabled = false;
+
+				    //-------------------------------------------
+				    // TOOLS MENU
+				    //-------------------------------------------
+				    eraserToolStripMenuItem.Enabled = false;
+				    eraserToolStripButton.Enabled = false;
+
+				    brushToolStripMenuItem.Enabled = false;
+                    brushToolStripButton.Enabled = false;
+                    break;
+
+                case GUIState.Editing:
+                    splitContainer.Visible = true;
+
+				    //-----------------------------------------
+				    // FILE MENU
+				    //---------------------------------------
+				    saveLevelToolStripButton.Enabled = true;
+				    saveToolStripMenuItem.Enabled = true;
+				    saveAsToolStripMenuItem.Enabled = true;
+
+				    previewLevelToolStripButton.Enabled = true;
+				    previewToolStripMenuItem.Enabled = true;
+
+				    //-------------------------------------------
+				    // VIEW MENU
+				    //-------------------------------------------
+				    toggleGridToolStripButton.Enabled = true;
+				    toggleGridToolStripMenuItem.Enabled = true;
+
+				    //-------------------------------------------
+				    // TOOLS MENU
+				    //-------------------------------------------
+				    eraserToolStripMenuItem.Enabled = true;
+				    eraserToolStripButton.Enabled = true;
+
+				    brushToolStripMenuItem.Enabled = true;
+				    brushToolStripButton.Enabled = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.NewLevel();
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                EditorLogic.CleanUp();
+            }
+            catch(Exception ex)
+            {
+                // more for debug purposes in this instance.
+                DisplayErrorMessage(ex.Message);
+            }
+        }
     }
 }
