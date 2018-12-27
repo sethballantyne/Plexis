@@ -151,5 +151,17 @@ namespace PLeD
                 DisplayErrorMessage(ex.Message);
             }
         }
+
+        private void newLevelToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.NewLevel();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
     }
 }

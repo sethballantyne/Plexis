@@ -326,6 +326,7 @@ namespace PLeD
             this.newLevelToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.newLevelToolStripButton.Text = "New Level";
             this.newLevelToolStripButton.ToolTipText = "New Level";
+            this.newLevelToolStripButton.Click += new System.EventHandler(this.newLevelToolStripButton_Click);
             // 
             // openLevelToolStripButton
             // 
