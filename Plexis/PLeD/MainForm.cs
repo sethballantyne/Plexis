@@ -214,5 +214,22 @@ namespace PLeD
                 throw;
             }
         }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.SaveAs();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

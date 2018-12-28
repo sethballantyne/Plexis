@@ -328,7 +328,7 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Writes the current level to disk and updates the GUI to show its been saved.
         /// </summary>
         static void SaveAndUpdateGUI()
         {
@@ -344,12 +344,6 @@ namespace PLeD
                 throw;
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        
 
         #endregion
         #region internal
@@ -453,71 +447,122 @@ namespace PLeD
             renderControl.Refresh();
         }
 
+        /// <summary>
+        /// Implements File->Open functionality.
+        /// </summary>
+        /// <exception cref="System.IO.FileNotFoundException">The specified file couldn't be found.</exception>
+        /// <exception cref="System.FormatException">A required attribute in the XML was supposed to contain a numeric value but doesn't.</exception>
+        /// <exception cref="System.Xml.XmlException">The specified XML file is missing data or is incorrectly formatted.</exception>
         internal static void OpenLevel()
         {
-            if(!workSaved)
+            try
             {
-                // the user hasn't saved their changes; prompt to see if they
-                // want to save their work before opening a level.
-                DialogResult userResponse = PromptToSave();
-                switch(userResponse)
+                if (!workSaved)
                 {
-                    case DialogResult.Yes:
-                        // Why yes, I would like to save.
-                        DialogResult saveAsDialogResponse = SaveLevel();
-                        if (saveAsDialogResponse == DialogResult.Cancel)
-                        {
-                            // user smacked 'Cancel' on the save as dialog, so cancel opening the level
+                    // the user hasn't saved their changes; prompt to see if they
+                    // want to save their work before opening a level.
+                    DialogResult userResponse = PromptToSave();
+                    switch (userResponse)
+                    {
+                        case DialogResult.Yes:
+                            // Why yes, I would like to save.
+                            DialogResult saveAsDialogResponse = SaveLevel();
+                            if (saveAsDialogResponse == DialogResult.Cancel)
+                            {
+                                // user smacked 'Cancel' on the save as dialog, so cancel opening the level
+                                return;
+                            }
+                            break;
+                        case DialogResult.Cancel:
                             return;
-                        }
-                        break;
-                    case DialogResult.Cancel:
-                        return;
+                    }
+                }
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ResetState();
+
+                    EditorLogic.currentLevel = XML.ReadLevel(EditorLogic.openFileDialog.FileName, EditorLogic.bricks);
+                    EditorLogic.mainForm.Text = String.Format(
+                    "{0} - {1}", Application.ProductName, EditorLogic.openFileDialog.FileName);
+                    EditorLogic.currentLevelFilename = EditorLogic.openFileDialog.FileName;
+
+                    EditorLogic.RenderLevel();
                 }
             }
-
-            if(openFileDialog.ShowDialog() == DialogResult.OK)
+            catch
             {
-                ResetState();
-
-                EditorLogic.currentLevel = XML.ReadLevel(EditorLogic.openFileDialog.FileName, EditorLogic.bricks);
-                EditorLogic.mainForm.Text = String.Format(
-                "{0} - {1}", Application.ProductName, EditorLogic.openFileDialog.FileName);
-                EditorLogic.currentLevelFilename = EditorLogic.openFileDialog.FileName;
-
-                EditorLogic.RenderLevel();
+                throw;
             }
+            
         }
 
         /// <summary>
-        /// 
+        /// File->Save As... menu item functionality.
         /// </summary>
-        /// <returns></returns>
+        internal static void SaveAs()
+        {
+            string temp = EditorLogic.currentLevelFilename;
+            EditorLogic.currentLevelFilename = null;
+
+            try
+            {
+                if (EditorLogic.SaveLevel() == DialogResult.Cancel)
+                {
+                    EditorLogic.currentLevelFilename = temp;
+                }
+
+                // no need to update currentLevelFilename here because that's
+                // handled by SaveLevel() on a successfull save.
+            }
+            catch
+            {
+                throw;
+            }
+            
+        }
+
+        /// <summary>
+        /// Saves the level to disk, displaying the Save dialog box if the level
+        /// hasn't been saved previously.
+        /// </summary>
+        /// <returns><c>DialogResult.Cancel</c> if the operation was cancelled by the user, otherwise <c>DialogResult.OK</c>.</returns>
         internal static DialogResult SaveLevel()
         {
             DialogResult dialogResult = DialogResult.Cancel;
 
-            // determine whether the save file dialog needs to be displayed
-            // before we write the level to disk.
-            if (EditorLogic.currentLevelFilename == null)
+            try
             {
-                // null = level has never been saved before.
-                dialogResult = EditorLogic.saveFileDialog.ShowDialog();
-                if (dialogResult == DialogResult.OK)
+                // determine whether the save file dialog needs to be displayed
+                // before we write the level to disk.
+                if (EditorLogic.currentLevelFilename == null)
                 {
-                    EditorLogic.currentLevelFilename = EditorLogic.saveFileDialog.FileName;
+                    // null = level has never been saved before.
+                    dialogResult = EditorLogic.saveFileDialog.ShowDialog();
+                    if (dialogResult == DialogResult.OK)
+                    {
+                        EditorLogic.currentLevelFilename = EditorLogic.saveFileDialog.FileName;
+                    }
+                    //else
+                    //{
+                    //    // cancel was pressed.
+                    //    return dialogResult;
+                    //}
                 }
-                else
-                {
-                    // cancel was pressed.
-                    return dialogResult;
-                }
+
+                SaveAndUpdateGUI();
+            }
+            catch
+            {
+                throw;
             }
 
-            SaveAndUpdateGUI();
             return dialogResult;
+            
         }
 
         #endregion
+
+        
     }
 }

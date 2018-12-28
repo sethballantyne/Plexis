@@ -324,9 +324,9 @@ namespace PLeD
         /// <returns>the level formatted as a level object. Duh.</returns>
         /// <exception cref="System.ArgumentNullException"><i>path</i> or <i>bricks</i> evaluate to <b>null</b>.</exception>
         /// <exception cref="System.ArgumentException"><i>path</i> evaluates to String.Empty.</exception>
-        /// <exception cref="System.FileNotFoundException">the location specified in <i>path</i> does not exist.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">the location specified in <i>path</i> does not exist.</exception>
         /// <exception cref="System.FormatException">A required attribute in the XML was supposed to contain a numeric value but doesn't.</exception>
-        /// <exception cref="System.XmlException">The specified XML file is missing data or is incorrectly formatted.</exception>
+        /// <exception cref="System.Xml.XmlException">The specified XML file is missing data or is incorrectly formatted.</exception>
         public static Level ReadLevel(string path, Brick[] bricks)
         {
             if(path == null)
@@ -385,11 +385,13 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Writes a level to disk.
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="level"></param>
-        /// <param name="bricks"></param>
+        /// <param name="path">the destination path for the level, including filename.</param>
+        /// <param name="level">the level to write to XML.</param>
+        /// <param name="bricks">the brick data parsed from entities.xml at startup.</param>
+        /// <exception cref="System.ArgumentNullException"><i>path</i>, <i>level</i>, or <i>bricks</i> evaluate to <b>null</b>.</exception>
+        /// <exception cref="System.ArgumentException"><i>path</i> evaluates to String.Empty.</exception>
         internal static void WriteLevel(string path, Level level, Brick[] bricks)
         {
             if(path == null)
