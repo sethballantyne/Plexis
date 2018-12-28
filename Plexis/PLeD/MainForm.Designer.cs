@@ -147,6 +147,7 @@ namespace PLeD
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.openToolStripMenuItem.Text = "&Open...";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -161,6 +162,7 @@ namespace PLeD
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.saveToolStripMenuItem.Text = "&Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -337,6 +339,7 @@ namespace PLeD
             this.openLevelToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.openLevelToolStripButton.Text = "Open Level";
             this.openLevelToolStripButton.ToolTipText = "Open Level";
+            this.openLevelToolStripButton.Click += new System.EventHandler(this.openLevelToolStripButton_Click);
             // 
             // saveLevelToolStripButton
             // 
@@ -347,6 +350,7 @@ namespace PLeD
             this.saveLevelToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.saveLevelToolStripButton.Text = "Save Level";
             this.saveLevelToolStripButton.ToolTipText = "Save Level";
+            this.saveLevelToolStripButton.Click += new System.EventHandler(this.saveLevelToolStripButton_Click);
             // 
             // toolStripSeparator5
             // 

@@ -23,6 +23,7 @@ using System.Text;
 using System.Runtime;
 using System.Xml;
 using System.Xml.Linq;
+using System.Drawing;
 
 namespace PLeD
 {
@@ -383,9 +384,77 @@ namespace PLeD
             
         }
 
-        internal static void WriteLevel(Level level, Brick[] brick, string p)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="level"></param>
+        /// <param name="bricks"></param>
+        internal static void WriteLevel(string path, Level level, Brick[] bricks)
         {
-            throw new NotImplementedException();
+            if(path == null)
+            {
+                throw new ArgumentNullException("path");
+            }
+            else if(level == null)
+            {
+                throw new ArgumentNullException("level");
+            }
+            else if(bricks == null)
+            {
+                throw new ArgumentNullException("bricks");
+            }
+            else if(path == String.Empty)
+            {
+                throw new ArgumentException("path evaluates to String.Empty.");
+            }
+
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+            xmlWriterSettings.Indent = true;
+            xmlWriterSettings.CloseOutput = true;
+            
+            try
+            {
+                using(XmlWriter xmlWriter = XmlWriter.Create(path, xmlWriterSettings))
+                {
+                    // <level width="xx" height="xx">
+                    xmlWriter.WriteStartElement("level");
+                    xmlWriter.WriteAttributeString("width", Convert.ToString(level.Width));
+                    xmlWriter.WriteAttributeString("height", Convert.ToString(level.Height));
+
+                    Dictionary<string, List<Point>> formattedLevelData = level.BuildDictionary(bricks);
+                    foreach(KeyValuePair<string, List<Point>> kvp in formattedLevelData)
+                    {
+                        if(kvp.Value.Count > 0)
+                        {
+                            // <brick name="foo">
+                            xmlWriter.WriteStartElement("brick");
+                            xmlWriter.WriteAttributeString("name", kvp.Key);
+
+                            for(int i = 0; i < kvp.Value.Count; i++)
+                            {
+                                // <position x="666" y="999">
+                                xmlWriter.WriteStartElement("position");
+                                xmlWriter.WriteAttributeString("x", Convert.ToString(kvp.Value[i].X));
+                                xmlWriter.WriteAttributeString("y", Convert.ToString(kvp.Value[i].Y));
+                                xmlWriter.WriteEndElement();
+                            }
+                        }
+
+                        // </brick>
+                        xmlWriter.WriteEndElement();
+                    }
+
+                    //</level>
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.Close();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+
         }
     }
 }

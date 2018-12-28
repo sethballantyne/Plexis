@@ -54,6 +54,8 @@ namespace PLeD
         static Bitmap bufferBitmap;
         static Graphics bufferBitmapGraphics;
 
+        static SolidBrush blackBrush = new SolidBrush(Color.Black);
+
         static Stack<Point> undoStack = new Stack<Point>();
         static Stack<Point> redoStack = new Stack<Point>();
 
@@ -223,9 +225,43 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Paints a brick at the specified coordinates
         /// </summary>
-        /// <returns></returns>
+        /// <param name="x">the bricks x coordinate on the control being used to render the level.</param>
+        /// <param name="y">the bricks y coordinate on the control being used to render the level.</param>
+        /// <param name="index">the index of the desired brick in the image list. Use -1 if painting a blank
+        /// space (removing a brick).</param>
+        /// <param name="refresh"><b>true</b> if the control being used to render the level
+        /// should be refreshed as soon as the brick is drawn, otherwise <b>false</b>.</param>
+        /// <remarks>Coordinates are screen coordinates, not tile coordinates.</remarks>
+        private static void PaintBrick(int x, int y, int index, bool refresh)
+        {
+            Debug.Assert(index == -1 || index < imageList.Images.Count);
+            Debug.Assert(x >= 0 && y >= 0);
+
+            if(index != -1)
+            {
+                EditorLogic.bufferBitmapGraphics.DrawImage(EditorLogic.imageList.Images[index], x, y);
+            }
+            else
+            {
+                EditorLogic.bufferBitmapGraphics.FillRectangle(
+                    EditorLogic.blackBrush, x, y, EditorLogic.bricks[0].FrameWidth, 
+                    EditorLogic.bricks[0].FrameHeight);
+            }
+
+            if(refresh)
+            {
+                EditorLogic.editorGrid.Render(EditorLogic.bufferBitmapGraphics);
+                EditorLogic.renderControl.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Displays a message box asking the user if they want to save any changes made.
+        /// </summary>
+        /// <returns>DialogResult.Yes if the user clicked Yes, DialogResult.No if the user clicked
+        /// No, or DialogResult.Cancel if the user clicked Cancel.</returns>
         static DialogResult PromptToSave()
         {
             return MessageBox.Show("Do you want to save the changes?", 
@@ -233,14 +269,50 @@ namespace PLeD
         }
 
         /// <summary>
+        /// Renders the specified Level to the control being used for rendering.
+        /// </summary>
+        static void RenderLevel()
+        {
+            // TODO: this could be refactored into the level class.
+            // Clear buffer
+            // currentLevel.RenderLevel(...)
+            // Draw grid
+            // Refresh control.
+            EditorLogic.bufferBitmapGraphics.Clear(Color.Black);
+
+            for(int i = 0; i < EditorLogic.currentLevel.Width; i++)
+            {
+                for(int j = 0; j < EditorLogic.currentLevel.Height; j++)
+                {
+                    int brick = currentLevel[i, j];
+                    if(brick != -1) // -1 means there's no brick here
+                    {
+                        PaintBrick(i * bricks[0].FrameWidth,
+                            j * bricks[0].FrameHeight, brick, false);
+                    }
+                }
+            }
+
+            EditorLogic.editorGrid.Render(EditorLogic.bufferBitmapGraphics);
+            EditorLogic.renderControl.Refresh();
+        }
+
+        
+        /// <summary>
         /// 
         /// </summary>
         static void ResetState()
         {
+            // erase the level from the screen
             EditorLogic.bufferBitmapGraphics.Clear(Color.Black);
+
+            // make sure controls needed for editing for enabled.
             EditorLogic.mainForm.SetGUIState(GUIState.Editing);
 
-            EditorLogic.mainForm.Text = "PLeD";
+            // remove the filename from the titlebar 
+            EditorLogic.mainForm.Text = Application.ProductName;
+
+            // don't prompt to save if the user quits the program|opens|creates a level.
             EditorLogic.workSaved = true;
             EditorLogic.currentLevelFilename = null;
 
@@ -262,7 +334,7 @@ namespace PLeD
         {
             try
             {
-                XML.WriteLevel(EditorLogic.currentLevel, EditorLogic.bricks, EditorLogic.currentLevelFilename);
+                XML.WriteLevel(EditorLogic.currentLevelFilename, EditorLogic.currentLevel, EditorLogic.bricks);
                 
                 EditorLogic.workSaved = true;
                 mainForm.Text = String.Format("{0} - {1}", Application.ProductName, EditorLogic.currentLevelFilename);
@@ -277,36 +349,13 @@ namespace PLeD
         /// 
         /// </summary>
         /// <returns></returns>
-        private static DialogResult SaveLevel()
-        {
-            DialogResult dialogResult = DialogResult.Cancel;
-
-            // determine whether the save file dialog needs to be displayed
-            // before we write the level to disk.
-            if(EditorLogic.currentLevelFilename == null)
-            {
-                // null = level has never been saved before.
-                dialogResult = EditorLogic.saveFileDialog.ShowDialog();
-                if(dialogResult == DialogResult.OK)
-                {
-                    EditorLogic.currentLevelFilename = EditorLogic.saveFileDialog.FileName;
-                }
-                else
-                {
-                    // cancel was pressed.
-                    return dialogResult;
-                }
-            }
-
-            SaveAndUpdateGUI();
-            return dialogResult;
-        }
+        
 
         #endregion
         #region internal
 
         /// <summary>
-        /// 
+        /// Disposes unmanaged resources used by the editor.
         /// </summary>
         internal static void CleanUp()
         {
@@ -334,7 +383,7 @@ namespace PLeD
         /// <param name="listView">the listview being used as a palette.</param>
         internal static void Initialise(MainForm mainForm, Control renderTarget, ImageList brickImageList, ListView listView)
         {
-            mainForm.SetGUIState(GUIState.Default);
+            //mainForm.SetGUIState(GUIState.Default);
 
             EditorLogic.mainForm = mainForm;
             EditorLogic.listView = listView;
@@ -402,6 +451,71 @@ namespace PLeD
 
             editorGrid.Render(EditorLogic.bufferBitmapGraphics);
             renderControl.Refresh();
+        }
+
+        internal static void OpenLevel()
+        {
+            if(!workSaved)
+            {
+                // the user hasn't saved their changes; prompt to see if they
+                // want to save their work before opening a level.
+                DialogResult userResponse = PromptToSave();
+                switch(userResponse)
+                {
+                    case DialogResult.Yes:
+                        // Why yes, I would like to save.
+                        DialogResult saveAsDialogResponse = SaveLevel();
+                        if (saveAsDialogResponse == DialogResult.Cancel)
+                        {
+                            // user smacked 'Cancel' on the save as dialog, so cancel opening the level
+                            return;
+                        }
+                        break;
+                    case DialogResult.Cancel:
+                        return;
+                }
+            }
+
+            if(openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ResetState();
+
+                EditorLogic.currentLevel = XML.ReadLevel(EditorLogic.openFileDialog.FileName, EditorLogic.bricks);
+                EditorLogic.mainForm.Text = String.Format(
+                "{0} - {1}", Application.ProductName, EditorLogic.openFileDialog.FileName);
+                EditorLogic.currentLevelFilename = EditorLogic.openFileDialog.FileName;
+
+                EditorLogic.RenderLevel();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal static DialogResult SaveLevel()
+        {
+            DialogResult dialogResult = DialogResult.Cancel;
+
+            // determine whether the save file dialog needs to be displayed
+            // before we write the level to disk.
+            if (EditorLogic.currentLevelFilename == null)
+            {
+                // null = level has never been saved before.
+                dialogResult = EditorLogic.saveFileDialog.ShowDialog();
+                if (dialogResult == DialogResult.OK)
+                {
+                    EditorLogic.currentLevelFilename = EditorLogic.saveFileDialog.FileName;
+                }
+                else
+                {
+                    // cancel was pressed.
+                    return dialogResult;
+                }
+            }
+
+            SaveAndUpdateGUI();
+            return dialogResult;
         }
 
         #endregion

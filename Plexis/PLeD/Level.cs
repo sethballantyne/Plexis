@@ -118,5 +118,35 @@ namespace PLeD
   
             return output;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint Height
+        {
+            get
+            {
+                return this.height;
+            }
+            set
+            {
+                this.height = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public uint Width
+        {
+            get
+            {
+                return this.width;
+            }
+            set
+            {
+                this.width = value;
+            }
+        }
     }
 }

@@ -31,6 +31,8 @@ namespace PLeD
         public MainForm()
         {
             InitializeComponent();
+
+            SetGUIState(GUIState.Default);
         }
 
         private void DisplayErrorMessage(string message)
@@ -45,7 +47,7 @@ namespace PLeD
             {
                 EditorLogic.Initialise(this, pictureBox, brickImageList, brickListView);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 DisplayErrorMessage(ex.Message);
             }
@@ -161,6 +163,55 @@ namespace PLeD
             catch (Exception ex)
             {
                 DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.OpenLevel();
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void openLevelToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.OpenLevel();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.SaveLevel();
+            }
+            catch
+            {
+                throw;
+            }
+            
+        }
+
+        private void saveLevelToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.SaveLevel();
+            }
+            catch
+            {
+                throw;
             }
         }
     }
