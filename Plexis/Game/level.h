@@ -53,12 +53,12 @@ public:
     /// </remarks>
     void PutBrickAt(unsigned int x, unsigned int y, String ^brickName)
     {
-        level[y, x] = EntityManager::GetEntity<Brick ^>(brickName);
+        level[x, y] = EntityManager::GetEntity<Brick ^>(brickName);
 
-        int spriteWidth = level[y, x]->Sprite->CurrentFrame->Coordinates.Width;
-        int spriteHeight = level[y, x]->Sprite->CurrentFrame->Coordinates.Height;
+        int spriteWidth = level[x, y]->Sprite->CurrentFrame->Coordinates.Width;
+        int spriteHeight = level[x, y]->Sprite->CurrentFrame->Coordinates.Height;
 
-        level[y, x]->Position = System::Drawing::Point(x * spriteWidth, y * spriteHeight);
+        level[x, y]->Position = System::Drawing::Point(x * spriteWidth, y * spriteHeight);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public:
     /// <returns>The <see cref="Brick"/> instance at the specified coordinates, or <b>nullptr</b> if no instance exists.</returns>
     Brick ^GetBrickAt(unsigned int x, unsigned int y)
     {
-        return level[y, x];
+        return level[x, y];
     }
 
     /// <summary>
