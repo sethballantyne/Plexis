@@ -345,6 +345,36 @@ namespace PLeD
             }
         }
 
+        /// <summary>
+        /// Prompts the user to save any work, displaying the Save file dialog box if neccessary.
+        /// </summary>
+        /// <returns>DialogResult.OK if the user saved the file, DialogResult.No if the user chose
+        /// No on the prompt, DialogResult.Cancel if the user cancelled the operation.</returns>
+        private static DialogResult PromptAndSaveBeforeShutdown()
+        {
+            DialogResult dr = DialogResult.OK;
+
+            try
+            {
+                if (!workSaved)
+                {
+                    dr = EditorLogic.PromptToSave();
+
+                    if (dr == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        dr = EditorLogic.SaveAs();
+                    }
+                }
+
+                return dr;
+            }
+            catch
+            {
+                throw;
+            }
+            
+        }
+
         #endregion
         #region internal
 
@@ -409,6 +439,32 @@ namespace PLeD
             }
 
 
+        }
+
+        
+
+        /// <summary>
+        /// Prompts to save unsaved work and performs clean up when the application shuts down.
+        /// </summary>
+        internal static bool InitiateShutdownSequence()
+        {
+            try
+            {
+                DialogResult dr = EditorLogic.PromptAndSaveBeforeShutdown();
+                if(dr == DialogResult.Cancel)
+                {
+                    // abort the operation
+                    return true;
+                }
+
+                // we're termingating; clean up and exit.
+                EditorLogic.CleanUp();
+                return false;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -500,18 +556,20 @@ namespace PLeD
         /// <summary>
         /// File->Save As... menu item functionality.
         /// </summary>
-        internal static void SaveAs()
+        internal static DialogResult SaveAs()
         {
             string temp = EditorLogic.currentLevelFilename;
             EditorLogic.currentLevelFilename = null;
 
             try
             {
-                if (EditorLogic.SaveLevel() == DialogResult.Cancel)
+                DialogResult dr = EditorLogic.SaveLevel();
+                if (dr == DialogResult.Cancel)
                 {
                     EditorLogic.currentLevelFilename = temp;
                 }
 
+                return dr;
                 // no need to update currentLevelFilename here because that's
                 // handled by SaveLevel() on a successfull save.
             }
@@ -542,15 +600,9 @@ namespace PLeD
                     if (dialogResult == DialogResult.OK)
                     {
                         EditorLogic.currentLevelFilename = EditorLogic.saveFileDialog.FileName;
+                        SaveAndUpdateGUI();
                     }
-                    //else
-                    //{
-                    //    // cancel was pressed.
-                    //    return dialogResult;
-                    //}
                 }
-
-                SaveAndUpdateGUI();
             }
             catch
             {

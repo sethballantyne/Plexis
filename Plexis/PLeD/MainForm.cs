@@ -145,7 +145,7 @@ namespace PLeD
         {
             try
             {
-                EditorLogic.CleanUp();
+                e.Cancel = EditorLogic.InitiateShutdownSequence();
             }
             catch(Exception ex)
             {
@@ -229,7 +229,7 @@ namespace PLeD
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            Close();
         }
     }
 }
