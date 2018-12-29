@@ -39,7 +39,7 @@ namespace PLeD
         static Brick[] bricks;
         static Paths paths;
 
-        static Grid editorGrid = new Grid();
+        static Grid editorGrid;
         static Level currentLevel;
 
         static MainForm mainForm;
@@ -56,13 +56,17 @@ namespace PLeD
 
         static SolidBrush blackBrush = new SolidBrush(Color.Black);
 
-        static Stack<Point> undoStack = new Stack<Point>();
-        static Stack<Point> redoStack = new Stack<Point>();
+        static Stack<CoordsAndIndex[]> undoStack = new Stack<CoordsAndIndex[]>();
+        static Stack<CoordsAndIndex[]> redoStack = new Stack<CoordsAndIndex[]>();
+        static List<CoordsAndIndex> paintBuffer = new List<CoordsAndIndex>();
 
         static string gameDirectory;
         static string currentLevelFilename;
 
+        static EditMode editMode = EditMode.None;
         static bool workSaved = true;
+        private static int selectedBrick;
+        private static bool isPainting;
 
         /// <summary>
         /// Loads and adds the brick images to the ListView so we can bricks.
@@ -102,6 +106,34 @@ namespace PLeD
                 throw;
             }
            
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="point"></param>
+        internal static void EndPainting()
+        {
+            try
+            {
+                EditorLogic.isPainting = false;
+                if(EditorLogic.paintBuffer.Count > 0)
+                {
+                    // we've painted some bricks, so add the old ones that we painted over
+                    // to the undo stack. When we click Undo, they'll magically appear
+                    // and peace will be throughout the land.
+                    EditorLogic.undoStack.Push(EditorLogic.paintBuffer.ToArray());
+                    EditorLogic.paintBuffer.Clear();
+
+                    EditorLogic.mainForm.SetUndo(true);
+                }
+
+                EditorLogic.mainForm.SetSaveItems(true);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -213,9 +245,6 @@ namespace PLeD
                 {
                     throw new FileNotFoundException("Unable to locate entities.xml.");
                 }
-
-                editorGrid.Colour = Properties.Settings.Default.GridColour;
-                editorGrid.Visible = Properties.Settings.Default.GridIsVisible;
             }
             catch
             {
@@ -254,6 +283,44 @@ namespace PLeD
             {
                 EditorLogic.editorGrid.Render(EditorLogic.bufferBitmapGraphics);
                 EditorLogic.renderControl.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mousePosition"></param>
+        internal static void Painting(Point mousePosition)
+        {
+            try
+            {
+                if (EditorLogic.isPainting)
+                {
+                    int tileCoordX = mousePosition.X / EditorLogic.bricks[0].FrameWidth;
+                    int tileCoordY = mousePosition.Y / EditorLogic.bricks[0].FrameHeight;
+
+                    if (tileCoordX < 25 && tileCoordY < 23)
+                    {
+                        if (EditorLogic.currentLevel[tileCoordX, tileCoordY] != EditorLogic.selectedBrick)
+                        {
+                            // they might appear to be the same as the mouse coordinates but
+                            // they're not; these cause the brick to "snap" into place, so everything
+                            // is nicely tiled.
+                            int screenX = tileCoordX * EditorLogic.bricks[0].FrameWidth;
+                            int screenY = tileCoordY * EditorLogic.bricks[0].FrameHeight;
+
+                            int oldBrick = EditorLogic.currentLevel[tileCoordX, tileCoordY];
+                            EditorLogic.paintBuffer.Add(new CoordsAndIndex(screenX, screenY, oldBrick));
+
+                            EditorLogic.currentLevel[tileCoordX, tileCoordY] = selectedBrick;
+                            EditorLogic.PaintBrick(screenX, screenY, selectedBrick, true);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw;
             }
         }
 
@@ -378,6 +445,57 @@ namespace PLeD
         #endregion
         #region internal
 
+        internal static void BeginPainting(Point mousePosition)
+        {
+            try
+            {
+                if(EditorLogic.editMode == EditMode.Brush || 
+                   EditorLogic.editMode == EditMode.Eraser)
+                {
+                    EditorLogic.isPainting = true;
+
+                    int tileCoordX = mousePosition.X / EditorLogic.bricks[0].FrameWidth;
+                    int tileCoordY = mousePosition.Y / EditorLogic.bricks[0].FrameHeight;
+
+                    // don't allow drawing out of bounds.
+                    if(tileCoordX < 25 && tileCoordY < 23)
+                    {
+                        // no point in painting a brick if it's already at these coordinates
+                        if(EditorLogic.currentLevel[tileCoordX, tileCoordY] != EditorLogic.selectedBrick)
+                        {
+                            EditorLogic.redoStack.Clear();
+                            EditorLogic.mainForm.SetRedo(false);
+
+                            // they might appear to be the same as the mouse coordinates but
+                            // they're not; these cause the brick to "snap" into place, so everything
+                            // is nicely tiled.
+                            int screenX = tileCoordX * EditorLogic.bricks[0].FrameWidth;
+                            int screenY = tileCoordY * EditorLogic.bricks[0].FrameHeight;
+
+                            int oldBrick = EditorLogic.currentLevel[tileCoordX, tileCoordY];
+                            EditorLogic.paintBuffer.Add(new CoordsAndIndex(screenX, screenY, oldBrick));
+
+                            // selectedBrick is set when a brick is selected in the list view.
+                            EditorLogic.currentLevel[tileCoordX, tileCoordY] = EditorLogic.selectedBrick;
+
+                            EditorLogic.PaintBrick(screenX, screenY, selectedBrick, true);
+                            if(workSaved)
+                            {
+                                // changes have been made that need to be saved, indicate
+                                // this to the user.
+                                EditorLogic.workSaved = false;
+                                EditorLogic.mainForm.Text += "*";
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// Disposes unmanaged resources used by the editor.
         /// </summary>
@@ -398,7 +516,7 @@ namespace PLeD
                 EditorLogic.bufferBitmap.Dispose();
             }
         }
-
+        
         /// <summary>
         /// Loads the required XML and puts the editor into its default state.
         /// </summary>
@@ -418,8 +536,11 @@ namespace PLeD
 
             EditorLogic.renderControl.BackgroundImage = bufferBitmap;
 
-            EditorLogic.editorGrid.Width = renderControl.Width;
-            EditorLogic.editorGrid.Height = renderControl.Height;
+            EditorLogic.editorGrid = new Grid(1024, 460,
+                Properties.Settings.Default.GridColour, 
+                Properties.Settings.Default.GridIsVisible);
+
+            EditorLogic.mainForm.CheckGridControls(EditorLogic.editorGrid.Visible);
 
             try
             {
@@ -446,6 +567,7 @@ namespace PLeD
         /// <summary>
         /// Prompts to save unsaved work and performs clean up when the application shuts down.
         /// </summary>
+        /// <returns><b>false</b> if the user cancelled the operation, otherwise <b>true</b>.</returns>
         internal static bool InitiateShutdownSequence()
         {
             try
@@ -497,7 +619,7 @@ namespace PLeD
 
             ResetState();
 
-            EditorLogic.currentLevel = new Level(41, 20);
+            EditorLogic.currentLevel = new Level(25, 23);
 
             editorGrid.Render(EditorLogic.bufferBitmapGraphics);
             renderControl.Refresh();
@@ -551,6 +673,43 @@ namespace PLeD
                 throw;
             }
             
+        }
+
+        internal static void Redo()
+        {
+            try
+            {
+                CoordsAndIndex[] bricks = redoStack.Pop();
+                List<CoordsAndIndex> temp = new List<CoordsAndIndex>();
+
+                foreach (CoordsAndIndex brick in bricks)
+                {
+                    int tileCoordX = brick.X / EditorLogic.bricks[0].FrameWidth;
+                    int tileCoordY = brick.Y / EditorLogic.bricks[0].FrameHeight;
+
+                    int brickIndex = EditorLogic.currentLevel[tileCoordX, tileCoordY];
+                    temp.Add(new CoordsAndIndex(brick.X, brick.Y, brickIndex));
+
+                    EditorLogic.currentLevel[tileCoordX, tileCoordY] = brick.Index;
+
+                    EditorLogic.PaintBrick(brick.X, brick.Y, brick.Index, false);
+                }
+
+                EditorLogic.undoStack.Push(temp.ToArray());
+                EditorLogic.editorGrid.Render(EditorLogic.bufferBitmapGraphics);
+                EditorLogic.renderControl.Refresh();
+
+                if (EditorLogic.redoStack.Count == 0)
+                {
+                    EditorLogic.mainForm.SetRedo(false);
+                }
+
+                EditorLogic.mainForm.SetUndo(true);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -613,8 +772,152 @@ namespace PLeD
             
         }
 
+        /// <summary>
+        /// Displays the colour dialog so the user can change the colour of the grid.
+        /// </summary>
+        internal static void ShowColourDialog()
+        {
+            try
+            {
+                if (EditorLogic.colourDialog.ShowDialog() == DialogResult.OK)
+                {
+                    EditorLogic.editorGrid.Colour = EditorLogic.colourDialog.Color;
+                    RenderLevel();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            
+        }
+
         #endregion
 
-        
+        internal static void ToggleGrid()
+        {
+            try
+            {
+                // this has to be before calling RenderLevel() because the method 
+                // checks to see if the grid needs to be rendered.
+                EditorLogic.editorGrid.Visible = !EditorLogic.editorGrid.Visible;
+                EditorLogic.mainForm.CheckGridControls(EditorLogic.editorGrid.Visible);
+
+                EditorLogic.RenderLevel();
+
+                Properties.Settings.Default.GridIsVisible = EditorLogic.editorGrid.Visible;
+                Properties.Settings.Default.Save();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        internal static void Undo()
+        {
+
+            try
+            {
+                CoordsAndIndex[] poppedBricks = undoStack.Pop();
+                List<CoordsAndIndex> temp = new List<CoordsAndIndex>();
+
+                foreach (CoordsAndIndex brick in poppedBricks)
+                {
+                    // brick.x and brick.y contain screen coordinates. If you don't
+                    // convert to tile coordinates, you'll get a buffer overflow (and they'll be wrong regardless).
+                    int tileCoordX = brick.X / EditorLogic.bricks[0].FrameWidth;
+                    int tileCoordY = brick.Y / EditorLogic.bricks[0].FrameHeight;
+
+                    // take each brick we're about the paint over and stick them in a buffer.
+                    // the buffer will be passed to the redo stack when we're done.
+                    int brickIndex = EditorLogic.currentLevel[tileCoordX, tileCoordY];
+                    temp.Add(new CoordsAndIndex(brick.X, brick.Y, brickIndex));
+
+                    EditorLogic.currentLevel[tileCoordX, tileCoordY] = brick.Index;
+
+                    // disabling the refresh because otherwise each brick is drawn and then displayed.
+                    // It results in a domino-like effect; we want to see all the bricks appear at once.
+                    EditorLogic.PaintBrick(brick.X, brick.Y, brick.Index, false);
+                }
+
+                EditorLogic.redoStack.Push(temp.ToArray());
+                EditorLogic.editorGrid.Render(EditorLogic.bufferBitmapGraphics);
+                EditorLogic.renderControl.Refresh();
+
+                if (undoStack.Count == 0)
+                {
+                    EditorLogic.mainForm.SetUndo(false);
+                }
+
+                EditorLogic.mainForm.SetRedo(true);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        internal static void ListViewSelectionChanged()
+        {
+            // an item has been selected in the listview, so we're now in paint mode.
+            if(EditorLogic.listView.SelectedItems.Count == 1)
+            {
+                EditorLogic.editMode = EditMode.Brush;
+                EditorLogic.selectedBrick = listView.Items.IndexOf(listView.SelectedItems[0]);
+                EditorLogic.mainForm.CheckEraserControls(false);
+            }
+            else
+            {
+                // a brick was unselected; how we handle it depends on which edit mode we're in.
+                if(EditorLogic.editMode == EditMode.Brush)
+                {
+                    EditorLogic.editMode = EditMode.None;
+                }
+                else
+                {
+                    // user has selected the eraser, which was unselected the item.
+                    //EditorLogic.editMode = EditMode.
+                }
+            }
+        }
+
+        internal static void EditToolSelected(EditMode editMode)
+        {
+            // TODO: this needs to be refactored/rewritten. The switch is now redundant as its 
+            // only ever calld by the eraser button and menu item.
+
+            try
+            {
+                switch(editMode)
+                {
+                    case EditMode.Eraser:
+                        if(EditorLogic.editMode == EditMode.Eraser)
+                        {
+                            // user has unchecked the eraser button or menu item.
+                            EditorLogic.editMode = EditMode.None;
+                            EditorLogic.mainForm.CheckEraserControls(false);
+                        }
+                        else
+                        {
+                            //EditorLogic.mainForm.Cursor = mainForm.EraserCursor();
+                            EditorLogic.editMode = editMode;
+                            EditorLogic.selectedBrick = -1;
+                            EditorLogic.mainForm.ClearListViewSelection();
+                            EditorLogic.mainForm.CheckEraserControls(true);
+                        }
+                        
+                        break;
+                  
+                }
+            }
+            catch
+            {
+                throw; 
+            }
+        }
     }
 }

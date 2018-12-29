@@ -38,16 +38,16 @@ namespace PLeD
         int gridWidth;
         int gridHeight;
 
-        Color gridColor;
+        Color gridColour;
 
         // used to draw the grid.
-        Pen gridPen = new Pen(Color.Black);
+        Pen gridPen;
 
         // true if the grid is visible and being rendered, otherwise false.
         bool visible;
 
         bool disposed = false;
-
+        
         protected virtual void Dispose(bool disposing)
         {
             if(disposed)
@@ -61,6 +61,23 @@ namespace PLeD
             }
 
             disposed = true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="colour"></param>
+        /// <param name="visible"></param>
+        public Grid(int width, int height, Color colour, bool visible)
+        {
+            this.gridWidth = width;
+            this.gridHeight = height;
+            this.gridColour = colour;
+            this.visible = visible;
+
+            this.gridPen = new Pen(colour);
         }
 
         public void Dispose()
@@ -84,10 +101,19 @@ namespace PLeD
             }
 
             // horizontal lines
-            for(int i = 0; i < this.gridHeight; i++)
+            for (int i = 0; i <= this.gridHeight; i += cellHeight)
             {
                 renderTarget.DrawLine(this.gridPen, 0, i, this.gridWidth, i);
             }
+
+            // vertical lines
+            for(int i = 0; i < this.gridWidth; i+= cellWidth)
+            {
+                renderTarget.DrawLine(this.gridPen, i, 0, i, this.gridHeight);
+            }
+
+            renderTarget.DrawLine(this.gridPen, 1023, 0, 1023, 460);
+            
         }
 
         /// <summary>
@@ -123,16 +149,21 @@ namespace PLeD
 
         /// <summary>
         /// Gets or sets the colour of the grid.
+        /// When assigning a value, the settings file will be updated with the new value.
         /// </summary>
         public Color Colour
         {
             get
             {
-                return this.gridColor;
+                return this.gridColour;
             }
             set
             {
-                this.gridColor = value;
+                this.gridColour = value;
+                gridPen.Color = this.gridColour;
+               
+                Properties.Settings.Default.GridColour = this.gridColour;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -167,6 +198,7 @@ namespace PLeD
         }
         /// <summary>
         /// Gets or sets whether the grid is visible.
+        /// When assigning a value, the settings file will be updated with the new value.
         /// </summary>
         public bool Visible
         {
@@ -177,6 +209,8 @@ namespace PLeD
             set
             {
                 this.visible = value;
+                Properties.Settings.Default.GridIsVisible = this.visible;
+                Properties.Settings.Default.Save();
             }
         }
     }

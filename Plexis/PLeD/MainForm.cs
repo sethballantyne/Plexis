@@ -37,7 +37,7 @@ namespace PLeD
 
         private void DisplayErrorMessage(string message)
         {
-            string errorMessage = String.Format("An error occured while initialising the editor: {0}\n\nAdios!", message);
+            string errorMessage = String.Format("Unholy Error: {0}\n\nAdios!", message);
                 MessageBox.Show(errorMessage, "ERRAWR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
@@ -90,10 +90,7 @@ namespace PLeD
 				    // TOOLS MENU
 				    //-------------------------------------------
 				    eraserToolStripMenuItem.Enabled = false;
-				    eraserToolStripButton.Enabled = false;
-
-				    brushToolStripMenuItem.Enabled = false;
-                    brushToolStripButton.Enabled = false;
+                    eraserToolStripButton.Enabled = false;
                     break;
 
                 case GUIState.Editing:
@@ -119,10 +116,7 @@ namespace PLeD
 				    // TOOLS MENU
 				    //-------------------------------------------
 				    eraserToolStripMenuItem.Enabled = true;
-				    eraserToolStripButton.Enabled = true;
-
-				    brushToolStripMenuItem.Enabled = true;
-				    brushToolStripButton.Enabled = true;
+                    eraserToolStripButton.Enabled = true;
                     break;
                 default:
                     break;
@@ -196,9 +190,9 @@ namespace PLeD
             {
                 EditorLogic.SaveLevel();
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                DisplayErrorMessage(ex.Message);
             }
             
         }
@@ -209,9 +203,9 @@ namespace PLeD
             {
                 EditorLogic.SaveLevel();
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                DisplayErrorMessage(ex.Message);
             }
         }
 
@@ -221,15 +215,203 @@ namespace PLeD
             {
                 EditorLogic.SaveAs();
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                DisplayErrorMessage(ex.Message);
             }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.Undo();
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.Redo();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        internal void SetUndo(bool enabled)
+        {
+            undoToolStripButton.Enabled = undoToolStripMenuItem.Enabled = enabled;
+        }
+
+        internal void SetRedo(bool enabled)
+        {
+            redoToolStripButton.Enabled = redoToolStripMenuItem.Enabled = enabled;
+        }
+
+        private void toggleGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.ToggleGrid();
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void toggleGridToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.ToggleGrid();
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void undoToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.Undo();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void redoToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.Redo();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                EditorLogic.BeginPainting(e.Location);
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        internal void CheckGridControls(bool enabled)
+        {
+            toggleGridToolStripButton.Checked = toggleGridToolStripMenuItem.Checked = enabled;
+        }
+
+        private void gridColourToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EditorLogic.ShowColourDialog();
+        }
+
+        private void brickListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.ListViewSelectionChanged();
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void pictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                EditorLogic.Painting(e.Location);
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void pictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                EditorLogic.EndPainting();
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enabled"></param>
+        internal void SetSaveItems(bool enabled)
+        {
+            saveAsToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = saveLevelToolStripButton.Enabled = enabled;
+        }
+
+        private void eraserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.EditToolSelected(EditMode.Eraser);
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void eraserToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.EditToolSelected(EditMode.Eraser);
+            }
+            catch(Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        internal void ClearListViewSelection()
+        {
+            brickListView.SelectedItems.Clear();
+        }
+
+        private void brushToolStripButton_Click(object sender, EventArgs e)
+        {
+           
+        }
+
+        internal void CheckEraserControls(bool isChecked)
+        {
+            eraserToolStripButton.Checked = eraserToolStripMenuItem.Checked = isChecked;
         }
     }
 }
