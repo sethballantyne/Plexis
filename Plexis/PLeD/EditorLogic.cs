@@ -516,7 +516,42 @@ namespace PLeD
                 EditorLogic.bufferBitmap.Dispose();
             }
         }
-        
+
+        internal static void EditToolSelected(EditMode editMode)
+        {
+            // TODO: this needs to be refactored/rewritten. The switch is now redundant as its 
+            // only ever calld by the eraser button and menu item.
+
+            try
+            {
+                switch (editMode)
+                {
+                    case EditMode.Eraser:
+                        if (EditorLogic.editMode == EditMode.Eraser)
+                        {
+                            // user has unchecked the eraser button or menu item.
+                            EditorLogic.editMode = EditMode.None;
+                            EditorLogic.mainForm.CheckEraserControls(false);
+                        }
+                        else
+                        {
+                            //EditorLogic.mainForm.Cursor = mainForm.EraserCursor();
+                            EditorLogic.editMode = editMode;
+                            EditorLogic.selectedBrick = -1;
+                            EditorLogic.mainForm.ClearListViewSelection();
+                            EditorLogic.mainForm.CheckEraserControls(true);
+                        }
+
+                        break;
+
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// Loads the required XML and puts the editor into its default state.
         /// </summary>
@@ -525,7 +560,8 @@ namespace PLeD
         /// <param name="listView">the listview being used as a palette.</param>
         internal static void Initialise(MainForm mainForm, Control renderTarget, ImageList brickImageList, ListView listView)
         {
-            //mainForm.SetGUIState(GUIState.Default);
+            openFileDialog.Filter = "XML files|*.xml";
+            saveFileDialog.Filter = openFileDialog.Filter;
 
             EditorLogic.mainForm = mainForm;
             EditorLogic.listView = listView;
@@ -586,6 +622,30 @@ namespace PLeD
             catch
             {
                 throw;
+            }
+        }
+
+        internal static void ListViewSelectionChanged()
+        {
+            // an item has been selected in the listview, so we're now in paint mode.
+            if (EditorLogic.listView.SelectedItems.Count == 1)
+            {
+                EditorLogic.editMode = EditMode.Brush;
+                EditorLogic.selectedBrick = listView.Items.IndexOf(listView.SelectedItems[0]);
+                EditorLogic.mainForm.CheckEraserControls(false);
+            }
+            else
+            {
+                // a brick was unselected; how we handle it depends on which edit mode we're in.
+                if (EditorLogic.editMode == EditMode.Brush)
+                {
+                    EditorLogic.editMode = EditMode.None;
+                }
+                else
+                {
+                    // user has selected the eraser, which was unselected the item.
+                    //EditorLogic.editMode = EditMode.
+                }
             }
         }
 
@@ -858,65 +918,6 @@ namespace PLeD
             catch
             {
                 throw;
-            }
-        }
-
-        internal static void ListViewSelectionChanged()
-        {
-            // an item has been selected in the listview, so we're now in paint mode.
-            if(EditorLogic.listView.SelectedItems.Count == 1)
-            {
-                EditorLogic.editMode = EditMode.Brush;
-                EditorLogic.selectedBrick = listView.Items.IndexOf(listView.SelectedItems[0]);
-                EditorLogic.mainForm.CheckEraserControls(false);
-            }
-            else
-            {
-                // a brick was unselected; how we handle it depends on which edit mode we're in.
-                if(EditorLogic.editMode == EditMode.Brush)
-                {
-                    EditorLogic.editMode = EditMode.None;
-                }
-                else
-                {
-                    // user has selected the eraser, which was unselected the item.
-                    //EditorLogic.editMode = EditMode.
-                }
-            }
-        }
-
-        internal static void EditToolSelected(EditMode editMode)
-        {
-            // TODO: this needs to be refactored/rewritten. The switch is now redundant as its 
-            // only ever calld by the eraser button and menu item.
-
-            try
-            {
-                switch(editMode)
-                {
-                    case EditMode.Eraser:
-                        if(EditorLogic.editMode == EditMode.Eraser)
-                        {
-                            // user has unchecked the eraser button or menu item.
-                            EditorLogic.editMode = EditMode.None;
-                            EditorLogic.mainForm.CheckEraserControls(false);
-                        }
-                        else
-                        {
-                            //EditorLogic.mainForm.Cursor = mainForm.EraserCursor();
-                            EditorLogic.editMode = editMode;
-                            EditorLogic.selectedBrick = -1;
-                            EditorLogic.mainForm.ClearListViewSelection();
-                            EditorLogic.mainForm.CheckEraserControls(true);
-                        }
-                        
-                        break;
-                  
-                }
-            }
-            catch
-            {
-                throw; 
             }
         }
     }
