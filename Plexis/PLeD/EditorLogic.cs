@@ -320,6 +320,11 @@ namespace PLeD
             }
             catch
             {
+                // fix for #73. Don't allow the user to keep painting if an error
+                // is thrown; prevents a trail of bricks from being drawn after the user
+                // has released the mouse button to dismiss the message box caused by the exception.
+                EditorLogic.isPainting = false;
+
                 throw;
             }
         }
@@ -453,7 +458,7 @@ namespace PLeD
                    EditorLogic.editMode == EditMode.Eraser)
                 {
                     EditorLogic.isPainting = true;
-
+                    
                     int tileCoordX = mousePosition.X / EditorLogic.bricks[0].FrameWidth;
                     int tileCoordY = mousePosition.Y / EditorLogic.bricks[0].FrameHeight;
 
@@ -492,6 +497,11 @@ namespace PLeD
             }
             catch
             {
+                // fix for #73. Don't allow the user to keep painting if an error
+                // is thrown; prevents a trail of bricks from being drawn after the user
+                // has released the mouse button to dismiss the message box caused by the exception.
+                EditorLogic.isPainting = false;
+
                 throw;
             }
         }
