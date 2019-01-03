@@ -35,9 +35,13 @@ namespace PLeD
             SetGUIState(GUIState.Default);
         }
 
+        /// <summary>
+        /// Displays an error message to the user based on an exception thrown by EditorLogic.
+        /// </summary>
+        /// <param name="message">the exceptions Message property.</param>
         private void DisplayErrorMessage(string message)
         {
-            string errorMessage = String.Format("Unholy Error: {0}\n\nAdios!", message);
+            string errorMessage = String.Format("Exception caught with message: {0}\n\n", message);
                 MessageBox.Show(errorMessage, "ERRAWR!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
