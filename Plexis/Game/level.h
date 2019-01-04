@@ -53,7 +53,20 @@ public:
     /// </remarks>
     void PutBrickAt(unsigned int x, unsigned int y, String ^brickName)
     {
+		if (nullptr == brickName)
+		{
+			throw gcnew ArgumentNullException("brickName");
+		}
+		else if (String::Empty == brickName)
+		{
+			throw gcnew ArgumentException("brickName evaluates to String::Empty.");
+		}
+
         level[x, y] = EntityManager::GetEntity<Brick ^>(brickName);
+		if (nullptr == level[x, y])
+		{
+			throw gcnew UnknownEntityException(String::Format("Unknown entity {0}. Check the entities file to see if it's present.", brickName));
+		}
 
         int spriteWidth = level[x, y]->Sprite->CurrentFrame->Coordinates.Width;
         int spriteHeight = level[x, y]->Sprite->CurrentFrame->Coordinates.Height;
