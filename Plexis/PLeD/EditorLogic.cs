@@ -46,6 +46,9 @@ namespace PLeD
         // the current level being edited.
         static Level currentLevel;
 
+        const uint levelWidth = 25;
+        const uint levelHeight = 23;
+
         // the editors GUI.
         static MainForm mainForm;
 
@@ -437,7 +440,7 @@ namespace PLeD
                     int tileCoordY = mousePosition.Y / EditorLogic.bricks[0].FrameHeight;
 
                     // don't allow drawing out of bounds.
-                    if(tileCoordX < 25 && tileCoordY < 23)
+                    if (tileCoordX < EditorLogic.currentLevel.Width && tileCoordY < EditorLogic.currentLevel.Height)
                     {
                         // no point in painting a brick if it's already at these coordinates
                         if(EditorLogic.currentLevel[tileCoordX, tileCoordY] != EditorLogic.selectedBrick)
@@ -587,7 +590,8 @@ namespace PLeD
 
             EditorLogic.renderControl.BackgroundImage = bufferBitmap;
 
-            EditorLogic.editorGrid = new Grid(1024, 460,
+            EditorLogic.editorGrid = new Grid(EditorLogic.renderControl.Size.Width, 
+                EditorLogic.renderControl.Size.Height,
                 Properties.Settings.Default.GridColour, 
                 Properties.Settings.Default.GridIsVisible);
 
@@ -681,7 +685,7 @@ namespace PLeD
                     int tileCoordX = mousePosition.X / EditorLogic.bricks[0].FrameWidth;
                     int tileCoordY = mousePosition.Y / EditorLogic.bricks[0].FrameHeight;
 
-                    if (tileCoordX < 25 && tileCoordY < 23)
+                    if (tileCoordX < EditorLogic.currentLevel.Width && tileCoordY < EditorLogic.currentLevel.Height)
                     {
                         if (EditorLogic.currentLevel[tileCoordX, tileCoordY] != EditorLogic.selectedBrick)
                         {
@@ -741,7 +745,7 @@ namespace PLeD
 
             ResetState();
 
-            EditorLogic.currentLevel = new Level(25, 23);
+            EditorLogic.currentLevel = new Level(EditorLogic.levelWidth, EditorLogic.levelHeight);
 
             editorGrid.Render(EditorLogic.bufferBitmapGraphics);
             renderControl.Refresh();
