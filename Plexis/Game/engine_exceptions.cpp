@@ -20,44 +20,47 @@
 #include <vcclr.h>
 #include "engine_exceptions.h"
 
-String ^Win32Exception::Format(String ^function)
-{
-    if(function == nullptr)
-    {
-        throw gcnew ArgumentNullException("function");
-    }
+using namespace System::Runtime::InteropServices;
 
-    LPVOID lpMessageBuffer;
-    LPVOID lpDisplayBuffer;
-    DWORD lastError = GetLastError();
-
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER |
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        lastError,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR)&lpMessageBuffer,
-        0, NULL);
-
-    pin_ptr<const wchar_t> pinnedFunctionString = PtrToStringChars(function);
-
-    // allocate memory for the message string
-    lpDisplayBuffer = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
-        (lstrlen((LPCTSTR)lpMessageBuffer) + function->Length + 40) * sizeof(TCHAR));
-
-    // print the string into the allocated buffer.
-    StringCchPrintf((LPTSTR)lpDisplayBuffer,
-        LocalSize(lpDisplayBuffer) / sizeof(TCHAR),
-        TEXT("%s failed with error %d: %s"),
-        pinnedFunctionString, pinnedFunctionString, lpMessageBuffer);
-
-    // convert the buffer to a managed string.
-    String ^formattedMessage = gcnew String((wchar_t *) lpDisplayBuffer);
-
-    LocalFree(lpMessageBuffer);
-    LocalFree(lpDisplayBuffer);
-
-    return formattedMessage;
-}
+//String ^Win32Exception::Format(String ^function)
+//{
+//    if(function == nullptr)
+//    {
+//        throw gcnew ArgumentNullException("function");
+//    }
+//
+//	
+//    LPVOID lpMessageBuffer;
+//    LPVOID lpDisplayBuffer;
+//	DWORD lastError = Marshal::GetLastWin32Error();
+//
+//    FormatMessage(
+//        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+//        FORMAT_MESSAGE_FROM_SYSTEM |
+//        FORMAT_MESSAGE_IGNORE_INSERTS,
+//        NULL,
+//        lastError,
+//        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+//        (LPTSTR)&lpMessageBuffer,
+//        0, NULL);
+//
+//    pin_ptr<const wchar_t> pinnedFunctionString = PtrToStringChars(function);
+//
+//    // allocate memory for the message string
+//    lpDisplayBuffer = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
+//        (lstrlen((LPCTSTR)lpMessageBuffer) + function->Length + 40) * sizeof(TCHAR));
+//
+//    // print the string into the allocated buffer.
+//    StringCchPrintf((LPTSTR)lpDisplayBuffer,
+//        LocalSize(lpDisplayBuffer) / sizeof(TCHAR),
+//        TEXT("%s failed with error %d: %s"),
+//        pinnedFunctionString, lastError, lpMessageBuffer);
+//
+//    // convert the buffer to a managed string.
+//    String ^formattedMessage = gcnew String((wchar_t *) lpDisplayBuffer);
+//
+//    LocalFree(lpMessageBuffer);
+//    LocalFree(lpDisplayBuffer);
+//
+//    return formattedMessage;
+//}
