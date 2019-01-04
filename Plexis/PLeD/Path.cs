@@ -23,9 +23,21 @@ using System.Text;
 
 namespace PLeD
 {
+    /// <summary>
+    /// Represents a single resource path read from paths.xml
+    /// </summary>
     struct Path
     {
+        /// <summary>
+        /// <b>true</b> if all the subdirectories within the directory pointed to be ResourcePath
+        /// should also be processed for the same resource type contained in ResourcePath, otherwise <b>false</b>.
+        /// This is the value of the inclueSubDirectories attribute contained within every &lt;path&gt element.
+        /// </summary>
         public bool IncludeSubDirectories;
+
+        /// <summary>
+        /// The value of a &lt;path&gt; element in paths.xml; points to directory containg a resource of a particular type. 
+        /// </summary>
         public string ResourcePath;
     }
 }

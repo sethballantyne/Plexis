@@ -24,37 +24,37 @@ using System.Text;
 namespace PLeD
 {
     /// <summary>
-    /// 
+    /// Represents a brick parsed from entities.xml.
     /// </summary>
     internal struct Brick
     {
         /// <summary>
-        /// 
+        /// The X position of the first frame in the sprite sheet.
         /// </summary>
         public int FrameX;
 
         /// <summary>
-        /// 
+        /// The Y position of the first frame in the sprite sheet.
         /// </summary>
         public int FrameY;
 
         /// <summary>
-        /// 
+        /// The width of a frame. It's assumed all frames are the same width.
         /// </summary>
         public int FrameWidth;
 
         /// <summary>
-        /// 
+        /// The height of a frame. It's assumed all frames are the same height.
         /// </summary>
         public int FrameHeight;
 
         /// <summary>
-        /// 
+        /// The name of the brick as specified in the <c>name</c> attribute in entities.xml. Must be unique.
         /// </summary>
         public string Name;
 
         /// <summary>
-        /// 
+        /// The filename of the bricks spritesheet, minus file extension.
         /// </summary>
         public string ImageName;
     }

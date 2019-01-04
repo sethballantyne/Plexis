@@ -57,6 +57,10 @@ namespace PLeD
             }
         }
 
+        /// <summary>
+        /// Enables or disables controls based on the state the Editor is being put in.
+        /// </summary>
+        /// <param name="guiState">The state of the editor</param>
         internal void SetGUIState(GUIState guiState)
         {
             switch(guiState)
@@ -254,11 +258,19 @@ namespace PLeD
             }
         }
 
+        /// <summary>
+        /// enables or disables the undo menu item and toolstrip button.
+        /// </summary>
+        /// <param name="enabled"><b>true</b> to enable the GUI items, <b>false</b> to disable.</param>
         internal void SetUndo(bool enabled)
         {
             undoToolStripButton.Enabled = undoToolStripMenuItem.Enabled = enabled;
         }
 
+        /// <summary>
+        /// enables or disables the redo menu item and toolstrip button.
+        /// </summary>
+        /// <param name="enabled"><b>true</b> to enable the GUI items, <b>false</b> to disable.</param>
         internal void SetRedo(bool enabled)
         {
             redoToolStripButton.Enabled = redoToolStripMenuItem.Enabled = enabled;
@@ -324,6 +336,10 @@ namespace PLeD
             }
         }
 
+        /// <summary>
+        /// Checks or unchecks the grid menu item and toolstrip button.
+        /// </summary>
+        /// <param name="enabled"><b>true</b> if the items should be checked, otherwise <b>false</b>.</param>
         internal void CheckGridControls(bool enabled)
         {
             toggleGridToolStripButton.Checked = toggleGridToolStripMenuItem.Checked = enabled;
@@ -371,9 +387,9 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Enables or disables the save menu items and toolstrip button.
         /// </summary>
-        /// <param name="enabled"></param>
+        /// <param name="enabled"><b>true</b> if the GUI items should be enabled, otherwise <b>false</b>.</param>
         internal void SetSaveItems(bool enabled)
         {
             saveAsToolStripMenuItem.Enabled = saveToolStripMenuItem.Enabled = saveLevelToolStripButton.Enabled = enabled;
@@ -403,16 +419,21 @@ namespace PLeD
             }
         }
 
+        /// <summary>
+        /// Unselects all bricks in the list view.
+        /// </summary>
+        /// <remarks>
+        /// This is a good example of why encapsulation can be a load of shit.
+        /// </remarks>
         internal void ClearListViewSelection()
         {
             brickListView.SelectedItems.Clear();
         }
 
-        private void brushToolStripButton_Click(object sender, EventArgs e)
-        {
-           
-        }
-
+        /// <summary>
+        /// Checks or unchecks the eraser toolstrip button and menu item.
+        /// </summary>
+        /// <param name="isChecked"><b>true</b> if the gui items should be put into a checked state, otherwise <b>false</b>.</param>
         internal void CheckEraserControls(bool isChecked)
         {
             eraserToolStripButton.Checked = eraserToolStripMenuItem.Checked = isChecked;

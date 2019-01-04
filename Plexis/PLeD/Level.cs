@@ -120,7 +120,7 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets how many bricks high the level is.
         /// </summary>
         public uint Height
         {
@@ -135,7 +135,7 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets how many bricks wide the level is.
         /// </summary>
         public uint Width
         {

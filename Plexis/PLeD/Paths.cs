@@ -23,10 +23,19 @@ using System.Text;
 
 namespace PLeD
 {
-
+    /// <summary>
+    /// Contains the locations of game resources required by the Editor.
+    /// </summary>
     struct Paths
     {
+        /// <summary>
+        /// The directories containing bitmap resources.
+        /// </summary>
         public Path[] BitmapPaths;
+
+        /// <summary>
+        /// The directories containing XML resources.
+        /// </summary>
         public Path[] XMLPaths;
     }
 }

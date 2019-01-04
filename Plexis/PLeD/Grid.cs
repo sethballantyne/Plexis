@@ -64,12 +64,12 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Initialies a new instance of Grid with the specified dimensions, colour and visibility.
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="colour"></param>
-        /// <param name="visible"></param>
+        /// <param name="width">the width of the grid in pixels.</param>
+        /// <param name="height">the height of the grid in pixels.</param>
+        /// <param name="colour">the desired colour of the grid.</param>
+        /// <param name="visible"><b>true</b> to render the grid, otherwise <b>false</b>.</param>
         public Grid(int width, int height, Color colour, bool visible)
         {
             this.gridWidth = width;
@@ -117,7 +117,7 @@ namespace PLeD
         }
 
         /// <summary>
-        /// Gets or sets the height of the cells within the grid.
+        /// Gets or sets the height of the cells within the grid in pixels.
         /// </summary>
         public int CellHeight
         {
@@ -133,7 +133,7 @@ namespace PLeD
         }
 
         /// <summary>
-        /// Gets or sets the width of the cells within the grid.
+        /// Gets or sets the width of the cells within the grid in pixels.
         /// </summary>
         public int CellWidth
         {
@@ -183,7 +183,7 @@ namespace PLeD
         }
 
         /// <summary>
-        /// Gets or sets the total width of the grid.
+        /// Gets or sets the total width of the grid in pixels.
         /// </summary>
         public int Width
         {

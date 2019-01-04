@@ -37,35 +37,67 @@ namespace PLeD
         #region private
         // all the bricks loaded from entities.xml.
         static Brick[] bricks;
+
+        // paths for XML and bitmap data required by the editor.
         static Paths paths;
 
         static Grid editorGrid;
+
+        // the current level being edited.
         static Level currentLevel;
 
+        // the editors GUI.
         static MainForm mainForm;
+
+        // the list view containing the bricks.
         static ListView listView;
+
+        // the control used to render the map when it's displayed.
         static Control renderControl;
+
+        // contains all the bricks loaded from the directories contained in
+        // EditorLogic.paths. Required so the List View control can display the bricks.
         static ImageList imageList;
 
         static SaveFileDialog saveFileDialog = new SaveFileDialog();
         static OpenFileDialog openFileDialog = new OpenFileDialog();
         static ColorDialog colourDialog = new ColorDialog();
 
+        // off screen surface that the levels are rendered to, then it's passed
+        // to EditorLogic.renderControl to display the level on the screen.
         static Bitmap bufferBitmap;
+
+        // bufferBitmap's drawing surface. 
         static Graphics bufferBitmapGraphics;
 
+        // used when the user erases a brick 
         static SolidBrush blackBrush = new SolidBrush(Color.Black);
 
+        // buffers to hold painted bricks so the user can undo/redo as needed.
         static Stack<CoordsAndIndex[]> undoStack = new Stack<CoordsAndIndex[]>();
         static Stack<CoordsAndIndex[]> redoStack = new Stack<CoordsAndIndex[]>();
+
+        // buffer used to hold bricks as they're being painted. It's copied to undoStack and cleared
+        // when the user unpresses the mouse button.
         static List<CoordsAndIndex> paintBuffer = new List<CoordsAndIndex>();
 
+        // the absolute path for the games directory.
         static string gameDirectory;
+
+        // the absolute path of the level that's currently being edited.
         static string currentLevelFilename;
 
+        // specifies whether the user is currently using the eraser, the brush or neither.
         static EditMode editMode = EditMode.None;
+
+        // true if the latest edits to the level has been saved, otherwise false.
         static bool workSaved = true;
+
+        // the ListView's selected index of the currently selected brick.
+        // applied to the image list so bricks can actually be painted.
         private static int selectedBrick;
+
+        // true if the user has the mouse button down and is currently painting bricks on EditorLogic.renderControl.
         private static bool isPainting;
 
         /// <summary>
@@ -108,33 +140,7 @@ namespace PLeD
            
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="point"></param>
-        internal static void EndPainting()
-        {
-            try
-            {
-                EditorLogic.isPainting = false;
-                if(EditorLogic.paintBuffer.Count > 0)
-                {
-                    // we've painted some bricks, so add the old ones that we painted over
-                    // to the undo stack. When we click Undo, they'll magically appear
-                    // and peace will be throughout the land.
-                    EditorLogic.undoStack.Push(EditorLogic.paintBuffer.ToArray());
-                    EditorLogic.paintBuffer.Clear();
-
-                    EditorLogic.mainForm.SetUndo(true);
-                }
-
-                EditorLogic.mainForm.SetSaveItems(true);
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        
 
         /// <summary>
         /// Searches the specified paths for a specific image.
@@ -286,48 +292,7 @@ namespace PLeD
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="mousePosition"></param>
-        internal static void Painting(Point mousePosition)
-        {
-            try
-            {
-                if (EditorLogic.isPainting)
-                {
-                    int tileCoordX = mousePosition.X / EditorLogic.bricks[0].FrameWidth;
-                    int tileCoordY = mousePosition.Y / EditorLogic.bricks[0].FrameHeight;
-
-                    if (tileCoordX < 25 && tileCoordY < 23)
-                    {
-                        if (EditorLogic.currentLevel[tileCoordX, tileCoordY] != EditorLogic.selectedBrick)
-                        {
-                            // they might appear to be the same as the mouse coordinates but
-                            // they're not; these cause the brick to "snap" into place, so everything
-                            // is nicely tiled.
-                            int screenX = tileCoordX * EditorLogic.bricks[0].FrameWidth;
-                            int screenY = tileCoordY * EditorLogic.bricks[0].FrameHeight;
-
-                            int oldBrick = EditorLogic.currentLevel[tileCoordX, tileCoordY];
-                            EditorLogic.paintBuffer.Add(new CoordsAndIndex(screenX, screenY, oldBrick));
-
-                            EditorLogic.currentLevel[tileCoordX, tileCoordY] = selectedBrick;
-                            EditorLogic.PaintBrick(screenX, screenY, selectedBrick, true);
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                // fix for #73. Don't allow the user to keep painting if an error
-                // is thrown; prevents a trail of bricks from being drawn after the user
-                // has released the mouse button to dismiss the message box caused by the exception.
-                EditorLogic.isPainting = false;
-
-                throw;
-            }
-        }
+        
 
         /// <summary>
         /// Displays a message box asking the user if they want to save any changes made.
@@ -371,7 +336,8 @@ namespace PLeD
 
         
         /// <summary>
-        /// 
+        /// Puts the Editor into a GUIState.Editing state with a blank level visible.
+        /// Effectively the same state as selecting File->New.
         /// </summary>
         static void ResetState()
         {
@@ -450,6 +416,14 @@ namespace PLeD
         #endregion
         #region internal
 
+        /// <summary>
+        /// Draws or erases the selected brick and puts the editor into a "painting" state.
+        /// </summary>
+        /// <param name="mousePosition">pixel coordinates of the mouse pointer.</param>
+        /// <remarks>The coordinates passed via <c>mousePosition</c> don't reflect where the brick
+        /// will be drawn. Bricks have to tile, so the coordinates will most likely be modified
+        /// during the methods execution so the brick "snaps" into place at the correct coordinate. 
+        /// In other words, they'll be converted from screen coordinates to brick (tile) coordinates.</remarks>
         internal static void BeginPainting(Point mousePosition)
         {
             try
@@ -527,6 +501,10 @@ namespace PLeD
             }
         }
 
+        /// <summary>
+        /// Puts the editor into the specified edit mode.
+        /// </summary>
+        /// <param name="editMode">the mode the user has selected.</param>
         internal static void EditToolSelected(EditMode editMode)
         {
             // TODO: this needs to be refactored/rewritten. The switch is now redundant as its 
@@ -555,6 +533,33 @@ namespace PLeD
                         break;
 
                 }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Finalizes the painting operation and updates the GUI.
+        /// </summary>
+        internal static void EndPainting()
+        {
+            try
+            {
+                EditorLogic.isPainting = false;
+                if (EditorLogic.paintBuffer.Count > 0)
+                {
+                    // we've painted some bricks, so add the old ones that we painted over
+                    // to the undo stack. When we click Undo, they'll magically appear
+                    // and peace will be throughout the land.
+                    EditorLogic.undoStack.Push(EditorLogic.paintBuffer.ToArray());
+                    EditorLogic.paintBuffer.Clear();
+
+                    EditorLogic.mainForm.SetUndo(true);
+                }
+
+                EditorLogic.mainForm.SetSaveItems(true);
             }
             catch
             {
@@ -635,6 +640,9 @@ namespace PLeD
             }
         }
 
+        /// <summary>
+        /// Updates the editing state based on what's been selected (deselected) in the listview.
+        /// </summary>
         internal static void ListViewSelectionChanged()
         {
             // an item has been selected in the listview, so we're now in paint mode.
@@ -660,7 +668,51 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Paints a brick at the specified mouse coordinates. This method is designed to be called as 
+        /// the mouse moves.
+        /// </summary>
+        /// <param name="mousePosition">The pixel coordinates of the mouse.</param>
+        internal static void Painting(Point mousePosition)
+        {
+            try
+            {
+                if (EditorLogic.isPainting)
+                {
+                    int tileCoordX = mousePosition.X / EditorLogic.bricks[0].FrameWidth;
+                    int tileCoordY = mousePosition.Y / EditorLogic.bricks[0].FrameHeight;
+
+                    if (tileCoordX < 25 && tileCoordY < 23)
+                    {
+                        if (EditorLogic.currentLevel[tileCoordX, tileCoordY] != EditorLogic.selectedBrick)
+                        {
+                            // they might appear to be the same as the mouse coordinates but
+                            // they're not; these cause the brick to "snap" into place, so everything
+                            // is nicely tiled.
+                            int screenX = tileCoordX * EditorLogic.bricks[0].FrameWidth;
+                            int screenY = tileCoordY * EditorLogic.bricks[0].FrameHeight;
+
+                            int oldBrick = EditorLogic.currentLevel[tileCoordX, tileCoordY];
+                            EditorLogic.paintBuffer.Add(new CoordsAndIndex(screenX, screenY, oldBrick));
+
+                            EditorLogic.currentLevel[tileCoordX, tileCoordY] = selectedBrick;
+                            EditorLogic.PaintBrick(screenX, screenY, selectedBrick, true);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // fix for #73. Don't allow the user to keep painting if an error
+                // is thrown; prevents a trail of bricks from being drawn after the user
+                // has released the mouse button to dismiss the message box caused by the exception.
+                EditorLogic.isPainting = false;
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Implements the File->New functionality.
         /// </summary>
         internal static void NewLevel()
         {
@@ -745,6 +797,9 @@ namespace PLeD
             
         }
 
+        /// <summary>
+        /// Implements Edit->Redo functionality.
+        /// </summary>
         internal static void Redo()
         {
             try
@@ -864,6 +919,9 @@ namespace PLeD
 
         #endregion
 
+        /// <summary>
+        /// Functionality for the grid menu item and toolstrip button.
+        /// </summary>
         internal static void ToggleGrid()
         {
             try
@@ -885,7 +943,7 @@ namespace PLeD
         }
 
         /// <summary>
-        /// 
+        /// Edit->Undo functionality.
         /// </summary>
         internal static void Undo()
         {
