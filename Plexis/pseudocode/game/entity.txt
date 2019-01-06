@@ -1,4 +1,4 @@
-class Entity : abstract, IEquatable
+class Entity : abstract
 private
     Sprite sprite
     Vector2D velocity
@@ -12,8 +12,10 @@ private
     function UpdatePosition(int x, int y)
         e->sprite->Position->X := x
         e->sprite->Position->Y := y
-        e->BoundingBox->X := x
-        e->BoundingBox->Y := y
+		e->sprite->CurrentFrame->BoundingBox.X := x
+		e->sprite->CurrentFrame->BoundingBox.Y := y
+        //e->BoundingBox->X := x
+        //e->BoundingBox->Y := y
     end function
 
 public
@@ -78,7 +80,7 @@ public
         hash *= 37 + attachments::GetHashCode()
         hash *= 37 + speed::GetHashCode()
         hash *= 37 + attached::GetHashCode()
-        hash *= 37 + id::GetHashCode()
+        hash *= 37 + name::GetHashCode()
         hash *= 37 + boundingBox::GetHashCode()
         return hash
     end function
