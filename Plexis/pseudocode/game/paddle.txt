@@ -2,8 +2,7 @@ class Paddle : Entity
 private
 
 public
-    constructor(Sprite paddleSprite, Rectangle boundingBox) 
-        : Entity(paddleSprite, Vector(0, 0), boundingBox)
+    constructor(Sprite paddleSprite) : Entity(paddleSprite, Vector(0, 0))
         
     end constructor
 
