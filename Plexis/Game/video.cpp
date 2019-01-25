@@ -382,6 +382,9 @@ void Video::CreateFullScreenWindow(HWND hWnd, unsigned int width, unsigned int h
     {
         throw;
     }
+
+	Video::width = width;
+	Video::height = height;
 }
 
 Surface ^Video::CreateSurface(HBITMAP hBitmap)

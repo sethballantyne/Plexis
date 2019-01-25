@@ -59,8 +59,6 @@ public:
     /// specified by the levels <c>width</c> and <c>height</c> attributes.</exception>
     static Level ^GetNextLevel()
     {
-        currentLevel++;
-
         if(currentLevel >= levels->Length)
         {
             currentLevel = 0;
@@ -68,11 +66,23 @@ public:
 
         try
         {
-            return ReadLevel(levels[currentLevel]);
+            Level ^newLevel = ReadLevel(levels[currentLevel]);
+			currentLevel++;
+
+			return newLevel;
         }
         catch(...)
         {
             throw;
         }
     }
+
+	/// <summary>
+	/// Resets the level counter back to 0. When this is called, the next time LevelManager::GetNextLevel()
+	/// is called, the first level will be returned.
+	/// </summary>
+	static void ResetLevelCounter()
+	{
+		currentLevel = 0;
+	}
 };

@@ -21,43 +21,55 @@
 #include "scenemanager.h"
 #include "entitymanager.h"
 #include "levelmanager.h"
+#include "gamelogic.h"
 
 public ref class GameView : SelectableControl
 {
 private:
     Label ^text;
-    String ^gameInProgressMainMenuScene;
-    String ^highScorePrompt;
-    Level ^currentLevel = nullptr;
+    //String ^gameInProgressMainMenuScene;
+    //String ^highScorePrompt;
+    //Level ^currentLevel = nullptr;
+	GameLogic ^gameLogic;
 public:
     GameView(String ^gameInProgressMainMenu, String ^highScorePrompt) : SelectableControl(0, 0, 0, gcnew System::Drawing::Size(0, 0))
     {
-        text = gcnew Label(0, 0, "green", "game view");
-        gameInProgressMainMenuScene = gameInProgressMainMenu;
-        IsSelected = true;
+       text = gcnew Label(0, 0, "green", "game view");
+       // gameInProgressMainMenuScene = gameInProgressMainMenu;
+       IsSelected = true;
+	   gameLogic = gcnew GameLogic(gameInProgressMainMenu, highScorePrompt);
     }
 
     void ReceiveSceneArgs(array<Object ^, 1> ^sceneArgs) override
     {
         if(sceneArgs != nullptr && sceneArgs[0] != nullptr)
         {
-            text->Text = (String ^) sceneArgs[0];
+			if("new" == (String ^)sceneArgs[0])
+			{
+				gameLogic->NewGame();
+			}
+
+			gameLogic->UpdateKeys();
+            //text->Text = (String ^) sceneArgs[0];
         }
 
-        currentLevel = LevelManager::GetNextLevel();
+        //currentLevel = LevelManager::GetNextLevel();
     }
 
     void Update(Keys ^keyboardState, Mouse ^mouseState) override
     {
-        if(keyboardState->KeyPressed(DIK_ESCAPE))
+		gameLogic->Update(keyboardState, mouseState);
+        /*if(keyboardState->KeyPressed(DIK_ESCAPE))
         {
             SceneManager::SetActiveScene(gameInProgressMainMenuScene, nullptr);
-        }
+        }*/
+		
     }
 
     void Render() override
     {
-        currentLevel->Render();
+		gameLogic->Render();
+        //currentLevel->Render();
         //text->Render();
     }
 };

@@ -186,6 +186,24 @@
     <ClInclude Include="levelmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="paddle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamelogic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamestate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="numericfield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -279,6 +297,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="levelmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="paddle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamelogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

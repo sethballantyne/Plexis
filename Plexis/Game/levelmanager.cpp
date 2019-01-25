@@ -45,7 +45,7 @@ Level ^LevelManager::ReadLevel(String ^levelFile)
         unsigned int levelBricksHigh = XmlHelper::GetAttributeValueAsUInt32(levelXml, "height");
 
         Level ^newLevel = gcnew Level(levelBricksWide, levelBricksHigh);
-
+		
         System::Collections::Generic::IEnumerable<XElement ^> ^brickQuery = levelXml->Elements((String ^)"brick");
         if(0 == XmlHelper::Count(brickQuery))
         {
@@ -79,6 +79,7 @@ Level ^LevelManager::ReadLevel(String ^levelFile)
                 
                 // put a new instance of this brick at the specified coordinates.
                 newLevel->PutBrickAt(x, y, name);
+				newLevel->BrickCount++;
             }
         }
 

@@ -37,7 +37,7 @@ private:
 
     // entity attached to this instance; these will move when the Entity
     // they're attached to moves.
-    List<Entity ^> ^attachments = nullptr;
+    List<Entity ^> ^attachments = gcnew List<Entity ^>();
 
     // current movement speed of the entity.
     float speed = 0.0f;
@@ -55,8 +55,9 @@ private:
 
     void UpdatePosition(int x, int y)
     {
+		//this->Pos
+		//this->Position.Y = y;
     }
-
 public:
     /// <summary>
     /// Creates a new <see cref="Entity" /> instance.
@@ -97,9 +98,19 @@ public:
         {
             throw gcnew ArgumentException("attaching an entity that's already attached.");
         }
+		else if(entityToAttach->Attached)
+		{
+			throw gcnew ArgumentException("attaching an entity that's already attached to another entity.");
+		}
 
         entityToAttach->Velocity = this->velocity;
-        entityToAttach->UpdatePosition(x, y);
+
+		// update the attachments position in the game based on the specified local coordinates
+		int screenX = this->BoundingBox.X + x;
+		int screenY = this->BoundingBox.Y + y;
+
+		entityToAttach->LocalCoordinates = System::Drawing::Point(x, y);
+        entityToAttach->SetPosition(screenX, screenY);
 
         this->attachments->Add(entityToAttach);
         entityToAttach->Attached = true;
@@ -116,11 +127,9 @@ public:
         {
             throw gcnew ArgumentNullException("entityToUnAttach");
         }
-        
-        if(attachments->Remove(entityToUnAttach))
-        {
-            entityToUnAttach->Attached = false;
-        }
+
+		attachments->Remove(entityToUnAttach);
+        entityToUnAttach->Attached = false;
     }
 
     /// <summary>
@@ -202,8 +211,8 @@ public:
             entity->Speed == speed &&
             entity->Attached == attached &&
             entity->Name == name &&
-            entity->BoundingBox == boundingBox &&
-            Equals(entity))
+            entity->BoundingBox == boundingBox) //&&
+            //Equals(entity))
         {
             return true;
         }
@@ -228,6 +237,19 @@ public:
 
     }
 
+	/// <summary>
+	/// Unattaches everything attached to the entity.
+	/// </summary>
+	void RemoveAttachments()
+	{
+		for(int i = 0; i < this->attachments->Count; i++)
+		{
+			this->attachments[i]->attached = false;
+		}
+
+		this->attachments->Clear();
+	}
+
     /// <summary>
     /// Updates the screen coordinates of the entity.
     /// </summary>
@@ -240,6 +262,14 @@ public:
 
         this->BoundingBox.X = this->sprite->Position.X + this->sprite->CurrentFrame->BoundingBox.X;
         this->BoundingBox.Y = this->sprite->Position.Y + this->sprite->CurrentFrame->BoundingBox.Y;
+
+		for(int i = 0; i < this->attachments->Count; i++)
+		{
+			int attachmentX = this->Sprite->Position.X + this->attachments[i]->LocalCoordinates.X;
+			int attachmentY = this->Sprite->Position.Y + this->attachments[i]->LocalCoordinates.Y;
+
+			this->attachments[i]->SetPosition(attachmentX, attachmentY);
+		}
     }
 
     /// <summary>
@@ -289,7 +319,7 @@ public:
     /// <summary>
     /// Gets or sets the entity's position on the screen.
     /// </summary>
-    property System::Drawing::Point Position
+    /*property System::Drawing::Point Position
     {
         System::Drawing::Point get()
         {
@@ -300,19 +330,19 @@ public:
         {
             SetPosition(value.X, value.Y);
         }
-    }
+    }*/
 
     /// <summary>
     /// Gets or sets the entity's current velocity.
     /// </summary>
-    property Vector2 Velocity
+    property Vector2% Velocity
     {
-        Vector2 get()
+        Vector2% get()
         {
             return velocity;
         }
 
-        void set(Vector2 value)
+        void set(Vector2% value)
         {
             this->velocity = value;
         }
@@ -360,4 +390,6 @@ public:
             return name;
         }
     }
+
+	System::Drawing::Point LocalCoordinates = System::Drawing::Point(0,0);
 };

@@ -72,6 +72,8 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
     try
     {
+		ShowCursor(false);
+
         LogManager::WriteLine(LogType::Log, "Initialising video");
         Video::Initialise();
 
@@ -95,17 +97,19 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
         ResourceManager::LoadResources();
         ResourceManager::UpdateVolume(GameOptions::GetValue("soundVolume", 50));
 
-        LogManager::WriteLine(LogType::Log, "loading high scores");
-        HighScores::Initialise("highscores.dat");
+		LogManager::WriteLine(LogType::Log, "loading entities.");
+		EntityManager::Initialise(ResourceManager::GetXML("entities"));
 
-        LogManager::WriteLine(LogType::Log, "loading scenes");
-        SceneManager::Initialise(ResourceManager::GetXML("scenes"));
+		// highscores have to be loaded before the scenes, otherwise the
+		// highscore table will be populated with default values.
+		LogManager::WriteLine(LogType::Log, "loading high scores");
+		HighScores::Initialise("highscores.dat");
 
-        LogManager::WriteLine(LogType::Log, "loading entities.");
-        EntityManager::Initialise(ResourceManager::GetXML("entities"));
+		LogManager::WriteLine(LogType::Log, "loading scenes");
+		SceneManager::Initialise(ResourceManager::GetXML("scenes"));
 
-        LogManager::WriteLine(LogType::Log, "loading levels list.");
-        LevelManager::Initialise(ResourceManager::GetXML("levels"));
+		LogManager::WriteLine(LogType::Log, "loading levels list.");
+		LevelManager::Initialise(ResourceManager::GetXML("levels"));
     }
     catch(...)
     {
@@ -172,7 +176,7 @@ void Game::Update()
     if(timeDifference != 0)
     {
         Keys ^keyboardState = Input::ReadKeyboard();
-        Mouse ^mouseState;
+        Mouse ^mouseState = Input::ReadMouse();
 
         /*if(GameOptions::GetValue("mouseMovesPaddle", false))
         {

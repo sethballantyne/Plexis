@@ -189,4 +189,26 @@ public:
             return this->fontSurface;
         }
     }
+
+	/// <summary>
+	/// Gets the height of a character in the font.
+	/// </summary>
+	property unsigned int GlyphHeight
+	{
+		unsigned int get()
+		{
+			return this->glyphHeight;
+		}
+	}
+
+	/// <summary>
+	/// Gets the width of a character in the font.
+	/// </summary>
+	property unsigned int GlyphWidth
+	{
+		unsigned int get()
+		{
+			return this->glyphWidth;
+		}
+	}
 };

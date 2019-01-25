@@ -37,6 +37,8 @@ private:
     // the number of points awarded to the player when the brick is destroyed.
     unsigned int pointsAwardedOnDeath = 0;
 
+	// determines whethert the brick should be rendered or not.
+	bool visible = true;
 public:
     /// <summary>
     /// Initialises a new instance of <see cref="Brick"/>.
@@ -63,8 +65,8 @@ public:
     Object ^Clone() override
     {
         ::Sprite ^sprite = gcnew ::Sprite(
-            this->Position.X, 
-            this->Position.Y, 
+            this->Sprite->Position.X, 
+            this->Sprite->Position.Y, 
             this->Sprite->GetFrames(), this->Sprite->Surface);
 
         return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath);
@@ -116,5 +118,29 @@ public:
             return pointsAwardedOnDeath;
         }
     }
+
+	/// <summary>
+	/// Gets or sets the boolean value that determines whether the brick should be rendered.
+	/// </summary>
+	property bool Visible
+	{
+		bool get()
+		{
+			return visible;
+		}
+		void set(bool value)
+		{
+			visible = value;
+		}
+	}
+
+	virtual void Hit()
+	{
+		visible = false;
+		Death(this, gcnew EventArgs());
+	}
+
+	event EventHandler^ Death;
+
 };
 

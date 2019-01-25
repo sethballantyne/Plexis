@@ -39,6 +39,12 @@ private:
     /// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
     static Frame ^ParseFrame(XElement ^frameElement);
    
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="ballElement"></param>
+	static void ParseBall(XElement ^ballElement);
+
     /// <summary>
     /// Parses a &lt;entity&gt; element whose <c>name</c> attribute is "brick".
     /// </summary>
@@ -48,6 +54,12 @@ private:
     /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
     /// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
     static void ParseBrick(XElement ^brickElement);
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="paddleElement"></param>
+	static void ParsePaddle(XElement ^paddleElement);
 
 public:
     /// <summary>

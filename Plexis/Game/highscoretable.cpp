@@ -98,7 +98,6 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
             // 99999
             // 999
             newHighScoreRow->Score->Text = RightAlignScore(HighScores::GetHighScore(i));
-
             rows->Add(newHighScoreRow);
         }
         catch(...)
@@ -117,12 +116,12 @@ void HighScoreTable::ReceiveSceneArgs(array<Object ^, 1> ^args)
             // bug: doesn't format the score correctly: it's left aligned when it should be right.
             // also, check if args[0] is nullptr, else it'll convert null to an int and assume you're
             // setting the high score.
-            if(args[0] != nullptr)
+            /*if(args[0] != nullptr)
             {
                 int arg = Convert::ToInt32(args[0]);
                 rows[arg]->PlayerName->Text = HighScores::GetPlayerName(arg);
                 rows[arg]->Score->Text = RightAlignScore(arg);
-            }
+            }*/
 
         }
         catch(...)

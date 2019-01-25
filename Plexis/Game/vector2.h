@@ -23,32 +23,42 @@
 public value class Vector2 : System::IEquatable<Vector2>
 {
 private:
-    // the vectors x component
-    float x = 0.0f;
+	// the vectors x component
+	float x = 0.0f;
 
-    // the vectors y component
-    float y = 0.0f;
+	// the vectors y component
+	float y = 0.0f;
 
 public:
-    /// <summary>
-    /// Initialises a new instance of the <see cref="Vector2"/> class.
-    /// </summary>
-    /// <param name="x">initial value of the vectors X component.</param>
-    /// <param name="y">initial value of the vectors Y component.</param>
-    Vector2(float x, float y)
-    {
-        this->x = x;
-        this->y = y;
-    }
+	/// <summary>
+	/// Initialises a new instance of the <see cref="Vector2"/> class.
+	/// </summary>
+	/// <param name="x">initial value of the vectors X component.</param>
+	/// <param name="y">initial value of the vectors Y component.</param>
+	Vector2(float x, float y)
+	{
+		this->x = x;
+		this->y = y;
+	}
 
-    /// <summary>
-    /// Initialises a new instance of the <see cref="Vector2" /> class.
-    /// </summary>
-    /// <param name="value">the value to be assigned to the X and Y components.</param>
-    Vector2(float value)
-    {
-        this->x = this->y = value;
-    }
+	/// <summary>
+	/// Initialises a new instance of the <see cref="Vector2" /> class.
+	/// </summary>
+	/// <param name="value">the value to be assigned to the X and Y components.</param>
+	Vector2(float value)
+	{
+		this->x = this->y = value;
+	}
+
+	/// <summary>
+	/// Calculates the dot product of this vector and <i>other</i>
+	/// </summary>
+	/// <param name="other">the second source vector.</param>
+	/// <returns>the dot product of the two vectors.</returns>
+	float Dot(Vector2 other)
+	{
+		return (this->x * other.X) + (this->Y * other.Y);
+	}
 
     /// <summary>
     /// Returns a value indicating whether the current Vector2 instance is equal to the specified object.

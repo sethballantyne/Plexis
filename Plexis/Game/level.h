@@ -30,6 +30,13 @@ public ref class Level
 private:
     array<Brick ^, 2>^ level;
 
+	// width and height of the level in bricks.
+	int width;
+	int height;
+
+	// the number of bricks within the level; needed so the game knows when to
+	// transition to the next level.
+	int brickCount;
 public:
     /// <summary>
     /// Creates a new instance of <see cred="Level"/> with the specified dimensions. 
@@ -39,10 +46,20 @@ public:
     Level(unsigned int width, unsigned int height)
     {
         level = gcnew array<Brick ^, 2>(width, height);
+		this->width = width;
+		this->height = height;
+
+		for(int i = 0; i < width; i++)
+		{
+			for(int j = 0; j < height; j++)
+			{
+				level[i,j] = nullptr;
+			}
+		}
     }
 
     /// <summary>
-    /// Assigns a deep cloneed instance of the specified brick to the specified coordinates.
+    /// Creates and assigns a deep cloned instance of the specified brick to the specified coordinates.
     /// </summary>
     /// <param name="x">the position on the X axis to place the brick.</param>
     /// <param name="y">the position on the Y axis to place the brick.</param>
@@ -71,7 +88,8 @@ public:
         int spriteWidth = level[x, y]->Sprite->CurrentFrame->Coordinates.Width;
         int spriteHeight = level[x, y]->Sprite->CurrentFrame->Coordinates.Height;
 
-        level[x, y]->Position = System::Drawing::Point(x * spriteWidth, y * spriteHeight);
+		// 25 causes it to render below the score and lives text at the top of the screen.
+        level[x, y]->SetPosition(x * spriteWidth, y * spriteHeight + 27);
     }
 
     /// <summary>
@@ -85,7 +103,7 @@ public:
         return level[x, y];
     }
 
-    /// <summary>
+    /// // <summary>
     /// Renders the level to the back buffer.
     /// </summary>
     /// <exception cref="System::Runtime::InteropServices::COMException">An unspecified COM error was returned.</exception>
@@ -115,7 +133,7 @@ public:
             {
                 for(int j = 0; j < level->GetLength(1); j++)
                 {
-                    if(nullptr != level[i, j])
+                    if(nullptr != level[i, j] && true == level[i,j]->Visible)
                     {
                         level[i, j]->Sprite->Render();
                     }
@@ -127,4 +145,60 @@ public:
             throw;
         }
     }
+
+	/// <summary>
+	/// Gets or sets the bricks within the level
+	/// </summary>
+	property Brick ^default[int, int]
+	{
+		Brick^ get(int x, int y)
+		{
+			return level[x,y];
+		}
+
+		void set(int x, int y, Brick ^value)
+		{
+			level[x,y] = value;
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the number of brick within the level.
+	/// </summary>
+	/// <remarks>Setting this value doesn't do anything other than update the variable
+	/// holding the value. It's only here so the game can keep track of when a level transition is required.</remarks>
+	property int BrickCount
+	{
+		int get()
+		{
+			return this->brickCount;
+		}
+
+		void set(int value)
+		{
+			this->brickCount = value;
+		}
+	}
+
+	/// <summary>
+	/// Gets the height of the level in bricks.s
+	/// </summary>
+	property int Height
+	{
+		int get()
+		{
+			return this->height;
+		}
+	}
+
+	/// <summary>
+	/// Gets the width of the level in bricks.
+	/// </summary>
+	property int Width
+	{
+		int get()
+		{
+			return this->width;
+		}
+	}
 };
