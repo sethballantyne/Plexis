@@ -75,6 +75,7 @@ public:
     /// <exception cref="System::IO::IOException">an unspecified I/O error occured while writing to disk.</exception>
     static void Update(unsigned int row, array<unsigned char, 1> ^playerName, unsigned int newHighScore);
 
+
     /// <summary>
     /// Returns the score on the specified position of the high score table.
     /// </summary>

@@ -15,6 +15,7 @@
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
 #pragma once
 #include "level.h"
 #include "paddle.h"
@@ -24,6 +25,7 @@
 #include "levelmanager.h"
 #include "gameoptions.h"
 #include "numericfield.h"
+#include "gameover.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
@@ -54,8 +56,6 @@ private:
 	//
 	Surface ^livesPaddleImage = nullptr;
 
-	Label ^gameOverLabel;
-
 	//
 	NumericField ^score;
 
@@ -65,8 +65,7 @@ private:
 	// 
 	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
 
-	//
-	Timer ^gameOverPrinterTimer = gcnew Timer(190);
+	
 
 	// used for the delay when the ball goes off the screen
 	Timer ^playerResetTimer = gcnew Timer(2000);
@@ -74,6 +73,9 @@ private:
 	//
 	String ^gameInProgressMainMenu;
 	String ^highScorePrompt;
+
+	//
+	GameOverScreen ^gameOverScreen = gcnew GameOverScreen();
 
 	//
 	GameState gameState = GameState::NewLevel;
@@ -104,10 +106,10 @@ private:
 
 	void GameOverTransition()
 	{
-		this->gameOverLabel->Text = String::Empty;
+		//this->gameOverLabel->Text = String::Empty;
 		//this->gameState = GameState::GameOver;
-	    gameOverScreenVisible = true;
-		this->gameOverPrinterTimer->Start();
+	    //gameOverScreenVisible = true;
+		//this->gameOverPrinterTimer->Start();
 	}
 
 	void ResetPlayerAndBall()
@@ -210,7 +212,7 @@ public:
 		this->numberOfLives = DEFAULT_NUMBER_OF_LIVES;
 		this->score->Value = 0;
 		this->lives->Value = this->numberOfLives;
-		gameOverScreenVisible = false;
+		gameOverScreen->Visible = false;
 
 		LevelManager::ResetLevelCounter();
 	}
@@ -221,7 +223,7 @@ public:
 
 		if(gameState == GameState::GameOver)
 		{
-			this->GameOverTransition();
+			this->gameOverScreen->Show(score->Value);
 		}
 		else
 		{
@@ -235,20 +237,7 @@ public:
 	/// </summary>
 	/// <param name="source"></param>
 	/// <param name="e"></param>
-	void OnPrintGameOverTimerEvent(Object ^source, ElapsedEventArgs ^e)
-	{
-		static wchar_t text[] = {'G', 'A', 'M', 'E', ' ', 'O', 'V', 'E', 'R'};
-		static int tickCount = 0;
-
-		gameOverLabel->Text += text[tickCount];
-		tickCount++;
-
-		if(wcslen(text) == tickCount)
-		{
-			this->gameOverPrinterTimer->Stop();
-			tickCount =  0;
-		}
-	}
+	
 
 	/// <summary>
 	/// 

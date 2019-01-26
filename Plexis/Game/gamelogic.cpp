@@ -48,10 +48,7 @@ GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
 	this->playerResetTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnPlayerResetTimerEvent);
 	this->playerResetTimer->Enabled = false;
 	this->playerResetTimer->AutoReset = true;
-	this->gameOverLabel = gcnew Label(431, 300, "white", "");
-	this->gameOverPrinterTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnPrintGameOverTimerEvent);
-	this->gameOverPrinterTimer->Enabled = false;
-	this->gameOverPrinterTimer->AutoReset = true;
+	
 }
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
@@ -65,7 +62,9 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 
 		else if(keyboardState->KeyPressed(DIK_D))
 		{
-			this->GameOverTransition();
+			//this->GameOverTransition();
+			gameState = GameState::GameOver;
+			this->gameOverScreen->Show(score->Value);
 		}
 	}
 
@@ -275,6 +274,9 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				gameState = GameState::LevelComplete;
 				this->levelLoadDelayTimer->Start();
 			}
+		case GameState::GameOver:
+			gameOverScreen->Update(keyboardState, mouseState);
+			break;
 		break;
 		default:
 			break;
@@ -290,15 +292,15 @@ void GameLogic::Render()
 		// stops the current level from being rendered before rendering the first level
 		// in the game if the player selects "new game" from the main menu.
 		// The current level will briefly appear before reverting to the first level, otherwise.
-		if(GameState::NewLevel != gameState && !gameOverScreenVisible)
+		if(GameState::NewLevel != gameState && !gameOverScreen->Visible)
 		{
 			currentLevel->Render();
 		}
 
-		if(GameState::GameOver == gameState && gameOverScreenVisible)
+		if(GameState::GameOver == gameState && gameOverScreen->Visible)
 		{
 			// blank screen with "GAME OVER" rendered in the middle.
-			gameOverLabel->Render();
+			gameOverScreen->Render();
 		}
 		else
 		{

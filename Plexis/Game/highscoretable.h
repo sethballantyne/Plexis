@@ -27,8 +27,21 @@ private:
     // each row that makes up the table. A list is being used instead of an array
     // so if the number of rows that makes up the table happens to change,
     // there's no numbers to change.
-    List<HighScoreRow ^> ^rows;
+    List<HighScoreRow ^> ^rows; 
 
+	String ^rowNumberFont;
+	String ^playerNameFont;
+	String ^scoreFont;
+
+	int numberOfRows;
+	int x;
+	int y;
+	int verticalSpacing;
+	int indexXPosition;
+	int playerNameXPosition;
+	int scoreXPosition;
+	
+	void PopulateTable();
 public:
     /// <summary>
     /// Initialises a new instance of HighScoreTable with the specified fonts and X coordinates
@@ -58,7 +71,7 @@ public:
     /// differ, the rows are going to be displayed incorrectly.
     /// </remarks>
     HighScoreTable(int x, int y, int numberOfRows, int verticalSpacing,
-        int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
+        int indexXPosition, String ^rowNumberFont, int playerNameXPosition, String ^playerNameFont,
         int scoreXPosition, String ^scoreFont);
 
     /// <summary>
@@ -118,6 +131,10 @@ public:
             rows[i]->Render();
         }
     }
+
+	/// <summary>
+	/// 
+	/// </summary>
 
     void Update(Keys ^keyboardState, Mouse ^mouseState) override
     {

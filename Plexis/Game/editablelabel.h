@@ -17,14 +17,19 @@
 // DEALINGS IN THE SOFTWARE.
 #pragma once
 #include "font.h"
-#include "containercontrol.h"
+#include "control.h"
+#include "input.h"
 
 /// <summary>
 /// essentially behaves like a textbox with a single line. When the control is in edit mode, 
 /// the user can type to add or remove text from the control in real-time. When not in edit mode,
 /// the control functions like a regular label.
 /// </summary>
-public ref class EditableLabel : ContainerControl
+/// <remarks>
+/// This was originally supposed to be a control that could be used in scenes.xml within a menu-item container, 
+/// but it ended up being not needed there; instead, it was retrofitted for use within the game over screen. 
+/// </remarks>
+public ref class EditableLabel : Control
 {
 private:
     // used as an index for the text array.
@@ -53,30 +58,26 @@ public:
     /// </summary>
     /// <param name="x">the controls screen coordinate on the x axis.</param>
     /// <param name="y">the controls screen coordinate on the y axis.</param>
-    /// <param name="selectedIndex">the controls position in the control list.</param>
     /// <param name="font">the name of the font that will be used to render the text.</param>
     /// <param name="length">the maximum number of characters the label can contain.</param>
-    /// <param name="parentContainer">the MenuItemContainer instance the control belongs to.</param>
     /// <exception cref="System::ArgumentException"><i>font</i> evaluates to String::Empty.</exception>
-    /// <exception cref="System::ArgumentNullException"><i>font</i> or <i>parentContainer</i> evaluate to <b>null</b></exception>
+    /// <exception cref="System::ArgumentNullException"><i>font</i> evaluate to <b>null</b></exception>
     /// <exception cref="ResourceNotFoundException">the font specified in <i>font</i> doesn't exist within the resource manager.</exception>
-    EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, bool allowEmptyInput, MenuItemContainer ^parentContainer);
+    EditableLabel(int x, int y, String ^font, unsigned int length, bool allowEmptyInput);
 
     /// <summary>
     /// Creates a new instance of EditableLabel.
     /// </summary>
     /// <param name="x">the controls screen coordinate on the x axis.</param>
     /// <param name="y">the controls screen coordinate on the y axis.</param>
-    /// <param name="selectedIndex">the controls position in the control list.</param>
     /// <param name="font">the name of the font that will be used to render the text.</param>
     /// <param name="length">the maximum number of characters the label can contain.</param>
     /// <param name="navigateTo">the scene that will displayed when the control is selected and the user presses enter.</param>
-    /// <param name="parentContainer">the MenuItemContainer instance the control belongs to.</param>
     /// <exception cref="System::ArgumentException"><i>font</i> evaluates to String::Empty.</exception>
     /// <exception cref="System::ArgumentNullException"><i>font</i>, <i>parentContainer</i> or <i>navigateTo</i> evaluate to <b>null</b></exception>
     /// <exception cref="ResourceNotFoundException">the font specified in <i>font</i> doesn't exist within the resource manager.</exception>
-    EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, bool allowEmptyInput, String ^navigateTo, MenuItemContainer ^parentContainer) :
-        EditableLabel(x, y, selectedIndex, font, length, allowEmptyInput, parentContainer)
+    EditableLabel(int x, int y, String ^font, unsigned int length, bool allowEmptyInput, String ^navigateTo) :
+        EditableLabel(x, y, font, length, allowEmptyInput)
     {
         if(nullptr == navigateTo)
         {
@@ -85,6 +86,23 @@ public:
         
         this->navigateTo = navigateTo;
     }
+
+	/// <summary>
+	/// 
+	/// </summary>
+	void Clear()
+	{
+		try
+		{
+			Array::Clear(text, 0, text->Length);
+			cursorPosition = 0;
+			editMode = true;
+		}
+		catch(...)
+		{
+			throw;
+		}
+	}
 
     /// <summary>
     /// handles arguments passed to the control via its parent scene when the Scene is displayed.
@@ -126,4 +144,31 @@ public:
     /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     void Render() override;
+
+	/// <summary>
+	/// Gets the characters entered by the user.
+	/// </summary>
+	property array<unsigned char, 1> ^Bytes
+	{
+		array<unsigned char, 1> ^get()
+		{
+			return text;
+		}
+	}
+
+	/// <summary>
+	/// Gets the font used by the control.
+	/// </summary>
+	property ::Font ^LabelFont
+	{
+		::Font ^get() { return font; }
+	}
+
+	/// <summary>
+	/// Returns how many characters the label can hold.
+	/// </summary>
+	property int Length
+	{
+		int get() { return maxLength; }
+	}
 };
