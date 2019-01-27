@@ -135,8 +135,9 @@ public:
 	/// <summary>
 	/// 
 	/// </summary>
-
     void Update(Keys ^keyboardState, Mouse ^mouseState) override
     {
     }
+
+	void UpdateTable();
 };

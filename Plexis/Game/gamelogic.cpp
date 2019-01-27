@@ -66,6 +66,10 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 			gameState = GameState::GameOver;
 			this->gameOverScreen->Show(score->Value);
 		}
+		else if(keyboardState->KeyPressed(DIKEYBOARD_1))
+		{
+			score->Value += 500;
+		}
 	}
 
 	if(keyboardState->KeyPressed(DIK_ESCAPE))

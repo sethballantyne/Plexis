@@ -89,7 +89,7 @@ void HighScoreTable::ReceiveSceneArgs(array<Object ^, 1> ^args)
 			{
 				if(safe_cast<String ^>(args[i]) == "updateScores")
 				{
-					PopulateTable();
+					UpdateTable();
 				}
 			}
         }
@@ -98,6 +98,25 @@ void HighScoreTable::ReceiveSceneArgs(array<Object ^, 1> ^args)
             LogManager::WriteLine(LogType::Debug, "Error converting the 0th scene argument in HighScoreTable.");
         }
     }
+}
+
+void HighScoreTable::UpdateTable()
+{
+	for(int i = 0; i < rows->Count; i++)
+	{
+		rows[i]->PlayerName->Text = HighScores::GetPlayerName(i);
+
+		// the score text is right aligned, calculating how many spaces need to be
+		// added so it's correctly padded.
+		// we want this:
+		// 99999
+		//   999
+		// not this:
+		// 99999
+		// 999
+		rows[i]->Score->Text = RightAlignScore(HighScores::GetHighScore(i));
+	}
+	
 }
 
 void HighScoreTable::PopulateTable()
