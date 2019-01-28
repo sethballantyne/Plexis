@@ -83,6 +83,8 @@ private:
     {
 		// fix for issue #56: ESCAPE is reserved for bringing up the main menu during gameplay.
         //lookupTable->Add(DIK_ESCAPE, "ESCAPE")
+		lookupTable->Add(0, "LEFT MOUSE BUTTON");
+		lookupTable->Add(1, "RIGHT MOUSE BUTTON");
         lookupTable->Add(DIK_1, "1");
         lookupTable->Add(DIK_2, "2");
         lookupTable->Add(DIK_3,"3");
@@ -180,8 +182,7 @@ private:
         lookupTable->Add(DIK_NEXT, "PAGE DOWN");
         lookupTable->Add(DIK_INSERT, "INSERT");
         lookupTable->Add(DIK_DELETE, "DELETE");
-        lookupTable->Add(DIMOUSE_BUTTON0, "LEFT MOUSE BUTTON");
-        lookupTable->Add(DIMOUSE_BUTTON1, "RIGHT MOUSE BUTTON");
+        
     }
 
     /// <summary>

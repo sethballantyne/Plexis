@@ -166,11 +166,15 @@ private:
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		player->Velocity.X = mouseState->X;
-		
-		if(keyboardState->KeyDown(playerFireKey))
+		if(mouseState->ButtonDown(playerFireKey) || keyboardState->KeyDown(playerFireKey))
 		{
 			player->FirePressed();
 		}
+			
+		/*else if(keyboardState->KeyDown(playerFireKey))
+		{
+			player->FirePressed();
+		}*/
 	}
 
 public:

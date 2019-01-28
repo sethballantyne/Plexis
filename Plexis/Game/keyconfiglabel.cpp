@@ -106,6 +106,10 @@ void KeyConfigLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
     {
         throw gcnew ArgumentNullException("keyboardState");
     }
+	else if(nullptr == mouseState)
+	{
+		throw gcnew ArgumentNullException("keyboardState");
+	}
 
     if(changingKey != true)
     {
@@ -125,35 +129,39 @@ void KeyConfigLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
     }
     else
     {
-        unsigned int pressedKey = keyboardState->PressedKey;
-        // in the off chance that the user presses keys and mouse buttons(s) at the same time,
-        // the keyboard takes precendence.
-        if(pressedKey != -1) // -1 means a key hasn't been pressed.
-        {
-            if(!KeyInUse(pressedKey))
-            {
-                UpdateConfig(pressedKey);
-                changingKey = false;
-            }
-            else
-            {
-                // attempted to assign a key that's already in bound
-                // to another option. Play a prompt indicating the error.
-                ResourceManager::GetSoundBuffer("error3")->Play();
-            }
-        }
-        else if(nullptr != mouseState)
-        {
-            if(mouseState->ButtonDown(0))
-            {
-                UpdateConfig(DIMOUSE_BUTTON0);
-                changingKey = false;
-            }
-            else if(mouseState->ButtonDown(1))
-            {
-                UpdateConfig(DIMOUSE_BUTTON1);
-                changingKey = false;
-            }
-        }
+		if(nullptr != mouseState)
+		{
+			if(mouseState->ButtonDown(0))
+			{
+				LogManager::WriteLine(LogType::Debug, "mouseState");
+				UpdateConfig(0);
+				changingKey = false;
+			}
+			else if(mouseState->ButtonDown(1))
+			{
+				UpdateConfig(1);
+				changingKey = false;
+			}
+		}
+		else
+		{
+			unsigned int pressedKey = keyboardState->PressedKey;
+			// in the off chance that the user presses keys and mouse buttons(s) at the same time,
+			// the keyboard takes precendence.
+			if(pressedKey != -1) // -1 means a key hasn't been pressed.
+			{
+				if(!KeyInUse(pressedKey))
+				{
+					UpdateConfig(pressedKey);
+					changingKey = false;
+				}
+				else
+				{
+					// attempted to assign a key that's already in bound
+					// to another option. Play a prompt indicating the error.
+					ResourceManager::GetSoundBuffer("error3")->Play();
+				}
+			}
+		}
     }
 }
