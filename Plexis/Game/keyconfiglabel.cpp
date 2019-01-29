@@ -129,19 +129,16 @@ void KeyConfigLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
     }
     else
     {
-		if(nullptr != mouseState)
+		if(mouseState->ButtonDown(0))
 		{
-			if(mouseState->ButtonDown(0))
-			{
-				LogManager::WriteLine(LogType::Debug, "mouseState");
-				UpdateConfig(0);
-				changingKey = false;
-			}
-			else if(mouseState->ButtonDown(1))
-			{
-				UpdateConfig(1);
-				changingKey = false;
-			}
+			LogManager::WriteLine(LogType::Debug, "mouseState");
+			UpdateConfig(0);
+			changingKey = false;
+		}
+		else if(mouseState->ButtonDown(1))
+		{
+			UpdateConfig(1);
+			changingKey = false;
 		}
 		else
 		{
