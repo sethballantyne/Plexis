@@ -85,6 +85,11 @@ private:
 			finalScoreLabel->Position->X = (Video::Width / 2)  - ((finalScoreLabel->Text->Length * finalScoreLabel->LabelFont->GlyphWidth) /  2);
 
 			scoreRank = HighScores::IsAHighScore(finalScore);
+			if(scoreRank == -1)
+			{
+				// no high score was achieved; set the "press any key" prompt so we can get out of here.
+				showPressAnyKeyPrompt = true;
+			}
 		}
 	}
 public:
@@ -117,11 +122,23 @@ public:
 	{
 		if(showPressAnyKeyPrompt && keyboardInput->PressedKey != -1)
 		{
-			array<String ^> ^params = gcnew array<String ^>(1);
-			params[0] = "updateScores";
+			// the user can see the "Press any key to continue" prompt and has pressed a key. 
+			if(scoreRank != -1)
+			{
+				// the user achieved a new high score, so the highscore table has to be updated.
+				array<String ^> ^params = gcnew array<String ^>(1);
+				params[0] = "updateScores";
 
-			Hide();
-			SceneManager::SetActiveScene("game_over_view_high_scores", params);
+				Hide();
+				SceneManager::SetActiveScene("game_over_view_high_scores", params);
+			}
+			else
+			{
+				// no high score was achieved, so just go back to the main menu.
+				Hide();
+				SceneManager::SetActiveScene("default_main_menu", nullptr);
+			}
+			
 		}
 		else if(scoreRank != -1)
 		{
@@ -171,11 +188,12 @@ public:
 			newHighScoreYoApostrophe->Render();
 			namePrompt->Render();
 			
-			if(showPressAnyKeyPrompt)
-			{
-				pressAnyKeyToContinuePrompt->Render();
-			}
 			//Video::Blit(dudex, dudey, dude);
+		}
+
+		if(showPressAnyKeyPrompt)
+		{
+			pressAnyKeyToContinuePrompt->Render();
 		}
 	}
 

@@ -53,7 +53,7 @@ GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 {
-	if(gameState == GameState::Playing)
+	if(gameState == GameState::Playing || gameState == GameState::Paused)
 	{
 		if(this->debugKeysEnabled)
 		{
