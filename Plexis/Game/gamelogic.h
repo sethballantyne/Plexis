@@ -170,11 +170,6 @@ private:
 		{
 			player->FirePressed();
 		}
-			
-		/*else if(keyboardState->KeyDown(playerFireKey))
-		{
-			player->FirePressed();
-		}*/
 	}
 
 public:

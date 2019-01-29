@@ -53,43 +53,47 @@ GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 {
-	if(this->debugKeysEnabled)
+	if(gameState == GameState::Playing)
 	{
-		if(keyboardState->KeyPressed(DIK_SUBTRACT))
+		if(this->debugKeysEnabled)
 		{
-			this->DebugRemoveBrick();
+			if(keyboardState->KeyPressed(DIK_SUBTRACT))
+			{
+				this->DebugRemoveBrick();
+			}
+
+			else if(keyboardState->KeyPressed(DIK_D))
+			{
+				//this->GameOverTransition();
+				gameState = GameState::GameOver;
+				this->gameOverScreen->Show(score->Value);
+			}
+			else if(keyboardState->KeyPressed(DIKEYBOARD_1))
+			{
+				score->Value += 500;
+			}
 		}
 
-		else if(keyboardState->KeyPressed(DIK_D))
-		{
-			//this->GameOverTransition();
-			gameState = GameState::GameOver;
-			this->gameOverScreen->Show(score->Value);
-		}
-		else if(keyboardState->KeyPressed(DIKEYBOARD_1))
-		{
-			score->Value += 500;
-		}
-	}
-
-	if(keyboardState->KeyPressed(DIK_ESCAPE))
-	{
-		this->gameState = GameState::Paused;
-		SceneManager::SetActiveScene(gameInProgressMainMenu, nullptr);
-	}
-	else if(keyboardState->KeyPressed(pauseKey))
-	{
-		if(this->gameState != GameState::Paused)
+		if(keyboardState->KeyPressed(DIK_ESCAPE))
 		{
 			this->gameState = GameState::Paused;
+			SceneManager::SetActiveScene(gameInProgressMainMenu, nullptr);
 		}
-		else
+		else if(keyboardState->KeyPressed(pauseKey))
 		{
-			// BUG: pressing pause in a state other than GameState::Playing
-			// will put the game into this state when pause is deactivated.
-			this->gameState = GameState::Playing;
+			if(this->gameState != GameState::Paused)
+			{
+				this->gameState = GameState::Paused;
+			}
+			else
+			{
+				// BUG: pressing pause in a state other than GameState::Playing
+				// will put the game into this state when pause is deactivated.
+				this->gameState = GameState::Playing;
+			}
 		}
 	}
+	
 }
 void GameLogic::HandleBallCollision()
 {
