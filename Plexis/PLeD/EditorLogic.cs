@@ -791,6 +791,10 @@ namespace PLeD
                     "{0} - {1}", Application.ProductName, EditorLogic.openFileDialog.FileName);
                     EditorLogic.currentLevelFilename = EditorLogic.openFileDialog.FileName;
 
+                    // bug fix: don't show the filename of the level that was just opened the next time
+                    // the editor displays the dialog.
+                    EditorLogic.openFileDialog.FileName = String.Empty;
+
                     EditorLogic.RenderLevel();
                 }
             }
@@ -888,6 +892,12 @@ namespace PLeD
                     if (dialogResult == DialogResult.OK)
                     {
                         EditorLogic.currentLevelFilename = EditorLogic.saveFileDialog.FileName;
+
+                        // clearing the filename in the textbox to prevent the names
+                        // of previous levels appearing in the dialog when a new level
+                        // is created and saved for the first time. (bug fix for #82)
+                        EditorLogic.saveFileDialog.FileName = String.Empty;
+
                         SaveAndUpdateGUI();
                     }
                 }

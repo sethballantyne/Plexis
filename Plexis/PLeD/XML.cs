@@ -441,10 +441,10 @@ namespace PLeD
                                 xmlWriter.WriteAttributeString("y", Convert.ToString(kvp.Value[i].Y));
                                 xmlWriter.WriteEndElement();
                             }
-                        }
 
-                        // </brick>
-                        xmlWriter.WriteEndElement();
+                            // </brick>
+                            xmlWriter.WriteEndElement();
+                        }
                     }
 
                     //</level>
