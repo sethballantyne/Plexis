@@ -93,7 +93,8 @@ void KeyConfigLabel::ReceiveSceneArgs(array<Object ^, 1> ^sceneArgs)
 
         if(nullptr == caption)
         {
-            caption = "ERROR";
+            caption = "UNDEFINED";
+			LogManager::WriteLine(LogType::Debug, "Key assigned to {0} is an illegal value.", optionsKey);
         }
 
         label->Text = caption;
