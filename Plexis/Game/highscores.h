@@ -139,12 +139,22 @@ public:
     /// </summary>
     static void Shutdown()
     {
-        binaryWriter->Close();
-        binaryReader->Close();
-        fileStream->Close();
+		if(nullptr != binaryWriter)
+		{
+			binaryWriter->Close();
+			delete binaryWriter;
+		}
 
-        delete binaryWriter;
-        delete binaryReader;
-        delete fileStream;
+		if(nullptr != binaryReader)
+		{
+			binaryReader->Close();
+			delete binaryReader;
+		}
+
+		if(nullptr != fileStream)
+		{
+			fileStream->Close();
+			delete fileStream;
+		}
     }
 };
