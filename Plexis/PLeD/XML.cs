@@ -24,7 +24,7 @@ using System.Runtime;
 using System.Xml;
 using System.Xml.Linq;
 using System.Drawing;
-
+using System.Diagnostics;
 namespace PLeD
 {
     /// <summary>
@@ -141,6 +141,26 @@ namespace PLeD
         }
 
         /// <summary>
+        /// Checks if pathList contains the specified path.
+        /// </summary>
+        /// <param name="pathList">List of Paths read from paths.xml</param>
+        /// <param name="path">the path to check for.</param>
+        /// <returns>true if the path is present, otherwise false.</returns>
+        private static bool ListContainsPath(List<Path> pathList, string path)
+        {
+            Debug.Assert(pathList != null);
+
+            for (int i = 0; i < pathList.Count; i++)
+            {
+                if (pathList[i].ResourcePath == path)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        /// <summary>
         /// Reads the specified XML and extracts the locations being used to house the
         /// specified resource type.
         /// </summary>
@@ -161,10 +181,13 @@ namespace PLeD
             {
                 foreach (var element in elements)
                 {
-                    Path resourcePath = new Path();
-                    resourcePath.IncludeSubDirectories = GetAttributeValueAsBoolean(element, "includeSubDirectories");
-                    resourcePath.ResourcePath = element.Value;
-                    pathList.Add(resourcePath);
+                    if(!ListContainsPath(pathList, element.Value))
+                    {
+                        Path resourcePath = new Path();
+                        resourcePath.IncludeSubDirectories = GetAttributeValueAsBoolean(element, "includeSubDirectories");
+                        resourcePath.ResourcePath = element.Value;
+                        pathList.Add(resourcePath);
+                    }
                 }
 
                 return pathList.ToArray();

@@ -203,7 +203,7 @@ namespace PLeD
 		        // this file contains the locations of the resources used by the game.
                 //--------------------------------------------------------------------
                 paths = XML.LoadPaths("paths.xml");
-
+                
                 if(paths.XMLPaths.Length == 0)
                 {
                     throw new XmlException("paths.xml doesn't contain any of the required information, so I can't load any resources.");
@@ -213,25 +213,28 @@ namespace PLeD
                 // it's possible to set an attribute in the XML we've just parsed that specifies that the
                 // provided path and all its subdirectories should be included when
                 // searching for resources, so we have to factor this in.
-                List<string> directoryList = new List<string>();
+                //List<string> directoryList = new List<string>();
 
-                foreach(Path directory in paths.BitmapPaths)
-                {
-                    // NOTE: it's possible to add multiple entries of the same directory, fix if there's time.
-                    directoryList.Add(directory.ResourcePath);
+                //foreach(Path directory in paths.BitmapPaths)
+                //{
+                //    if (!directoryList.Contains(directory.ResourcePath))
+                //    {
+                //        directoryList.Add(directory.ResourcePath);
 
-                    if(directory.IncludeSubDirectories)
-                    {
-                        string tempPath = String.Format("{0}/{1}", gameDirectory, directory.ResourcePath);
-                        string[] directories = Directory.GetDirectories(tempPath);
+                //        if (directory.IncludeSubDirectories)
+                //        {
+                //            string tempPath = String.Format("{0}/{1}", gameDirectory, directory.ResourcePath);
+                //            string[] directories = Directory.GetDirectories(tempPath);
 
-                        if(directories != null)
-                        {
-                            directoryList.AddRange(directories);
-                        }
-                    }
-                }
+                //            if (directories != null)
+                //            {
+                //                directoryList.AddRange(directories);
+                //            }
+                //        }
+                //    }
+                //}
 
+                // find which path contains entities.xml
                 foreach(Path path in paths.XMLPaths)
                 {
                     try
