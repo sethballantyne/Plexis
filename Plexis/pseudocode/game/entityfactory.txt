@@ -63,15 +63,19 @@ private
                 return
             end if
 
-            XElement boundingBoxQuery := element->Element((string)"boundingBox")
-            Size surfaceSize := ResourceManager::GetSurface(name)->Size;
+			XElement frameQuery := element->Element((string) "frame");
+			if(XmlHelper::Count(frameQuery) = 0)
+				throw XmlException("No frames associated with the paddle named {0}", name)
+			end if
 
-            Rectangle boundingBox := ParseBoundingBox(boundingBoxQuery, surfaceSize);
+			-- loads the each frame and associated bounding box.
+			new List<Frame> frames 
+			foreach(frameElement in XElement frameQuery)
+				frames->Add(ParseFrame(frameElement))
+			end foreach
 
-            -- 
-            -- INCORRECTLY USING NAME. 
-            -- BOUNDINGBOXES ARE NOW PART OF SPRITE
-            Paddle paddle(boundingBox, ResourceManager::GetSurface(name))
+			new Sprite paddleSprite(0, 0, frames->ToArray(), image)
+			new Paddle paddle(paddleSprite)
 
             parsedEntities[name] := paddle
         catch
@@ -79,7 +83,7 @@ private
         end try
     end function
 
-    function Brick ParseBrick(XElement element)
+    function ParseBrick(XElement element)
         string name := XmlHelper::GetAttributeValue(element, "name")
         string image := XmlHelper::GetAttributeValue(element, "image")
         uint hitCount := XmlHelper::GetAttributeValueAsUint32(element, "hitCount")

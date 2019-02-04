@@ -51,7 +51,6 @@ public:
     /// <exception cref="DirectSoundInvalidCallException">this function is not valid for the current state of this object.</exception>
     /// <exception cref="DirectSoundInvalidParameterException">an invalid parameter was passed to DirectSound.</exception>
     /// <exception cref="DirectSoundPriorityLevelNeededException">a cooperative level of DSSCL_PRIORITY or higher is required.</exception>
-    /// <exception cref=""></exception>
     void Play();
 
     /// <summary>

@@ -24,7 +24,21 @@
 #include "video.h"
 
 using namespace System::Drawing;
+using namespace System::ComponentModel; // Win32Exception
 using namespace System::Runtime::InteropServices; // COMException
+
+// importing all these with SetLastError=true so Marshal::GetLastWin32Error() can be used
+// to report why they fail if they do. Only these methods are being explicitly imported because
+// they're the only ones that make use of GetLastWin32Error() and the Win32Exception class when failing.
+[DllImport("gdi32.dll", SetLastError=true)]
+IntPtr CreateCompatibleDC(IntPtr hDC);
+
+[DllImport("gdi32.dll", SetLastError=true)]
+bool BitBlt(IntPtr hObject, int xDest, int yDest, int width, int height, IntPtr hDCSrc,
+	int xSrc, int ySrc, int rasterOperations);
+
+[DllImport("gdi32.dll", SetLastError=true)]
+int LoadImage(int hinst, int lpszName, unsigned int uType, int cxDesired, int cyDesired, unsigned int fuLoad);
 
 void Video::AttachClipper(HWND hWnd)
 {
@@ -368,6 +382,9 @@ void Video::CreateFullScreenWindow(HWND hWnd, unsigned int width, unsigned int h
     {
         throw;
     }
+
+	Video::width = width;
+	Video::height = height;
 }
 
 Surface ^Video::CreateSurface(HBITMAP hBitmap)
@@ -524,14 +541,14 @@ Surface ^Video::CreateSurface(HBITMAP hBitmap)
     hdcImage = CreateCompatibleDC(NULL);
     if(!hdcImage)
     {
-        throw gcnew Win32Exception(Win32Exception::Format("CreateCompatibleDC"));
+        throw gcnew Win32Exception(Marshal::GetLastWin32Error());
     }
 
     SelectObject(hdcImage, hBitmap);
 
     if(!BitBlt(hDC, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcImage, 0, 0, SRCCOPY))
     {
-        throw gcnew Win32Exception(Win32Exception::Format("BitBlt"));
+        throw gcnew Win32Exception(Marshal::GetLastWin32Error());
     }
 
     lpDDSurface->ReleaseDC(hDC);
@@ -1048,7 +1065,7 @@ Surface ^Video::CreateSurface(String ^path)
     HBITMAP hBitmap = (HBITMAP) LoadImage(NULL, pinnedPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
     if(!hBitmap)
     {
-        throw gcnew Win32Exception(Win32Exception::Format("LoadImage"));
+        throw gcnew Win32Exception(Marshal::GetLastWin32Error());
     }
 
     try

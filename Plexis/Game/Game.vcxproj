@@ -69,13 +69,29 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies />
+      <AdditionalDependencies>winmm.lib;dsound.lib;dxguid.lib;ddraw.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="audio.h" />
+    <ClInclude Include="ball.h" />
+    <ClInclude Include="brick.h" />
     <ClInclude Include="credits.h" />
+    <ClInclude Include="entity.h" />
+    <ClInclude Include="entitymanager.h" />
+    <ClInclude Include="frame.h" />
+    <ClInclude Include="gamelogic.h" />
+    <ClInclude Include="gameover.h" />
+    <ClInclude Include="gamestate.h" />
+    <ClInclude Include="gameview.h" />
     <ClInclude Include="imagecontrol.h" />
+    <ClInclude Include="level.h" />
+    <ClInclude Include="levelmanager.h" />
+    <ClInclude Include="numericfield.h" />
+    <ClInclude Include="paddle.h" />
+    <ClInclude Include="score.h" />
+    <ClInclude Include="sprite.h" />
+    <ClInclude Include="vector2.h" />
     <ClInclude Include="versionlabel.h" />
     <ClInclude Include="volumeslider.h" />
     <ClInclude Include="containercontrol.h" />
@@ -126,8 +142,10 @@
     <ClCompile Include="audio.cpp" />
     <ClCompile Include="editablelabel.cpp" />
     <ClCompile Include="engine_exceptions.cpp" />
+    <ClCompile Include="entitymanager.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="gamelogic.cpp" />
     <ClCompile Include="gameoptions.cpp" />
     <ClCompile Include="highscorerow.cpp" />
     <ClCompile Include="highscores.cpp" />
@@ -136,11 +154,13 @@
     <ClCompile Include="keyconfiglabel.cpp" />
     <ClCompile Include="keys.cpp" />
     <ClCompile Include="label.cpp" />
+    <ClCompile Include="levelmanager.cpp" />
     <ClCompile Include="logmanager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menuitem.cpp" />
     <ClCompile Include="menuitemcontainer.cpp" />
     <ClCompile Include="messageboxlogger.cpp" />
+    <ClCompile Include="paddle.cpp" />
     <ClCompile Include="resourcemanager.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scenefactory.cpp" />

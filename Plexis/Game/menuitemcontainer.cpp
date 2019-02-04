@@ -28,6 +28,22 @@ void MenuItemContainer::AddControl(SelectableControl ^control)
     this->items[0]->IsSelected = true;
 }
 
+void MenuItemContainer::SelectFirstControl()
+{
+	if(1 == this->items->Count || 0 == this->currentSelectedItem)
+	{
+		// control is already selected
+		return;
+	}
+
+	this->items[this->currentSelectedItem]->IsSelected = false;
+	this->currentSelectedItem = 0;
+	this->items[currentSelectedItem]->IsSelected = true;
+
+	ResourceManager::GetSoundBuffer("menu_nav")->Play();
+	
+}
+
 void MenuItemContainer::SelectPreviousControl()
 {
     // no control to select if there's only one.

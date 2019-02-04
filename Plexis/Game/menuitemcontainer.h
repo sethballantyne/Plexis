@@ -95,12 +95,18 @@ public:
     void ReceiveSceneArgs(array<Object ^, 1> ^args) override
     {
         this->receivedArguments = args;
+		SelectFirstControl();
 
         for(int i = 0; i < this->items->Count; i++)
         {
             items[i]->ReceiveSceneArgs(args);
         }
     }
+
+	/// <summary>
+	/// Selects the first control in the control list.
+	/// </summary>
+	void SelectFirstControl();
 
     /// <summary>
     /// Selects the previous control in the control list.

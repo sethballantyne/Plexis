@@ -18,9 +18,10 @@
 #include "highscoretable.h"
 #include "highscores.h"
 #include "resourcemanager.h"
+#include "scenemanager.h"
 
 HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpacing,
-    int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
+    int indexXPosition, String ^rowNumberFont, int playerNameXPosition, String ^playerNameFont,
     int scoreXPosition, String ^scoreFont) : SelectableControl(x, y, -1, gcnew System::Drawing::Size(0, 0))
 {
     if(nullptr == rowNumberFont)
@@ -52,60 +53,20 @@ HighScoreTable::HighScoreTable(int x, int y, int numberOfRows, int verticalSpaci
     this->Enabled = false;
     this->IsSelected = false;
 
-    rows = gcnew List<HighScoreRow ^>();
-    int yStep = 0;
-    int fontHeight = ResourceManager::GetFont(rowNumberFont)->FontSurface->Size->Height;
+	this->x = x;
+	this->y = y;
+	this->numberOfRows = numberOfRows;
+	this->rowNumberFont = rowNumberFont;
+	this->verticalSpacing = verticalSpacing;
+	this->indexXPosition = indexXPosition;
+	this->playerNameXPosition = playerNameXPosition;
+	this->scoreXPosition = scoreXPosition;
+	this->scoreFont = scoreFont;
+	this->playerNameFont = playerNameFont;
 
-    for(int i = 0; i < numberOfRows; i++)
-    {
-        // 18 is the height of the font; replace so it's calculated based on the
-        // actual font being used.
-        int rowYPosition = y + yStep;
-        yStep = ((i + 1) * (fontHeight + verticalSpacing));
+	rows = gcnew List<HighScoreRow ^>(10);
 
-        Point ^indexPosition = gcnew Point(indexXPosition, rowYPosition);
-        Point ^playerNamePosition = gcnew Point(PlayerNameXPosition, rowYPosition);
-        Point ^scorePosition = gcnew Point(scoreXPosition, rowYPosition);
-
-        
-        try
-        {
-            HighScoreRow ^newHighScoreRow = gcnew HighScoreRow(rowNumberFont, indexPosition,
-                playerNameFont, playerNamePosition, scoreFont, scorePosition);
-
-            String ^indexText;
-            // setting the entries position.
-            // adding 1 to i because the range used to indicate a players position
-            // on the highscore table needs to be 1 to 10, not 0 to 9.
-            if(i < 9)
-            {
-                indexText = String::Format(" {0})", i + 1);
-            }
-            else
-            {
-                indexText = String::Format("{0})", i + 1);
-            }
-
-            newHighScoreRow->Rank->Text = indexText;
-            newHighScoreRow->PlayerName->Text = HighScores::GetPlayerName(i);
-
-            // the score text is right aligned, calculating how many spaces need to be
-            // added so it's correctly padded.
-            // we want this:
-            // 99999
-            //   999
-            // not this:
-            // 99999
-            // 999
-            newHighScoreRow->Score->Text = RightAlignScore(HighScores::GetHighScore(i));
-
-            rows->Add(newHighScoreRow);
-        }
-        catch(...)
-        {
-            throw;
-        }
-    }
+	PopulateTable();
 }
 
 void HighScoreTable::ReceiveSceneArgs(array<Object ^, 1> ^args)
@@ -117,17 +78,100 @@ void HighScoreTable::ReceiveSceneArgs(array<Object ^, 1> ^args)
             // bug: doesn't format the score correctly: it's left aligned when it should be right.
             // also, check if args[0] is nullptr, else it'll convert null to an int and assume you're
             // setting the high score.
-            if(args[0] != nullptr)
+            /*if(args[0] != nullptr)
             {
                 int arg = Convert::ToInt32(args[0]);
                 rows[arg]->PlayerName->Text = HighScores::GetPlayerName(arg);
                 rows[arg]->Score->Text = RightAlignScore(arg);
-            }
+            }*/
 
+			for(int i = 0; i < args->Length; i++)
+			{
+				if(safe_cast<String ^>(args[i]) == "updateScores")
+				{
+					UpdateTable();
+				}
+			}
         }
         catch(...)
         {
             LogManager::WriteLine(LogType::Debug, "Error converting the 0th scene argument in HighScoreTable.");
         }
     }
+}
+
+void HighScoreTable::UpdateTable()
+{
+	for(int i = 0; i < rows->Count; i++)
+	{
+		rows[i]->PlayerName->Text = HighScores::GetPlayerName(i);
+
+		// the score text is right aligned, calculating how many spaces need to be
+		// added so it's correctly padded.
+		// we want this:
+		// 99999
+		//   999
+		// not this:
+		// 99999
+		// 999
+		rows[i]->Score->Text = RightAlignScore(HighScores::GetHighScore(i));
+	}
+	
+}
+
+void HighScoreTable::PopulateTable()
+{
+	rows->Clear();
+	int yStep = 0;
+	int fontHeight = ResourceManager::GetFont(rowNumberFont)->FontSurface->Size->Height;
+
+	for(int i = 0; i < numberOfRows; i++)
+	{
+		// 18 is the height of the font; replace so it's calculated based on the
+		// actual font being used.
+		int rowYPosition = y + yStep;
+		yStep = ((i + 1) * (fontHeight + verticalSpacing));
+
+		Point ^indexPosition = gcnew Point(indexXPosition, rowYPosition);
+		Point ^playerNamePosition = gcnew Point(playerNameXPosition, rowYPosition);
+		Point ^scorePosition = gcnew Point(scoreXPosition, rowYPosition);
+
+
+		try
+		{
+			HighScoreRow ^newHighScoreRow = gcnew HighScoreRow(rowNumberFont, indexPosition,
+				playerNameFont, playerNamePosition, scoreFont, scorePosition);
+
+			String ^indexText;
+			// setting the entries position.
+			// adding 1 to i because the range used to indicate a players position
+			// on the highscore table needs to be 1 to 10, not 0 to 9.
+			if(i < 9)
+			{
+				indexText = String::Format(" {0})", i + 1);
+			}
+			else
+			{
+				indexText = String::Format("{0})", i + 1);
+			}
+
+			newHighScoreRow->Rank->Text = indexText;
+			newHighScoreRow->PlayerName->Text = HighScores::GetPlayerName(i);
+
+			// the score text is right aligned, calculating how many spaces need to be
+			// added so it's correctly padded.
+			// we want this:
+			// 99999
+			//   999
+			// not this:
+			// 99999
+			// 999
+			newHighScoreRow->Score->Text = RightAlignScore(HighScores::GetHighScore(i));
+			rows->Add(newHighScoreRow);
+		}
+		catch(...)
+		{
+			throw;
+		}
+	}
 }

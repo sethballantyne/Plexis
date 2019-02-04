@@ -81,8 +81,20 @@ void HighScores::Update(unsigned int row, array<unsigned char, 1> ^playerName, u
         throw gcnew ArgumentOutOfRangeException("row");
     }
 
-    highScores[row]->SetPlayerName(playerName);
-    highScores[row]->Score = newHighScore;
+    /*highScores[row]->SetPlayerName(playerName);
+    highScores[row]->Score = newHighScore;*/
+	HighScoreRecord ^newHighScoreRecord = gcnew HighScoreRecord();
+	newHighScoreRecord->Score = newHighScore;
+	newHighScoreRecord->SetPlayerName(playerName);
+
+	highScores->Insert(row, newHighScoreRecord);
+
+	// Check to see if we've now exceeded the maximum number of entries.
+	if(highScores->Count > defaultNumberOfEntries)
+	{
+		// yes we have; trim the bottom one.
+		highScores->RemoveAt(defaultNumberOfEntries);
+	}
 
     try
     {
@@ -101,3 +113,45 @@ void HighScores::Update(unsigned int row, array<unsigned char, 1> ^playerName, u
         throw;
     }
 }
+
+
+//void HighScores::Update(unsigned int row, array<unsigned char, 1> ^playerName, unsigned int newHighScore)
+//{
+//	for(int i = 0; i < highScores->Count; i++)
+//	{
+//		if(highScores[i]->Score < newHighScore)
+//		{
+//			HighScoreRecord ^newHighScoreRecord = gcnew HighScoreRecord();
+//			newHighScoreRecord->Score = newHighScore;
+//			newHighScoreRecord->SetPlayerName(playerName);
+//
+//			highScores->Insert(i, newHighScoreRecord);
+//
+//			// Check to see if we've now exceeded the maximum number of entries.
+//			if(highScores->Count > defaultNumberOfEntries)
+//			{
+//				// yes we have; trim the bottom one.
+//				highScores->RemoveAt(defaultNumberOfEntries);
+//			}
+//
+//			break;
+//		}
+//	}
+//
+//	try
+//	{
+//		fileStream->Flush();
+//		fileStream->SetLength(0);
+//		binaryWriter->Write(highScores->Count);
+//
+//		for(int i = 0; i < highScores->Count; i++)
+//		{
+//			binaryWriter->Write(highScores[i]->GetPlayerName());
+//			binaryWriter->Write(highScores[i]->Score);
+//		}
+//	}
+//	catch(...)
+//	{
+//		throw;
+//	}
+//}

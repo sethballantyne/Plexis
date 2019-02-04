@@ -9,8 +9,6 @@ void SceneManager::Initialise(XElement ^scenesXML)
         throw gcnew ArgumentNullException("scenesXML");
     }
 
-    SceneFactory ^sceneFactory = gcnew SceneFactory();
-
     try
     {
         array<Scene ^, 1> ^parsedScenes = (gcnew SceneFactory())->Read(scenesXML);

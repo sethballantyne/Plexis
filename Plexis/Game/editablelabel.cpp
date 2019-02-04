@@ -19,17 +19,13 @@
 #include "input.h"
 #include "scenemanager.h"
 #include "highscores.h"
+#include "resourcemanager.h"
 
-EditableLabel::EditableLabel(int x, int y, int selectedIndex, String ^font, unsigned int length, bool allowEmptyInput, MenuItemContainer ^parentContainer)
-    : ContainerControl(x, y, selectedIndex, parentContainer)
+EditableLabel::EditableLabel(int x, int y, String ^font, unsigned int length, bool allowEmptyInput) : Control(x, y)
 {
     if(nullptr == font)
     {
         throw gcnew ArgumentNullException("font");
-    }
-    else if(nullptr == parentContainer)
-    {
-        throw gcnew ArgumentNullException("parentContainer");
     }
 
     if(String::Empty == font)
@@ -69,7 +65,7 @@ void EditableLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
             if(asciiCode >= KEY_SPACE && asciiCode <= KEY_TILDE)
             {
                 // is the buffer filled?
-                if(cursorPosition < (text->Length - 1))
+                if(cursorPosition < text->Length)
                 {
                     // nope, stick the key that was pressed into the cursors position
                     text[cursorPosition] = asciiCode;
@@ -102,15 +98,15 @@ void EditableLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
                             editMode = false;
                             if(nullptr != navigateTo)
                             {
-                                // TEST CODE FOR PASSING PLAYER NAME AND A SCORE
-                                // TO THE HIGHSCORE TABLE.
-                                // VERY MUCH TEMPORARY.
-                                int newScoreRank = 0;
-                                HighScores::Update(0, text, 99999);
-                                array<Object ^, 1> ^args = gcnew array<Object ^, 1>(1);
-                                args[0] = newScoreRank;
-                                // END TEST CODE.
-                                SceneManager::SetActiveScene(navigateTo, args);
+                                //// TEST CODE FOR PASSING PLAYER NAME AND A SCORE
+                                //// TO THE HIGHSCORE TABLE.
+                                //// VERY MUCH TEMPORARY.
+                                //int newScoreRank = 0;
+                                //HighScores::Update(0, text, 99999);
+                                //array<Object ^, 1> ^args = gcnew array<Object ^, 1>(1);
+                                //args[0] = newScoreRank;
+                                //// END TEST CODE.
+                                //SceneManager::SetActiveScene(navigateTo, args);
                             }
                         }
                         break;

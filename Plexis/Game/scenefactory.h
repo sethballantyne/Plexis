@@ -30,6 +30,7 @@
 #include "imagecontrol.h"
 #include "versionlabel.h"
 #include "credits.h"
+#include "gameview.h"
 
 using namespace System::Xml::Linq;
 
@@ -78,6 +79,13 @@ private:
     /// <exception cref="System::FormatException">the value of an attribute that takes a numeric argument 
     /// contains a non-integer value.</exception>
     EditableLabel ^ParseEditableLabel(XElement ^element, MenuItemContainer ^parentContainer);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="element"></param>
+    /// <returns></returns>
+    GameView ^ParseGameView(XElement ^element);
 
     /// <summary>
     /// Parses a control element whose value of its <i>type</i> attribute is <b>highScoreTable</b>.
@@ -154,7 +162,7 @@ private:
     Slider ^ParseSlider(XElement ^element, MenuItemContainer ^parentContainer);
 
     /// <summary>
-    /// Parses a </i>containerItem</i> element whose <i>type</i> attribute evaluates to <b>keyConfigLabel</b>.
+    /// Parses a <i>containerItem</i> element whose <i>type</i> attribute evaluates to <b>keyConfigLabel</b>.
     /// </summary>
     /// <param name="element">the element to parse.</param>
     /// <param name="parentContainer">the menu item container the control will be attached to.</param>
@@ -170,7 +178,7 @@ private:
     KeyConfigLabel ^ParseKeyConfigLabel(XElement ^element, MenuItemContainer ^parentContainer);
 
     /// <summary>
-    /// Parses a </i>&lt;containerItem&gt;</i> element whose <i>type</i> attribute evaluates to <b>toggleLabel.</b>.
+    /// Parses a <i>&lt;containerItem&gt;</i> element whose <i>type</i> attribute evaluates to <b>toggleLabel.</b>.
     /// </summary>
     /// <param name="element">the element to parse.</param>
     /// <param name="parentContainer">the menu item container the control will be attached to.</param>

@@ -266,11 +266,11 @@ EditableLabel ^SceneFactory::ParseEditableLabel(XElement ^element, MenuItemConta
 
         if(nullptr == navigateTo)
         {
-            return gcnew EditableLabel(x, y, selectedIndex, font, length, allowEmptyInput, parentContainer);
+            return gcnew EditableLabel(x, y, font, length, allowEmptyInput);
         }
         else
         {
-            return gcnew EditableLabel(x, y, selectedIndex, font, length, allowEmptyInput, navigateTo, parentContainer);
+            return gcnew EditableLabel(x, y, font, length, allowEmptyInput, navigateTo);
         }
     }
     catch(...)
@@ -318,6 +318,21 @@ VersionLabel ^SceneFactory::ParseVersionLabel(XElement ^element)
         String ^font = XmlHelper::GetAttributeValue(element, "font");
 
         return gcnew VersionLabel(x, y, font);
+    }
+    catch(...)
+    {
+        throw;
+    }
+}
+
+GameView ^SceneFactory::ParseGameView(XElement ^element)
+{
+    try
+    {
+        String ^mainMenu = XmlHelper::GetAttributeValue(element, "mainMenu");
+        String ^highScorePrompt = XmlHelper::GetAttributeValue(element, "highScorePrompt");
+
+        return gcnew GameView(mainMenu, highScorePrompt);
     }
     catch(...)
     {
@@ -379,6 +394,11 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                     Credits ^credits = ParseCredits(controlElement);
                     newScene->GetControlList()->Add(credits);
                 }
+                else if(typeAttribute == "gameView")
+                {
+                    GameView ^gameView = ParseGameView(controlElement);
+                    newScene->GetControlList()->Add(gameView);
+                }
                 else if(typeAttribute == "menuItemContainer")
                 {
                     System::Collections::Generic::IEnumerable<XElement ^> ^containerQuery = sceneElement->Descendants((String ^)"containerItem");
@@ -408,11 +428,11 @@ array<Scene ^, 1> ^SceneFactory::Read(XElement ^sceneXML)
                             KeyConfigLabel ^keyConfigLabel = ParseKeyConfigLabel(containerItem, menuItemContainer);
                             menuItemContainer->AddControl(keyConfigLabel);
                         }
-                        else if(containerItemType == "editableLabel")
+                       /* else if(containerItemType == "editableLabel")
                         {
                             EditableLabel ^editableLabel = ParseEditableLabel(containerItem, menuItemContainer);
                             menuItemContainer->AddControl(editableLabel);
-                        }
+                        }*/
                         else if(containerItemType == "volumeSlider")
                         {
                             VolumeSlider ^volumeSlider = ParseVolumeSlider(containerItem, menuItemContainer);

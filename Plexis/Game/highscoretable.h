@@ -27,8 +27,21 @@ private:
     // each row that makes up the table. A list is being used instead of an array
     // so if the number of rows that makes up the table happens to change,
     // there's no numbers to change.
-    List<HighScoreRow ^> ^rows;
+    List<HighScoreRow ^> ^rows; 
 
+	String ^rowNumberFont;
+	String ^playerNameFont;
+	String ^scoreFont;
+
+	int numberOfRows;
+	int x;
+	int y;
+	int verticalSpacing;
+	int indexXPosition;
+	int playerNameXPosition;
+	int scoreXPosition;
+	
+	void PopulateTable();
 public:
     /// <summary>
     /// Initialises a new instance of HighScoreTable with the specified fonts and X coordinates
@@ -37,24 +50,28 @@ public:
     /// <param name="x">the controls screen position on the X axis.</param>
     /// <param name="y">the controls screen position on the Y axis.</param>
     /// <param name="numberOfRows">the number of ranks the table will consist of. This value should'nt be greater than the number of entries in highscores.dat.</param>
-    /// <param name="vertialSpacing">the amount of space between rows in pixels.</param>
+    /// <param name="verticalSpacing">the amount of space between rows in pixels.</param>
     /// <param name="indexXPosition">the position on the X axis where each rank should be rendered.</param>
     /// <param name="rowNumberFont">the name of the font that will be used to render each rank.</param>
-    /// <param name="PlayerNameXPosition">the position on the X axis where each player name should be rendered.</param>
+    /// <param name="playerNameXPosition">the position on the X axis where each player name should be rendered.</param>
     /// <param name="playerNameFont">the name of the font that will be used to render each player name.</param>
     /// <param name="scoreXPosition">the position on the X axis where each score should be rendered.</param>
     /// <param name="scoreFont">the name of the font that will be used to render each score.</param>
     /// <exception cref="System::ArgumentException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>,
-    ///  or <i>scoreFont</i> evaluate to String::Empty.</exception>
+    ///  or <i>scoreFont</i> evaluate to String::Empty.
+    /// </exception>
     /// <exception cref="System::ArgumentNullException">either <i>rowNumberFont</i>, or <i>playerNameFont</i>,
-    ///  or <i>scoreFont</i> is <b>null</b>.</exception>
+    ///  or <i>scoreFont</i> is <b>null</b>.
+    /// </exception>
     /// <exception cref="ResourceNotFoundException">the font specified in either <i>rowNumberFont</i>,
-    ///  or < i>playerNameFont</i>, or <i>scoreFont/i> doesn't exist within the resource manager.</exception>
+    ///  or <i>playerNameFont</i>, or <i>scoreFont</i> doesn't exist within the resource manager.
+    /// </exception>
     /// <remarks>When HighScoreTable calculates the spacing between rows, it uses the height of the font specified in <i>rowNumberFont</i>
     /// and assumes the fonts specified in <i>playerNameFont</i> and <i>scoreFont</i> are the same height. If the heights
-    /// differ, the rows are going to be displayed incorrectly.</remarks>
-    HighScoreTable(int x, int y, int numberOfRows, int vertialSpacing,
-        int indexXPosition, String ^rowNumberFont, int PlayerNameXPosition, String ^playerNameFont,
+    /// differ, the rows are going to be displayed incorrectly.
+    /// </remarks>
+    HighScoreTable(int x, int y, int numberOfRows, int verticalSpacing,
+        int indexXPosition, String ^rowNumberFont, int playerNameXPosition, String ^playerNameFont,
         int scoreXPosition, String ^scoreFont);
 
     /// <summary>
@@ -115,7 +132,12 @@ public:
         }
     }
 
+	/// <summary>
+	/// 
+	/// </summary>
     void Update(Keys ^keyboardState, Mouse ^mouseState) override
     {
     }
+
+	void UpdateTable();
 };

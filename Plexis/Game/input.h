@@ -38,7 +38,9 @@ private:
     static LPDIRECTINPUTDEVICE8 lpDIKeyboard;
     static LPDIRECTINPUTDEVICE8 lpDIMouse;
 
-    // holds string descriptions of keys
+    // If a key is present in this table, it can be bound by the user to a particular action 
+	// in the game. the int argument is the DIK_* scan code, the string is the text description 
+	// of the key as it'll appear within the game when binding the key.
     static Dictionary<int, String ^> ^lookupTable = gcnew Dictionary<int, String ^>();
 
     // the previous state of the keyboard is stored because it's required when
@@ -75,10 +77,14 @@ private:
 
     /// <summary>
     /// Populates the table with string descriptions of specific keys.
+    /// 
     /// </summary>
     static void InitLookupTable()
     {
-        lookupTable->Add(DIK_ESCAPE, "ESCAPE");
+		// fix for issue #56: ESCAPE is reserved for bringing up the main menu during gameplay.
+        //lookupTable->Add(DIK_ESCAPE, "ESCAPE")
+		lookupTable->Add(0, "LEFT MOUSE BUTTON");
+		lookupTable->Add(1, "RIGHT MOUSE BUTTON");
         lookupTable->Add(DIK_1, "1");
         lookupTable->Add(DIK_2, "2");
         lookupTable->Add(DIK_3,"3");
@@ -176,8 +182,7 @@ private:
         lookupTable->Add(DIK_NEXT, "PAGE DOWN");
         lookupTable->Add(DIK_INSERT, "INSERT");
         lookupTable->Add(DIK_DELETE, "DELETE");
-        lookupTable->Add(DIMOUSE_BUTTON0, "LEFT MOUSE BUTTON");
-        lookupTable->Add(DIMOUSE_BUTTON1, "RIGHT MOUSE BUTTON");
+        
     }
 
     /// <summary>
