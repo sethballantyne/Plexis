@@ -65,7 +65,7 @@ void EditableLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
             if(asciiCode >= KEY_SPACE && asciiCode <= KEY_TILDE)
             {
                 // is the buffer filled?
-                if(cursorPosition < (text->Length - 1))
+                if(cursorPosition < text->Length)
                 {
                     // nope, stick the key that was pressed into the cursors position
                     text[cursorPosition] = asciiCode;

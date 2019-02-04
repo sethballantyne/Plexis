@@ -88,7 +88,7 @@ public:
     }
 
 	/// <summary>
-	/// 
+	/// Removes all characters from label.
 	/// </summary>
 	void Clear()
 	{
