@@ -17,10 +17,10 @@ void GameLogic::DebugRemoveBrick()
 }
 
 
-GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
+GameLogic::GameLogic(String ^gameInProgressMenu)
 {
 	this->gameInProgressMainMenu = gameInProgressMenu;
-	this->highScorePrompt = highScorePrompt;
+	//this->highScorePrompt = highScorePrompt;
 	this->debugKeysEnabled = GameOptions::GetValue("debugKeys", false);
 
 	this->player = EntityManager::GetEntity<Paddle ^>("player");
@@ -30,8 +30,8 @@ GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
 	this->ball = EntityManager::GetEntity<Ball ^>("defaultBall");
 	Debug::Assert(this->ball != nullptr);
 
-	this->livesPaddleImage = ResourceManager::GetSurface("heart2");
-	this->lives = gcnew NumericField(200, 5, this->livesPaddleImage, this->numberOfLives, 2);
+	this->livesImage = ResourceManager::GetSurface("heart2");
+	this->lives = gcnew NumericField(200, 5, this->livesImage, 2, 2);
 	this->score = gcnew NumericField(5, 5, "SCORE", 0, 5);
 	this->pauseImage = ResourceManager::GetSurface("paused2");
 	this->pauseX = (Video::Width / 2) - (this->pauseImage->Size->Width / 2);
@@ -53,6 +53,8 @@ GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 {
+	Debug::Assert(keyboardState != nullptr && mouseState != nullptr);
+
 	if(gameState == GameState::Playing || gameState == GameState::Paused)
 	{
 		if(this->debugKeysEnabled)

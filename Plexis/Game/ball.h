@@ -18,10 +18,17 @@
 #pragma once
 #include "entity.h"
 
+/// <summary>
+/// Represents the ball the player smacks around the screen. 
+/// </summary>
 public ref class Ball : public Entity
 {
 private:
 public:
+	/// <summary>
+	/// Creates a new ball instance with the specified sprite. 
+	/// </summary>
+	/// <param name="sprite">The balls sprite.</param>
 	Ball(::Sprite ^sprite) : Entity(sprite, Vector2::Zero)
 	{
 	}

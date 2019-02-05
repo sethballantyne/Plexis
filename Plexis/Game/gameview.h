@@ -23,21 +23,18 @@
 #include "levelmanager.h"
 #include "gamelogic.h"
 
+/// <summary>
+/// 
+/// </summary>
 public ref class GameView : SelectableControl
 {
 private:
-    Label ^text;
-    //String ^gameInProgressMainMenuScene;
-    //String ^highScorePrompt;
-    //Level ^currentLevel = nullptr;
 	GameLogic ^gameLogic;
 public:
-    GameView(String ^gameInProgressMainMenu, String ^highScorePrompt) : SelectableControl(0, 0, 0, gcnew System::Drawing::Size(0, 0))
+    GameView(String ^gameInProgressMainMenu) : SelectableControl(0, 0, 0, gcnew System::Drawing::Size(0, 0))
     {
-       text = gcnew Label(0, 0, "green", "game view");
-       // gameInProgressMainMenuScene = gameInProgressMainMenu;
        IsSelected = true;
-	   gameLogic = gcnew GameLogic(gameInProgressMainMenu, highScorePrompt);
+	   gameLogic = gcnew GameLogic(gameInProgressMainMenu);
     }
 
     void ReceiveSceneArgs(array<Object ^, 1> ^sceneArgs) override
@@ -50,10 +47,7 @@ public:
 			}
 
 			gameLogic->UpdateKeys();
-            //text->Text = (String ^) sceneArgs[0];
         }
-
-        //currentLevel = LevelManager::GetNextLevel();
     }
 
     void Update(Keys ^keyboardState, Mouse ^mouseState) override

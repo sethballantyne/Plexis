@@ -49,7 +49,7 @@ public enum GameState
 	GameOver,
 
 	/// <summary>
-	/// 
+	/// The player and ball are about to be reset to their default positions.
 	/// </summary>
 	PlayerReset
 };

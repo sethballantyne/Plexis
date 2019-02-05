@@ -134,12 +134,18 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// Describes what should happen when the ball hits this brick.
+	/// </summary>
 	virtual void Hit()
 	{
 		visible = false;
 		Death(this, gcnew EventArgs());
 	}
 
+	/// <summary>
+	/// event that's fired when the brick is "killed" (its health equates to 0).
+	/// </summary>
 	event EventHandler^ Death;
 
 };

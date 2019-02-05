@@ -52,33 +52,40 @@ Frame ^EntityManager::ParseFrame(XElement ^frameElement)
 
 void EntityManager::ParseBall(XElement ^ballElement)
 {
-	String ^name = XmlHelper::GetAttributeValue(ballElement, "name");
-	String ^image = XmlHelper::GetAttributeValue(ballElement, "image");
-	if(parsedEntities.ContainsKey(name))
+	try
 	{
-		LogManager::WriteLine(LogType::Debug, "A ball with the name {0} already exists in the entities collection; skipping.", name);
-	}
+		String ^name = XmlHelper::GetAttributeValue(ballElement, "name");
+		String ^image = XmlHelper::GetAttributeValue(ballElement, "image");
+		if(parsedEntities.ContainsKey(name))
+		{
+			LogManager::WriteLine(LogType::Debug, "A ball with the name {0} already exists in the entities collection; skipping.", name);
+		}
 
-	//---------------------------------------------------------------------------------------------
-	// load the child <frame> elements; this will also load the bounding box data
-	//---------------------------------------------------------------------------------------------
-	System::Collections::Generic::IEnumerable<XElement ^> ^frameElements = ballElement->Elements((String ^) "frame");
-	if(XmlHelper::Count(frameElements) == 0)
+		//---------------------------------------------------------------------------------------------
+		// load the child <frame> elements; this will also load the bounding box data
+		//---------------------------------------------------------------------------------------------
+		System::Collections::Generic::IEnumerable<XElement ^> ^frameElements = ballElement->Elements((String ^) "frame");
+		if(XmlHelper::Count(frameElements) == 0)
+		{
+			// if there's no frame data, the game doesn't know what to draw.
+			throw gcnew XmlException(String::Format("No frames are associated with the ball named {0}.", name));
+		}
+
+		List<Frame ^> ^frames = gcnew List<Frame ^>();
+		for each(XElement ^frameElement in frameElements)
+		{
+			frames->Add(ParseFrame(frameElement));
+		}
+
+		Sprite ^ballSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Ball ^ball = gcnew Ball(ballSprite);
+
+		parsedEntities[name] = ball;
+	}
+	catch(...)
 	{
-		// if there's no frame data, the game doesn't know what to draw.
-		throw gcnew XmlException(String::Format("No frames are associated with the ball named {0}.", name));
+		throw;
 	}
-
-	List<Frame ^> ^frames = gcnew List<Frame ^>();
-	for each(XElement ^frameElement in frameElements)
-	{
-		frames->Add(ParseFrame(frameElement));
-	}
-
-	Sprite ^ballSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
-	Ball ^ball = gcnew Ball(ballSprite);
-
-	parsedEntities[name] = ball;
 }
 
 void EntityManager::ParseBrick(XElement ^brickElement)
@@ -148,7 +155,7 @@ void EntityManager::ParsePaddle(XElement ^paddleElement)
 	}
 	catch(...)
 	{
-
+		throw;
 	}
 }
 

@@ -77,11 +77,12 @@ public:
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="x"></param>
-	/// <param name="y"></param>
-	/// <param name="captionText"></param>
-	/// <param name="scoreInitialValue"></param>
-	/// <param name="paddingAmount"></param>
+	/// <param name="x">the controls x position</param>
+	/// <param name="y">the controls y position</param>
+	/// <param name="captionText">the text that's displayed next to the controls integer value.</param>
+	/// <param name="numberTextInitialValue">Initial value of the controls integer value.</param>
+	/// <param name="paddingAmount">The max number of characters the integer value should take up;
+	/// empty spaces will be replaced with zeros.</param>
 	NumericField(unsigned int x, unsigned int y, String ^captionText, int ^numberTextInitialValue, unsigned int paddingAmount)
 	{
 		Debug::Assert(nullptr != captionText);
@@ -95,10 +96,17 @@ public:
 
 		unsigned int numberPositionX = x + (this->captionText->LabelFont->GlyphWidth + 1) * this->captionText->Text->Length;
 		this->numberText = gcnew Label(numberPositionX, y, "white", Pad(paddingAmount));
-
-		
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="x">the controls x position</param>
+	/// <param name="y">the controls y position</param>
+	/// <param name="image">the image that appears next to the controls integer value.</param>
+	/// <param name="numberTextInitialValue">the initial value of the controls integer value.</param>
+	/// <param name="paddingAmount">The max number of characters the integer value should take up;
+	/// empty spaces will be replaced with zeros.</param>
 	NumericField(unsigned int x, unsigned int y, Surface ^image, int numberTextInitialValue, unsigned int paddingAmount)
 	{
 		String ^convertedNumText = Convert::ToString(numberTextInitialValue);
@@ -117,6 +125,9 @@ public:
 		
 	}
 
+	/// <summary>
+	/// Renders the control to the backbuffer.
+	/// </summary>
 	void Render()
 	{	
 		(true == renderTextCaption) ? captionText->Render() : Video::Blit(imageX, imageY, image);
@@ -124,7 +135,9 @@ public:
 	}
 
 	
-
+	/// <summary>
+	/// Gets or sets the controls integer value.
+	/// </summary>
 	property int Value
 	{
 		int get()

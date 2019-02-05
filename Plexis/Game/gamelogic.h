@@ -30,36 +30,38 @@
 using namespace System::Diagnostics;
 using namespace System::Timers;
 
-#define DEFAULT_NUMBER_OF_LIVES 3
+// 0 based
+#define DEFAULT_NUMBER_OF_LIVES 2
 
 /// <summary>
-/// 
+/// Game play logic.
 /// </summary>
 public ref class GameLogic
 {
 private:
-	//
+	// the current level that's being played
 	Level ^currentLevel;
 
-	//
+	// the player controlled paddle
 	Paddle ^player;
 
-	//
+	// The ball the player beats about the screen
 	Ball ^ball;
 
-	//
+	// the image that's displayed when the user presses the pause key during gameplay.
 	Surface ^pauseImage = nullptr;
 
-	//
+	// the image that's displayed when the user has destroyed all the bricks in the level.
 	Surface ^levelCompleteImage = nullptr;
 
-	//
-	Surface ^livesPaddleImage = nullptr;
+	// the image next to the lives counter.
+	// indicates that the value we're gawking at corresponds to lives.
+	Surface ^livesImage = nullptr;
 
-	//
+	// the amount of points the player has
 	NumericField ^score;
 
-	//
+	// the number lives remaining
 	NumericField ^lives;
 
 	// 
@@ -70,48 +72,48 @@ private:
 	// used for the delay when the ball goes off the screen
 	Timer ^playerResetTimer = gcnew Timer(2000);
 
-	//
+	// the scene that should be displayed when the user hits escape during gameplay.
 	String ^gameInProgressMainMenu;
-	String ^highScorePrompt;
 
-	//
+	// 
+	//String ^highScorePrompt;
+
+	// the screen that's displayed when the user runs out of lives.
 	GameOverScreen ^gameOverScreen = gcnew GameOverScreen();
 
-	//
+	// controls game flow and what's displayed on the screen. 
 	GameState gameState = GameState::NewLevel;
 
-	//
+	// keys read from options.xml
 	int pauseKey;
-	int playerLeftKey;
-	int playerRightKey;
 	int playerFireKey;
 
+	// x and y positions for the image that's displayed when the player
+	// presses pause.
 	int pauseX;
 	int pauseY;
 
+	// x and y coordinates for the image that's displayed when the player
+	// completes a level.
 	int levelCompleteX;
 	int levelCompleteY;
 
+	// the number of bricks the user has to hit in order to complete the level
 	int numberOfBricksRemaining;
-	int numberOfLives;
 
 	bool debugKeysEnabled = false;
 
 	bool gameOverScreenVisible = false;
 
-	//-----------------------------------------------------------
-	// DEBUG COMMANDS
-	//-----------------------------------------------------------
+	
+	/// <summary>
+	/// Removes a brick from the game, as if it were hit by the ball.
+	/// </summary>
 	void DebugRemoveBrick();
 
-	void GameOverTransition()
-	{
-		//this->gameOverLabel->Text = String::Empty;
-		//this->gameState = GameState::GameOver;
-	    //gameOverScreenVisible = true;
-		//this->gameOverPrinterTimer->Start();
-	}
-
+	/// <summary>
+	/// Resets the paddle and ball to their default positions.
+	/// </summary>
 	void ResetPlayerAndBall()
 	{
 		player->ResetPosition();
@@ -120,29 +122,29 @@ private:
 	}
 
 	/// <summary>
-	/// 
+	/// Handles mouse and keyboard input during gameplay
 	/// </summary>
 	/// <param name="keyboardState"></param>
 	/// <param name="mouseState"></param>
 	void HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState);
 	
 	/// <summary>
-	/// 
+	/// Ball collision detection with walls and the player
 	/// </summary>
 	void HandleBallCollision();
 
 	/// <summary>
-	/// 
+	/// Player collision detection
 	/// </summary>
 	void HandlePlayerWallCollision();
 	
 	/// <summary>
-	/// 
+	/// Ball collision detection with bricks
 	/// </summary>
 	void HandleBrickCollisions();
 
 	/// <summary>
-	/// 
+	/// Handles all the collision detection within the game
 	/// </summary>
 	void HandleCollisions()
 	{
@@ -159,7 +161,7 @@ private:
 	}
 
 	/// <summary>
-	/// 
+	/// Input that controls or affects gameplay.
 	/// </summary>
 	/// <param name="keyboardState"></param>
 	/// <param name="mouseState"></param>
@@ -173,49 +175,41 @@ private:
 	}
 
 public:
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="gameInProgressMenu"></param>
-	/// <param name="highScorePrompt"></param>
-	GameLogic(String ^gameInProgressMenu, String ^highScorePrompt);
+	GameLogic(String ^gameInProgressMenu);
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="keyboardState"></param>
-	/// <param name="mouseState"></param>
 	void Update(Keys ^keyboardState, Mouse ^mouseState);
 
 	/// <summary>
-	/// 
+	/// Gets the key configuration from GameOptions.
 	/// </summary>
 	void UpdateKeys()
 	{
-		this->playerLeftKey = GameOptions::GetValue("movePaddleLeftKey", DIK_LEFT);
-		this->playerRightKey = GameOptions::GetValue("movePaddleRightKey", DIK_RIGHT);
 		this->playerFireKey = GameOptions::GetValue("fireKey", DIK_SPACE);
 		this->pauseKey = GameOptions::GetValue("", DIK_P);
 	}
 
 	/// <summary>
-	/// 
+	/// Renders the gameplay to the screen
 	/// </summary>
 	void Render();
+
 	/// <summary>
-	/// 
+	/// Puts the game into its default state.
 	/// </summary>
 	void NewGame()
 	{
 		this->gameState = GameState::NewLevel;
-		this->numberOfLives = DEFAULT_NUMBER_OF_LIVES;
 		this->score->Value = 0;
-		this->lives->Value = this->numberOfLives;
+		this->lives->Value = DEFAULT_NUMBER_OF_LIVES;
 		gameOverScreen->Visible = false;
 
 		LevelManager::ResetLevelCounter();
 	}
 
+	/// <summary>
+	/// controls whether the game over screen is displayed or if the player and ball
+	/// are reset when the player loses a life.
+	/// </summary>
 	void OnPlayerResetTimerEvent(Object ^source, ElapsedEventArgs ^e)
 	{
 		this->playerResetTimer->Stop();
@@ -231,29 +225,16 @@ public:
 		}
 	}
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="source"></param>
-	/// <param name="e"></param>
-	
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="source"></param>
-	/// <param name="e"></param>
-	 void OnLevelTransitionTimerEvent(Object ^source, ElapsedEventArgs ^e)
+	void OnLevelTransitionTimerEvent(Object ^source, ElapsedEventArgs ^e)
 	{
 		this->levelLoadDelayTimer->Stop();
 		this->gameState = GameState::NewLevel;
 	}
 
 	/// <summary>
-	/// 
+	/// describes what should happen when a brick is destroyed.
 	/// </summary>
-	/// <param name="sender"></param>
-	/// <param name="e"></param>
 	void OnDeath(Object ^sender, EventArgs ^e)
 	{
 		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
@@ -261,7 +242,6 @@ public:
 
 		this->score->Value += (safe_cast<Brick ^>(sender))->PointValue;
 		this->currentLevel->BrickCount--;
-		LogManager::WriteLine(LogType::Debug, "{0}", currentLevel->BrickCount);
 		Debug::Assert(this->currentLevel->BrickCount >= 0);
 	}
 };
