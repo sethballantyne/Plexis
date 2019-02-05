@@ -900,10 +900,14 @@ namespace PLeD
                         // of previous levels appearing in the dialog when a new level
                         // is created and saved for the first time. (bug fix for #82)
                         EditorLogic.saveFileDialog.FileName = String.Empty;
-
-                        SaveAndUpdateGUI();
+                    }
+                    else
+                    {
+                        return dialogResult;
                     }
                 }
+
+                SaveAndUpdateGUI();
             }
             catch
             {
