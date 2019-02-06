@@ -16,41 +16,55 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 #pragma once
-#include "entity.h"
+using namespace System;
+using namespace System::Diagnostics;
 
 /// <summary>
-/// Represents the ball the player smacks around the screen. 
+/// Contains the data required to be passed to a brick's Death event.
 /// </summary>
-public ref class Ball : public Entity
+public ref class BrickHitEventArgs : EventArgs
 {
-private:
+	//String ^name;
+	System::Drawing::Point levelCoordinates;
+
+	bool explode = false;
 public:
 	/// <summary>
-	/// Creates a new ball instance with the specified sprite. 
+	/// Instantiates a new instance of BrickHitEventArgs with the name and coordinates
+	/// of the brick that's been hit.
 	/// </summary>
-	/// <param name="sprite">The balls sprite.</param>
-	Ball(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
+	/// <param name="coordinates">the bricks tile coordinates.</param>
+	/// <param name="explode">true if the brick is exploding, otherwise false.</param>
+	BrickHitEventArgs(System::Drawing::Point coordinates, bool explode) : EventArgs()
 	{
+		//Debug::Assert(brickName != nullptr || brickName != String::Empty);
+		//name = brickName;
+
+		this->levelCoordinates = coordinates;
+		this->explode = explode;
+	}
+	
+	/// <summary>
+	/// Gets the tile coordinates of the brick 
+	/// </summary>
+	property System::Drawing::Point Coordinates
+	{
+		System::Drawing::Point get() { return levelCoordinates; }
 	}
 
 	/// <summary>
-	/// Creates a deep copy of this <see cref="Ball"/> instance.
+	/// Gets a value indicating whether the brick is exploding or not.
 	/// </summary>
-	/// <returns></returns>
-	Object ^Clone() override
+	property bool Explode
 	{
-		::Sprite ^sprite = gcnew ::Sprite(
-			this->Sprite->Position.X,
-			this->Sprite->Position.Y,
-			this->Sprite->GetFrames(), this->Sprite->Surface);
-
-		return gcnew Ball(sprite, this->Name);
+		bool get() { return explode; }
 	}
-
 	/// <summary>
-	/// Updates the bricks state.
+	/// Gets the name of the brick
 	/// </summary>
-	void Update() override
+	/*property String ^Name
 	{
-	}
+		String ^get() { return name; }
+	}*/
+
 };

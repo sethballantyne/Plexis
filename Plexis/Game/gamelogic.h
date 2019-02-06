@@ -26,6 +26,7 @@
 #include "gameoptions.h"
 #include "numericfield.h"
 #include "gameover.h"
+#include "explosion.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
@@ -83,6 +84,10 @@ private:
 
 	// controls game flow and what's displayed on the screen. 
 	GameState gameState = GameState::NewLevel;
+
+	// list of explosions that need to be rendered when an explosive brick
+	// is hit by the ball or destroyed in another explosion.
+	List<Explosion ^> ^explosionList = gcnew List<Explosion ^>();
 
 	// keys read from options.xml
 	int pauseKey;
@@ -233,15 +238,69 @@ public:
 	}
 
 	/// <summary>
+	/// Creates an explosion at the specified tile coordinates.
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	void CreateExplosion(int x, int y)
+	{
+		Explosion ^booomMotherFuckerApostrophe = gcnew Explosion(x, y);
+		booomMotherFuckerApostrophe->Start();
+		explosionList->Add(booomMotherFuckerApostrophe);
+	}
+
+	/// <summary>
 	/// describes what should happen when a brick is destroyed.
 	/// </summary>
-	void OnDeath(Object ^sender, EventArgs ^e)
+	void OnDeath(Object ^sender, BrickHitEventArgs ^e)
 	{
 		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
 			ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
 
-		this->score->Value += (safe_cast<Brick ^>(sender))->PointValue;
+		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
+
+		this->score->Value += destroyedBrick->PointValue;
+		if(destroyedBrick->Name == "explosiveBrick")
+		{
+			// make the exploding brick look like it's exploding.
+			CreateExplosion(e->Coordinates.X, e->Coordinates.Y);
+
+			ExplodeSurroundingBricks(e->Coordinates);
+		}
+		else if(true == e->Explode)
+		{
+			CreateExplosion(e->Coordinates.X, e->Coordinates.Y);
+		}
+
 		this->currentLevel->BrickCount--;
 		Debug::Assert(this->currentLevel->BrickCount >= 0);
+	}
+
+	/// <summary>
+	/// Causes all bricks within a 1 brick radius of the specified coords to explode.
+	/// </summary>
+	/// <param name="coords">the center of the explosion, in tile coordinates.</param>
+	void ExplodeSurroundingBricks(System::Drawing::Point coords)
+	{
+		// now make any other bricks around it explode!
+		for(int x = -1; x < 2; x++)
+		{
+			for(int y = -1; y < 2; y++)
+			{
+				int xCoord = coords.X + x;
+				int yCoord = coords.Y + y;
+
+				if(xCoord >= 0 &&
+					xCoord < currentLevel->Width &&
+					yCoord >= 0 &&
+					yCoord < currentLevel->Height &&
+					nullptr != currentLevel[xCoord, yCoord] &&
+				    currentLevel[xCoord, yCoord]->Visible)
+				{
+					// KNOCK KNOCK, YOU'RE DEAD!
+					currentLevel[xCoord, yCoord]->Die(xCoord, yCoord, true);
+				}
+			}
+		}
 	}
 };

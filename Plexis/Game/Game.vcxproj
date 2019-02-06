@@ -76,9 +76,11 @@
     <ClInclude Include="audio.h" />
     <ClInclude Include="ball.h" />
     <ClInclude Include="brick.h" />
+    <ClInclude Include="brickhiteventargs.h" />
     <ClInclude Include="credits.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="entitymanager.h" />
+    <ClInclude Include="explosion.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="gamelogic.h" />
     <ClInclude Include="gameover.h" />

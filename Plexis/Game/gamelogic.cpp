@@ -9,7 +9,7 @@ void GameLogic::DebugRemoveBrick()
 		{
 			if(nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible)
 			{
-				currentLevel[i,j]->Hit();
+				currentLevel[i,j]->Hit(i, j);
 				return;
 			}
 		}
@@ -218,7 +218,7 @@ void GameLogic::HandleBrickCollisions()
 			{
 				if(ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 				{
-					currentLevel[i, j]->Hit();
+					currentLevel[i, j]->Hit(i, j);
 					ball->Velocity.X = -ball->Velocity.X;
 					ball->Velocity.Y *= -1;
 
@@ -263,7 +263,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				{
 					if(nullptr != this->currentLevel[i, j])
 					{
-						this->currentLevel[i, j]->Death += gcnew EventHandler(this, &GameLogic::OnDeath);
+						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::OnDeath);
 					}
 				}
 			}
@@ -316,6 +316,20 @@ void GameLogic::Render()
 		{
 			player->Sprite->Render();
 			ball->Sprite->Render();
+
+			if(explosionList->Count > 0)
+			{
+				LogManager::WriteLine(LogType::Debug, "{0}", explosionList->Count);
+				for(int i = explosionList->Count - 1; i >= 0; i--)
+				{
+					explosionList[i]->Render();
+					if(explosionList[i]->Done)
+					{
+						explosionList->RemoveAt(i);
+					}
+				}
+			}
+
 			score->Render();
 
 			// don't show -1 when the player loses his/her last life.

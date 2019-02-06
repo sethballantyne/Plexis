@@ -65,7 +65,7 @@ public:
     /// <param name="sprite">the entity's sprite.</param>
     /// <param name="velocity">the entity's initial velocity.</param>
     /// <exception cref="System::ArgumentNullException"><c>sprite</c> evaluates to <b>null</b>.</exception>
-    Entity(Sprite ^sprite, Vector2 velocity)
+    Entity(Sprite ^sprite, Vector2 velocity, String ^name)
     {
         if(nullptr == sprite)
         {
@@ -74,6 +74,7 @@ public:
 
         this->sprite = sprite;
         this->velocity = velocity;
+		this->name = name;
         this->boundingBox.X = sprite->Position.X + sprite->CurrentFrame->BoundingBox.X;
         this->boundingBox.Y = sprite->Position.Y + sprite->CurrentFrame->BoundingBox.Y;
         this->boundingBox.Width = sprite->CurrentFrame->BoundingBox.Width;

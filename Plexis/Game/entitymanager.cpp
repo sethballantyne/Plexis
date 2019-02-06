@@ -78,7 +78,7 @@ void EntityManager::ParseBall(XElement ^ballElement)
 		}
 
 		Sprite ^ballSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
-		Ball ^ball = gcnew Ball(ballSprite);
+		Ball ^ball = gcnew Ball(ballSprite, name);
 
 		parsedEntities[name] = ball;
 	}
@@ -111,7 +111,7 @@ void EntityManager::ParseBrick(XElement ^brickElement)
         }
 
         Sprite ^brickSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
-        Brick ^brick = gcnew Brick(brickSprite, hitCount, chanceOfPowerUp, points);
+        Brick ^brick = gcnew Brick(brickSprite, hitCount, chanceOfPowerUp, points, name);
 
         parsedEntities[name] = brick;
     }
@@ -149,7 +149,7 @@ void EntityManager::ParsePaddle(XElement ^paddleElement)
 		}
 
 		Sprite ^paddleSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
-		Paddle ^paddle = gcnew Paddle(paddleSprite);
+		Paddle ^paddle = gcnew Paddle(paddleSprite, name);
 
 		parsedEntities[name] = paddle;
 	}

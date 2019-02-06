@@ -25,7 +25,7 @@
 public ref class Paddle : public Entity
 {
 public:
-	Paddle(::Sprite ^sprite) : Entity(sprite, Vector2::Zero)
+	Paddle(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
 	{
 
 	}
@@ -53,7 +53,7 @@ public:
 			this->Sprite->Position.Y,
 			this->Sprite->GetFrames(), this->Sprite->Surface);
 
-		return gcnew Paddle(sprite);
+		return gcnew Paddle(sprite, this->Name);
 	}
 
 	/// <summary>

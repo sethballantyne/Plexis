@@ -129,7 +129,7 @@ public:
     }
 
     /// <summary>
-    /// Gets the current frame as an integer.
+    /// Gets or sets the current frame as an integer.
     /// </summary>
     property unsigned int CurrentFrameIndex
     {
@@ -137,6 +137,11 @@ public:
         {
             return currentFrameIndex;
         }
+		void set(unsigned int value)
+		{
+			System::Diagnostics::Debug::Assert(value < frames->Length);
+			currentFrameIndex = value;
+		}
     }
 
     /// <summary>
