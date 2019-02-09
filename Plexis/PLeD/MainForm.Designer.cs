@@ -291,8 +291,9 @@ namespace PLeD
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // toolStrip
             // 
@@ -421,7 +422,7 @@ namespace PLeD
             // 
             this.splitContainer.Panel2.Controls.Add(this.brickListView);
             this.splitContainer.Panel2.Controls.Add(this.paletteToolStrip);
-            this.splitContainer.Size = new System.Drawing.Size(921, 297);
+            this.splitContainer.Size = new System.Drawing.Size(921, 329);
             this.splitContainer.SplitterDistance = 738;
             this.splitContainer.TabIndex = 2;
             // 
@@ -444,7 +445,7 @@ namespace PLeD
             this.brickListView.Location = new System.Drawing.Point(0, 25);
             this.brickListView.MultiSelect = false;
             this.brickListView.Name = "brickListView";
-            this.brickListView.Size = new System.Drawing.Size(179, 272);
+            this.brickListView.Size = new System.Drawing.Size(179, 304);
             this.brickListView.TabIndex = 0;
             this.brickListView.UseCompatibleStateImageBehavior = false;
             this.brickListView.SelectedIndexChanged += new System.EventHandler(this.brickListView_SelectedIndexChanged);
@@ -488,7 +489,7 @@ namespace PLeD
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(921, 346);
+            this.ClientSize = new System.Drawing.Size(921, 378);
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.mainMenuStrip);

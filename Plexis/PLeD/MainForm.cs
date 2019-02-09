@@ -438,5 +438,10 @@ namespace PLeD
         {
             eraserToolStripButton.Checked = eraserToolStripMenuItem.Checked = isChecked;
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ((new AboutBox())).Show();
+        }
     }
 }
