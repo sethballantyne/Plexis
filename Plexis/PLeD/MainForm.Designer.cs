@@ -431,7 +431,7 @@ namespace PLeD
             this.pictureBox.BackColor = System.Drawing.Color.Black;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(1024, 460);
+            this.pictureBox.Size = new System.Drawing.Size(1024, 461);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
