@@ -137,7 +137,7 @@ public:
 				params[0] = "updateScores";
 
 				Hide();
-				SceneManager::SetActiveScene("game_over_view_high_scores", params);
+				SceneManager::SetActiveScene("view_high_scores", params);
 			}
 			else
 			{
