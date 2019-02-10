@@ -69,6 +69,7 @@ HRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SYSCOMMAND:
         if (wParam == SC_MOVE || wParam == SC_SIZE || wParam == SC_MAXIMIZE || wParam == SC_MONITORPOWER)
         {
+			LogManager::WriteLine(LogType::Debug, "WM_SYSCOMMAND");
             return true;
         }
         break;

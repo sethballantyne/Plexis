@@ -30,6 +30,35 @@
 #include "entitymanager.h"
 #include "levelmanager.h"
 
+void Game::ParseCommandLineArgs()
+{
+	array<String ^, 1> ^args = Environment::GetCommandLineArgs();
+
+	// the first element is the programs path, which we're not interested in.
+	// the only command accepted by the game is /map and that requires the path of the
+	// map to load; all up that's 3 arguments that'll be present. 
+	if (args->Length > 2)
+	{
+		// is the /map argument present?
+		for (int i = 1; i < args->Length; i++)
+		{
+			if (args[i]->ToLower() == "/map" && (i + 1) < args->Length)
+			{
+				// found /map and it's not on the end of the command line, so we can
+				// attempt to parse the level path.
+				if (File::Exists(args[i + 1]))
+				{
+					testLevel = args[i + 1];
+				}
+				else
+				{
+					LogManager::WriteLine(LogType::Error, "path passed to /map doesn't exist.");
+				}
+			}
+		}
+	}
+}
+
 void Game::RestoreSurfaces()
 {
     try
@@ -74,6 +103,8 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
     {
 		ShowCursor(false);
 
+		ParseCommandLineArgs();
+
         LogManager::WriteLine(LogType::Log, "Initialising video");
         Video::Initialise();
 
@@ -110,6 +141,15 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 
 		LogManager::WriteLine(LogType::Log, "loading levels list.");
 		LevelManager::Initialise(ResourceManager::GetXML("levels"));
+
+		if (nullptr != testLevel)
+		{
+			array<Object ^> ^sceneArgs = gcnew array<Object ^>(2);
+			//sceneArgs[0] = safe_cast<String ^>("game_in_progress_main_menu");
+			sceneArgs[0] = safe_cast<String ^>("/map");
+			sceneArgs[1] = safe_cast<String ^>(testLevel);
+			SceneManager::SetActiveScene("game", sceneArgs);
+		}
     }
     catch(...)
     {

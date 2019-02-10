@@ -256,7 +256,16 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		case GameState::NewLevel:
 			LogManager::WriteLine(LogType::Debug, "GameState::NewLevel");
-			this->currentLevel = LevelManager::GetNextLevel();
+			if (!testLevel)
+			{
+				this->currentLevel = LevelManager::GetNextLevel();
+			}
+			else
+			{
+				this->currentLevel = LevelManager::ReadLevel(testLevel, true);
+				this->testLevel = nullptr;
+			}
+
 			for(int i = 0; i < currentLevel->Width; i++)
 			{
 				for(int j = 0; j < currentLevel->Height; j++)

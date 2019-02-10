@@ -89,6 +89,9 @@ private:
 	// is hit by the ball or destroyed in another explosion.
 	List<Explosion ^> ^explosionList = gcnew List<Explosion ^>();
 
+	// the name of the level if /map was passed via command line.
+	String ^testLevel = nullptr;
+
 	// keys read from options.xml
 	int pauseKey;
 	int playerFireKey;
@@ -302,5 +305,15 @@ public:
 				}
 			}
 		}
+	}
+
+	/// <summary>
+	/// Gets or sets the name of the test level, if any.
+	/// </summary>
+	/// <remarks>This is only relevant if /map was passed via command line.</remarks>
+	property String ^TestLevel 
+	{
+		String ^get() { return this->testLevel; }
+		void set(String ^value) { this->testLevel = value; }
 	}
 };

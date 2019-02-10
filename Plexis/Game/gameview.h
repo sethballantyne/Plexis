@@ -41,9 +41,14 @@ public:
     {
         if(sceneArgs != nullptr && sceneArgs[0] != nullptr)
         {
-			if("new" == (String ^)sceneArgs[0])
+			if ("new" == safe_cast<String ^>(sceneArgs[0]))
 			{
 				gameLogic->NewGame();
+			}
+			else if ("/map" == safe_cast<String ^>(sceneArgs[0]))
+			{
+				Debug::Assert(sceneArgs->Length >= 2);
+				gameLogic->TestLevel = safe_cast<String ^>(sceneArgs[1]);
 			}
 
 			gameLogic->UpdateKeys();
