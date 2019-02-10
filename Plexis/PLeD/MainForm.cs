@@ -443,5 +443,29 @@ namespace PLeD
         {
             ((new AboutBox())).Show();
         }
+
+        private void previewLevelToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.PreviewLevel();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void previewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.PreviewLevel();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
     }
 }

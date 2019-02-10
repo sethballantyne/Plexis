@@ -719,6 +719,31 @@ namespace PLeD
         }
 
         /// <summary>
+        /// Saves the level to the users temp directory and loads the level in the game.
+        /// </summary>
+        internal static void PreviewLevel()
+        {
+            try
+            {
+                string tempPath = System.IO.Path.GetTempFileName();
+              
+                XML.WriteLevel(tempPath, currentLevel, bricks);
+                Process gameProcess = new Process();
+#if DEBUG
+                gameProcess.StartInfo.FileName = "game_debug.exe";
+#else
+                gameProcess.StartInfo.FileName = "game_release.exe";
+#endif
+                gameProcess.StartInfo.Arguments = String.Format("/map {0}", tempPath);
+                gameProcess.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+                gameProcess.Start();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        /// <summary>
         /// Implements the File->New functionality.
         /// </summary>
         internal static void NewLevel()

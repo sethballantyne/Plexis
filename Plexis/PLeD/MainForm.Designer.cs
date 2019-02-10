@@ -184,6 +184,7 @@ namespace PLeD
             this.previewToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.previewToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.previewToolStripMenuItem.Text = "&Preview";
+            this.previewToolStripMenuItem.Click += new System.EventHandler(this.previewToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -291,7 +292,7 @@ namespace PLeD
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -362,6 +363,7 @@ namespace PLeD
             this.previewLevelToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.previewLevelToolStripButton.Text = "Preview Level";
             this.previewLevelToolStripButton.ToolTipText = "Preview Level";
+            this.previewLevelToolStripButton.Click += new System.EventHandler(this.previewLevelToolStripButton_Click);
             // 
             // toolStripSeparator1
             // 
