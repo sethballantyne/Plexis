@@ -133,11 +133,11 @@ public:
 			if(scoreRank != -1)
 			{
 				// the user achieved a new high score, so the highscore table has to be updated.
-				array<String ^> ^params = gcnew array<String ^>(1);
-				params[0] = "updateScores";
+				/*array<String ^> ^params = gcnew array<String ^>(1);
+				params[0] = "updateScores";*/
 
 				Hide();
-				SceneManager::SetActiveScene("view_high_scores", params);
+				SceneManager::SetActiveScene("game_over_view_high_scores", nullptr);
 			}
 			else
 			{
