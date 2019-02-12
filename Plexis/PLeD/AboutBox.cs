@@ -91,5 +91,10 @@ namespace PLeD
         {
             System.Diagnostics.Process.Start("mailto:" + linkLabel.Text);
         }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }
