@@ -28,6 +28,8 @@ namespace PLeD
 {
     public partial class MainForm : Form
     {
+        LevelOrder levelOrder = new LevelOrder();
+
         public MainForm()
         {
             InitializeComponent();
@@ -466,6 +468,20 @@ namespace PLeD
             {
                 DisplayErrorMessage(ex.Message);
             }
+        }
+
+        private void chaneLevelOrderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string[] test = { "1", "2", "3", "4" };
+                EditorLogic.ShowLevelOrderDialog();
+            }
+            catch
+            {
+                throw;
+            }
+            //levelOrder.Show(test, "test");
         }
     }
 }

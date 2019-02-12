@@ -47,10 +47,10 @@ namespace PLeD
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutBox));
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.logoPictureBox = new System.Windows.Forms.PictureBox();
+            this.labelProductName = new System.Windows.Forms.Label();
+            this.labelVersion = new System.Windows.Forms.Label();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
             this.okButton = new System.Windows.Forms.Button();
-            this.labelVersion = new System.Windows.Forms.Label();
-            this.labelProductName = new System.Windows.Forms.Label();
             this.linkLabel = new System.Windows.Forms.LinkLabel();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
@@ -93,6 +93,30 @@ namespace PLeD
             this.logoPictureBox.TabIndex = 12;
             this.logoPictureBox.TabStop = false;
             // 
+            // labelProductName
+            // 
+            this.labelProductName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelProductName.Location = new System.Drawing.Point(143, 0);
+            this.labelProductName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
+            this.labelProductName.MaximumSize = new System.Drawing.Size(0, 17);
+            this.labelProductName.Name = "labelProductName";
+            this.labelProductName.Size = new System.Drawing.Size(271, 17);
+            this.labelProductName.TabIndex = 19;
+            this.labelProductName.Text = "Product Name";
+            this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // labelVersion
+            // 
+            this.labelVersion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelVersion.Location = new System.Drawing.Point(143, 26);
+            this.labelVersion.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
+            this.labelVersion.MaximumSize = new System.Drawing.Size(0, 17);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(271, 17);
+            this.labelVersion.TabIndex = 0;
+            this.labelVersion.Text = "Version";
+            this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // textBoxDescription
             // 
             this.textBoxDescription.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -117,30 +141,6 @@ namespace PLeD
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 24;
             this.okButton.Text = "&OK";
-            // 
-            // labelVersion
-            // 
-            this.labelVersion.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelVersion.Location = new System.Drawing.Point(143, 26);
-            this.labelVersion.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
-            this.labelVersion.MaximumSize = new System.Drawing.Size(0, 17);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(271, 17);
-            this.labelVersion.TabIndex = 0;
-            this.labelVersion.Text = "Version";
-            this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelProductName
-            // 
-            this.labelProductName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelProductName.Location = new System.Drawing.Point(143, 0);
-            this.labelProductName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
-            this.labelProductName.MaximumSize = new System.Drawing.Size(0, 17);
-            this.labelProductName.Name = "labelProductName";
-            this.labelProductName.Size = new System.Drawing.Size(271, 17);
-            this.labelProductName.TabIndex = 19;
-            this.labelProductName.Text = "Product Name";
-            this.labelProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // linkLabel
             // 

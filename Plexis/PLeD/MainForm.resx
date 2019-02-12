@@ -121,6 +121,16 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="eraserToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADhSURBVDhPY6ALOFFR9v9oc9P/50uW/AexocLEAZCGX9Mm
+        g/HXyRP+v+nrBhtyrL6GsEHImrHhY5V4XENI87b83P+n6quxG0Cs5kVpSZgGEKsZhDeUlaIaQIrmzfk5
+        qJoPzZz0/9/2pf9PddT9P1lbgVfzFiAbqg0BTk1q+f9v13I4PtXX9P9kUzVxmg9P6UfRjIxBBl/qaIJo
+        LsSiGQROTUa1HRmD5M411+HWDANHp3X/Pz21DcOAbXUl/7cS0owMjsyY+P/0FIhBINt3lhYRrxkZHJo3
+        8/9hYABCubQCDAwAnq1yJiJYcacAAAAASUVORK5CYII=
+</value>
+  </data>
   <data name="newToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -212,16 +222,6 @@
         Boc2wtkgm0F+dsje+t86c9N/89R1/02TVv03jF/x3yB6KaZByKEN8jOUieJskGYoExMEITkbObSRA0wv
         BpvNcGfvBycSkJ8doKFtDtRskrQa7Gy96GX/daIW/9eKWAjGUO0IgBLa2QhnG8Uvh7OxaoQBZGdbpCJC
         G9nZeA0gHTAwAACOffGU2o3WzAAAAABJRU5ErkJggg==
-</value>
-  </data>
-  <data name="eraserToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADhSURBVDhPY6ALOFFR9v9oc9P/50uW/AexocLEAZCGX9Mm
-        g/HXyRP+v+nrBhtyrL6GsEHImrHhY5V4XENI87b83P+n6quxG0Cs5kVpSZgGEKsZhDeUlaIaQIrmzfk5
-        qJoPzZz0/9/2pf9PddT9P1lbgVfzFiAbqg0BTk1q+f9v13I4PtXX9P9kUzVxmg9P6UfRjIxBBl/qaIJo
-        LsSiGQROTUa1HRmD5M411+HWDANHp3X/Pz21DcOAbXUl/7cS0owMjsyY+P/0FIhBINt3lhYRrxkZHJo3
-        8/9hYABCubQCDAwAnq1yJiJYcacAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="gridColourToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

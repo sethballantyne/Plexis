@@ -88,6 +88,8 @@ namespace PLeD
             this.paletteToolStrip = new System.Windows.Forms.ToolStrip();
             this.eraserToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.brushToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.chaneLevelOrderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.splitContainer.Panel1.SuspendLayout();
@@ -248,7 +250,9 @@ namespace PLeD
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eraserToolStripMenuItem});
+            this.eraserToolStripMenuItem,
+            this.toolStripMenuItem4,
+            this.chaneLevelOrderToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -260,7 +264,7 @@ namespace PLeD
             this.eraserToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.eraserToolStripMenuItem.Name = "eraserToolStripMenuItem";
             this.eraserToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.eraserToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.eraserToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.eraserToolStripMenuItem.Text = "&Eraser";
             this.eraserToolStripMenuItem.Click += new System.EventHandler(this.eraserToolStripMenuItem_Click);
             // 
@@ -487,6 +491,18 @@ namespace PLeD
             this.brushToolStripButton.Name = "brushToolStripButton";
             this.brushToolStripButton.Size = new System.Drawing.Size(23, 22);
             // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(184, 6);
+            // 
+            // chaneLevelOrderToolStripMenuItem
+            // 
+            this.chaneLevelOrderToolStripMenuItem.Name = "chaneLevelOrderToolStripMenuItem";
+            this.chaneLevelOrderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.chaneLevelOrderToolStripMenuItem.Text = "&Change Level Order...";
+            this.chaneLevelOrderToolStripMenuItem.Click += new System.EventHandler(this.chaneLevelOrderToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -558,6 +574,8 @@ namespace PLeD
         private System.Windows.Forms.ToolStripMenuItem eraserToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem gridColourToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem chaneLevelOrderToolStripMenuItem;
     }
 }
 
