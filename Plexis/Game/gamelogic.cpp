@@ -218,9 +218,21 @@ void GameLogic::HandleBrickCollisions()
 			{
 				if(ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 				{
+					if (ball->BoundingBox.Y <= player->BoundingBox.Y ||
+						ball->BoundingBox.Y >= player->BoundingBox.Y)
+					{
+						ball->Velocity.Y = -ball->Velocity.Y;
+					}
+					
+					if (ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right || 
+						ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
+					{  
+						ball->Velocity.X = -ball->Velocity.X;
+					}
+				
 					currentLevel[i, j]->Hit(i, j);
-					ball->Velocity.X = -ball->Velocity.X;
-					ball->Velocity.Y *= -1;
+					/*ball->Velocity.X = -ball->Velocity.X;
+					ball->Velocity.Y = -ball->Velocity.Y;*/
 
 					return;
 				}
