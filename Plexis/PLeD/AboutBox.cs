@@ -31,14 +31,34 @@ namespace PLeD
         public AboutBox()
         {
             InitializeComponent();
-            this.labelProductName.Text = String.Format(
-                "{0} {1}.{2}.{3}",
+            this.versionLabel.Text = String.Format(
+                "{0} {1}.{2}.{3}, the Plexis level editaw!",
                 AssemblyProduct,
                 Assembly.GetExecutingAssembly().GetName().Version.Major,
                 Assembly.GetExecutingAssembly().GetName().Version.Minor,
                 Assembly.GetExecutingAssembly().GetName().Version.Build
                 );
-            this.labelVersion.Text = AssemblyCopyright;
+            this.copyrightLabel.Text = AssemblyCopyright;
+
+            Point pos = new Point();
+            int formWidthDiv2 = this.Width / 2;
+
+            pos.X = formWidthDiv2 - (copyrightLabel.Width / 2);
+            pos.Y = copyrightLabel.Location.Y;
+            copyrightLabel.Location = pos;
+
+            pos.X = formWidthDiv2 - (versionLabel.Width / 2);
+            pos.Y = versionLabel.Location.Y;
+            versionLabel.Location = pos;
+
+            pos.X = formWidthDiv2 - (licenseLabel.Width / 2);
+            pos.Y = licenseLabel.Location.Y;
+            licenseLabel.Location = pos;
+
+            pos.X = formWidthDiv2 - (okayButton.Width / 2);
+            pos.Y = okayButton.Location.Y;
+            okayButton.Location = pos;
+
         }
         
         #region Assembly Attribute Accessors
@@ -87,14 +107,9 @@ namespace PLeD
         }
         #endregion
 
-        private void linkLabel1_Click(object sender, EventArgs e)
+        private void okayButton_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("mailto:" + linkLabel.Text);
-        }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            Close();
+            Hide();
         }
     }
 }

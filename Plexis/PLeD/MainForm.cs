@@ -29,6 +29,7 @@ namespace PLeD
     public partial class MainForm : Form
     {
         LevelOrder levelOrder = new LevelOrder();
+        AboutBox aboutBox = new AboutBox();
 
         public MainForm()
         {
@@ -443,7 +444,7 @@ namespace PLeD
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ((new AboutBox())).Show();
+            aboutBox.Show();
         }
 
         private void previewLevelToolStripButton_Click(object sender, EventArgs e)
