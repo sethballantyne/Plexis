@@ -25,47 +25,54 @@
 using namespace System::Timers;
 
 /// <summary>
-/// 
+/// Screen that's displayed when the player has used up all his lives.
 /// </summary>
 public ref class GameOverScreen
 {
 private:
-	//
+	// displays "GAME OVER"
 	Label ^gameOverLabel = gcnew Label(431, 250, "white", "");
 
+	// displays the players final score.
 	// the x coordinate will change, based on the string length passed
 	// to the label when the timer fires.
 	Label ^finalScoreLabel = gcnew Label(431, 300, "white", " ");
 
-	//
+	// displays the "NEW HIGH SCORE" message
+	// its position needs to be calculated which is why isn't instantiated here.
 	Label ^newHighScoreYoApostrophe;
 
-	// x value changes in the constructor
+	//the prompt that appears when the player has achieved a new highscore.
+	// x value changes in the GameOver constructor
 	EditableLabel ^namePrompt = gcnew EditableLabel(431, 400, "green", 12, true);
 
-	// x value changes in the constructor
+	// x value changes in the GameOver constructor
 	Label ^pressAnyKeyToContinuePrompt = gcnew Label(0, 500, "white", "PRESS ANY KEY TO CONTINUE");
 
-	
-	//
+	// the timer used to print "GAME OVER".
 	Timer ^gameOverPrinterTimer = gcnew Timer(190);
 
-	Surface ^dude;
+	//Surface ^dude;
 
-	int dudex, dudey;
-	//
+	//int dudex, dudey;
+	// the players final score; this differs from the label above in that the label displays a
+	// a message and the score as a string, where as this is for passing to the highscore file.
 	unsigned int finalScore;
 
+	// highscore rank
 	int scoreRank = -1;
-	//
+
+	// whether the game over screen is visible or not.
 	bool visible = false;
 
+	// the prompt needs to be hidden by default as the labels are shown within a particular
+	// order and timing.
 	bool showPressAnyKeyPrompt = false;
+
 	/// <summary>
-	/// 
+	/// Prints a letter in "GAME OVER" each time its called. When all the letters
+	/// have been printed, it triggers the rest of the labels.
 	/// </summary>
-	/// <param name="source"></param>
-	/// <param name="e"></param>
 	void OnPrintGameOverTimerEvent(Object ^source, ElapsedEventArgs ^e)
 	{
 		static wchar_t text[] = {'G', 'A', 'M', 'E', ' ', 'O', 'V', 'E', 'R'};
@@ -108,13 +115,13 @@ public:
 		namePrompt->Position->X = videoWidthDiv2 - ((namePrompt->Length * namePrompt->LabelFont->GlyphWidth) / 2);
 		pressAnyKeyToContinuePrompt->Position->X = videoWidthDiv2 - ((pressAnyKeyToContinuePrompt->Text->Length * pressAnyKeyToContinuePrompt->LabelFont->GlyphWidth) / 2);
 
-		dude = ResourceManager::GetSurface("dude");
+		/*dude = ResourceManager::GetSurface("dude");
 		dudex = (Video::Width / 2) - (dude->Size->Width / 2);
-		dudey = 450;
+		dudey = 450;*/
 	}
 
 	/// <summary>
-	/// 
+	/// Handles key input for the scene.
 	/// </summary>
 	/// <param name="keyboardInput"></param>
 	/// <param name="mouseInput"></param>
@@ -126,11 +133,11 @@ public:
 			if(scoreRank != -1)
 			{
 				// the user achieved a new high score, so the highscore table has to be updated.
-				array<String ^> ^params = gcnew array<String ^>(1);
-				params[0] = "updateScores";
+				/*array<String ^> ^params = gcnew array<String ^>(1);
+				params[0] = "updateScores";*/
 
 				Hide();
-				SceneManager::SetActiveScene("game_over_view_high_scores", params);
+				SceneManager::SetActiveScene("game_over_view_high_scores", nullptr);
 			}
 			else
 			{
@@ -155,7 +162,7 @@ public:
 	}
 
 	/// <summary>
-	/// 
+	/// Causes the scene to render and starts the timer that prints "GAME OVER"
 	/// </summary>
 	void Show(unsigned int score)
 	{
@@ -166,6 +173,9 @@ public:
 
 	}
 
+	/// <summary>
+	/// Resets the scene and hides it.
+	/// </summary>
 	void Hide()
 	{
 		visible = false;
@@ -175,8 +185,9 @@ public:
 		finalScoreLabel->Text = "";
 		namePrompt->Clear();
 	}
+
 	/// <summary>
-	/// 
+	/// Draws the scene to the backbuffer.
 	/// </summary>
 	void Render()
 	{
@@ -198,7 +209,7 @@ public:
 	}
 
 	/// <summary>
-	/// 
+	/// Gets or sets whether the scene is visible.
 	/// </summary>
 	property bool Visible
 	{

@@ -330,9 +330,9 @@ GameView ^SceneFactory::ParseGameView(XElement ^element)
     try
     {
         String ^mainMenu = XmlHelper::GetAttributeValue(element, "mainMenu");
-        String ^highScorePrompt = XmlHelper::GetAttributeValue(element, "highScorePrompt");
+        //String ^highScorePrompt = XmlHelper::GetAttributeValue(element, "highScorePrompt");
 
-        return gcnew GameView(mainMenu, highScorePrompt);
+        return gcnew GameView(mainMenu);
     }
     catch(...)
     {

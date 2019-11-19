@@ -23,37 +23,36 @@
 #include "levelmanager.h"
 #include "gamelogic.h"
 
+/// <summary>
+/// 
+/// </summary>
 public ref class GameView : SelectableControl
 {
 private:
-    Label ^text;
-    //String ^gameInProgressMainMenuScene;
-    //String ^highScorePrompt;
-    //Level ^currentLevel = nullptr;
 	GameLogic ^gameLogic;
 public:
-    GameView(String ^gameInProgressMainMenu, String ^highScorePrompt) : SelectableControl(0, 0, 0, gcnew System::Drawing::Size(0, 0))
+    GameView(String ^gameInProgressMainMenu) : SelectableControl(0, 0, 0, gcnew System::Drawing::Size(0, 0))
     {
-       text = gcnew Label(0, 0, "green", "game view");
-       // gameInProgressMainMenuScene = gameInProgressMainMenu;
        IsSelected = true;
-	   gameLogic = gcnew GameLogic(gameInProgressMainMenu, highScorePrompt);
+	   gameLogic = gcnew GameLogic(gameInProgressMainMenu);
     }
 
     void ReceiveSceneArgs(array<Object ^, 1> ^sceneArgs) override
     {
         if(sceneArgs != nullptr && sceneArgs[0] != nullptr)
         {
-			if("new" == (String ^)sceneArgs[0])
+			if ("new" == safe_cast<String ^>(sceneArgs[0]))
 			{
 				gameLogic->NewGame();
 			}
+			else if ("/map" == safe_cast<String ^>(sceneArgs[0]))
+			{
+				Debug::Assert(sceneArgs->Length >= 2);
+				gameLogic->TestLevel = safe_cast<String ^>(sceneArgs[1]);
+			}
 
 			gameLogic->UpdateKeys();
-            //text->Text = (String ^) sceneArgs[0];
         }
-
-        //currentLevel = LevelManager::GetNextLevel();
     }
 
     void Update(Keys ^keyboardState, Mouse ^mouseState) override

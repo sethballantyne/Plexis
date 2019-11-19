@@ -18,11 +18,18 @@
 #pragma once
 #include "entity.h"
 
+/// <summary>
+/// Represents the ball the player smacks around the screen. 
+/// </summary>
 public ref class Ball : public Entity
 {
 private:
 public:
-	Ball(::Sprite ^sprite) : Entity(sprite, Vector2::Zero)
+	/// <summary>
+	/// Creates a new ball instance with the specified sprite. 
+	/// </summary>
+	/// <param name="sprite">The balls sprite.</param>
+	Ball(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
 	{
 	}
 
@@ -37,7 +44,7 @@ public:
 			this->Sprite->Position.Y,
 			this->Sprite->GetFrames(), this->Sprite->Surface);
 
-		return gcnew Ball(sprite);
+		return gcnew Ball(sprite, this->Name);
 	}
 
 	/// <summary>

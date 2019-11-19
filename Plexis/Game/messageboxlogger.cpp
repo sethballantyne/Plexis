@@ -19,7 +19,7 @@ void MessageBoxLogger::Write(String ^message)
 {
     pin_ptr<const wchar_t> unmanagedString = PtrToStringChars(message);
 
-    MessageBox(this->hWnd, unmanagedString, L"Unholy Error", MB_OK | MB_ICONEXCLAMATION);
+    MessageBox(this->hWnd, unmanagedString, L"Unholy Error", MB_OK | MB_ICONEXCLAMATION | MB_TOPMOST);
 }
 
 // no idea why you'd use this function but it's here for completeness.

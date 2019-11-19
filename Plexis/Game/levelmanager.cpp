@@ -19,7 +19,7 @@
 
 using namespace System::Xml;
 
-Level ^LevelManager::ReadLevel(String ^levelFile)
+Level ^LevelManager::ReadLevel(String ^levelFile, bool testLevel)
 {
     try
     {
@@ -29,7 +29,16 @@ Level ^LevelManager::ReadLevel(String ^levelFile)
         //         ...
         //     </brick>
         // </level>
-        XElement ^levelXml = ResourceManager::GetXML(levelFile);
+
+		XElement ^levelXml;
+		if (!testLevel)
+		{
+			levelXml = ResourceManager::GetXML(levelFile);
+		}
+		else
+		{
+			levelXml = XElement::Load(levelFile);
+		}
 
         /*System::Collections::Generic::IEnumerable<XElement ^> ^levelQuery = levelXml->Elements((String ^)"level");
         if(0 == XmlHelper::Count(levelQuery))

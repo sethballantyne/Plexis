@@ -28,6 +28,8 @@ namespace PLeD
 {
     public partial class MainForm : Form
     {
+        LevelOrder levelOrder = new LevelOrder();
+
         public MainForm()
         {
             InitializeComponent();
@@ -437,6 +439,49 @@ namespace PLeD
         internal void CheckEraserControls(bool isChecked)
         {
             eraserToolStripButton.Checked = eraserToolStripMenuItem.Checked = isChecked;
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ((new AboutBox())).Show();
+        }
+
+        private void previewLevelToolStripButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.PreviewLevel();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void previewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EditorLogic.PreviewLevel();
+            }
+            catch (Exception ex)
+            {
+                DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        private void chaneLevelOrderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string[] test = { "1", "2", "3", "4" };
+                EditorLogic.ShowLevelOrderDialog();
+            }
+            catch
+            {
+                throw;
+            }
+            //levelOrder.Show(test, "test");
         }
     }
 }

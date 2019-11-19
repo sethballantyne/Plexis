@@ -88,6 +88,8 @@ namespace PLeD
             this.paletteToolStrip = new System.Windows.Forms.ToolStrip();
             this.eraserToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.brushToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.chaneLevelOrderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.splitContainer.Panel1.SuspendLayout();
@@ -184,6 +186,7 @@ namespace PLeD
             this.previewToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
             this.previewToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.previewToolStripMenuItem.Text = "&Preview";
+            this.previewToolStripMenuItem.Click += new System.EventHandler(this.previewToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -247,7 +250,9 @@ namespace PLeD
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eraserToolStripMenuItem});
+            this.eraserToolStripMenuItem,
+            this.toolStripMenuItem4,
+            this.chaneLevelOrderToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -259,7 +264,7 @@ namespace PLeD
             this.eraserToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.eraserToolStripMenuItem.Name = "eraserToolStripMenuItem";
             this.eraserToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.eraserToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.eraserToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.eraserToolStripMenuItem.Text = "&Eraser";
             this.eraserToolStripMenuItem.Click += new System.EventHandler(this.eraserToolStripMenuItem_Click);
             // 
@@ -293,6 +298,7 @@ namespace PLeD
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // toolStrip
             // 
@@ -361,6 +367,7 @@ namespace PLeD
             this.previewLevelToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.previewLevelToolStripButton.Text = "Preview Level";
             this.previewLevelToolStripButton.ToolTipText = "Preview Level";
+            this.previewLevelToolStripButton.Click += new System.EventHandler(this.previewLevelToolStripButton_Click);
             // 
             // toolStripSeparator1
             // 
@@ -421,7 +428,7 @@ namespace PLeD
             // 
             this.splitContainer.Panel2.Controls.Add(this.brickListView);
             this.splitContainer.Panel2.Controls.Add(this.paletteToolStrip);
-            this.splitContainer.Size = new System.Drawing.Size(921, 297);
+            this.splitContainer.Size = new System.Drawing.Size(921, 329);
             this.splitContainer.SplitterDistance = 738;
             this.splitContainer.TabIndex = 2;
             // 
@@ -430,7 +437,7 @@ namespace PLeD
             this.pictureBox.BackColor = System.Drawing.Color.Black;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(1024, 460);
+            this.pictureBox.Size = new System.Drawing.Size(1024, 461);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
@@ -444,7 +451,7 @@ namespace PLeD
             this.brickListView.Location = new System.Drawing.Point(0, 25);
             this.brickListView.MultiSelect = false;
             this.brickListView.Name = "brickListView";
-            this.brickListView.Size = new System.Drawing.Size(179, 272);
+            this.brickListView.Size = new System.Drawing.Size(179, 304);
             this.brickListView.TabIndex = 0;
             this.brickListView.UseCompatibleStateImageBehavior = false;
             this.brickListView.SelectedIndexChanged += new System.EventHandler(this.brickListView_SelectedIndexChanged);
@@ -484,11 +491,23 @@ namespace PLeD
             this.brushToolStripButton.Name = "brushToolStripButton";
             this.brushToolStripButton.Size = new System.Drawing.Size(23, 22);
             // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(184, 6);
+            // 
+            // chaneLevelOrderToolStripMenuItem
+            // 
+            this.chaneLevelOrderToolStripMenuItem.Name = "chaneLevelOrderToolStripMenuItem";
+            this.chaneLevelOrderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.chaneLevelOrderToolStripMenuItem.Text = "&Change Level Order...";
+            this.chaneLevelOrderToolStripMenuItem.Click += new System.EventHandler(this.chaneLevelOrderToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(921, 346);
+            this.ClientSize = new System.Drawing.Size(921, 378);
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.mainMenuStrip);
@@ -555,6 +574,8 @@ namespace PLeD
         private System.Windows.Forms.ToolStripMenuItem eraserToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem gridColourToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem chaneLevelOrderToolStripMenuItem;
     }
 }
 

@@ -15,41 +15,56 @@
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-
 #pragma once
+using namespace System;
+using namespace System::Diagnostics;
+
 /// <summary>
-/// Represents the gameplay state the game is in.
+/// Contains the data required to be passed to a brick's Death event.
 /// </summary>
-public enum GameState
+public ref class BrickHitEventArgs : EventArgs
 {
+	//String ^name;
+	System::Drawing::Point levelCoordinates;
+
+	bool explode = false;
+public:
 	/// <summary>
-	/// level has been loaded and ball is attached to paddle. 
-	/// The game is waiting for the player to hit the fire button.
+	/// Instantiates a new instance of BrickHitEventArgs with the name and coordinates
+	/// of the brick that's been hit.
 	/// </summary>
-	NewLevel,
+	/// <param name="coordinates">the bricks tile coordinates.</param>
+	/// <param name="explode">true if the brick is exploding, otherwise false.</param>
+	BrickHitEventArgs(System::Drawing::Point coordinates, bool explode) : EventArgs()
+	{
+		//Debug::Assert(brickName != nullptr || brickName != String::Empty);
+		//name = brickName;
+
+		this->levelCoordinates = coordinates;
+		this->explode = explode;
+	}
+	
+	/// <summary>
+	/// Gets the tile coordinates of the brick 
+	/// </summary>
+	property System::Drawing::Point Coordinates
+	{
+		System::Drawing::Point get() { return levelCoordinates; }
+	}
 
 	/// <summary>
-	/// Player has left the NewLevel game state and now the Ball is in motion, not attached to paddle.
+	/// Gets a value indicating whether the brick is exploding or not.
 	/// </summary>
-	Playing,
-
+	property bool Explode
+	{
+		bool get() { return explode; }
+	}
 	/// <summary>
-	/// Player has pressed the pause key and the game is now paused.
+	/// Gets the name of the brick
 	/// </summary>
-	Paused,
+	/*property String ^Name
+	{
+		String ^get() { return name; }
+	}*/
 
-	/// <summary>
-	/// Level has been completed and the game is now in a transition phase.
-	/// </summary>
-	LevelComplete,
-
-	/// <summary>
-	/// The player has died, no more lives are remaining and the game has ended.
-	/// </summary>
-	GameOver,
-
-	/// <summary>
-	/// The player and ball are about to be reset to their default positions.
-	/// </summary>
-	PlayerReset
 };

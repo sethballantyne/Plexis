@@ -40,25 +40,30 @@ private:
     static Frame ^ParseFrame(XElement ^frameElement);
    
 	/// <summary>
-	/// 
+	/// Parses an &lt;entity&gt; element whose <c>name</c> attribute is <i>ball</i>.
 	/// </summary>
-	/// <param name="ballElement"></param>
+	/// <param name="ballElement">The element to parse.</param>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
 	static void ParseBall(XElement ^ballElement);
 
     /// <summary>
-    /// Parses a &lt;entity&gt; element whose <c>name</c> attribute is "brick".
+    /// Parses an &lt;entity&gt; element whose <c>name</c> attribute is <i>brick</i>.
     /// </summary>
     /// <param name="brickElement">The element to parse.</param>
-    /// <returns>An instance of <see cref="Brick"/> based on the elements parsed attributes.</returns>
     /// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
     /// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
     /// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
     static void ParseBrick(XElement ^brickElement);
 
 	/// <summary>
-	/// 
+	/// Parses an &lt;entity&gt; element whose <c>name</c> attribute is <i>paddle</i>.
 	/// </summary>
-	/// <param name="paddleElement"></param>
+	/// <param name="paddleElement">the element to parse.</param>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
 	static void ParsePaddle(XElement ^paddleElement);
 
 public:

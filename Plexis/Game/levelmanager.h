@@ -30,17 +30,6 @@ private:
     // used for indexing the levels array.
     static unsigned int currentLevel = 0;
 
-    /// <summary>
-    /// Generates the specified level.
-    /// </summary>
-    /// <param name="levelFile">the name of the level to generate.</param>
-    /// <returns>A <see cref="Level"/> instance containing the specified level.</returns>
-    /// <exception cref="System::FormatException">An attribute was supposed to have a numeric value but instead contains a non-numeric value.</exception>
-    /// <exception cref="System::OverflowException">An attribute was contains a numeric value that's outside its types range.</exception>
-    /// <exception cref="System::Xml::XmlException">A required attribute is missing, or the value of an 
-    /// attribute evaluates to String::Empty, or the specified coordinate for a brick is outside the bounds 
-    /// specified by the levels <c>width</c> and <c>height</c> attributes.</exception>
-    static Level ^ReadLevel(String ^levelFile);
 public:
     /// <summary>
     /// Parses the XML containing the names of each level to played in the game.
@@ -66,7 +55,7 @@ public:
 
         try
         {
-            Level ^newLevel = ReadLevel(levels[currentLevel]);
+            Level ^newLevel = ReadLevel(levels[currentLevel], false);
 			currentLevel++;
 
 			return newLevel;
@@ -76,6 +65,20 @@ public:
             throw;
         }
     }
+
+	/// <summary>
+	/// Generates the specified level.
+	/// </summary>
+	/// <param name="levelFile">the name of the level to generate.</param>
+	/// <param name="testLevel">true if the level has been passed via the /map command line argument,
+	/// otherwise false.</param>
+	/// <returns>A <see cref="Level"/> instance containing the specified level.</returns>
+	/// <exception cref="System::FormatException">An attribute was supposed to have a numeric value but instead contains a non-numeric value.</exception>
+	/// <exception cref="System::OverflowException">An attribute was contains a numeric value that's outside its types range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing, or the value of an 
+	/// attribute evaluates to String::Empty, or the specified coordinate for a brick is outside the bounds 
+	/// specified by the levels <c>width</c> and <c>height</c> attributes.</exception>
+	static Level ^ReadLevel(String ^levelFile, bool testLevel);
 
 	/// <summary>
 	/// Resets the level counter back to 0. When this is called, the next time LevelManager::GetNextLevel()

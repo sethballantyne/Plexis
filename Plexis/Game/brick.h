@@ -17,6 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 #pragma once
 #include "entity.h"
+#include "brickhiteventargs.h"
+
+delegate void BrickDeathEventHandler(Object ^sender, BrickHitEventArgs ^args);
 
 /// <summary>
 /// Red, Green and Yellow bricks are instances of this class.
@@ -51,7 +54,7 @@ public:
     /// This is a percentage between 1 and 100.</param>
     /// <param name="pointsAwarded">the number of added to the players score when this brick is destroyed.</param>
     Brick(::Sprite ^sprite, unsigned int health, unsigned int chanceOfPowerUpSpawning, 
-        unsigned int pointsAwarded) : Entity(sprite, Vector2(0))
+        unsigned int pointsAwarded, String ^name) : Entity(sprite, Vector2(0), name)
     {
         this->health = health;
         this->chanceOfPowerUpSpawning = chanceOfPowerUpSpawning;
@@ -69,7 +72,7 @@ public:
             this->Sprite->Position.Y, 
             this->Sprite->GetFrames(), this->Sprite->Surface);
 
-        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath);
+        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath, this->Name);
     }
 
     /// <summary>
@@ -134,13 +137,38 @@ public:
 		}
 	}
 
-	virtual void Hit()
+	/// <summary>
+	/// Describes what should happen when the ball hits this brick.
+	/// </summary>
+	virtual void Hit(int x, int y)
 	{
-		visible = false;
-		Death(this, gcnew EventArgs());
+		health--;
+		if(health != 0)
+		{
+			this->Sprite->CurrentFrameIndex++;
+		}
+		else
+		{
+			// false is irrelevant if its an exploding brick, as it'll be
+			// told to explode anyway; that's what exploding bricks do!
+			Die(x, y, false);
+		}
 	}
 
-	event EventHandler^ Death;
+	/// <summary>
+	/// Kills the brick and fires the Death event.
+	/// </summary>
+	virtual void Die(int x, int y, bool explode)
+	{
+		visible = false;
+		BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), explode);
+		Death(this, hitEventArgs);
+	}
+
+	/// <summary>
+	/// event that's fired when the brick is "killed" (its health equates to 0).
+	/// </summary>
+	event BrickDeathEventHandler^ Death;
 
 };
 

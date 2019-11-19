@@ -9,7 +9,7 @@ void GameLogic::DebugRemoveBrick()
 		{
 			if(nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible)
 			{
-				currentLevel[i,j]->Hit();
+				currentLevel[i,j]->Hit(i, j);
 				return;
 			}
 		}
@@ -17,10 +17,10 @@ void GameLogic::DebugRemoveBrick()
 }
 
 
-GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
+GameLogic::GameLogic(String ^gameInProgressMenu)
 {
 	this->gameInProgressMainMenu = gameInProgressMenu;
-	this->highScorePrompt = highScorePrompt;
+	//this->highScorePrompt = highScorePrompt;
 	this->debugKeysEnabled = GameOptions::GetValue("debugKeys", false);
 
 	this->player = EntityManager::GetEntity<Paddle ^>("player");
@@ -30,8 +30,8 @@ GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
 	this->ball = EntityManager::GetEntity<Ball ^>("defaultBall");
 	Debug::Assert(this->ball != nullptr);
 
-	this->livesPaddleImage = ResourceManager::GetSurface("heart2");
-	this->lives = gcnew NumericField(200, 5, this->livesPaddleImage, this->numberOfLives, 2);
+	this->livesImage = ResourceManager::GetSurface("heart2");
+	this->lives = gcnew NumericField(200, 5, this->livesImage, 2, 2);
 	this->score = gcnew NumericField(5, 5, "SCORE", 0, 5);
 	this->pauseImage = ResourceManager::GetSurface("paused2");
 	this->pauseX = (Video::Width / 2) - (this->pauseImage->Size->Width / 2);
@@ -53,6 +53,8 @@ GameLogic::GameLogic(String ^gameInProgressMenu, String ^highScorePrompt)
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 {
+	Debug::Assert(keyboardState != nullptr && mouseState != nullptr);
+
 	if(gameState == GameState::Playing || gameState == GameState::Paused)
 	{
 		if(this->debugKeysEnabled)
@@ -216,9 +218,21 @@ void GameLogic::HandleBrickCollisions()
 			{
 				if(ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 				{
-					currentLevel[i, j]->Hit();
-					ball->Velocity.X = -ball->Velocity.X;
-					ball->Velocity.Y *= -1;
+					if (ball->BoundingBox.Y <= player->BoundingBox.Y ||
+						ball->BoundingBox.Y >= player->BoundingBox.Y)
+					{
+						ball->Velocity.Y = -ball->Velocity.Y;
+					}
+					
+					if (ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right || 
+						ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
+					{  
+						ball->Velocity.X = -ball->Velocity.X;
+					}
+				
+					currentLevel[i, j]->Hit(i, j);
+					/*ball->Velocity.X = -ball->Velocity.X;
+					ball->Velocity.Y = -ball->Velocity.Y;*/
 
 					return;
 				}
@@ -254,14 +268,23 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		case GameState::NewLevel:
 			LogManager::WriteLine(LogType::Debug, "GameState::NewLevel");
-			this->currentLevel = LevelManager::GetNextLevel();
+			if (!testLevel)
+			{
+				this->currentLevel = LevelManager::GetNextLevel();
+			}
+			else
+			{
+				this->currentLevel = LevelManager::ReadLevel(testLevel, true);
+				this->testLevel = nullptr;
+			}
+
 			for(int i = 0; i < currentLevel->Width; i++)
 			{
 				for(int j = 0; j < currentLevel->Height; j++)
 				{
 					if(nullptr != this->currentLevel[i, j])
 					{
-						this->currentLevel[i, j]->Death += gcnew EventHandler(this, &GameLogic::OnDeath);
+						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::OnDeath);
 					}
 				}
 			}
@@ -314,6 +337,20 @@ void GameLogic::Render()
 		{
 			player->Sprite->Render();
 			ball->Sprite->Render();
+
+			if(explosionList->Count > 0)
+			{
+				LogManager::WriteLine(LogType::Debug, "{0}", explosionList->Count);
+				for(int i = explosionList->Count - 1; i >= 0; i--)
+				{
+					explosionList[i]->Render();
+					if(explosionList[i]->Done)
+					{
+						explosionList->RemoveAt(i);
+					}
+				}
+			}
+
 			score->Render();
 
 			// don't show -1 when the player loses his/her last life.

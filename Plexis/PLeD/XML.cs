@@ -481,5 +481,63 @@ namespace PLeD
             }
 
         }
+
+        /// <summary>
+        /// Reads the levels file into memory.
+        /// </summary>
+        /// <param name="path">absolute path to the levels file.</param>
+        /// <returns>the names of all the levels within the levels file as a string array.</returns>
+        internal static string[] ReadLevelsFile(string path)
+        {
+            try
+            {
+                List<string> levels = new List<string>();
+                XElement levelFile = XElement.Load(path);
+
+                IEnumerable<XElement> LevelNodes = levelFile.Descendants("level");
+                foreach(XElement levelElement in LevelNodes)
+                {
+                    if(levelElement.Value != null && levelElement.Value != String.Empty)
+                    {
+                        levels.Add(levelElement.Value);
+                    }
+                }
+
+                return levels.ToArray();
+
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        internal static void WriteLevelsFile(string path, string[] levels)
+        {
+            try
+            {
+                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+                xmlWriterSettings.Indent = true;
+                xmlWriterSettings.CloseOutput = true;
+
+                using(XmlWriter xmlWriter = XmlWriter.Create(path, xmlWriterSettings))
+                {
+                    xmlWriter.WriteStartElement("levels");
+                    foreach(string s in levels)
+                    {
+                        xmlWriter.WriteStartElement("level");
+                        xmlWriter.WriteValue(s);
+                        xmlWriter.WriteEndElement();
+                    }
+
+                    xmlWriter.WriteEndElement();
+                    xmlWriter.Close();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

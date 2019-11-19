@@ -19,6 +19,7 @@
 #pragma once
 
 #include <windows.h>
+#include "surface.h"
 
 /// <summary>
 /// Handles the game state, seperating it from the application layer. 
@@ -27,6 +28,10 @@
 public ref class Game abstract sealed
 {
 private:
+	// path to the level specified when the game is 
+	// started with the /map command line argument.
+	static String ^testLevel = nullptr;
+
     // the game only supports this resolution, so these are hardcoded.
     static const unsigned int windowWidth = 1024;
     static const unsigned int windowHeight = 768;
@@ -35,11 +40,18 @@ private:
     static HWND gamehWnd;
 
     static DWORD lastTime;
+
+	/// <summary>
+	/// Parses the games command line arguments, probably.
+	/// </summary>
+	static void ParseCommandLineArgs();
+
     /// <summary>
     /// Internal function used to restore DirectDraw when the user alt-tabs back and forth.
     /// </summary>
     static void RestoreSurfaces();
    
+    static Surface ^fontSurface;
 public:
     static Game()
     {

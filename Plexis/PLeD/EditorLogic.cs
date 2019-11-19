@@ -62,6 +62,7 @@ namespace PLeD
         // EditorLogic.paths. Required so the List View control can display the bricks.
         static ImageList imageList;
 
+        static LevelOrder levelOrderFrm = new LevelOrder();
         static SaveFileDialog saveFileDialog = new SaveFileDialog();
         static OpenFileDialog openFileDialog = new OpenFileDialog();
         static ColorDialog colourDialog = new ColorDialog();
@@ -89,6 +90,12 @@ namespace PLeD
 
         // the absolute path of the level that's currently being edited.
         static string currentLevelFilename;
+
+        // absolute path of the levels file.
+        static string levelsPath;
+
+        // levels read from levels.xml
+        static List<string> levels = new List<string>(16);
 
         // specifies whether the user is currently using the eraser, the brush or neither.
         static EditMode editMode = EditMode.None;
@@ -241,6 +248,9 @@ namespace PLeD
                     {
                         string tempPath = String.Format("{0}{1}{2}", gameDirectory, path.ResourcePath, "/entities.xml");
                         bricks = XML.ReadBrickData(tempPath);
+
+                        levelsPath = String.Format("{0}{1}{2}", gameDirectory, path.ResourcePath, "/levels.xml");
+                        levels.AddRange(XML.ReadLevelsFile(levelsPath));
                         break;
                     }
                     catch(FileNotFoundException)
@@ -719,6 +729,31 @@ namespace PLeD
         }
 
         /// <summary>
+        /// Saves the level to the users temp directory and loads the level in the game.
+        /// </summary>
+        internal static void PreviewLevel()
+        {
+            try
+            {
+                string tempPath = System.IO.Path.GetTempFileName();
+              
+                XML.WriteLevel(tempPath, currentLevel, bricks);
+                Process gameProcess = new Process();
+#if DEBUG
+                gameProcess.StartInfo.FileName = "game_debug.exe";
+#else
+                gameProcess.StartInfo.FileName = "game_release.exe";
+#endif
+                gameProcess.StartInfo.Arguments = String.Format("/map {0}", tempPath);
+                gameProcess.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+                gameProcess.Start();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        /// <summary>
         /// Implements the File->New functionality.
         /// </summary>
         internal static void NewLevel()
@@ -896,14 +931,24 @@ namespace PLeD
                     {
                         EditorLogic.currentLevelFilename = EditorLogic.saveFileDialog.FileName;
 
+                        string filename = System.IO.Path.GetFileNameWithoutExtension(currentLevelFilename);
+                        if(!levels.Contains(filename))
+                        {
+                            levels.Add(filename);
+                            XML.WriteLevelsFile(levelsPath, levels.ToArray());
+                        }
                         // clearing the filename in the textbox to prevent the names
                         // of previous levels appearing in the dialog when a new level
                         // is created and saved for the first time. (bug fix for #82)
                         EditorLogic.saveFileDialog.FileName = String.Empty;
-
-                        SaveAndUpdateGUI();
+                    }
+                    else
+                    {
+                        return dialogResult;
                     }
                 }
+
+                SaveAndUpdateGUI();
             }
             catch
             {
@@ -999,6 +1044,32 @@ namespace PLeD
                 }
 
                 EditorLogic.mainForm.SetRedo(true);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        internal static void ShowLevelOrderDialog()
+        {
+            try
+            {
+                string filename = null;
+                if (currentLevelFilename != null)
+                {
+                    filename = System.IO.Path.GetFileNameWithoutExtension(currentLevelFilename);
+                }
+
+                levelOrderFrm.FileName = filename;
+                levelOrderFrm.Levels = levels.ToArray();
+                if(levelOrderFrm.ShowDialog() == DialogResult.OK)
+                {
+                    levels.Clear();
+                    levels.AddRange(levelOrderFrm.Levels);
+                    XML.WriteLevelsFile(levelsPath, levels.ToArray());
+                }
+                
             }
             catch
             {
