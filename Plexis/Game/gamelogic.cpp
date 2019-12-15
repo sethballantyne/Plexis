@@ -48,6 +48,15 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->playerResetTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnPlayerResetTimerEvent);
 	this->playerResetTimer->Enabled = false;
 	this->playerResetTimer->AutoReset = true;
+
+	this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
+	this->laserActiveTimer->Enabled = false;
+	this->laserActiveTimer->AutoReset = true;
+
+	this->timerImage = ResourceManager::GetSurface("timer");
+	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
+	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
+	this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
 	
 }
 
@@ -138,6 +147,7 @@ void GameLogic::HandleBallCollision()
 		/*ball->Velocity.Y = -ball->Velocity.Y;
 		correctedY = (Video::Height - ball->BoundingBox.Height) - 1;*/
 
+		// Player died.
 		this->gameState = GameState::PlayerReset;
 		ResourceManager::GetSoundBuffer("loselife")->Play();
 
@@ -152,6 +162,7 @@ void GameLogic::HandleBallCollision()
 		}
 
 		playerResetTimer->Start();
+		laserActiveTimer->Stop();
 		/*lives->Value--;
 		if(lives->Value != -1)
 		{
@@ -208,6 +219,7 @@ void GameLogic::HandleBallCollision()
 	ball->SetPosition(correctedX, correctedY);
 }
 
+
 void GameLogic::HandleBrickCollisions()
 {
 	for(int i = 0; i < currentLevel->Width; i++)
@@ -262,6 +274,7 @@ void GameLogic::HandlePlayerWallCollision()
 
 	player->SetPosition(correctedX);
 }
+
 void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 {
 	switch(this->gameState)
@@ -290,24 +303,34 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 			}
 
 			player->ResetPosition();
-			this->player->RemoveAttachments();
+			this->player->RemoveAttachments(); // this was supposed to be used when the player
+											   // had a laser gun attached to the paddle or there
+											   // was a powerup active that caused the ball(s) to stick
+										       // (FEAR MY STICKY BALLS!!!) to the paddle. Probably redundant now.
 			this->player->AttachBall(ball);
+
+			// disable any powerups currently in use.
+			DisablePowerUps(true);
 
 			this->gameState = GameState::Playing;
 		break;
 
 		case GameState::Playing:
 			HandleGameInput(keyboardState, mouseState);
+			UpdatePowerUps();
 			HandleCollisions();
 
 			if(0 == currentLevel->BrickCount)
 			{
 				gameState = GameState::LevelComplete;
 				this->levelLoadDelayTimer->Start();
+
+				laserActiveTimer->Stop();
 			}
+		break;
+
 		case GameState::GameOver:
 			gameOverScreen->Update(keyboardState, mouseState);
-			break;
 		break;
 		default:
 			break;
@@ -337,6 +360,7 @@ void GameLogic::Render()
 		{
 			player->Sprite->Render();
 			ball->Sprite->Render();
+			RenderPowerUps();
 
 			if(explosionList->Count > 0)
 			{

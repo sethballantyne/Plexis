@@ -161,7 +161,8 @@ public:
 	virtual void Die(int x, int y, bool explode)
 	{
 		visible = false;
-		BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), explode);
+		
+		BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), this->Sprite->Position, explode);
 		Death(this, hitEventArgs);
 	}
 

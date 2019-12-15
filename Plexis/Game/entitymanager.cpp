@@ -18,6 +18,8 @@
 #include "entitymanager.h"
 #include "paddle.h"
 #include "ball.h"
+#include "laserpowerup.h"
+#include "laser.h"
 
 using namespace System::Xml;
 
@@ -121,6 +123,57 @@ void EntityManager::ParseBrick(XElement ^brickElement)
     }
 }
 
+void EntityManager::ParseLaserPowerUp(XElement ^powerupElement, String ^name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		unsigned int duration = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "duration");
+		int laserVelocity = XmlHelper::GetAttributeValueAsInt32(powerupElement, "laserVelocity");
+		unsigned int laserDamage = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "laserDamage");
+
+		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
+		if(0 == XmlHelper::Count(frameQuery))
+		{
+			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
+		}
+
+		List<Frame ^> ^frames = gcnew List<Frame ^>();
+		for each(XElement ^frameElement in frameQuery)
+		{
+			frames->Add(ParseFrame(frameElement));
+		}
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		LaserPowerUp ^laserPowerUp = gcnew LaserPowerUp(powerupSprite, duration, laserVelocity, laserDamage, name);
+
+		parsedEntities[name] = laserPowerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ParsePowerup(XElement ^powerupElement)
+{
+	try
+	{
+		String ^name = XmlHelper::GetAttributeValue(powerupElement, "name");
+		String ^lowercasename = name->ToLower();
+
+		if("laser_powerup" == lowercasename)
+		{
+			ParseLaserPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
 void EntityManager::ParsePaddle(XElement ^paddleElement)
 {
 	try
@@ -159,6 +212,41 @@ void EntityManager::ParsePaddle(XElement ^paddleElement)
 	}
 }
 
+void EntityManager::ParsePowerUpAsset(XElement ^entityElement)
+{
+	try
+	{
+		String ^name = XmlHelper::GetAttributeValue(entityElement, "name");
+		String ^image = XmlHelper::GetAttributeValue(entityElement, "image");
+
+		//---------------------------------------------------------------------------------------------
+		// load the child <frame> elements; this will also load the bounding box data
+		//---------------------------------------------------------------------------------------------
+		System::Collections::Generic::IEnumerable<XElement ^> ^frameElements = entityElement->Elements((String ^) "frame");
+		if(XmlHelper::Count(frameElements) == 0)
+		{
+			// if there's no frame data, the game doesn't know what to draw.
+			throw gcnew XmlException(String::Format("No frames are associated with the powerup asset named {0}.", name));
+		}
+
+		List<Frame ^> ^frames = gcnew List<Frame ^>();
+		for each(XElement ^frameElement in frameElements)
+		{
+			frames->Add(ParseFrame(frameElement));
+		}
+
+		Sprite ^laserSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Laser ^laser = gcnew Laser(laserSprite, name);
+
+		parsedEntities[name] = laser;
+
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
 void EntityManager::Initialise(XElement ^entitiesFile)
 {
     try
@@ -184,6 +272,14 @@ void EntityManager::Initialise(XElement ^entitiesFile)
 			else if("ball" == entityType)
 			{
 				ParseBall(entityElement);
+			}
+			else if("powerup" == entityType)
+			{
+				ParsePowerup(entityElement);
+			}
+			else if("powerup_asset" == entityType)
+			{
+				ParsePowerUpAsset(entityElement);
 			}
         }
     }

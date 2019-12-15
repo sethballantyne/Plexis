@@ -27,12 +27,16 @@
 #include "numericfield.h"
 #include "gameover.h"
 #include "explosion.h"
+#include "laserpowerup.h"
+#include "laser.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
 
 // 0 based
 #define DEFAULT_NUMBER_OF_LIVES 2
+
+const float PI_RADIANS = 3.1459 / 180.0f;
 
 /// <summary>
 /// Game play logic.
@@ -59,16 +63,24 @@ private:
 	// indicates that the value we're gawking at corresponds to lives.
 	Surface ^livesImage = nullptr;
 
+
+	Surface ^timerImage = nullptr;
+
 	// the amount of points the player has
 	NumericField ^score;
 
 	// the number lives remaining
 	NumericField ^lives;
 
+	// number of seconds remaining when the laser power up is in use.
+	NumericField ^powerUpTimerValue;
+
 	// 
 	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
 
-	
+	// timer used to countdown the number of seconds remaining
+	// while the laser powerup is in use.
+	Timer ^laserActiveTimer = gcnew Timer(1000);
 
 	// used for the delay when the ball goes off the screen
 	Timer ^playerResetTimer = gcnew Timer(2000);
@@ -89,9 +101,18 @@ private:
 	// is hit by the ball or destroyed in another explosion.
 	List<Explosion ^> ^explosionList = gcnew List<Explosion ^>();
 
+	// list of powerups moving around on the screen
+	List<PowerUp ^> ^powerUpList = gcnew List<PowerUp ^>();
+
+	// lasers fired when the user has the laser powerup
+	List<Laser ^> ^laserList = gcnew List<Laser ^>();
+
+	PowerUp ^powerUpInEffect = nullptr;
+
 	// the name of the level if /map was passed via command line.
 	String ^testLevel = nullptr;
 
+	Random ^randomNumberGen = gcnew Random();
 	// keys read from options.xml
 	int pauseKey;
 	int playerFireKey;
@@ -113,11 +134,29 @@ private:
 
 	bool gameOverScreenVisible = false;
 
-	
+	//bool powerUpInEffect = false;
+
 	/// <summary>
 	/// Removes a brick from the game, as if it were hit by the ball.
 	/// </summary>
 	void DebugRemoveBrick();
+
+	///<summary>
+	/// Disables any active powerups and clears the lists containing powerup effects or
+	/// powerups moving around the screen.
+	///</summary>
+	void DisablePowerUps(bool clearLists)
+	{
+		powerUpInEffect = nullptr;
+		powerUpTimerValue->Value = 30;
+		laserActiveTimer->Enabled = false;
+
+		if(clearLists)
+		{
+			powerUpList->Clear();
+			laserList->Clear();
+		}
+	}
 
 	/// <summary>
 	/// Resets the paddle and ball to their default positions.
@@ -151,6 +190,7 @@ private:
 	/// </summary>
 	void HandleBrickCollisions();
 
+	
 	/// <summary>
 	/// Handles all the collision detection within the game
 	/// </summary>
@@ -176,9 +216,52 @@ private:
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		player->Velocity.X = mouseState->X;
-		if(mouseState->ButtonDown(playerFireKey) || keyboardState->KeyDown(playerFireKey))
+		
+		if(mouseState->ButtonPressed(playerFireKey))
 		{
-			player->FirePressed();
+			if(nullptr != powerUpInEffect)
+			{
+				/*ResourceManager::GetSoundBuffer("laser")->Stop();
+				ResourceManager::GetSoundBuffer("laser")->Play();*/
+				powerUpInEffect->Fired();
+				
+			}
+			else
+			{
+				player->FirePressed();
+			}
+		}
+		/*if(mouseState->ButtonDown(playerFireKey) || keyboardState->KeyDown(playerFireKey))
+		{
+			if(nullptr != powerUpInEffect)
+			{
+				powerUpInEffect->Fired();
+			}
+			else
+			{
+				player->FirePressed();
+			}
+		}*/
+		/*if((keyboardState->KeyPressed(playerFireKey) || mouseState->ButtonPressed(playerFire
+		{
+		}*/
+	}
+
+	void HandleLaserBrickCollisions(Laser ^laser)
+	{
+		for(int i = 0; i < currentLevel->Width; i++)
+		{
+			for(int j = 0; j < currentLevel->Height; j++)
+			{
+				if(nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible)
+				{
+					if(laser->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
+					{
+						currentLevel[i, j]->Hit(i, j);
+						laserList->Remove(laser);
+					}
+				}
+			}
 		}
 	}
 
@@ -214,6 +297,20 @@ public:
 		LevelManager::ResetLevelCounter();
 	}
 
+	void OnLaserTimerEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		if(powerUpTimerValue->Value != 0)
+		{
+			powerUpTimerValue->Value--;
+		}
+		else
+		{
+			// no more time left on the clock for this powerup.
+			// remove the power up effects and reset the timer.
+			DisablePowerUps(false);
+		}
+	}
+
 	/// <summary>
 	/// controls whether the game over screen is displayed or if the player and ball
 	/// are reset when the player loses a life.
@@ -229,6 +326,7 @@ public:
 		else
 		{
 			this->ResetPlayerAndBall();
+		    DisablePowerUps(true);
 			this->gameState = GameState::Playing;
 		}
 	}
@@ -252,6 +350,40 @@ public:
 		explosionList->Add(booomMotherFuckerApostrophe);
 	}
 
+	// Handles firing the lasers when the laser powerup is active and the
+	// player has pressed by the fire button.
+	void OnFirePressed_LaserPowerUp(Object ^sender, EventArgs ^args)
+	{
+		Laser ^leftLaser = EntityManager::GetEntity<Laser ^>("laser");
+		Laser ^rightLaser = EntityManager::GetEntity<Laser ^>("laser");
+
+		int spawnX = player->Sprite->Position.X + 8;
+		int spawnY = (player->BoundingBox.Y - leftLaser->BoundingBox.Height) - 1;
+		leftLaser->SetPosition(spawnX, spawnY);
+		leftLaser->Velocity = safe_cast<LaserPowerUp ^>(powerUpInEffect)->LaserVelocity;
+		laserList->Add(leftLaser);
+		
+
+		spawnX = player->BoundingBox.Right - 8;
+		rightLaser->SetPosition(spawnX, spawnY);
+		rightLaser->Velocity = leftLaser->Velocity;
+		laserList->Add(rightLaser);
+
+		// you have to stop the sound effect otherwise playing does nothing
+		// if it's already playing and you don't get that rapid fire effect.
+		ResourceManager::GetSoundBuffer("laser")->Stop();
+		ResourceManager::GetSoundBuffer("laser")->Play();
+	}
+
+	// Event handlder for when the laser powerup collides with the players paddle.
+	void OnCollisionWithPaddle_LaserPowerUp(Object ^sender, EventArgs ^e)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+		powerUpInEffect = safe_cast<PowerUp ^>(sender);
+
+		laserActiveTimer->Start();
+	}
+
 	/// <summary>
 	/// describes what should happen when a brick is destroyed.
 	/// </summary>
@@ -266,13 +398,19 @@ public:
 		if(destroyedBrick->Name == "explosiveBrick")
 		{
 			// make the exploding brick look like it's exploding.
-			CreateExplosion(e->Coordinates.X, e->Coordinates.Y);
+			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
 
-			ExplodeSurroundingBricks(e->Coordinates);
+			ExplodeSurroundingBricks(e->TileCoordinates);
 		}
-		else if(true == e->Explode)
+		else if(true == e->Explode) // test to see if we've been told to explode.
 		{
-			CreateExplosion(e->Coordinates.X, e->Coordinates.Y);
+			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
+		}
+
+		// decide whether a powerup should be spawned
+		if(randomNumberGen->Next(1, 101) <= destroyedBrick->PowerUpSpawnPercentage)
+		{
+			SpawnPowerUp(e->ScreenCoordinates.X, e->ScreenCoordinates.Y);
 		}
 
 		this->currentLevel->BrickCount--;
@@ -303,6 +441,93 @@ public:
 					// KNOCK KNOCK, YOU'RE DEAD!
 					currentLevel[xCoord, yCoord]->Die(xCoord, yCoord, true);
 				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Creates a random powerup at the specified coordinates.
+	///</summary>
+	void SpawnPowerUp(int x, int y)
+	{
+		static int id = 0;
+		int value = randomNumberGen->Next(0, EntityManager::NumberOfPowerUps);
+		float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+		switch(value)
+		{
+			case 0:
+				LaserPowerUp ^laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
+				
+				laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
+				laser->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_LaserPowerUp);
+				laser->Spawn(x, y, angle);
+
+				powerUpList->Add(safe_cast<PowerUp ^>(laser));
+			break;
+		}
+	}
+
+	///<summary>
+	/// Renders any powerups bouncing about the screen, along with any power up effects (such as lasers)
+	/// that are currently within the relevant list.
+	///</summary>
+	void GameLogic::RenderPowerUps()
+	{
+		for(int i = 0; i < powerUpList->Count; i++)
+		{
+			powerUpList[i]->Sprite->Render();
+		}
+
+		// power up effects
+		for(int i = 0; i < laserList->Count; i++)
+		{
+			laserList[i]->Sprite->Render();
+		}
+
+		// timer shit
+		if(laserActiveTimer->Enabled)
+		{
+			powerUpTimerValue->Render();
+		}
+	}
+
+	///<summar>
+	/// Updates the state of any powerups currently visible on the screen, along with any effects
+	/// that happen to be active.
+	///</summary>
+	void GameLogic::UpdatePowerUps()
+	{
+		for(int i = powerUpList->Count - 1; i >= 0; i--)
+		{
+			powerUpList[i]->Update(0, 0, Video::Width, Video::Height);
+			if(powerUpList[i]->Sprite->Position.Y > Video::Height)
+			{
+				// powerup wasn't collected by the player and has disappeared
+				// off the bottom of the screen
+				powerUpList->RemoveAt(i);
+				//LogManager::WriteLine(LogType::Debug, "Removing powerup from list. Items remaining: {0}", powerUpList->Count);
+			}
+			else if(powerUpList[i]->BoundingBox.IntersectsWith(player->BoundingBox))
+			{
+				powerUpList[i]->PlayerCollision();
+				powerUpList->RemoveAt(i);
+				//LogManager::WriteLine(LogType::Debug, "ATTACHING LASERS, MOTHERFUCKER!!!");
+			}
+		}
+
+		// update powerup effects
+		for(int i = laserList->Count - 1; i >= 0; i--)
+		{
+			laserList[i]->Update();
+			
+			if(laserList[i]->BoundingBox.Bottom < 0)
+			{
+				laserList->RemoveAt(i);
+			}
+			else
+			{
+				HandleLaserBrickCollisions(laserList[i]);
 			}
 		}
 	}

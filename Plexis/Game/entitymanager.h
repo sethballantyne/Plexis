@@ -66,7 +66,18 @@ private:
 	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
 	static void ParsePaddle(XElement ^paddleElement);
 
+	static void ParsePowerUpAsset(XElement ^assetElement);
+
+	static void ParseLaserPowerUp(XElement ^powerupElement, String ^name);
+
+	static void ParsePowerup(XElement ^brickElement);
+
 public:
+	/// <summary>
+	/// The number of different powerups within the game.
+	/// </summary>
+	static property unsigned int NumberOfPowerUps;
+
     /// <summary>
     /// Parses the XML containing entity information, creating instances of each entity which can 
     /// then be requested during gameplay.

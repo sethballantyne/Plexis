@@ -70,6 +70,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;dsound.lib;dxguid.lib;ddraw.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>C:\projects\project ball buster\build\game_release.exe</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -87,10 +88,13 @@
     <ClInclude Include="gamestate.h" />
     <ClInclude Include="gameview.h" />
     <ClInclude Include="imagecontrol.h" />
+    <ClInclude Include="laser.h" />
+    <ClInclude Include="laserpowerup.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="levelmanager.h" />
     <ClInclude Include="numericfield.h" />
     <ClInclude Include="paddle.h" />
+    <ClInclude Include="powerup.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="vector2.h" />
@@ -188,4 +192,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="Resource.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
