@@ -19,7 +19,7 @@
 #pragma once
 #include <math.h>
 #include "entity.h"
-#include "powerupeffectargs.h"
+
 
 delegate void PowerUpEffectHandler(Object ^sender, EventArgs ^args);
 

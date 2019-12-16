@@ -381,7 +381,16 @@ public:
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 		powerUpInEffect = safe_cast<PowerUp ^>(sender);
 
-		laserActiveTimer->Start();
+		// when the laser powerup is caught, the timer is reset is if the power-up
+		// is already active.
+		if(laserActiveTimer->Enabled)
+		{
+			powerUpTimerValue->Value = 30;
+		}
+		else
+		{
+			laserActiveTimer->Start();
+		}
 	}
 
 	/// <summary>
@@ -408,7 +417,8 @@ public:
 		}
 
 		// decide whether a powerup should be spawned
-		if(randomNumberGen->Next(1, 101) <= destroyedBrick->PowerUpSpawnPercentage)
+		int value = randomNumberGen->Next(1, 101);
+		if(value <= destroyedBrick->PowerUpSpawnPercentage)
 		{
 			SpawnPowerUp(e->ScreenCoordinates.X, e->ScreenCoordinates.Y);
 		}
