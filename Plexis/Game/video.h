@@ -50,18 +50,6 @@ private:
 	static int width;
 	static int height;
 
-    /// <summary>
-    /// Converts an ARGB value to a 32 bit integer, as required by DirectDraw.
-    /// </summary>
-    /// <param name="alpha">the alpha component of the ARGB value.</param>
-    /// <param name="red">the red component of the ARGB value.</param>
-    /// <param name="green">the green component of the ARGB value.</param>
-    /// <param name="blue">the blue component of the ARGB value.</param>
-    /// <returns>the ARGB value encoded as a 32 bit integer.</returns>
-    inline static unsigned int ARGBTo32Bit(unsigned int alpha, unsigned int red, unsigned int green, unsigned int blue)
-    {
-        return ((blue)+((green) << 8) + ((red) << 16) + ((alpha) << 24));
-    }
 
     /// <summary>
     /// Attaches the clipper to the specified window.
@@ -187,6 +175,19 @@ private:
     }
 
 public:
+	/// <summary>
+	/// Converts an ARGB value to a 32 bit integer, as required by DirectDraw.
+	/// </summary>
+	/// <param name="alpha">the alpha component of the ARGB value.</param>
+	/// <param name="red">the red component of the ARGB value.</param>
+	/// <param name="green">the green component of the ARGB value.</param>
+	/// <param name="blue">the blue component of the ARGB value.</param>
+	/// <returns>the ARGB value encoded as a 32 bit integer.</returns>
+	inline static unsigned int ARGBTo32Bit(unsigned int alpha, unsigned int red, unsigned int green, unsigned int blue)
+	{
+		return ((blue)+((green) << 8) + ((red) << 16) + ((alpha) << 24));
+	}
+
     /// <summary>
     /// Initialises DirectDraw. This method must be called before any other Video methods can
     /// be used.
@@ -285,7 +286,7 @@ public:
     /// <param name="lines">the line(s) to draw to the backbuffer.</param>
     /// <exception cref="ArgumentException"><i>lines</i> is an empty array, or contains a line whose <i>From</i> and <i>To</i> points are the same.</exception>
     /// <exception cref="ArgumentNullException">lines is <b>null</b>.</exception>
-    /// <exception cref="COMException"></exception>
+    /// <exception cref="COMException">Generic error returned by DirectDraw when a more specific error isn't provided.</exception>
     /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
     /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
     /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
@@ -296,6 +297,17 @@ public:
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     /// <exception cref="OutOfMemoryException">Not enough memory available to complete the operation.</exception>
     static void DrawLines(array<Line ^> ^lines);
+
+	/// <summary>
+	/// Draws a pixel of the specified colour to the specified coordinates. 
+	/// This function is easier than your mum and just as fast! Lock the surface by calling
+	/// LockSurface() before you call this or bad things will happen. UnlockSurface() must be called
+	/// once you're done drawing.
+	/// </summary>
+	/// <remarks>
+	/// Only works with a 32 bit resolution.
+	/// </remarks>
+	static inline void DrawPixel(int x, int y, unsigned int colour);
 
     /// <summary>
     /// Flips the buffers, causing the contents of the backbuffer to be rendered to the screen.
@@ -311,6 +323,31 @@ public:
     /// <exception cref="DirectDrawUnsupportedException">the operation is not supported.</exception>
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     static void Flip();
+
+	/// <summary>
+	/// Locks the primary surface so it can be drawn to. YOU MUST CALL THIS BEFORE DRAWING INDIVIDUAL PIXELS.
+	/// UnlockSurface() must be called once drawing is complete.
+	///</summary>
+	/// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+	/// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+	/// <exception cref="OutOfMemoryException">Not enough memory available to complete the operation.</exception>
+	/// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+	/// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+	/// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+	/// <exception cref="COMException">Generic error returned by DirectDraw when a more specific error isn't provided.</exception>
+	static void LockSurface();
+
+	///<summary>
+	/// Unlocks the previously locked primary surface. Call this after you've locked a surface and finished
+	/// drawing to it.
+	///</summary>
+	/// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
+	/// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+	/// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+	/// <exception cref="DirectDrawInvalidRectException">the rectangle coordinates used by the surface were invalid.</exception>
+	/// <exception cref="DirectDrawNotLockedException">Attempted to unlock a surface that wasn't locked.</exception>
+	/// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+	static void UnlockSurface();
 
     /// <summary>
     /// Draws the specified surface to the backbuffer at the specified location.
