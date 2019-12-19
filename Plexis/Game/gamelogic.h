@@ -27,8 +27,10 @@
 #include "numericfield.h"
 #include "gameover.h"
 #include "explosion.h"
-#include "laserpowerup.h"
+#include "laser_powerup.h"
 #include "laser.h"
+#include "explosion_particle_effect.h"
+#include "instadeath_powerup.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
@@ -107,6 +109,11 @@ private:
 	// lasers fired when the user has the laser powerup
 	List<Laser ^> ^laserList = gcnew List<Laser ^>();
 
+	// particle effects created by powerups
+	List<ExplosionParticleEffect ^> ^particleEffectsList = gcnew List<ExplosionParticleEffect ^>();
+
+	// used for powerups that are caught by the play and have an effect for a specific
+	// duration. Insta-death, the bonus points powerups and extra life powerup don't use this.
 	PowerUp ^powerUpInEffect = nullptr;
 
 	// the name of the level if /map was passed via command line.
@@ -166,6 +173,7 @@ private:
 		player->ResetPosition();
 		this->player->RemoveAttachments();
 		this->player->AttachBall(ball);
+		this->player->IsDead = false;
 	}
 
 	/// <summary>
@@ -216,7 +224,13 @@ private:
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		player->Velocity.X = mouseState->X;
-		
+		if(keyboardState->KeyPressed(DIK_SPACE))
+		{
+			// test shit here
+			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+			SpawnInstaDeathPowerUp(640, 480, angle);
+		}
+
 		if(mouseState->ButtonPressed(playerFireKey))
 		{
 			if(nullptr != powerUpInEffect)
@@ -265,6 +279,21 @@ private:
 		}
 	}
 
+	void SpawnPlayer()
+	{
+		player->ResetPosition();
+		this->player->RemoveAttachments(); // this was supposed to be used when the player
+		// had a laser gun attached to the paddle or there
+		// was a powerup active that caused the ball(s) to stick
+		// (FEAR MY STICKY BALLS!!!) to the paddle. Probably redundant now.
+		this->player->AttachBall(ball);
+
+		this->player->IsDead = false;
+
+		// disable any powerups currently in use.
+		DisablePowerUps(true);
+	}
+
 public:
 	GameLogic(String ^gameInProgressMenu);
 
@@ -297,47 +326,6 @@ public:
 		LevelManager::ResetLevelCounter();
 	}
 
-	void OnLaserTimerEvent(Object ^source, ElapsedEventArgs ^e)
-	{
-		if(powerUpTimerValue->Value != 0)
-		{
-			powerUpTimerValue->Value--;
-		}
-		else
-		{
-			// no more time left on the clock for this powerup.
-			// remove the power up effects and reset the timer.
-			DisablePowerUps(false);
-		}
-	}
-
-	/// <summary>
-	/// controls whether the game over screen is displayed or if the player and ball
-	/// are reset when the player loses a life.
-	/// </summary>
-	void OnPlayerResetTimerEvent(Object ^source, ElapsedEventArgs ^e)
-	{
-		this->playerResetTimer->Stop();
-
-		if(gameState == GameState::GameOver)
-		{
-			this->gameOverScreen->Show(score->Value);
-		}
-		else
-		{
-			this->ResetPlayerAndBall();
-		    DisablePowerUps(true);
-			this->gameState = GameState::Playing;
-		}
-	}
-
-
-	void OnLevelTransitionTimerEvent(Object ^source, ElapsedEventArgs ^e)
-	{
-		this->levelLoadDelayTimer->Stop();
-		this->gameState = GameState::NewLevel;
-	}
-
 	/// <summary>
 	/// Creates an explosion at the specified tile coordinates.
 	/// </summary>
@@ -348,83 +336,6 @@ public:
 		Explosion ^booomMotherFuckerApostrophe = gcnew Explosion(x, y);
 		booomMotherFuckerApostrophe->Start();
 		explosionList->Add(booomMotherFuckerApostrophe);
-	}
-
-	// Handles firing the lasers when the laser powerup is active and the
-	// player has pressed by the fire button.
-	void OnFirePressed_LaserPowerUp(Object ^sender, EventArgs ^args)
-	{
-		Laser ^leftLaser = EntityManager::GetEntity<Laser ^>("laser");
-		Laser ^rightLaser = EntityManager::GetEntity<Laser ^>("laser");
-
-		int spawnX = player->Sprite->Position.X + 8;
-		int spawnY = (player->BoundingBox.Y - leftLaser->BoundingBox.Height) - 1;
-		leftLaser->SetPosition(spawnX, spawnY);
-		leftLaser->Velocity = safe_cast<LaserPowerUp ^>(powerUpInEffect)->LaserVelocity;
-		laserList->Add(leftLaser);
-		
-
-		spawnX = player->BoundingBox.Right - 8;
-		rightLaser->SetPosition(spawnX, spawnY);
-		rightLaser->Velocity = leftLaser->Velocity;
-		laserList->Add(rightLaser);
-
-		// you have to stop the sound effect otherwise playing does nothing
-		// if it's already playing and you don't get that rapid fire effect.
-		ResourceManager::GetSoundBuffer("laser")->Stop();
-		ResourceManager::GetSoundBuffer("laser")->Play();
-	}
-
-	// Event handlder for when the laser powerup collides with the players paddle.
-	void OnCollisionWithPaddle_LaserPowerUp(Object ^sender, EventArgs ^e)
-	{
-		ResourceManager::GetSoundBuffer("powerup2")->Play();
-		powerUpInEffect = safe_cast<PowerUp ^>(sender);
-
-		// when the laser powerup is caught, the timer is reset is if the power-up
-		// is already active.
-		if(laserActiveTimer->Enabled)
-		{
-			powerUpTimerValue->Value = 30;
-		}
-		else
-		{
-			laserActiveTimer->Start();
-		}
-	}
-
-	/// <summary>
-	/// describes what should happen when a brick is destroyed.
-	/// </summary>
-	void OnDeath(Object ^sender, BrickHitEventArgs ^e)
-	{
-		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
-			ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
-
-		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
-
-		this->score->Value += destroyedBrick->PointValue;
-		if(destroyedBrick->Name == "explosiveBrick")
-		{
-			// make the exploding brick look like it's exploding.
-			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
-
-			ExplodeSurroundingBricks(e->TileCoordinates);
-		}
-		else if(true == e->Explode) // test to see if we've been told to explode.
-		{
-			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
-		}
-
-		// decide whether a powerup should be spawned
-		int value = randomNumberGen->Next(1, 101);
-		if(value <= destroyedBrick->PowerUpSpawnPercentage)
-		{
-			SpawnPowerUp(e->ScreenCoordinates.X, e->ScreenCoordinates.Y);
-		}
-
-		this->currentLevel->BrickCount--;
-		Debug::Assert(this->currentLevel->BrickCount >= 0);
 	}
 
 	/// <summary>
@@ -455,27 +366,78 @@ public:
 		}
 	}
 
+	void ExplodePaddle()
+	{
+		player->IsDead = true;
+
+		int paddleHalfWidth = player->BoundingBox.Width / 2;
+		int paddleHalfHeight = player->BoundingBox.Height / 2;
+		int explosionX = player->BoundingBox.Right - paddleHalfWidth;
+		int explosionY = player->BoundingBox.Bottom - paddleHalfHeight;
+	
+		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 75));
+
+		// a different sound effect plays if the ball goes off screen.
+		/*if(!ballWentOffScreen) 
+		{
+			ResourceManager::GetSoundBuffer("paddle_explosion")->Play();
+		}*/
+		ResourceManager::GetSoundBuffer("loselife")->Play();
+		/*else
+		{
+			this->gameState = GameState::GameOver;
+		}*/
+
+		playerResetTimer->Start();
+		laserActiveTimer->Stop();
+
+	}
+
 	/// <summary>
 	/// Creates a random powerup at the specified coordinates.
 	///</summary>
 	void SpawnPowerUp(int x, int y)
 	{
-		static int id = 0;
 		int value = randomNumberGen->Next(0, EntityManager::NumberOfPowerUps);
 		float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
 
 		switch(value)
 		{
 			case 0:
-				LaserPowerUp ^laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
-				
-				laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
-				laser->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_LaserPowerUp);
-				laser->Spawn(x, y, angle);
+				SpawnLaserPowerUp(x, y, angle);
+			break;
 
-				powerUpList->Add(safe_cast<PowerUp ^>(laser));
+			case 1:
+				SpawnInstaDeathPowerUp(x, y, angle);
 			break;
 		}
+	}
+
+	void SpawnLaserPowerUp(int x, int y, float angle)
+	{
+		LaserPowerUp ^laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
+
+		laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
+		laser->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_LaserPowerUp);
+		laser->Spawn(x, y, angle);
+
+		powerUpList->Add(safe_cast<PowerUp ^>(laser));
+	}
+
+	/// <summary>
+	///
+	/// </summary>
+	/// <param name="coords">the center of the explosion, in tile coordinates.</param>
+	/// <param name="y"></param>
+	/// <param name="angle"></param>
+	void SpawnInstaDeathPowerUp(int x, int y, float angle)
+	{
+		InstaDeathPowerUp ^instaDeath = EntityManager::GetEntity<InstaDeathPowerUp ^>("instadeath_powerup");
+
+		instaDeath->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_InstaDeathPowerUp);
+		instaDeath->Spawn(x, y, angle);
+
+		powerUpList->Add(safe_cast<PowerUp ^>(instaDeath));
 	}
 
 	///<summary>
@@ -551,4 +513,145 @@ public:
 		String ^get() { return this->testLevel; }
 		void set(String ^value) { this->testLevel = value; }
 	}
+
+
+	//---------------------------------------------------------------------------------
+	// 
+	// EVENT HANDLERS UP IN THIS MA FUCKER!
+	//
+	//---------------------------------------------------------------------------------
+	/// <summary>
+	/// controls whether the game over screen is displayed or if the player and ball
+	/// are reset when the player loses a life.
+	/// </summary>
+	void OnPlayerResetTimerEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		this->playerResetTimer->Stop();
+
+		lives->Value--;
+
+		if(lives->Value == -1)
+		{
+			gameState = GameState::GameOver;
+			this->gameOverScreen->Show(score->Value);
+		}
+		else
+		{
+			this->ResetPlayerAndBall();
+			DisablePowerUps(true);
+			this->gameState = GameState::Playing;
+		}
+	}
+
+	/// <summary>
+	/// describes what should happen when a brick is destroyed.
+	/// </summary>
+	void Brick_OnDeath(Object ^sender, BrickHitEventArgs ^e)
+	{
+		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
+		ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
+
+		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
+
+		this->score->Value += destroyedBrick->PointValue;
+		if(destroyedBrick->Name == "explosiveBrick")
+		{
+			// make the exploding brick look like it's exploding.
+			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
+
+			ExplodeSurroundingBricks(e->TileCoordinates);
+		}
+		else if(true == e->Explode) // test to see if we've been told to explode.
+		{
+			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
+		}
+
+		// decide whether a powerup should be spawned
+		int value = randomNumberGen->Next(1, 101);
+		if(value <= destroyedBrick->PowerUpSpawnPercentage)
+		{
+			SpawnPowerUp(e->ScreenCoordinates.X, e->ScreenCoordinates.Y);
+		}
+
+		this->currentLevel->BrickCount--;
+		Debug::Assert(this->currentLevel->BrickCount >= 0);
+	}
+
+	void OnLevelTransitionTimerEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		this->levelLoadDelayTimer->Stop();
+		this->gameState = GameState::NewLevel;
+	}
+
+	//------------------------------------------------------
+	// POWERUP EVENT HANDLERS
+	//------------------------------------------------------
+
+	//// LASER ////////////////////////////////////////////////
+	void OnLaserTimerEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		if(powerUpTimerValue->Value != 0)
+		{
+			powerUpTimerValue->Value--;
+		}
+		else
+		{
+			// no more time left on the clock for this powerup.
+			// remove the power up effects and reset the timer.
+			DisablePowerUps(false);
+		}
+	}
+
+	// Event handlder for when the laser powerup collides with the players paddle.
+	void OnCollisionWithPaddle_LaserPowerUp(Object ^sender, EventArgs ^e)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+		powerUpInEffect = safe_cast<PowerUp ^>(sender);
+
+		// when the laser powerup is caught, the timer is reset is if the power-up
+		// is already active.
+		if(laserActiveTimer->Enabled)
+		{
+			powerUpTimerValue->Value = 30;
+		}
+		else
+		{
+			laserActiveTimer->Start();
+		}
+	}
+
+	// Handles firing the lasers when the laser powerup is active and the
+	// player has pressed by the fire button.
+	void OnFirePressed_LaserPowerUp(Object ^sender, EventArgs ^args)
+	{
+		Laser ^leftLaser = EntityManager::GetEntity<Laser ^>("laser");
+		Laser ^rightLaser = EntityManager::GetEntity<Laser ^>("laser");
+
+		int spawnX = player->Sprite->Position.X + 8;
+		int spawnY = (player->BoundingBox.Y - leftLaser->BoundingBox.Height) - 1;
+		leftLaser->SetPosition(spawnX, spawnY);
+		leftLaser->Velocity = safe_cast<LaserPowerUp ^>(powerUpInEffect)->LaserVelocity;
+		laserList->Add(leftLaser);
+
+
+		spawnX = player->BoundingBox.Right - 8;
+		rightLaser->SetPosition(spawnX, spawnY);
+		rightLaser->Velocity = leftLaser->Velocity;
+		laserList->Add(rightLaser);
+
+		// you have to stop the sound effect otherwise playing does nothing
+		// if it's already playing and you don't get that rapid fire effect.
+		ResourceManager::GetSoundBuffer("laser")->Stop();
+		ResourceManager::GetSoundBuffer("laser")->Play();
+	}
+
+	/// INSTADEATH ////////////////////////////////////////////
+	void OnCollisionWithPaddle_InstaDeathPowerUp(System::Object ^sender, System::EventArgs ^args)
+	{
+		//player->IsDead = true;
+
+		// generate the explosion in the middle of the paddle
+		ExplodePaddle();
+	}
+
 };

@@ -18,8 +18,9 @@
 #include "entitymanager.h"
 #include "paddle.h"
 #include "ball.h"
-#include "laserpowerup.h"
+#include "laser_powerup.h"
 #include "laser.h"
+#include "instadeath_powerup.h"
 
 using namespace System::Xml;
 
@@ -155,6 +156,35 @@ void EntityManager::ParseLaserPowerUp(XElement ^powerupElement, String ^name)
 	}
 }
 
+void EntityManager::ParseInstaDeathPowerUp(XElement ^powerupElement, String ^name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+
+		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
+		if(0 == XmlHelper::Count(frameQuery))
+		{
+			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
+		}
+
+		List<Frame ^> ^frames = gcnew List<Frame ^>();
+		for each(XElement ^frameElement in frameQuery)
+		{
+			frames->Add(ParseFrame(frameElement));
+		}
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		InstaDeathPowerUp ^instaDeathPowerUp = gcnew InstaDeathPowerUp(powerupSprite, name);
+
+		parsedEntities[name] = instaDeathPowerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
 void EntityManager::ParsePowerup(XElement ^powerupElement)
 {
 	try
@@ -165,6 +195,11 @@ void EntityManager::ParsePowerup(XElement ^powerupElement)
 		if("laser_powerup" == lowercasename)
 		{
 			ParseLaserPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("instadeath_powerup" == lowercasename)
+		{
+			ParseInstaDeathPowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
 	}

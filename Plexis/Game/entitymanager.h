@@ -72,6 +72,8 @@ private:
 
 	static void ParsePowerup(XElement ^brickElement);
 
+	static void ParseInstaDeathPowerUp(XElement ^powerupElement, String ^name);
+
 public:
 	/// <summary>
 	/// The number of different powerups within the game.

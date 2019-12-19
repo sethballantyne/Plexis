@@ -106,6 +106,7 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 	}
 	
 }
+
 void GameLogic::HandleBallCollision()
 {
 	int ballX = ball->BoundingBox.X + ball->Velocity.X;
@@ -142,27 +143,15 @@ void GameLogic::HandleBallCollision()
 		correctedY = 0;
 	}
 
-	if(ballY >= Video::Height)
+	if(ballY >= Video::Height && !player->IsDead)
 	{
 		/*ball->Velocity.Y = -ball->Velocity.Y;
 		correctedY = (Video::Height - ball->BoundingBox.Height) - 1;*/
 
 		// Player died.
-		this->gameState = GameState::PlayerReset;
-		ResourceManager::GetSoundBuffer("loselife")->Play();
-
-		if(lives->Value != 0)
-		{
-			lives->Value--;
-			ball->Velocity = Vector2::Zero;
-		}
-		else
-		{
-			this->gameState = GameState::GameOver;
-		}
-
-		playerResetTimer->Start();
-		laserActiveTimer->Stop();
+		ExplodePaddle();
+		
+		ball->Velocity = Vector2::Zero;
 		/*lives->Value--;
 		if(lives->Value != -1)
 		{
@@ -177,7 +166,7 @@ void GameLogic::HandleBallCollision()
 		}*/
 	}
 
-	if(ball->BoundingBox.IntersectsWith(player->BoundingBox))
+	if(ball->BoundingBox.IntersectsWith(player->BoundingBox) && !player->IsDead)
 	{
 		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
 		ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
@@ -297,28 +286,28 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				{
 					if(nullptr != this->currentLevel[i, j])
 					{
-						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::OnDeath);
+						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
 					}
 				}
 			}
 
-			player->ResetPosition();
-			this->player->RemoveAttachments(); // this was supposed to be used when the player
-											   // had a laser gun attached to the paddle or there
-											   // was a powerup active that caused the ball(s) to stick
-										       // (FEAR MY STICKY BALLS!!!) to the paddle. Probably redundant now.
-			this->player->AttachBall(ball);
-
-			// disable any powerups currently in use.
-			DisablePowerUps(true);
-
+			SpawnPlayer();
 			this->gameState = GameState::Playing;
 		break;
 
 		case GameState::Playing:
-			HandleGameInput(keyboardState, mouseState);
+			if(!player->IsDead)
+			{
+				HandleGameInput(keyboardState, mouseState);
+			}
 			UpdatePowerUps();
 			HandleCollisions();
+
+			// keep those particles moving!
+			for(int i = 0; i < particleEffectsList->Count; i++)
+			{
+				particleEffectsList[i]->Update();
+			}
 
 			if(0 == currentLevel->BrickCount)
 			{
@@ -327,6 +316,14 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 
 				laserActiveTimer->Stop();
 			}
+		break;
+
+		case GameState::PlayerReset:
+			// keep those particles moving!
+			/*for(int i = 0; i < particleEffectsList->Count; i++)
+			{
+				particleEffectsList[i]->Update();
+			}*/
 		break;
 
 		case GameState::GameOver:
@@ -358,7 +355,11 @@ void GameLogic::Render()
 		}
 		else
 		{
-			player->Sprite->Render();
+			if(!player->IsDead)
+			{
+				player->Sprite->Render();
+			}
+
 			ball->Sprite->Render();
 			RenderPowerUps();
 
@@ -391,6 +392,12 @@ void GameLogic::Render()
 					break;
 				default:
 					break;
+			}
+
+			// render particle effects
+			for(int i = 0; i < particleEffectsList->Count; i++)
+			{
+				particleEffectsList[i]->Render();
 			}
 		}
 	}

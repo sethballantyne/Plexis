@@ -213,13 +213,22 @@
     <ClInclude Include="explosion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="laserpowerup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="powerup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="laser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="explosion_particle_effect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="instadeath_powerup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="laser_powerup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

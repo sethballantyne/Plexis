@@ -17,37 +17,16 @@
 // DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#include "sprite.h"
-#include "entity.h"
-#include "vector2.h"
-#include "ball.h"
+#include "powerup.h"
 
-public ref class Paddle : public Entity
+public ref class InstaDeathPowerUp : public PowerUp
 {
 public:
-	property bool IsDead;
-
-	Paddle(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
+	InstaDeathPowerUp(::Sprite ^powerupSprite, System::String ^name) : PowerUp(powerupSprite, Vector2::Zero, name)
 	{
 
 	}
 
-	void AttachBall(Ball ^ball)
-	{
-		int ballWidth = ball->Sprite->CurrentFrame->Coordinates.Width;
-		int middleOfPaddle = this->Sprite->CurrentFrame->Coordinates.Width / 2;
-
-		// ballX and ballY are local coordinates (coordinates on the paddle), not screen coordinates.
-		int ballX = middleOfPaddle - (ballWidth / 2);
-		int ballY = this->Sprite->CurrentFrame->Coordinates.Y - ball->BoundingBox.Height;
-
-		this->Attach(ball, ballX, ballY);
-	}
-
-	/// <summary>
-	/// Creates a deep copy of this <see cref="Paddle"/> instance.
-	/// </summary>
-	/// <returns></returns>
 	Object ^Clone() override
 	{
 		::Sprite ^sprite = gcnew ::Sprite(
@@ -55,29 +34,6 @@ public:
 			this->Sprite->Position.Y,
 			this->Sprite->GetFrames(), this->Sprite->Surface);
 
-		return gcnew Paddle(sprite, this->Name);
-	}
-
-	/// <summary>
-	/// Puts the paddle in the middle of the screens X axis.
-	/// </summary>
-	inline void ResetPosition()
-	{
-		int x = (Video::Width / 2) - (this->Sprite->CurrentFrame->Coordinates.Width / 2);
-		this->SetPosition(x);
-	}
-
-	inline void SetPosition(int x)
-	{
-		this->SetPosition(x, this->Sprite->Position.Y);
-	}
-
-	void FirePressed();
-
-	/// <summary>
-	/// Updates the bricks state.
-	/// </summary>
-	void Update() override
-	{
+		return gcnew InstaDeathPowerUp(sprite, this->Name);
 	}
 };
