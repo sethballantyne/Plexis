@@ -21,6 +21,8 @@
 #include "laser_powerup.h"
 #include "laser.h"
 #include "instadeath_powerup.h"
+#include "bonuspoints_powerup.h"
+#include "extralife_powerup.h"
 
 using namespace System::Xml;
 
@@ -185,6 +187,66 @@ void EntityManager::ParseInstaDeathPowerUp(XElement ^powerupElement, String ^nam
 	}
 }
 
+void EntityManager::ParseBonusPointsPowerUp(XElement ^powerupElement, String ^name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		int pointsAwarded = XmlHelper::GetAttributeValueAsInt32(powerupElement, "points");
+
+		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
+		if(0 == XmlHelper::Count(frameQuery))
+		{
+			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
+		}
+
+		List<Frame ^> ^frames = gcnew List<Frame ^>();
+		for each(XElement ^frameElement in frameQuery)
+		{
+			frames->Add(ParseFrame(frameElement));
+		}
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		BonusPointsPowerUp ^bonusPoints = gcnew BonusPointsPowerUp(powerupSprite, pointsAwarded, name);
+
+		parsedEntities[name] = bonusPoints;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ParseExtraLifePowerUp(XElement ^powerupElement, String ^name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		int livesAwarded = XmlHelper::GetAttributeValueAsInt32(powerupElement, "lives");
+
+		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
+		if(0 == XmlHelper::Count(frameQuery))
+		{
+			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
+		}
+
+		List<Frame ^> ^frames = gcnew List<Frame ^>();
+		for each(XElement ^frameElement in frameQuery)
+		{
+			frames->Add(ParseFrame(frameElement));
+		}
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		ExtraLifePowerUp ^extraLife = gcnew ExtraLifePowerUp(powerupSprite, livesAwarded, name);
+
+		parsedEntities[name] = extraLife;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
 void EntityManager::ParsePowerup(XElement ^powerupElement)
 {
 	try
@@ -200,6 +262,19 @@ void EntityManager::ParsePowerup(XElement ^powerupElement)
 		else if("instadeath_powerup" == lowercasename)
 		{
 			ParseInstaDeathPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("bp50_powerup" == lowercasename  || 
+				"bp100_powerup" == lowercasename ||
+				"bp200_powerup" == lowercasename ||
+				"bp500_powerup" == lowercasename)
+		{
+			ParseBonusPointsPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("extralife_powerup" == lowercasename)
+		{
+			ParseExtraLifePowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
 	}

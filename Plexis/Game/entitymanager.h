@@ -74,6 +74,10 @@ private:
 
 	static void ParseInstaDeathPowerUp(XElement ^powerupElement, String ^name);
 
+	static void ParseBonusPointsPowerUp(XElement ^powerupElement, String ^lowercasename);
+
+	static void ParseExtraLifePowerUp(XElement ^powerupElement, String ^name);
+
 public:
 	/// <summary>
 	/// The number of different powerups within the game.

@@ -31,6 +31,8 @@
 #include "laser.h"
 #include "explosion_particle_effect.h"
 #include "instadeath_powerup.h"
+#include "bonuspoints_powerup.h"
+#include "extralife_powerup.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
@@ -182,7 +184,7 @@ private:
 	/// <param name="keyboardState"></param>
 	/// <param name="mouseState"></param>
 	void HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState);
-	
+
 	/// <summary>
 	/// Ball collision detection with walls and the player
 	/// </summary>
@@ -192,13 +194,13 @@ private:
 	/// Player collision detection
 	/// </summary>
 	void HandlePlayerWallCollision();
-	
+
 	/// <summary>
 	/// Ball collision detection with bricks
 	/// </summary>
 	void HandleBrickCollisions();
 
-	
+
 	/// <summary>
 	/// Handles all the collision detection within the game
 	/// </summary>
@@ -227,8 +229,7 @@ private:
 		if(keyboardState->KeyPressed(DIK_SPACE))
 		{
 			// test shit here
-			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
-			SpawnInstaDeathPowerUp(640, 480, angle);
+			SpawnPowerUp(640, 480);
 		}
 
 		if(mouseState->ButtonPressed(playerFireKey))
@@ -238,7 +239,7 @@ private:
 				/*ResourceManager::GetSoundBuffer("laser")->Stop();
 				ResourceManager::GetSoundBuffer("laser")->Play();*/
 				powerUpInEffect->Fired();
-				
+
 			}
 			else
 			{
@@ -247,14 +248,14 @@ private:
 		}
 		/*if(mouseState->ButtonDown(playerFireKey) || keyboardState->KeyDown(playerFireKey))
 		{
-			if(nullptr != powerUpInEffect)
-			{
-				powerUpInEffect->Fired();
-			}
-			else
-			{
-				player->FirePressed();
-			}
+		if(nullptr != powerUpInEffect)
+		{
+		powerUpInEffect->Fired();
+		}
+		else
+		{
+		player->FirePressed();
+		}
 		}*/
 		/*if((keyboardState->KeyPressed(playerFireKey) || mouseState->ButtonPressed(playerFire
 		{
@@ -353,11 +354,11 @@ public:
 				int yCoord = coords.Y + y;
 
 				if(xCoord >= 0 &&
-					xCoord < currentLevel->Width &&
-					yCoord >= 0 &&
-					yCoord < currentLevel->Height &&
-					nullptr != currentLevel[xCoord, yCoord] &&
-				    currentLevel[xCoord, yCoord]->Visible)
+				   xCoord < currentLevel->Width &&
+				   yCoord >= 0 &&
+				   yCoord < currentLevel->Height &&
+				   nullptr != currentLevel[xCoord, yCoord] &&
+				   currentLevel[xCoord, yCoord]->Visible)
 				{
 					// KNOCK KNOCK, YOU'RE DEAD!
 					currentLevel[xCoord, yCoord]->Die(xCoord, yCoord, true);
@@ -374,18 +375,18 @@ public:
 		int paddleHalfHeight = player->BoundingBox.Height / 2;
 		int explosionX = player->BoundingBox.Right - paddleHalfWidth;
 		int explosionY = player->BoundingBox.Bottom - paddleHalfHeight;
-	
+
 		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 75));
 
 		// a different sound effect plays if the ball goes off screen.
-		/*if(!ballWentOffScreen) 
+		/*if(!ballWentOffScreen)
 		{
-			ResourceManager::GetSoundBuffer("paddle_explosion")->Play();
+		ResourceManager::GetSoundBuffer("paddle_explosion")->Play();
 		}*/
 		ResourceManager::GetSoundBuffer("loselife")->Play();
 		/*else
 		{
-			this->gameState = GameState::GameOver;
+		this->gameState = GameState::GameOver;
 		}*/
 
 		playerResetTimer->Start();
@@ -405,10 +406,30 @@ public:
 		{
 			case 0:
 				SpawnLaserPowerUp(x, y, angle);
-			break;
+				break;
 
 			case 1:
 				SpawnInstaDeathPowerUp(x, y, angle);
+				break;
+
+			case 2:
+				SpawnBonusPointPowerUp("bp50_powerup", x, y, angle);
+				break;
+
+			case 3:
+				SpawnBonusPointPowerUp("bp100_powerup", x, y, angle);
+				break;
+
+			case 4:
+				SpawnBonusPointPowerUp("bp200_powerup", x, y, angle);
+				break;
+
+			case 5:
+				SpawnBonusPointPowerUp("bp500_powerup", x, y, angle);
+				break;
+
+			case 6:
+				SpawnExtraLifePowerUp(x, y, angle);
 			break;
 		}
 	}
@@ -425,11 +446,10 @@ public:
 	}
 
 	/// <summary>
-	///
+	/// Creates an instadeath powerup at the specified screen coordinates. 
+	/// The angle determines the angle of the powerups projection as it flies upwards before
+	/// falling towards the player.
 	/// </summary>
-	/// <param name="coords">the center of the explosion, in tile coordinates.</param>
-	/// <param name="y"></param>
-	/// <param name="angle"></param>
 	void SpawnInstaDeathPowerUp(int x, int y, float angle)
 	{
 		InstaDeathPowerUp ^instaDeath = EntityManager::GetEntity<InstaDeathPowerUp ^>("instadeath_powerup");
@@ -438,6 +458,26 @@ public:
 		instaDeath->Spawn(x, y, angle);
 
 		powerUpList->Add(safe_cast<PowerUp ^>(instaDeath));
+	}
+
+	void SpawnBonusPointPowerUp(String ^pickupName, int x, int y, float angle)
+	{
+		BonusPointsPowerUp ^bonusPointsPowerUp = EntityManager::GetEntity<BonusPointsPowerUp ^>(pickupName);
+
+		bonusPointsPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_BonusPointsPowerUp);
+		bonusPointsPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(safe_cast<PowerUp ^>(bonusPointsPowerUp));
+	}
+
+	void SpawnExtraLifePowerUp(int x, int y, float angle)
+	{
+		ExtraLifePowerUp ^extraLifePowerUp = EntityManager::GetEntity<ExtraLifePowerUp ^>("extralife_powerup");
+
+		extraLifePowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_ExtraLifePowerUp);
+		extraLifePowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(safe_cast<PowerUp ^>(extraLifePowerUp));
 	}
 
 	///<summary>
@@ -492,7 +532,7 @@ public:
 		for(int i = laserList->Count - 1; i >= 0; i--)
 		{
 			laserList[i]->Update();
-			
+
 			if(laserList[i]->BoundingBox.Bottom < 0)
 			{
 				laserList->RemoveAt(i);
@@ -508,7 +548,7 @@ public:
 	/// Gets or sets the name of the test level, if any.
 	/// </summary>
 	/// <remarks>This is only relevant if /map was passed via command line.</remarks>
-	property String ^TestLevel 
+	property String ^TestLevel
 	{
 		String ^get() { return this->testLevel; }
 		void set(String ^value) { this->testLevel = value; }
@@ -652,6 +692,22 @@ public:
 
 		// generate the explosion in the middle of the paddle
 		ExplodePaddle();
+	}
+
+	void OnCollisionWithPaddle_BonusPointsPowerUp(System::Object ^sender, System::EventArgs ^args)
+	{
+		BonusPointsPowerUp ^temp = safe_cast<BonusPointsPowerUp ^>(sender);
+		score->Value += temp->Points;
+
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+	}
+
+	void OnCollisionWithPaddle_ExtraLifePowerUp(System::Object ^sender, System::EventArgs ^args)
+	{
+		ExtraLifePowerUp ^temp = safe_cast<ExtraLifePowerUp ^>(sender);
+		lives->Value += temp->LivesAwarded;
+
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
 	}
 
 };

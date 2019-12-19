@@ -231,6 +231,12 @@
     <ClInclude Include="laser_powerup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bonuspoints_powerup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="extralife_powerup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
