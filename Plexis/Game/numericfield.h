@@ -83,10 +83,9 @@ public:
 	/// <param name="numberTextInitialValue">Initial value of the controls integer value.</param>
 	/// <param name="paddingAmount">The max number of characters the integer value should take up;
 	/// empty spaces will be replaced with zeros.</param>
-	NumericField(unsigned int x, unsigned int y, String ^captionText, int ^numberTextInitialValue, unsigned int paddingAmount)
+	NumericField(unsigned int x, unsigned int y, String ^captionText, int numberTextInitialValue, unsigned int paddingAmount)
 	{
 		Debug::Assert(nullptr != captionText);
-		Debug::Assert(nullptr != numberTextInitialValue);
 
 		String ^convertedNumText = Convert::ToString(numberTextInitialValue);
 		this->captionText = gcnew Label(x, y, "white", captionText);

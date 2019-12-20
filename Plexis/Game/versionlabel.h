@@ -33,6 +33,10 @@ public:
     /// <param name="font">the name of the font to use when rendering the labels text.</param>
     VersionLabel(int x, int y, String ^font) : Label(x, y, font, nullptr)
     {
-        this->Text = gcnew String(VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_REVISION);
+		// VERSION_MAJOR and VERSION_REVISION are converted to string because
+		// the compiler was bitching about both values being implicitly boxed 
+		// (their values were zero at the time). 
+		// They have to be converted to strings anyway but I still think it's dumb.
+		this->Text = String::Format("{0}.{1}.{2}", Convert::ToString(VERSION_MAJOR), VERSION_MINOR, Convert::ToString(VERSION_REVISION));
     }
 };
