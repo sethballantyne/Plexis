@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 #pragma once
 #include "surface.h"
+#include "video.h"
 
 /// <summary>
 /// Class for loading and rendering fixed-width bitmap fonts. 1 instance encapsulates 1 font, so for multiple fonts

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 #pragma once
 #include "label.h"
+#include "engine_exceptions.h"
 
 using namespace System::Drawing;
 
@@ -39,7 +40,7 @@ public:
     /// Initialises a new instance of HighScoreRow.
     /// </summary>
     /// <param name="rowNumberFont">the name of the font that will be used to render the rank text.</param>
-    /// <param name="indexPosition">the screen position where the rank should be rendered.</param>
+    /// <param name="rankPosition">the screen position where the rank should be rendered.</param>
     /// <param name="playerNameFont">the name of the font that will be used to render the players name.</param>
     /// <param name="playerNamePosition">the screen position where the players name should be rendered.</param>
     /// <param name="scoreFont">the name of the font that will be used to render the players score.</param>

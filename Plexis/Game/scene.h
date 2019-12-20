@@ -18,6 +18,7 @@
 #pragma once
 #include "control.h"
 #include "selectablecontrol.h"
+#include "exceptions.h"
 
 using namespace System::Collections::Generic;
 

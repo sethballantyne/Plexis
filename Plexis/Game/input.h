@@ -22,6 +22,7 @@
 #include "keys.h"
 #include "logmanager.h"
 #include "mouse.h"
+#include "exceptions.h"
 
 using namespace System;
 

@@ -97,7 +97,7 @@ public:
     /// Gets or sets the directory assigned to the object.
     /// </summary>
     /// <exception cref="System::ArgumentException">Attempting to assign an empty string or a string that contains only whitespace.</exception>
-    /// <exception cref="Systemm::ArgumentNullException">Attempting to assign a <b>null</b> value.</exception>
+    /// <exception cref="System::ArgumentNullException">Attempting to assign a <b>null</b> value.</exception>
     property String ^Path
     {
         String ^get()

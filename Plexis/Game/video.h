@@ -20,6 +20,7 @@
 #include <ddraw.h>
 #include "line.h"
 #include "surface.h"
+#include "ddraw_exceptions.h"
 
 using namespace System;
 
@@ -112,7 +113,7 @@ private:
     /// <param name="hBitmap">the handle of the bitmap to use when creating DirectDraw surface.</param>
     /// <returns></returns>
     /// <exception cref="System::ArgumentNullException"><i>hBitmap</i> is <b>null</b>.</exception>
-    /// <exception cref="COMException">An unspecified COM error occured.</exception>
+    /// <exception cref="System::Runtime::InteropServices::COMException">An unspecified COM error occured.</exception>
     /// <exception cref="DirectDrawDCAlreadyCreatedException">a device context has already been returned for this surface.</exception>
     /// <exception cref="DirectDrawGenericException">generic error occured, fucked if I know what's going on.</exception>
     /// <exception cref="DirectDrawIncompatiblePrimarySurfaceException">the image surface is incompatible with the format of the existing primary surface.</exception>
@@ -137,7 +138,7 @@ private:
     /// <exception cref="DirectDrawUnsupportedModeException">unable to create a surface for the current display mode, it's unsupported.</exception>
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     /// <exception cref="OutOfMemoryException">DirectDraw does not have enough memory to perform the operation.</exception>
-    /// <exception cref="Win32Exception">Copying the bitmap to the DirectDraw surface failed.</exception>
+    /// <exception cref="System::ComponentModel::Win32Exception">Copying the bitmap to the DirectDraw surface failed.</exception>
     static Surface ^CreateSurface(HBITMAP hBitmap);
 
     /// <summary>
@@ -275,7 +276,7 @@ public:
     /// <exception cref="DirectDrawUnsupportedModeException">unable to create a surface for the current display mode, it's unsupported.</exception>
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     /// <exception cref="OutOfMemoryException">DirectDraw does not have enough memory to perform the operation.</exception>
-    /// <exception cref="Win32Exception">The function was unable to load the image at the specified path.</exception>
+    /// <exception cref="System::ComponentModel::Win32Exception">The function was unable to load the image at the specified path.</exception>
     /// <remarks>this fails when loading bitmaps that contain colour space information, which the gimp genenerates
     /// by default.</remarks>
     static Surface ^CreateSurface(String ^path);
@@ -286,7 +287,7 @@ public:
     /// <param name="lines">the line(s) to draw to the backbuffer.</param>
     /// <exception cref="ArgumentException"><i>lines</i> is an empty array, or contains a line whose <i>From</i> and <i>To</i> points are the same.</exception>
     /// <exception cref="ArgumentNullException">lines is <b>null</b>.</exception>
-    /// <exception cref="COMException">Generic error returned by DirectDraw when a more specific error isn't provided.</exception>
+    /// <exception cref="System::Runtime::InteropServices::COMException">Generic error returned by DirectDraw when a more specific error isn't provided.</exception>
     /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
     /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
     /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
@@ -312,7 +313,7 @@ public:
     /// <summary>
     /// Flips the buffers, causing the contents of the backbuffer to be rendered to the screen.
     /// </summary>
-    /// <exception cref="COMException">DirectDraw returned an unspecified COM error.</exception>
+    /// <exception cref="System::Runtime::InteropServices::COMException">DirectDraw returned an unspecified COM error.</exception>
     /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
     /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
     /// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
@@ -334,7 +335,7 @@ public:
 	/// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
 	/// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
 	/// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
-	/// <exception cref="COMException">Generic error returned by DirectDraw when a more specific error isn't provided.</exception>
+	/// <exception cref="System::Runtime::InteropServices::COMException">Generic error returned by DirectDraw when a more specific error isn't provided.</exception>
 	static void LockSurface();
 
 	///<summary>
