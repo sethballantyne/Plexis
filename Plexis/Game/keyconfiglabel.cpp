@@ -132,7 +132,6 @@ void KeyConfigLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
     {
 		if(mouseState->ButtonDown(0))
 		{
-			LogManager::WriteLine(LogType::Debug, "mouseState");
 			UpdateConfig(0);
 			changingKey = false;
 		}

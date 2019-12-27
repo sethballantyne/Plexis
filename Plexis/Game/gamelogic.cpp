@@ -21,7 +21,7 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 {
 	this->gameInProgressMainMenu = gameInProgressMenu;
 	//this->highScorePrompt = highScorePrompt;
-	this->debugKeysEnabled = GameOptions::GetValue("debugKeys", false);
+	this->debugKeysEnabled = (bool) GameOptions::GetValue("debugKeys", false);
 
 	this->player = EntityManager::GetEntity<Paddle ^>("player");
 	Debug::Assert(this->player != nullptr);
@@ -269,7 +269,6 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 	switch(this->gameState)
 	{
 		case GameState::NewLevel:
-			LogManager::WriteLine(LogType::Debug, "GameState::NewLevel");
 			if (!testLevel)
 			{
 				this->currentLevel = LevelManager::GetNextLevel();
@@ -365,7 +364,6 @@ void GameLogic::Render()
 
 			if(explosionList->Count > 0)
 			{
-				LogManager::WriteLine(LogType::Debug, "{0}", explosionList->Count);
 				for(int i = explosionList->Count - 1; i >= 0; i--)
 				{
 					explosionList[i]->Render();

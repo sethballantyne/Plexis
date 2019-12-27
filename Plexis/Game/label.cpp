@@ -29,14 +29,12 @@ Label::Label(int x, int y, String ^font, String ^text) : Control(x, y)
         throw gcnew ArgumentException("font evaluates to String::Empty.");
     }
 
-    // not throwing an exception here because sometimes controls that make use of Label
+    // the text argument isn't checked because sometimes controls that make use of Label
     // don't have anything to pass to the control in terms of text during initialisation.
-    // the log message is intended as a heads up incase it really is an accident.
-    // Attempting to render it when it's NULL will throw an exception, however.
-    if(nullptr == text)
-    {
-        LogManager::WriteLine(LogType::Debug, "Label::Ctor: self->text evaluates to nullptr.");
-    }
+	// There was a log message here that would log when text evaluated to nullptr; it was designed
+	// to be a friendly heads up to aid debugging, but it turned out to be a total pain in the
+	// arse. It felt very satisfying getting rid of it, much like scratching a terrible itch
+	// or taking a massive dump. 
 
     try
     {

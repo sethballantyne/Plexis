@@ -51,7 +51,6 @@ void SceneManager::SetActiveScene(String ^scene, array<Object ^, 1> ^sceneArgs)
 
     try
     {
-		LogManager::WriteLine(LogType::Debug, "scene: {0}", scene);
         currentScene = scenes[scene];
         currentScene->BroadcastArguments(sceneArgs);
     }
