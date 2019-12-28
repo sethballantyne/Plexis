@@ -9,7 +9,7 @@ void GameLogic::DebugRemoveBrick()
 		{
 			if(nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible)
 			{
-				currentLevel[i,j]->Hit(i, j);
+				currentLevel[i,j]->Hit(i, j, BRICK_EXPLODE);
 				return;
 			}
 		}
@@ -231,7 +231,7 @@ void GameLogic::HandleBrickCollisions()
 						ball->Velocity.X = -ball->Velocity.X;
 					}
 				
-					currentLevel[i, j]->Hit(i, j);
+					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
 					/*ball->Velocity.X = -ball->Velocity.X;
 					ball->Velocity.Y = -ball->Velocity.Y;*/
 

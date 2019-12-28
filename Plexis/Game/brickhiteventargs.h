@@ -27,7 +27,7 @@ public ref class BrickHitEventArgs : EventArgs
 	//String ^name;
 	System::Drawing::Point tileCoordinates;
 	System::Drawing::Point screenCoordinates; // needed for spawning a powerup
-	bool explode = false;
+	unsigned int flags = 0;
 public:
 	/// <summary>
 	/// Instantiates a new instance of BrickHitEventArgs with the name and coordinates
@@ -35,14 +35,14 @@ public:
 	/// </summary>
 	/// <param name="coordinates">the bricks tile coordinates.</param>
 	/// <param name="explode">true if the brick is exploding, otherwise false.</param>
-	BrickHitEventArgs(System::Drawing::Point tileCoordinates, System::Drawing::Point screenCoordinates, bool explode) : EventArgs()
+	BrickHitEventArgs(System::Drawing::Point tileCoordinates, System::Drawing::Point screenCoordinates, unsigned int flags) : EventArgs()
 	{
 		//Debug::Assert(brickName != nullptr || brickName != String::Empty);
 		//name = brickName;
 
 		this->tileCoordinates = tileCoordinates;
 		this->screenCoordinates = screenCoordinates;
-		this->explode = explode;
+		this->flags = flags;
 	}
 	
 	/// <summary>
@@ -64,9 +64,9 @@ public:
 	/// <summary>
 	/// Gets a value indicating whether the brick is exploding or not.
 	/// </summary>
-	property bool Explode
+	property unsigned int Flags
 	{
-		bool get() { return explode; }
+		unsigned int get() { return flags; }
 	}
 	/// <summary>
 	/// Gets the name of the brick

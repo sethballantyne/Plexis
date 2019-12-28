@@ -26,7 +26,8 @@ public ref class ExplosionParticleEffect
 	System::Collections::Generic::List<Particle ^>^ particles;
 
 public:
-	ExplosionParticleEffect(int x, int y, unsigned int numberOfParticles)
+	ExplosionParticleEffect(int x, int y, unsigned int numberOfParticles, int maxXVelocity, int maxYVelocity,
+							unsigned char R, unsigned char G, unsigned char B)
 	{
 		const float PI_RADIANS = 3.1459 / 180.0f;
 		Random ^rng = gcnew Random();
@@ -35,11 +36,12 @@ public:
 		
 		for(unsigned int i = 0; i < numberOfParticles; i++)
 		{
-			float angle = rng->Next(1, 360) * PI_RADIANS;
-			velocity.X = rng->Next(1, 25) * cos(angle);
-			velocity.Y = rng->Next(1, 25) * sin(angle);
+			float angle = rng->Next(1, 359) * PI_RADIANS;
+			velocity.X = rng->Next(1, maxXVelocity) / cos(angle);
+			velocity.Y = rng->Next(1, maxYVelocity) / sin(angle);
 
-			particles->Add(gcnew Particle(x, y, velocity, 255, 255, 255));
+
+			particles->Add(gcnew Particle(x, y, velocity, R, G, B));
 		}
 	}
 

@@ -66,9 +66,40 @@ public:
 		Position.X += Velocity.X;
 		Position.Y += Velocity.Y;
 
-		if(R != 0)
+		if(R > 0)
 		{
-			R = G = B -= 5;
+			if(R - 5 < 0)
+			{
+				R -= (0 + R);
+			}
+			else
+			{
+				R -= 5;
+			}
+		}
+
+		if(G > 0)
+		{
+			if(G - 5 < 0)
+			{
+				G -= (0 + G);
+			}
+			else
+			{
+				G -= 5;
+			}
+		}
+
+		if(B > 0)
+		{
+			if(B - 5 < 0)
+			{
+				B -= (0 + B);
+			}
+			else
+			{
+				B -= 5;
+			}
 		}
 
 		Colour = Video::ARGBTo32Bit(255, R, G, B);

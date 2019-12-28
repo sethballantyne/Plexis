@@ -272,8 +272,9 @@ private:
 				{
 					if(laser->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 					{
-						currentLevel[i, j]->Hit(i, j);
+						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_LASER);
 						laserList->Remove(laser);
+						//ExplodeBrickWithLaser(currentLevel[i, j], 255, 255, 255);
 					}
 				}
 			}
@@ -369,10 +370,25 @@ public:
 				   currentLevel[xCoord, yCoord]->Visible)
 				{
 					// KNOCK KNOCK, YOU'RE DEAD!
-					currentLevel[xCoord, yCoord]->Die(xCoord, yCoord, true);
+					currentLevel[xCoord, yCoord]->Die(xCoord, yCoord, BRICK_EXPLODE);
 				}
 			}
 		}
+	}
+
+	void ExplodeBrick(Brick^ b, unsigned char R, unsigned char G, unsigned char B)
+	{
+		int brickHalfWidth = b->BoundingBox.Width / 2;
+		int brickHalfHeight = b->BoundingBox.Height / 2;
+		int explosionX = b->BoundingBox.Right - brickHalfWidth;
+		int explosionY = b->BoundingBox.Bottom - brickHalfHeight;
+
+		int x = randomNumberGen->Next(10, 25);
+		int y = randomNumberGen->Next(10, 25);
+		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 35, x, y, R, G, B));
+
+		ResourceManager::GetSoundBuffer("explosion")->Stop();
+		ResourceManager::GetSoundBuffer("explosion")->Play();
 	}
 
 	void ExplodePaddle()
@@ -384,7 +400,7 @@ public:
 		int explosionX = player->BoundingBox.Right - paddleHalfWidth;
 		int explosionY = player->BoundingBox.Bottom - paddleHalfHeight;
 
-		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 75));
+		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 75, 25, 25, 255, 255, 255));
 
 		// a different sound effect plays if the ball goes off screen.
 		/*if(!ballWentOffScreen)
@@ -621,13 +637,14 @@ public:
 		if(destroyedBrick->Name == "explosiveBrick")
 		{
 			// make the exploding brick look like it's exploding.
-			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
-
+			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
+			ExplodeBrick(destroyedBrick, 255, 215, 0);
 			ExplodeSurroundingBricks(e->TileCoordinates);
 		}
-		else if(true == e->Explode) // test to see if we've been told to explode.
+		else if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
 		{
-			CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
+			ExplodeBrick(destroyedBrick, 255, 215, 0);
+			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
 		}
 
 		// decide whether a powerup should be spawned
