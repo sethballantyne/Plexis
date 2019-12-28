@@ -302,11 +302,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 			UpdatePowerUps();
 			HandleCollisions();
 
-			// keep those particles moving!
-			for(int i = 0; i < particleEffectsList->Count; i++)
-			{
-				particleEffectsList[i]->Update();
-			}
+			UpdateParticleEffects();
 
 			if(0 == currentLevel->BrickCount)
 			{
@@ -337,66 +333,71 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 
 void GameLogic::Render()
 {
-	if(nullptr != currentLevel)
+	try
 	{
-		// stops the current level from being rendered before rendering the first level
-		// in the game if the player selects "new game" from the main menu.
-		// The current level will briefly appear before reverting to the first level, otherwise.
-		if(GameState::NewLevel != gameState && !gameOverScreen->Visible)
+		if(nullptr != currentLevel)
 		{
-			currentLevel->Render();
-		}
-
-		if(GameState::GameOver == gameState && gameOverScreen->Visible)
-		{
-			// blank screen with "GAME OVER" rendered in the middle.
-			gameOverScreen->Render();
-		}
-		else
-		{
-			if(!player->IsDead)
+			// stops the current level from being rendered before rendering the first level
+			// in the game if the player selects "new game" from the main menu.
+			// The current level will briefly appear before reverting to the first level, otherwise.
+			if(GameState::NewLevel != gameState && !gameOverScreen->Visible)
 			{
-				player->Sprite->Render();
+				currentLevel->Render();
 			}
 
-			ball->Sprite->Render();
-			RenderPowerUps();
-
-			if(explosionList->Count > 0)
+			if(GameState::GameOver == gameState && gameOverScreen->Visible)
 			{
-				for(int i = explosionList->Count - 1; i >= 0; i--)
+				// blank screen with "GAME OVER" rendered in the middle.
+				gameOverScreen->Render();
+			}
+			else
+			{
+				if(!player->IsDead)
 				{
-					explosionList[i]->Render();
-					if(explosionList[i]->Done)
+					player->Sprite->Render();
+				}
+
+				ball->Sprite->Render();
+				RenderPowerUps();
+
+				if(explosionList->Count > 0)
+				{
+					for(int i = explosionList->Count - 1; i >= 0; i--)
 					{
-						explosionList->RemoveAt(i);
+						explosionList[i]->Render();
+						if(explosionList[i]->Done)
+						{
+							explosionList->RemoveAt(i);
+						}
 					}
 				}
-			}
 
-			score->Render();
+				score->Render();
 
-			// don't show -1 when the player loses his/her last life.
-			lives->Render();
+				// don't show -1 when the player loses his/her last life.
+				lives->Render();
 
-			switch(this->gameState)
-			{
-				case GameState::Paused:
-					Video::Blit(this->pauseX, this->pauseY, this->pauseImage);
-					break;
+				switch(this->gameState)
+				{
+					case GameState::Paused:
+						Video::Blit(this->pauseX, this->pauseY, this->pauseImage);
+						break;
 
-				case GameState::LevelComplete:
-					Video::Blit(this->levelCompleteX, this->levelCompleteY, this->levelCompleteImage);
-					break;
-				default:
-					break;
-			}
+					case GameState::LevelComplete:
+						Video::Blit(this->levelCompleteX, this->levelCompleteY, this->levelCompleteImage);
+						break;
+					default:
+						break;
+				}
 
-			// render particle effects
-			for(int i = 0; i < particleEffectsList->Count; i++)
-			{
-				particleEffectsList[i]->Render();
+				RenderParticleEffects();
 			}
 		}
 	}
+	catch(...)
+	{
+		throw;
+	}
+
+	
 }

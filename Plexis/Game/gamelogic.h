@@ -309,6 +309,14 @@ public:
 		this->pauseKey = GameOptions::GetValue("", DIK_P);
 	}
 
+	void UpdateParticleEffects()
+	{
+		for(int i = 0; i < particleEffectsList->Count; i++)
+		{
+			particleEffectsList[i]->Update();
+		}
+	}
+
 	/// <summary>
 	/// Renders the gameplay to the screen
 	/// </summary>
@@ -478,6 +486,22 @@ public:
 		extraLifePowerUp->Spawn(x, y, angle);
 
 		powerUpList->Add(safe_cast<PowerUp ^>(extraLifePowerUp));
+	}
+
+	void RenderParticleEffects()
+	{
+		try
+		{
+			// render particle effects
+			for(int i = 0; i < particleEffectsList->Count; i++)
+			{
+				particleEffectsList[i]->Render();
+			}
+		}
+		catch(...)
+		{
+			throw;
+		}
 	}
 
 	///<summary>
