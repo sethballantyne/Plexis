@@ -312,9 +312,13 @@ public:
 
 	void UpdateParticleEffects()
 	{
-		for(int i = 0; i < particleEffectsList->Count; i++)
+		for(int i = particleEffectsList->Count - 1; i >= 0; i--)
 		{
 			particleEffectsList[i]->Update();
+			if(0 == particleEffectsList[i]->ParticleCount)
+			{
+				particleEffectsList->RemoveAt(i);
+			}
 		}
 	}
 

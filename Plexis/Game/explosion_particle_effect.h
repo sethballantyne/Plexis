@@ -40,8 +40,18 @@ public:
 			velocity.X = rng->Next(1, maxXVelocity) / cos(angle);
 			velocity.Y = rng->Next(1, maxYVelocity) / sin(angle);
 
-
 			particles->Add(gcnew Particle(x, y, velocity, R, G, B));
+		}
+	}
+
+	///<summary>
+	/// Gets the number of the particles remaining in the list
+	///</summary>
+	property int ParticleCount
+	{
+		int get()
+		{
+			return particles->Count;
 		}
 	}
 
@@ -56,8 +66,6 @@ public:
 			}
 		}
 	}
-
-	
 
 	void Render()
 	{
