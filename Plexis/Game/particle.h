@@ -21,6 +21,26 @@
 
 public ref class Particle
 {
+private:
+	// the amount each RGB value will be decremented by, each frame.
+	const unsigned char decrementAmount = 5;
+
+	// decrease the specified value, ensuring it doesn't underflow. 
+	// for use with the R,G,B values.
+	inline void Decrease(unsigned char %value)
+	{
+		if(value > 0)
+		{
+			if(value - decrementAmount < 0)
+			{
+				value -= (0 + value);
+			}
+			else
+			{
+				value -= decrementAmount;
+			}
+		}
+	}
 public:
 	Vector2 Velocity;
 	System::Drawing::Point Position;
@@ -66,41 +86,9 @@ public:
 		Position.X += Velocity.X;
 		Position.Y += Velocity.Y;
 
-		if(R > 0)
-		{
-			if(R - 5 < 0)
-			{
-				R -= (0 + R);
-			}
-			else
-			{
-				R -= 5;
-			}
-		}
-
-		if(G > 0)
-		{
-			if(G - 5 < 0)
-			{
-				G -= (0 + G);
-			}
-			else
-			{
-				G -= 5;
-			}
-		}
-
-		if(B > 0)
-		{
-			if(B - 5 < 0)
-			{
-				B -= (0 + B);
-			}
-			else
-			{
-				B -= 5;
-			}
-		}
+		Decrease(R);
+		Decrease(G);
+		Decrease(B);
 
 		Colour = Video::ARGBTo32Bit(255, R, G, B);
 	}
