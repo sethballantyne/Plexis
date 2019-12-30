@@ -306,8 +306,13 @@ public:
 	/// </summary>
 	void UpdateKeys()
 	{
-		this->playerFireKey = GameOptions::GetValue("fireKey", DIK_SPACE);
-		this->pauseKey = GameOptions::GetValue("", DIK_P);
+		// defaults should never be generated unless it's due to programmer error.
+		// GameOptions is searched at start up for the below keys and defaults
+		// provided if they don't exist (see Game::Initialise()).
+		// if the below defaults do come into play, they won't be reflected in the 
+		// options screen; but again, shouldn't happen.
+		this->playerFireKey = GameOptions::GetValue("fireKey", 0);
+		this->pauseKey = GameOptions::GetValue("pauseKey", DIK_P);
 	}
 
 	void UpdateParticleEffects()
