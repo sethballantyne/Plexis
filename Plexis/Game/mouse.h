@@ -23,6 +23,8 @@
 
 using namespace System;
 
+#define MAX_NUM_BUTTONS 8 
+
 /// <summary>
 /// encapsulates a snapshot of the mouse state. There's functionality missing 
 /// (like ButtonUp or ButtonClick functions) because the game doesn't need them.
@@ -34,8 +36,8 @@ private:
 	int y;
 	int z;
 
-	array<byte, 1> ^buttons = gcnew array<byte, 1>(8);
-	array<byte, 1> ^previousButtons = gcnew array<byte, 1>(8);
+	array<byte, 1> ^buttons = gcnew array<byte, 1>(MAX_NUM_BUTTONS);
+	array<byte, 1> ^previousButtons = gcnew array<byte, 1>(MAX_NUM_BUTTONS);
 public:
     /// <summary>
     /// Creates a new instance of Mouse.
@@ -54,12 +56,12 @@ public:
 			this->y = currentMouseState->lY;
 			this->z = currentMouseState->lZ;
 
-			for(int i = 0; i < 8; i++)
+			for(int i = 0; i < MAX_NUM_BUTTONS; i++)
 			{
 				buttons[i] = currentMouseState->rgbButtons[i];
 			}	
 
-			for(int i = 0; i < 8; i++)
+			for(int i = 0; i < MAX_NUM_BUTTONS; i++)
 			{
 				previousButtons[i] = previousMouseState->rgbButtons[i];
 			}
@@ -79,7 +81,7 @@ public:
 
 	bool ButtonPressed(BYTE button)
 	{
-		if(previousButtons == nullptr || button > 8)
+		if(previousButtons == nullptr || button > MAX_NUM_BUTTONS)
 		{
 			return false;
 		}
@@ -89,6 +91,22 @@ public:
 
 		// key pressed if the currentState is false (key is up) and previous is true (key is down)
 		return ((currentButtonState == false) && (previousButtonState == true));
+	}
+
+	property int PressedButton
+	{
+		int get()
+		{
+			for(int i = 0; i < MAX_NUM_BUTTONS; i++)
+			{
+				if(ButtonPressed(i))
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
 	}
     /// <summary>
     /// returns the X position of the mouse.

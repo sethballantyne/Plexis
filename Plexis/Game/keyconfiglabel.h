@@ -44,6 +44,8 @@ private:
     
     bool firstRun = true;
 
+	void HandleKey(unsigned char key);
+
     /// <summary>
     /// Checks to see if the specified key is currently assigned to any other KeyConfigLabel instances within the
     /// current scene.
@@ -102,7 +104,7 @@ public:
     /// <summary>
     /// Renders the controls text to the backbuffer.
     /// </summary>
-    ///<exception cref = "System::Runtime::InteropServices::COMException">An unspecified COM error was returned.< / exception>
+    ///<exception cref = "System::Runtime::InteropServices::COMException">An unspecified COM error was returned.</exception>
     /// <exception cref="DirectDrawGenericException">DirectDraw returned an unspecified error condition.</exception>
     /// <exception cref="DirectDrawInvalidClipListException">DirectDraw does not support the provided clip list.</exception>
     /// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
