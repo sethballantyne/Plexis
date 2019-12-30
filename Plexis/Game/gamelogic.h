@@ -232,34 +232,17 @@ private:
 			SpawnPowerUp(640, 480);
 		}
 
-		if(mouseState->ButtonPressed(playerFireKey))
+		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
 		{
 			if(nullptr != powerUpInEffect)
 			{
-				/*ResourceManager::GetSoundBuffer("laser")->Stop();
-				ResourceManager::GetSoundBuffer("laser")->Play();*/
 				powerUpInEffect->Fired();
-
 			}
 			else
 			{
 				player->FirePressed();
 			}
 		}
-		/*if(mouseState->ButtonDown(playerFireKey) || keyboardState->KeyDown(playerFireKey))
-		{
-		if(nullptr != powerUpInEffect)
-		{
-		powerUpInEffect->Fired();
-		}
-		else
-		{
-		player->FirePressed();
-		}
-		}*/
-		/*if((keyboardState->KeyPressed(playerFireKey) || mouseState->ButtonPressed(playerFire
-		{
-		}*/
 	}
 
 	void HandleLaserBrickCollisions(Laser ^laser)

@@ -79,7 +79,7 @@ public:
 
 	bool ButtonPressed(BYTE button)
 	{
-		if(previousButtons == nullptr)
+		if(previousButtons == nullptr || button > 8)
 		{
 			return false;
 		}
