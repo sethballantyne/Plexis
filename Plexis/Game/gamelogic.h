@@ -500,11 +500,15 @@ public:
 	{
 		try
 		{
+			Video::LockSurface();
+
 			// render particle effects
 			for(int i = 0; i < particleEffectsList->Count; i++)
 			{
 				particleEffectsList[i]->Render();
 			}
+
+			Video::UnlockSurface();
 		}
 		catch(...)
 		{

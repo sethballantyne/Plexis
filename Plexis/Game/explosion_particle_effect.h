@@ -69,13 +69,9 @@ public:
 
 	void Render()
 	{
-		Video::LockSurface();
-
 		for(int i = 0; i < particles->Count; i++)
 		{
 			particles[i]->Render();
 		}
-
-		Video::UnlockSurface();
 	}
 };
