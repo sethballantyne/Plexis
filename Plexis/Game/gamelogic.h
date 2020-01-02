@@ -556,7 +556,7 @@ public:
 				powerUpList->RemoveAt(i);
 				//LogManager::WriteLine(LogType::Debug, "Removing powerup from list. Items remaining: {0}", powerUpList->Count);
 			}
-			else if(powerUpList[i]->BoundingBox.IntersectsWith(player->BoundingBox))
+			else if(powerUpList[i]->BoundingBox.IntersectsWith(player->BoundingBox) && !player->IsDead)
 			{
 				powerUpList[i]->PlayerCollision();
 				powerUpList->RemoveAt(i);
