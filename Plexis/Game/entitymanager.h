@@ -40,6 +40,11 @@ private:
     static Frame ^ParseFrame(XElement ^frameElement);
    
 	/// <summary>
+	/// Parses all the &lt;frame&gt; elements for a specified &lt;entity&gt; element.
+	/// </summary>
+	static array<Frame ^, 1>^ ParseFrames(XElement ^element);
+
+	/// <summary>
 	/// Parses an &lt;entity&gt; element whose <c>name</c> attribute is <i>ball</i>.
 	/// </summary>
 	/// <param name="ballElement">The element to parse.</param>

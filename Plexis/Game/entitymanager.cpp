@@ -55,6 +55,31 @@ Frame ^EntityManager::ParseFrame(XElement ^frameElement)
     }
 }
 
+array<Frame^, 1>^ EntityManager::ParseFrames(XElement ^elements)
+{
+	try
+	{
+		System::Collections::Generic::IEnumerable<XElement ^> ^frameElements = elements->Elements((String ^) "frame");
+		if(XmlHelper::Count(frameElements) == 0)
+		{
+			// if there's no frame data, the game doesn't know what to draw.
+			throw gcnew XmlException("No frames are associated with the entity being parsed.");
+		}
+
+		List<Frame ^> ^frames = gcnew List<Frame ^>();
+		for each(XElement ^frameElement in frameElements)
+		{
+			frames->Add(ParseFrame(frameElement));
+		}
+
+		return frames->ToArray();
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
 void EntityManager::ParseBall(XElement ^ballElement)
 {
 	try
@@ -69,20 +94,9 @@ void EntityManager::ParseBall(XElement ^ballElement)
 		//---------------------------------------------------------------------------------------------
 		// load the child <frame> elements; this will also load the bounding box data
 		//---------------------------------------------------------------------------------------------
-		System::Collections::Generic::IEnumerable<XElement ^> ^frameElements = ballElement->Elements((String ^) "frame");
-		if(XmlHelper::Count(frameElements) == 0)
-		{
-			// if there's no frame data, the game doesn't know what to draw.
-			throw gcnew XmlException(String::Format("No frames are associated with the ball named {0}.", name));
-		}
+		array<Frame^, 1>^ frames = ParseFrames(ballElement);
 
-		List<Frame ^> ^frames = gcnew List<Frame ^>();
-		for each(XElement ^frameElement in frameElements)
-		{
-			frames->Add(ParseFrame(frameElement));
-		}
-
-		Sprite ^ballSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Sprite ^ballSprite = gcnew Sprite(0, 0, frames, image);
 		Ball ^ball = gcnew Ball(ballSprite, name);
 
 		parsedEntities[name] = ball;
@@ -102,20 +116,9 @@ void EntityManager::ParseBrick(XElement ^brickElement)
         unsigned int hitCount = XmlHelper::GetAttributeValueAsUInt32(brickElement, "hitCount");
         unsigned int chanceOfPowerUp = XmlHelper::GetAttributeValueAsUInt32(brickElement, "chanceOfPowerUp");
         unsigned int points = XmlHelper::GetAttributeValueAsUInt32(brickElement, "points");
+		array<Frame ^, 1>^ frames = ParseFrames(brickElement);
 
-        System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = brickElement->Elements((String ^) "frame");
-        if(0 == XmlHelper::Count(frameQuery))
-        {
-            throw gcnew XmlException(String::Format("brick {0} doesn't have any frames associated with it.", name));
-        }
-
-        List<Frame ^> ^frames = gcnew List<Frame ^>();
-        for each(XElement ^frameElement in frameQuery)
-        {
-            frames->Add(ParseFrame(frameElement));
-        }
-
-        Sprite ^brickSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+        Sprite ^brickSprite = gcnew Sprite(0, 0, frames, image);
         Brick ^brick = gcnew Brick(brickSprite, hitCount, chanceOfPowerUp, points, name);
 
         parsedEntities[name] = brick;
@@ -135,19 +138,9 @@ void EntityManager::ParseLaserPowerUp(XElement ^powerupElement, String ^name)
 		int laserVelocity = XmlHelper::GetAttributeValueAsInt32(powerupElement, "laserVelocity");
 		unsigned int laserDamage = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "laserDamage");
 
-		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
-		if(0 == XmlHelper::Count(frameQuery))
-		{
-			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
-		}
+		array<Frame ^, 1>^ frames = ParseFrames(powerupElement);
 
-		List<Frame ^> ^frames = gcnew List<Frame ^>();
-		for each(XElement ^frameElement in frameQuery)
-		{
-			frames->Add(ParseFrame(frameElement));
-		}
-
-		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
 		LaserPowerUp ^laserPowerUp = gcnew LaserPowerUp(powerupSprite, duration, laserVelocity, laserDamage, name);
 
 		parsedEntities[name] = laserPowerUp;
@@ -164,19 +157,9 @@ void EntityManager::ParseInstaDeathPowerUp(XElement ^powerupElement, String ^nam
 	{
 		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
 
-		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
-		if(0 == XmlHelper::Count(frameQuery))
-		{
-			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
-		}
+		array<Frame ^, 1>^ frames = ParseFrames(powerupElement);
 
-		List<Frame ^> ^frames = gcnew List<Frame ^>();
-		for each(XElement ^frameElement in frameQuery)
-		{
-			frames->Add(ParseFrame(frameElement));
-		}
-
-		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
 		InstaDeathPowerUp ^instaDeathPowerUp = gcnew InstaDeathPowerUp(powerupSprite, name);
 
 		parsedEntities[name] = instaDeathPowerUp;
@@ -194,19 +177,9 @@ void EntityManager::ParseBonusPointsPowerUp(XElement ^powerupElement, String ^na
 		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
 		int pointsAwarded = XmlHelper::GetAttributeValueAsInt32(powerupElement, "points");
 
-		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
-		if(0 == XmlHelper::Count(frameQuery))
-		{
-			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
-		}
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
 
-		List<Frame ^> ^frames = gcnew List<Frame ^>();
-		for each(XElement ^frameElement in frameQuery)
-		{
-			frames->Add(ParseFrame(frameElement));
-		}
-
-		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
 		BonusPointsPowerUp ^bonusPoints = gcnew BonusPointsPowerUp(powerupSprite, pointsAwarded, name);
 
 		parsedEntities[name] = bonusPoints;
@@ -224,19 +197,9 @@ void EntityManager::ParseExtraLifePowerUp(XElement ^powerupElement, String ^name
 		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
 		int livesAwarded = XmlHelper::GetAttributeValueAsInt32(powerupElement, "lives");
 
-		System::Collections::Generic::IEnumerable<XElement ^> ^frameQuery = powerupElement->Elements((String ^) "frame");
-		if(0 == XmlHelper::Count(frameQuery))
-		{
-			throw gcnew XmlException(String::Format("powerup {0} doesn't have any frames associated with it.", name));
-		}
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
 
-		List<Frame ^> ^frames = gcnew List<Frame ^>();
-		for each(XElement ^frameElement in frameQuery)
-		{
-			frames->Add(ParseFrame(frameElement));
-		}
-
-		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
 		ExtraLifePowerUp ^extraLife = gcnew ExtraLifePowerUp(powerupSprite, livesAwarded, name);
 
 		parsedEntities[name] = extraLife;
@@ -298,20 +261,9 @@ void EntityManager::ParsePaddle(XElement ^paddleElement)
 		//---------------------------------------------------------------------------------------------
 		// load the child <frame> elements; this will also load the bounding box data
 		//---------------------------------------------------------------------------------------------
-		System::Collections::Generic::IEnumerable<XElement ^> ^frameElements = paddleElement->Elements((String ^) "frame");
-		if (XmlHelper::Count(frameElements) == 0)
-		{
-			// if there's no frame data, the game doesn't know what to draw.
-			throw gcnew XmlException(String::Format("No frames are associated with the paddle named {0}.", name));
-		}
+		array<Frame ^, 1>^ frames = ParseFrames(paddleElement);
 
-		List<Frame ^> ^frames = gcnew List<Frame ^>();
-		for each(XElement ^frameElement in frameElements)
-		{
-			frames->Add(ParseFrame(frameElement));
-		}
-
-		Sprite ^paddleSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Sprite ^paddleSprite = gcnew Sprite(0, 0, frames, image);
 		Paddle ^paddle = gcnew Paddle(paddleSprite, name);
 
 		parsedEntities[name] = paddle;
@@ -332,24 +284,12 @@ void EntityManager::ParsePowerUpAsset(XElement ^entityElement)
 		//---------------------------------------------------------------------------------------------
 		// load the child <frame> elements; this will also load the bounding box data
 		//---------------------------------------------------------------------------------------------
-		System::Collections::Generic::IEnumerable<XElement ^> ^frameElements = entityElement->Elements((String ^) "frame");
-		if(XmlHelper::Count(frameElements) == 0)
-		{
-			// if there's no frame data, the game doesn't know what to draw.
-			throw gcnew XmlException(String::Format("No frames are associated with the powerup asset named {0}.", name));
-		}
+		array<Frame ^, 1>^ frames = ParseFrames(entityElement);
 
-		List<Frame ^> ^frames = gcnew List<Frame ^>();
-		for each(XElement ^frameElement in frameElements)
-		{
-			frames->Add(ParseFrame(frameElement));
-		}
-
-		Sprite ^laserSprite = gcnew Sprite(0, 0, frames->ToArray(), image);
+		Sprite ^laserSprite = gcnew Sprite(0, 0, frames, image);
 		Laser ^laser = gcnew Laser(laserSprite, name);
 
 		parsedEntities[name] = laser;
-
 	}
 	catch(...)
 	{
