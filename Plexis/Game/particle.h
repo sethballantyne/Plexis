@@ -19,9 +19,15 @@
 #include "vector2.h"
 #include "video.h"
 
+///<summary>
+/// Represents a single particle (pixel in reality) used in particle effects.
+///</summary>
 public ref class Particle
 {
 private:
+	// the 32bit colour of the particle; only used when rendering.
+	unsigned int Colour;
+
 	// the amount each RGB value will be decremented by, each frame.
 	const unsigned char decrementAmount = 5;
 
@@ -43,10 +49,23 @@ private:
 	}
 public:
 	Vector2 Velocity;
+
+	// Screen position of the particle
 	System::Drawing::Point Position;
-	unsigned int Colour;
+
+	// colour of the pixel.
+	// pixels are rendered in 32 bit colour.
 	unsigned char R, G, B;
 
+	///<summary>
+	/// initialises the particle with the specified coordinates, velocity and colour.
+	///</summary>
+	///<param name="x">the initial position on the screen, x axis.</param>
+	///<param name="y">the initial position on the screen, y axis.</param>
+	///<param name="velocity">the particles initial velocity.</param>
+	///<param name="R">initial red component of the particles colour.</param>
+	///<param name="G">initial green component of the particles colour.</param>
+	///<param name="B">initial blue component of the particles colour.</param>
 	Particle(int x, int y, Vector2 velocity, unsigned char R, unsigned char G, unsigned char B)
 	{
 		this->Position.X = x;
@@ -58,6 +77,14 @@ public:
 		this->Colour = Video::ARGBTo32Bit(255, R, G, B);
 	}
 
+	///<summary>
+	/// initialises the particle with the specified coordinates, velocity and colour.
+	///</summary>
+	///<param name="position">the initial position on the screen.</param>
+	///<param name="velocity">the particles initial velocity.</param>
+	///<param name="R">initial red component of the particles colour.</param>
+	///<param name="G">initial green component of the particles colour.</param>
+	///<param name="B">initial blue component of the particles colour.</param>
 	Particle(System::Drawing::Point position, Vector2 velocity, unsigned char R, unsigned char G, unsigned char B) 
 	{
 		this->Position = position;
@@ -68,11 +95,17 @@ public:
 		this->Colour = Video::ARGBTo32Bit(255, R, G, B);
 	}
 
+	///<summary>
+	/// Returns true if the pixel is the specified colour, else returns false.
+	///</summary>
 	bool IsColour(unsigned char R, unsigned G, unsigned B)
 	{
 		return ((this->R == R) && (this->G == G) && (this->B == B));
 	}
 
+	///<summary>
+	/// Returns true if the pixel is off screen, else returns false.
+	///</summary>
 	bool IsOffScreen()
 	{
 		bool expr1 = Position.X >= Video::Width || Position.X < 0;
@@ -81,6 +114,9 @@ public:
 		return expr1 || expr2;
 	}
 
+	///<summary>
+	/// Updates the particles position and colour.
+	///</summary>
 	void Update()
 	{
 		Position.X += Velocity.X;
@@ -93,6 +129,10 @@ public:
 		Colour = Video::ARGBTo32Bit(255, R, G, B);
 	}
 
+	///<summary>
+	/// Renders the pixel to the screen. 
+	/// LOCK THE SCREEN before using.
+	///</summary>
 	void Render()
 	{
 		// it's asssumed the surface is being locked elsewhere, since doing it 

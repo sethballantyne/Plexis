@@ -67,7 +67,7 @@ private:
 	// indicates that the value we're gawking at corresponds to lives.
 	Surface ^livesImage = nullptr;
 
-
+	// the timer image used when a powerup is in effect
 	Surface ^timerImage = nullptr;
 
 	// the amount of points the player has
@@ -79,7 +79,7 @@ private:
 	// number of seconds remaining when the laser power up is in use.
 	NumericField ^powerUpTimerValue;
 
-	// 
+	// the delay that's present when transitioning between levels.
 	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
 
 	// timer used to countdown the number of seconds remaining
@@ -245,6 +245,9 @@ private:
 		}
 	}
 
+	///<summary>
+	/// Collision detection for when lasers hit bricks.
+	///</summary>
 	void HandleLaserBrickCollisions(Laser ^laser)
 	{
 		for(int i = 0; i < currentLevel->Width; i++)
@@ -264,6 +267,10 @@ private:
 		}
 	}
 
+	///<summary>
+	/// Resets the paddle so it's visible and in the middle of the screen, with the ball attached.
+	/// Any previously active powerups are disabled.
+	///</summary>
 	void SpawnPlayer()
 	{
 		player->ResetPosition();
@@ -298,6 +305,9 @@ public:
 		this->pauseKey = GameOptions::GetValue("pauseKey", DIK_P);
 	}
 
+	///<summary>
+	/// Moves any particle effect currently on the screen.
+	///</summary>
 	void UpdateParticleEffects()
 	{
 		for(int i = particleEffectsList->Count - 1; i >= 0; i--)
@@ -368,6 +378,9 @@ public:
 		}
 	}
 
+	///<summary>
+	/// Creates an explosion particle effect at the specified brick.
+	///</summary>
 	void ExplodeBrick(Brick^ b, unsigned char R, unsigned char G, unsigned char B)
 	{
 		int brickHalfWidth = b->BoundingBox.Width / 2;
@@ -383,6 +396,9 @@ public:
 		ResourceManager::GetSoundBuffer("explosion")->Play();
 	}
 
+	///<summary>
+	///Creates the effect that makes the particle look like it has exploded.
+	///</summary>
 	void ExplodePaddle()
 	{
 		player->IsDead = true;
@@ -450,6 +466,11 @@ public:
 		}
 	}
 
+	///<summary>
+	/// Creates a laser power up at the specified screen coordinates.
+	/// The angle determines the angle of the powerups projection as it flies upwards before
+	/// falling towards the player.
+	///</summary>
 	void SpawnLaserPowerUp(int x, int y, float angle)
 	{
 		LaserPowerUp ^laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
@@ -476,6 +497,11 @@ public:
 		powerUpList->Add(safe_cast<PowerUp ^>(instaDeath));
 	}
 
+	///<summary>
+	/// Creates a bonus point powerup at the specified screen coordinates. 
+	/// The angle determines the angle of the powerups projection as it flies upwards before
+	/// falling towards the player.
+	///</summary>
 	void SpawnBonusPointPowerUp(String ^pickupName, int x, int y, float angle)
 	{
 		BonusPointsPowerUp ^bonusPointsPowerUp = EntityManager::GetEntity<BonusPointsPowerUp ^>(pickupName);
@@ -486,6 +512,11 @@ public:
 		powerUpList->Add(safe_cast<PowerUp ^>(bonusPointsPowerUp));
 	}
 
+	///<summary>
+	/// Creates an extra life powerup at the specified screen coordinates. 
+	/// The angle determines the angle of the powerups projection as it flies upwards before
+	/// falling towards the player.
+	///</summary>
 	void SpawnExtraLifePowerUp(int x, int y, float angle)
 	{
 		ExtraLifePowerUp ^extraLifePowerUp = EntityManager::GetEntity<ExtraLifePowerUp ^>("extralife_powerup");
@@ -496,6 +527,18 @@ public:
 		powerUpList->Add(safe_cast<PowerUp ^>(extraLifePowerUp));
 	}
 
+	///<summary>
+	/// Renders all existing particle effects within the particle effects list to the back buffer.
+	///</summary>
+	/// <exception cref="DirectDrawInvalidObjectException">DirectDraw received a pointer that was an invalid DirectDraw object.</exception>
+	/// <exception cref="DirectDrawInvalidParametersException">one or more of the parameters passed to the method are incorrect.</exception>
+	/// <exception cref="OutOfMemoryException">Not enough memory available to complete the operation.</exception>
+	/// <exception cref="DirectDrawSurfaceBusyException">access to the surface is refused because the surface is locked by another thread.</exception>
+	/// <exception cref="DirectDrawSurfaceLostException">access to the surface is refused because the surface memory is gone.</exception>
+	/// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
+	/// <exception cref="DirectDrawInvalidRectException">the rectangle coordinates used by the surface were invalid.</exception>
+	/// <exception cref="DirectDrawNotLockedException">Attempted to unlock a surface that wasn't locked.</exception>
+	/// <exception cref="System::Runtime::InteropServices::COMException">Generic error returned by DirectDraw when a more specific error isn't provided.</exception>
 	void RenderParticleEffects()
 	{
 		try
