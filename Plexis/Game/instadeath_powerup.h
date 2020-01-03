@@ -19,6 +19,9 @@
 #pragma once
 #include "powerup.h"
 
+///<summary>
+/// Represents the powerup that kills the player when it collides with the paddle.
+///</summary>
 public ref class InstaDeathPowerUp : public PowerUp
 {
 public:
@@ -27,6 +30,9 @@ public:
 
 	}
 
+	///<summary>
+	/// Creates a deep copy of the object.
+	///</summary>
 	Object ^Clone() override
 	{
 		::Sprite ^sprite = gcnew ::Sprite(

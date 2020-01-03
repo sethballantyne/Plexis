@@ -23,6 +23,9 @@
 
 delegate void PowerUpEffectHandler(Object ^sender, EventArgs ^args);
 
+///<summary>
+/// Base class for all powerups within the game.
+///</summary>
 public ref class PowerUp : public Entity
 {
 	/// <summary>
@@ -83,6 +86,11 @@ public:
 		Speed = 7.0f;
 	}
 
+	///<summary>
+	///<param name="x">the initial x position on the screen.</param>
+	///<param name="y">the initial y position on the screen.</param>
+	///<param name="angle">the powerups inital angle of movement.</param>
+	///</summary>
 	void Spawn(int x, int y, float angle)
 	{
 		Angle = angle;
@@ -92,12 +100,20 @@ public:
 		Sprite->Position.Y = y;
 	}
 
+	///<summary>
+	/// User has pressed the fire button while the power up is active. 
+	/// Triggers the FirePressed event.
+	///</summary>
 	virtual void Fired()
 	{
 		EventArgs ^eventArgs = gcnew EventArgs();
 		FirePressed(this, eventArgs);
 	}
 
+	///<summary>
+	/// Triggers the CollisionWithPaddle event.
+	/// Should be called when the powerup collides with the paddle.
+	///</summary>
 	virtual void PlayerCollision()
 	{
 		EventArgs ^eventArgs = gcnew EventArgs();
@@ -109,6 +125,13 @@ public:
 	{
 	}
 
+	///<summary>
+	/// Updates the postion of the power up.
+	///</summary>
+	///<param name="x">the top left coordinate of the viewport, x axis.</param>
+	///<param name="y">the top left coordinate of the viewport, y axis.</param>
+	///<param name="width">the width of the view port in pixels.</param>
+	///<param name="height">the height of the view port in pixels.</param>
 	void Update(int x, int y, int width, int height)
 	{
 		int xPos = this->Sprite->Position.X;
@@ -123,6 +146,11 @@ public:
 		HandleEdgeCollisions(x, y, width, height);
 	}
 
+	// triggers when PlayerCollision() is called.
+	// represents when the powerup is collected by the paddle.
 	event PowerUpEffectHandler^ CollisionWithPaddle;
+
+	// triggers when Fired() is called.
+	// Used for when the player presses the fire button when the powerup is active.
 	event PowerUpEffectHandler^ FirePressed;
 };

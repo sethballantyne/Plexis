@@ -79,6 +79,9 @@ public:
 		return buttons[button] & 0x80;
     }
 
+	/// <summary>
+	/// returns true if the specified button has been pressed, otherwise false.
+	/// </summary>
 	bool ButtonPressed(BYTE button)
 	{
 		if(previousButtons == nullptr || button > MAX_NUM_BUTTONS)
@@ -93,6 +96,12 @@ public:
 		return ((currentButtonState == false) && (previousButtonState == true));
 	}
 
+	/// <summary>
+	/// returns which mouse button has been pressed. 
+	/// 0-based, so the left mouse button will be 0, right 1 etc.
+	/// Highlights why the some #defines are needed to enumerate
+	/// mouse button values instead of using magic numbers. :P
+	/// </summary>
 	property int PressedButton
 	{
 		int get()
@@ -108,6 +117,7 @@ public:
 			return -1;
 		}
 	}
+
     /// <summary>
     /// returns the X position of the mouse.
     /// </summary>

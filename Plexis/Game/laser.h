@@ -18,14 +18,25 @@
 #pragma once
 #include "entity.h"
 
+///<summary>
+/// Represents a single laser beam shot by the paddle when the laser powerup is in
+/// effect.
+///</summary>
 public ref class Laser : public Entity
 {
 public:
 	property float Velocity;
+
+	// the amount of damage the laser does if it hits a brick.
+	// Each point of damage is interpreted as a single hit,
+	// so if there's two points of damage, that's two hits.
 	property unsigned int Damage;
 
 	Laser(::Sprite ^sprite, System::String ^name) : Entity(sprite, Vector2::Zero, name) {}
 
+	///<summary>
+	/// Creates a deep copy of this instance.
+	///</summary>
 	Object ^Clone() override
 	{
 		::Sprite ^sprite = gcnew ::Sprite(
@@ -41,6 +52,9 @@ public:
 
 	}
 
+	/// <summary>
+	/// Updates the position of the laser.
+	/// </summary>
 	void Update() override
 	{
 		int y = Sprite->Position.Y + Velocity;

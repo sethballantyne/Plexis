@@ -20,12 +20,28 @@
 #include "particle.h"
 
 
-
+///<summary>
+/// Object for creating particle effects representing explosions.
+///</summary>
 public ref class ExplosionParticleEffect
 {
 	System::Collections::Generic::List<Particle ^>^ particles;
 
 public:
+	///<summary>
+	/// initialises the explosion by creating the particles and assigning an initial velocity.
+	///</summary>
+	///<param name="x">the initial x position of each particle.</param>
+	///<param name="y">the initial y postion of each particle</param>
+	///<param name="numberOfParticles">the amount of particles the explosion consists of.
+	/// depending on what you're aiming for, 25 is a good starting point.</param>
+	///<param name="maxXVelocity">the initial velocity on the X axis that the particle shouldn't
+	/// exceed.</param>
+	///<param name="maxYVelocity">the initial velocity on the Y axis that the particle shouldn't
+	/// exceed.</param>
+	///<param name="R">The red component of the particles colour.</param>
+	///<param name="G">The green component of the particles colour.</param>
+	///<param name="B">the blue component of the particles colour.</param>
 	ExplosionParticleEffect(int x, int y, unsigned int numberOfParticles, int maxXVelocity, int maxYVelocity,
 							unsigned char R, unsigned char G, unsigned char B)
 	{
@@ -55,6 +71,9 @@ public:
 		}
 	}
 
+	///<summary>
+	/// Causes each particle in the explosion to update their position and colour.
+	///</summary>
 	void Update()
 	{
 		for(int i = particles->Count - 1; i >= 0; i--)
@@ -67,6 +86,11 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// Renders the particle effect to the back buffer.
+	/// NOTE: the video surface MUST be locked before calling this and unlocked
+	/// after its completed. 
+	/// </summary>
 	void Render()
 	{
 		for(int i = 0; i < particles->Count; i++)
