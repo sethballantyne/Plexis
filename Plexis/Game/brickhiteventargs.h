@@ -25,9 +25,9 @@ using namespace System::Diagnostics;
 public ref class BrickHitEventArgs : EventArgs
 {
 	//String ^name;
-	System::Drawing::Point levelCoordinates;
-
-	bool explode = false;
+	System::Drawing::Point tileCoordinates;
+	System::Drawing::Point screenCoordinates; // needed for spawning a powerup
+	unsigned int flags = 0;
 public:
 	/// <summary>
 	/// Instantiates a new instance of BrickHitEventArgs with the name and coordinates
@@ -35,29 +35,38 @@ public:
 	/// </summary>
 	/// <param name="coordinates">the bricks tile coordinates.</param>
 	/// <param name="explode">true if the brick is exploding, otherwise false.</param>
-	BrickHitEventArgs(System::Drawing::Point coordinates, bool explode) : EventArgs()
+	BrickHitEventArgs(System::Drawing::Point tileCoordinates, System::Drawing::Point screenCoordinates, unsigned int flags) : EventArgs()
 	{
 		//Debug::Assert(brickName != nullptr || brickName != String::Empty);
 		//name = brickName;
 
-		this->levelCoordinates = coordinates;
-		this->explode = explode;
+		this->tileCoordinates = tileCoordinates;
+		this->screenCoordinates = screenCoordinates;
+		this->flags = flags;
 	}
 	
 	/// <summary>
 	/// Gets the tile coordinates of the brick 
 	/// </summary>
-	property System::Drawing::Point Coordinates
+	property System::Drawing::Point TileCoordinates
 	{
-		System::Drawing::Point get() { return levelCoordinates; }
+		System::Drawing::Point get() { return tileCoordinates; }
+	}
+
+	/// <summary>
+	/// Gets the screen coordinates of the brick 
+	/// </summary>
+	property System::Drawing::Point ScreenCoordinates
+	{
+		System::Drawing::Point get() { return screenCoordinates; }
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the brick is exploding or not.
 	/// </summary>
-	property bool Explode
+	property unsigned int Flags
 	{
-		bool get() { return explode; }
+		unsigned int get() { return flags; }
 	}
 	/// <summary>
 	/// Gets the name of the brick

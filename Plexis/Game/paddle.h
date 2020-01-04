@@ -25,6 +25,8 @@
 public ref class Paddle : public Entity
 {
 public:
+	property bool IsDead;
+
 	Paddle(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
 	{
 

@@ -9,7 +9,7 @@ void GameLogic::DebugRemoveBrick()
 		{
 			if(nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible)
 			{
-				currentLevel[i,j]->Hit(i, j);
+				currentLevel[i,j]->Hit(i, j, BRICK_EXPLODE);
 				return;
 			}
 		}
@@ -21,7 +21,7 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 {
 	this->gameInProgressMainMenu = gameInProgressMenu;
 	//this->highScorePrompt = highScorePrompt;
-	this->debugKeysEnabled = GameOptions::GetValue("debugKeys", false);
+	this->debugKeysEnabled = (bool) GameOptions::GetValue("debugKeys", false);
 
 	this->player = EntityManager::GetEntity<Paddle ^>("player");
 	Debug::Assert(this->player != nullptr);
@@ -48,6 +48,15 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->playerResetTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnPlayerResetTimerEvent);
 	this->playerResetTimer->Enabled = false;
 	this->playerResetTimer->AutoReset = true;
+
+	this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
+	this->laserActiveTimer->Enabled = false;
+	this->laserActiveTimer->AutoReset = true;
+
+	this->timerImage = ResourceManager::GetSurface("timer");
+	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
+	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
+	this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
 	
 }
 
@@ -97,6 +106,7 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 	}
 	
 }
+
 void GameLogic::HandleBallCollision()
 {
 	int ballX = ball->BoundingBox.X + ball->Velocity.X;
@@ -108,7 +118,8 @@ void GameLogic::HandleBallCollision()
 	int correctedY = ballY;
 	if(ballX2 >= Video::Width)
 	{
-		//ResourceManager::GetSoundBuffer("bounce")->Play();
+		ResourceManager::GetSoundBuffer("bounce")->Stop();
+		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		ball->Velocity.X = -ball->Velocity.X;
 		correctedX = (Video::Width - ball->BoundingBox.Width) - 1;
@@ -116,7 +127,8 @@ void GameLogic::HandleBallCollision()
 
 	if(ballX < 0)
 	{
-		//ResourceManager::GetSoundBuffer("bounce")->Play();
+		ResourceManager::GetSoundBuffer("bounce")->Stop();
+		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		ball->Velocity.X = -ball->Velocity.X;
 		correctedX = 0;
@@ -126,6 +138,7 @@ void GameLogic::HandleBallCollision()
 
 	if(ballY < 0)
 	{
+		ResourceManager::GetSoundBuffer("bounce")->Stop();
 		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		//ball->Velocity.X = -ball->Velocity.X;
@@ -133,25 +146,15 @@ void GameLogic::HandleBallCollision()
 		correctedY = 0;
 	}
 
-	if(ballY >= Video::Height)
+	if(ballY >= Video::Height && !player->IsDead)
 	{
 		/*ball->Velocity.Y = -ball->Velocity.Y;
 		correctedY = (Video::Height - ball->BoundingBox.Height) - 1;*/
 
-		this->gameState = GameState::PlayerReset;
-		ResourceManager::GetSoundBuffer("loselife")->Play();
-
-		if(lives->Value != 0)
-		{
-			lives->Value--;
-			ball->Velocity = Vector2::Zero;
-		}
-		else
-		{
-			this->gameState = GameState::GameOver;
-		}
-
-		playerResetTimer->Start();
+		// Player died.
+		ExplodePaddle();
+		
+		ball->Velocity = Vector2::Zero;
 		/*lives->Value--;
 		if(lives->Value != -1)
 		{
@@ -166,7 +169,7 @@ void GameLogic::HandleBallCollision()
 		}*/
 	}
 
-	if(ball->BoundingBox.IntersectsWith(player->BoundingBox))
+	if(ball->BoundingBox.IntersectsWith(player->BoundingBox) && !player->IsDead)
 	{
 		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
 		ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
@@ -208,6 +211,7 @@ void GameLogic::HandleBallCollision()
 	ball->SetPosition(correctedX, correctedY);
 }
 
+
 void GameLogic::HandleBrickCollisions()
 {
 	for(int i = 0; i < currentLevel->Width; i++)
@@ -230,7 +234,7 @@ void GameLogic::HandleBrickCollisions()
 						ball->Velocity.X = -ball->Velocity.X;
 					}
 				
-					currentLevel[i, j]->Hit(i, j);
+					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
 					/*ball->Velocity.X = -ball->Velocity.X;
 					ball->Velocity.Y = -ball->Velocity.Y;*/
 
@@ -262,12 +266,12 @@ void GameLogic::HandlePlayerWallCollision()
 
 	player->SetPosition(correctedX);
 }
+
 void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 {
 	switch(this->gameState)
 	{
 		case GameState::NewLevel:
-			LogManager::WriteLine(LogType::Debug, "GameState::NewLevel");
 			if (!testLevel)
 			{
 				this->currentLevel = LevelManager::GetNextLevel();
@@ -284,30 +288,44 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				{
 					if(nullptr != this->currentLevel[i, j])
 					{
-						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::OnDeath);
+						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
 					}
 				}
 			}
 
-			player->ResetPosition();
-			this->player->RemoveAttachments();
-			this->player->AttachBall(ball);
-
+			SpawnPlayer();
 			this->gameState = GameState::Playing;
 		break;
 
 		case GameState::Playing:
-			HandleGameInput(keyboardState, mouseState);
+			if(!player->IsDead)
+			{
+				HandleGameInput(keyboardState, mouseState);
+			}
+			UpdatePowerUps();
 			HandleCollisions();
+
+			UpdateParticleEffects();
 
 			if(0 == currentLevel->BrickCount)
 			{
 				gameState = GameState::LevelComplete;
 				this->levelLoadDelayTimer->Start();
+
+				laserActiveTimer->Stop();
 			}
+		break;
+
+		case GameState::PlayerReset:
+			// keep those particles moving!
+			/*for(int i = 0; i < particleEffectsList->Count; i++)
+			{
+				particleEffectsList[i]->Update();
+			}*/
+		break;
+
 		case GameState::GameOver:
 			gameOverScreen->Update(keyboardState, mouseState);
-			break;
 		break;
 		default:
 			break;
@@ -318,56 +336,71 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 
 void GameLogic::Render()
 {
-	if(nullptr != currentLevel)
+	try
 	{
-		// stops the current level from being rendered before rendering the first level
-		// in the game if the player selects "new game" from the main menu.
-		// The current level will briefly appear before reverting to the first level, otherwise.
-		if(GameState::NewLevel != gameState && !gameOverScreen->Visible)
+		if(nullptr != currentLevel)
 		{
-			currentLevel->Render();
-		}
-
-		if(GameState::GameOver == gameState && gameOverScreen->Visible)
-		{
-			// blank screen with "GAME OVER" rendered in the middle.
-			gameOverScreen->Render();
-		}
-		else
-		{
-			player->Sprite->Render();
-			ball->Sprite->Render();
-
-			if(explosionList->Count > 0)
+			// stops the current level from being rendered before rendering the first level
+			// in the game if the player selects "new game" from the main menu.
+			// The current level will briefly appear before reverting to the first level, otherwise.
+			if(GameState::NewLevel != gameState && !gameOverScreen->Visible)
 			{
-				LogManager::WriteLine(LogType::Debug, "{0}", explosionList->Count);
-				for(int i = explosionList->Count - 1; i >= 0; i--)
-				{
-					explosionList[i]->Render();
-					if(explosionList[i]->Done)
-					{
-						explosionList->RemoveAt(i);
-					}
-				}
+				currentLevel->Render();
 			}
 
-			score->Render();
-
-			// don't show -1 when the player loses his/her last life.
-			lives->Render();
-
-			switch(this->gameState)
+			if(GameState::GameOver == gameState && gameOverScreen->Visible)
 			{
-				case GameState::Paused:
-					Video::Blit(this->pauseX, this->pauseY, this->pauseImage);
-					break;
+				// blank screen with "GAME OVER" rendered in the middle.
+				gameOverScreen->Render();
+			}
+			else
+			{
+				if(!player->IsDead)
+				{
+					player->Sprite->Render();
+				}
 
-				case GameState::LevelComplete:
-					Video::Blit(this->levelCompleteX, this->levelCompleteY, this->levelCompleteImage);
-					break;
-				default:
-					break;
+				ball->Sprite->Render();
+				RenderPowerUps();
+
+				if(explosionList->Count > 0)
+				{
+					for(int i = explosionList->Count - 1; i >= 0; i--)
+					{
+						explosionList[i]->Render();
+						if(explosionList[i]->Done)
+						{
+							explosionList->RemoveAt(i);
+						}
+					}
+				}
+
+				score->Render();
+
+				// don't show -1 when the player loses his/her last life.
+				lives->Render();
+
+				switch(this->gameState)
+				{
+					case GameState::Paused:
+						Video::Blit(this->pauseX, this->pauseY, this->pauseImage);
+						break;
+
+					case GameState::LevelComplete:
+						Video::Blit(this->levelCompleteX, this->levelCompleteY, this->levelCompleteImage);
+						break;
+					default:
+						break;
+				}
+
+				RenderParticleEffects();
 			}
 		}
 	}
+	catch(...)
+	{
+		throw;
+	}
+
+	
 }

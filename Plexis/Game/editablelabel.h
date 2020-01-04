@@ -19,6 +19,7 @@
 #include "font.h"
 #include "control.h"
 #include "input.h"
+#include "engine_exceptions.h"
 
 /// <summary>
 /// essentially behaves like a textbox with a single line. When the control is in edit mode, 

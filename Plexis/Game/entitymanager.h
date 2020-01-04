@@ -40,6 +40,11 @@ private:
     static Frame ^ParseFrame(XElement ^frameElement);
    
 	/// <summary>
+	/// Parses all the &lt;frame&gt; elements for a specified &lt;entity&gt; element.
+	/// </summary>
+	static array<Frame ^, 1>^ ParseFrames(XElement ^element);
+
+	/// <summary>
 	/// Parses an &lt;entity&gt; element whose <c>name</c> attribute is <i>ball</i>.
 	/// </summary>
 	/// <param name="ballElement">The element to parse.</param>
@@ -66,7 +71,63 @@ private:
 	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
 	static void ParsePaddle(XElement ^paddleElement);
 
+	/// <summary>
+	/// Parses an entity element who's name attribute is <i>powerup_asset</i>.
+	/// Powerup assets are assets used by a powerup when it's in effect (lasers, etc).
+	/// </summary>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	static void ParsePowerUpAsset(XElement ^assetElement);
+
+	/// <summary>
+	/// Parses the XML that describes laser power up.
+	/// </summary>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	static void ParseLaserPowerUp(XElement ^powerupElement, String ^name);
+
+	/// <summary>
+	/// Parses all the powerups within the entities file.
+	/// </summary>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	static void ParsePowerup(XElement ^brickElement);
+
+	/// <summary>
+	/// Parses the XML that describes instadeath power up that isn't really a power up, I just didn't know what to call it. 
+	/// Fuck-me-up? I dunno. "the instadeath fuck-me-up". I kinda like that.
+	/// I'm talking to myself in the documentation tags. Awesome. 
+	/// </summary>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	static void ParseInstaDeathPowerUp(XElement ^powerupElement, String ^name);
+
+	/// <summary>
+	/// Parses the XML that describes the power ups that give bonus points.
+	/// </summary>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	static void ParseBonusPointsPowerUp(XElement ^powerupElement, String ^lowercasename);
+
+	/// <summary>
+	/// Parses the XML that describes bonus life power up.
+	/// </summary>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	static void ParseExtraLifePowerUp(XElement ^powerupElement, String ^name);
+
 public:
+	/// <summary>
+	/// The number of different powerups within the game.
+	/// </summary>
+	static property unsigned int NumberOfPowerUps;
+
     /// <summary>
     /// Parses the XML containing entity information, creating instances of each entity which can 
     /// then be requested during gameplay.

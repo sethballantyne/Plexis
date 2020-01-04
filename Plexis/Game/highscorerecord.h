@@ -52,7 +52,7 @@ public:
     /// </summary>
     /// <returns>the player name as a String consisting of ASCII characters.</returns>
     /// <exception cref="System::ArgumentException">the player name is <b>null</b>.</exception>
-    /// <exception cref="System::ArgumentNullExeption">the player name contains non-ascii characters.</exception>
+    /// <exception cref="System::ArgumentNullException">the player name contains non-ascii characters.</exception>
     String ^PlayerNameAsString()
     {
         try
@@ -69,6 +69,8 @@ public:
     /// returns the current player name assigned to the player field for this record.
     /// </summary>
     /// <returns>the current name as an array of ASCII characters.</returns>
+    /// <remarks>the size of the player name will always be the length of the buffer it's stored in
+    /// as its a fixed size.</remarks>
     array<unsigned char, 1> ^GetPlayerName()
     {
         return this->playerName;

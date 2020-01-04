@@ -281,7 +281,7 @@ public:
     /// <exception cref="OutOfMemoryException">DirectDraw does not have enough memory to perform the operation.</exception>
     /// <exception cref="System::IO::PathTooLongException">paths.xml contains a path for bitmap resources 
     /// that's longer than the OS-defined maximum length for a path.</exception>
-    /// <exception cref="Win32Exception">The function was unable to load the image at the specified path.</exception>
+    /// <exception cref="System::ComponentModel::Win32Exception">The function was unable to load the image at the specified path.</exception>
     static void LoadSurfaces();
 
     /// <summary>
@@ -340,7 +340,7 @@ public:
     /// <exception cref="DirectDrawUnsupportedModeException">unable to create a surface for the current display mode, it's unsupported.</exception>
     /// <exception cref="DirectDrawWasStillDrawingException">the previous blit operation is incomplete.</exception>
     /// <exception cref="System::OutOfMemoryException">DirectDraw does not have enough memory to perform the operation.</exception>
-    /// <exception cref="Win32Exception">The function was unable to load the image at the specified path.</exception>
+    /// <exception cref="System::ComponentModel::Win32Exception">The function was unable to load the image at the specified path.</exception>
     static void ReloadSurfaces();
 
     /// <summary>

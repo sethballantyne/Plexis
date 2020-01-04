@@ -23,6 +23,8 @@
 #include "surface.h"
 #include "video.h"
 
+DDSURFACEDESC2 ddSD;
+
 using namespace System::Drawing;
 using namespace System::ComponentModel; // Win32Exception
 using namespace System::Runtime::InteropServices; // COMException
@@ -1084,103 +1086,115 @@ Surface ^Video::CreateSurface(String ^path)
 
 void Video::DrawLines(array<Line ^>^ lines)
 {
-    if(lines == nullptr)
-    {
-        throw gcnew ArgumentNullException("lines");
-    }
-    else if(lines->Length == 0)
-    {
-        throw gcnew ArgumentException("lines is an empty array.");
-    }
+	if(lines == nullptr)
+	{
+		throw gcnew ArgumentNullException("lines");
+	}
+	else if(lines->Length == 0)
+	{
+		throw gcnew ArgumentException("lines is an empty array.");
+	}
 
-    DDSURFACEDESC2 ddSD;
-    SecureZeroMemory(&ddSD, sizeof(ddSD));
-    ddSD.dwSize = sizeof(DDSURFACEDESC2);
+	try
+	{
+		LockSurface();
 
-    HRESULT result = lpDDSSecondarySurface->Lock(NULL, &ddSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL);
-    if(result != DD_OK)
-    {
-        switch(result)
-        {
-            case DDERR_INVALIDOBJECT:
-                throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Lock: DirectDraw received a pointer that was an invalid DirectDraw object.");
-                break;
+		for(int i = 0; i < lines->Length; i++)
+		{
+			
+			Line ^clippedLine = Video::ClipLine(lines[i], &ddSD);
+			Video::DrawLine(clippedLine, &ddSD);
+		}
 
-            case DDERR_INVALIDPARAMS:
-                throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Lock: one or more of the parameters passed to the method are incorrect.");
-                break;
-
-            case DDERR_OUTOFMEMORY:
-                throw gcnew OutOfMemoryException("IDirectDrawSurface7::Lock: not enough memory available to complete the operation.");
-                break;
-
-            case DDERR_SURFACEBUSY:
-                throw gcnew DirectDrawSurfaceBusyException("IDirectDrawSurface7::Lock: access to the surface is refused because the surface is locked by another thread.");
-                break;
-
-            case DDERR_SURFACELOST:
-                throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Lock: access to the surface is refused because the surface memory is gone.");
-                break;
-
-            case DDERR_WASSTILLDRAWING:
-                throw gcnew DirectDrawWasStillDrawingException("IDirectDrawSurface7::Lock: the previous blit operation is incomplete.");
-                break;
-
-            default:
-                throw gcnew COMException("IDirectDrawSurface7::Lock failed.", result);
-                break;
-        }
-    }
-    else
-    {
-        for(int i = 0; i < lines->Length; i++)
-        {
-            try
-            {
-                Line ^clippedLine = Video::ClipLine(lines[i], &ddSD);
-                Video::DrawLine(clippedLine, &ddSD);
-            }
-            catch(...)
-            {
-                throw;
-            }
-        }
-
-        result = lpDDSSecondarySurface->Unlock(NULL);
-        if(result != DD_OK)
-        {
-            switch(result)
-            {
-                case DDERR_GENERIC:
-                    throw gcnew DirectDrawGenericException("IDirectDrawSurface7::Unlock: DirectDraw returned an unspecified error condition.");
-                    break;
-
-                case DDERR_INVALIDOBJECT:
-                    throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Unlock: DirectDraw received a pointer that was an invalid DirectDraw object.");
-                    break;
-
-                case DDERR_INVALIDPARAMS:
-                    throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Unlock: one or more of the parameters passed to the method are incorrect.");
-                    break;
-
-                case DDERR_INVALIDRECT:
-                    throw gcnew DirectDrawInvalidRectException("IDirectDrawSurface7::Unlock: the rectangle coordinates used by the surface were invalid.");
-                    break;
-
-                case DDERR_NOTLOCKED:
-                    throw gcnew DirectDrawNotLockedException("IDirectDrawSurface7::Unlock: attempting to unlock the surface when it wasn't locked.");
-                    break;
-
-                case DDERR_SURFACELOST:
-                    throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Unlock: access to the surface is refused because the surface memory is gone.");
-
-                default:
-                    break;
-            }
-        }
-    }
+		UnlockSurface();
+	}
+	catch(...)
+	{
+		throw;
+	}
 }
 
+void Video::DrawPixel(int x, int y, unsigned int colour)
+{
+	((UINT *)ddSD.lpSurface)[x + y * ddSD.dwWidth] = colour;
+}
+
+void Video::LockSurface()
+{
+	SecureZeroMemory(&ddSD, sizeof(ddSD));
+	ddSD.dwSize = sizeof(DDSURFACEDESC2);
+
+	HRESULT result = lpDDSSecondarySurface->Lock(NULL, &ddSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL);
+	if(result != DD_OK)
+	{
+		switch(result)
+		{
+			case DDERR_INVALIDOBJECT:
+				throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Lock: DirectDraw received a pointer that was an invalid DirectDraw object.");
+				break;
+
+			case DDERR_INVALIDPARAMS:
+				throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Lock: one or more of the parameters passed to the method are incorrect.");
+				break;
+
+			case DDERR_OUTOFMEMORY:
+				throw gcnew OutOfMemoryException("IDirectDrawSurface7::Lock: not enough memory available to complete the operation.");
+				break;
+
+			case DDERR_SURFACEBUSY:
+				throw gcnew DirectDrawSurfaceBusyException("IDirectDrawSurface7::Lock: access to the surface is refused because the surface is locked by another thread.");
+				break;
+
+			case DDERR_SURFACELOST:
+				throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Lock: access to the surface is refused because the surface memory is gone.");
+				break;
+
+			case DDERR_WASSTILLDRAWING:
+				throw gcnew DirectDrawWasStillDrawingException("IDirectDrawSurface7::Lock: the previous blit operation is incomplete.");
+				break;
+
+			default:
+				throw gcnew COMException("IDirectDrawSurface7::Lock failed.", result);
+				break;
+		}
+	}
+}
+
+void Video::UnlockSurface()
+{
+	HRESULT result = lpDDSSecondarySurface->Unlock(NULL);
+	if(result != DD_OK)
+	{
+		switch(result)
+		{
+			case DDERR_GENERIC:
+				throw gcnew DirectDrawGenericException("IDirectDrawSurface7::Unlock: DirectDraw returned an unspecified error condition.");
+				break;
+
+			case DDERR_INVALIDOBJECT:
+				throw gcnew DirectDrawInvalidObjectException("IDirectDrawSurface7::Unlock: DirectDraw received a pointer that was an invalid DirectDraw object.");
+				break;
+
+			case DDERR_INVALIDPARAMS:
+				throw gcnew DirectDrawInvalidParametersException("IDirectDrawSurface7::Unlock: one or more of the parameters passed to the method are incorrect.");
+				break;
+
+			case DDERR_INVALIDRECT:
+				throw gcnew DirectDrawInvalidRectException("IDirectDrawSurface7::Unlock: the rectangle coordinates used by the surface were invalid.");
+				break;
+
+			case DDERR_NOTLOCKED:
+				throw gcnew DirectDrawNotLockedException("IDirectDrawSurface7::Unlock: attempting to unlock the surface when it wasn't locked.");
+				break;
+
+			case DDERR_SURFACELOST:
+				throw gcnew DirectDrawSurfaceLostException("IDirectDrawSurface7::Unlock: access to the surface is refused because the surface memory is gone.");
+
+			default:
+				break;
+		}
+	}
+}
 void Video::Flip()
 {
     // DDFLIP_WAIT ensures it'll keep trying to flip until successful if the HAL returns

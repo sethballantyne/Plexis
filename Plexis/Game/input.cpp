@@ -5,6 +5,9 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
+DIMOUSESTATE2 previousMouseState;
+DIMOUSESTATE2 currentMouseState;
+
 void Input::AcquireDevice(LPDIRECTINPUTDEVICE8 lpDIDevice)
 {
     if(lpDIDevice != NULL)
@@ -335,8 +338,9 @@ Keys ^Input::ReadKeyboard()
 
 Mouse ^Input::ReadMouse()
 {
-    DIMOUSESTATE2 mouseState;
-    HRESULT result = lpDIMouse->GetDeviceState(sizeof(mouseState), &mouseState);
+   // DIMOUSESTATE2 mouseState;
+	previousMouseState = currentMouseState;
+    HRESULT result = lpDIMouse->GetDeviceState(sizeof(currentMouseState), &currentMouseState);
     if(result != DI_OK)
     {
         switch(result)
@@ -365,7 +369,7 @@ Mouse ^Input::ReadMouse()
 
     try
     {
-        return gcnew Mouse(&mouseState);
+        return gcnew Mouse(&currentMouseState, &previousMouseState);
     }
     catch(...)
     {

@@ -19,6 +19,10 @@
 #include "entity.h"
 #include "brickhiteventargs.h"
 
+#define BRICK_HIT_BY_LASER 1
+#define BRICK_HIT_BY_BALL  2
+#define BRICK_EXPLODE      4
+
 delegate void BrickDeathEventHandler(Object ^sender, BrickHitEventArgs ^args);
 
 /// <summary>
@@ -140,7 +144,7 @@ public:
 	/// <summary>
 	/// Describes what should happen when the ball hits this brick.
 	/// </summary>
-	virtual void Hit(int x, int y)
+	virtual void Hit(int x, int y, unsigned int flags)
 	{
 		health--;
 		if(health != 0)
@@ -149,19 +153,23 @@ public:
 		}
 		else
 		{
-			// false is irrelevant if its an exploding brick, as it'll be
-			// told to explode anyway; that's what exploding bricks do!
-			Die(x, y, false);
+			if(BRICK_HIT_BY_LASER == (flags & BRICK_HIT_BY_LASER))
+			{
+				flags |= BRICK_EXPLODE;
+			}
+
+			Die(x, y, flags);
 		}
 	}
 
 	/// <summary>
 	/// Kills the brick and fires the Death event.
 	/// </summary>
-	virtual void Die(int x, int y, bool explode)
+	virtual void Die(int x, int y, unsigned int flags)
 	{
 		visible = false;
-		BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), explode);
+		
+		BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), this->Sprite->Position, flags);
 		Death(this, hitEventArgs);
 	}
 

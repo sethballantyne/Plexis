@@ -20,6 +20,7 @@
 
 /// <summary>
 /// the explosions that are displayed when the explosive brick explodes.
+/// NO LONGER IN USE but here incase it's ever needed.
 /// </summary>
 public ref class Explosion
 {
@@ -47,7 +48,7 @@ public:
 		//System::Diagnostics::Debug::Assert(nullptr != spriteSheet && String::Empty != spriteSheet);
 
 		array<Frame ^, 1> ^frames = gcnew array<Frame ^, 1>(frameCount);
-		for(unsigned int i = 0; i < frameCount; i++)
+		for(int i = 0; i < frameCount; i++)
 		{
 			System::Drawing::Rectangle frame(i * frameWidth, 0, frameWidth, frameHeight);
 			frames[i] = gcnew Frame(frame, System::Drawing::Rectangle());

@@ -84,6 +84,18 @@ void Game::RestoreSurfaces()
     }
 }
 
+// Checks for the existance of option within GameOptions,
+// creating the key and setting value as its default value if it doesn't exist.
+void VerifyOption(String^ option, int value)
+{
+	int ret = GameOptions::GetValue(option, -1);
+	if(ret == -1)
+	{
+		GameOptions::SetValue(option, value);
+		GameOptions::Save();
+	}
+}
+
 void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 {
     if(!hWnd)
@@ -150,6 +162,10 @@ void Game::Initialise(HINSTANCE hInstance, HWND hWnd)
 			sceneArgs[1] = safe_cast<String ^>(testLevel);
 			SceneManager::SetActiveScene("game", sceneArgs);
 		}
+
+		VerifyOption("fireKey", 0); // 0 - left mouse button
+		VerifyOption("pauseKey", DIK_P); 
+
     }
     catch(...)
     {
@@ -165,7 +181,8 @@ void Game::Render()
         //Video::Blit(0, 0, ResourceManager::GetSurface("green_font"));
         SceneManager::CurrentScene->Render();
         Video::Flip();
-    }
+
+	}
     catch(DirectDrawSurfaceLostException ^)
     {
         try
