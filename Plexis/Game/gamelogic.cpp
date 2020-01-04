@@ -118,7 +118,8 @@ void GameLogic::HandleBallCollision()
 	int correctedY = ballY;
 	if(ballX2 >= Video::Width)
 	{
-		//ResourceManager::GetSoundBuffer("bounce")->Play();
+		ResourceManager::GetSoundBuffer("bounce")->Stop();
+		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		ball->Velocity.X = -ball->Velocity.X;
 		correctedX = (Video::Width - ball->BoundingBox.Width) - 1;
@@ -126,7 +127,8 @@ void GameLogic::HandleBallCollision()
 
 	if(ballX < 0)
 	{
-		//ResourceManager::GetSoundBuffer("bounce")->Play();
+		ResourceManager::GetSoundBuffer("bounce")->Stop();
+		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		ball->Velocity.X = -ball->Velocity.X;
 		correctedX = 0;
@@ -136,6 +138,7 @@ void GameLogic::HandleBallCollision()
 
 	if(ballY < 0)
 	{
+		ResourceManager::GetSoundBuffer("bounce")->Stop();
 		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		//ball->Velocity.X = -ball->Velocity.X;
