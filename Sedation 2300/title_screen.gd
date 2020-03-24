@@ -1,17 +1,10 @@
-extends Sprite
+extends Node2D
 
-const SCREEN_WIDTH = 320
-var scroll_speed = 30.0
 
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
 
-func scroll_background(delta):
-	position += Vector2(-scroll_speed * delta, 0.0)
-	
-	if position.x <= -SCREEN_WIDTH:
-		position.x += SCREEN_WIDTH
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -20,6 +13,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	scroll_background(delta)
-
-	
+	if Input.is_key_pressed(KEY_ENTER):
+		get_tree().change_scene("res://stage.tscn")
+	elif Input.is_key_pressed(KEY_ESCAPE):
+		get_tree().quit()

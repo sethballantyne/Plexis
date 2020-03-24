@@ -5,6 +5,7 @@ var move_speed = 100.0
 var score_emitted = false
 
 signal score
+signal spawned
 
 # Declare member variables here. Examples:
 # var a = 2
@@ -26,7 +27,9 @@ func _on_asteroid_area_entered(area):
 	if area.is_in_group("shot") or area.is_in_group("player"):
 		if not score_emitted:
 			score_emitted = true
-			emit_signal("score")
+			if area.is_in_group("shot"): 
+				# only increment score if the laser hit the asteroid
+				emit_signal("score")
 			queue_free()
 			
 			var stage_node = get_parent()
