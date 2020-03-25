@@ -1,8 +1,11 @@
 extends Area2D
 
 var explosion_scene = preload("res://explosion.tscn")
-var move_speed = 100.0
 var score_emitted = false
+var rotation_dir = 0
+var rotation_speed = 0
+
+var move_speed
 
 signal score
 signal spawned
@@ -10,7 +13,7 @@ signal spawned
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-
+var velocity = Vector2()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -22,7 +25,9 @@ func _process(delta):
 	position -= Vector2(move_speed * delta, 0.0)
 	if position.x <= -100:
 		queue_free()
-
+	
+	rotation += rotation_speed
+	
 func _on_asteroid_area_entered(area):
 	if area.is_in_group("shot") or area.is_in_group("player"):
 		if not score_emitted:
