@@ -30,7 +30,7 @@ namespace PLeD
     {
         LevelOrder levelOrder = new LevelOrder();
         AboutBox aboutBox = new AboutBox();
-
+        
         public MainForm()
         {
             InitializeComponent();
@@ -58,6 +58,8 @@ namespace PLeD
             {
                 DisplayErrorMessage(ex.Message);
             }
+
+           
         }
 
         /// <summary>

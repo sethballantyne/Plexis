@@ -533,9 +533,10 @@ namespace PLeD
                     case EditMode.Eraser:
                         if (EditorLogic.editMode == EditMode.Eraser)
                         {
-                            // user has unchecked the eraser button or menu item.
+                            // user has unchecked the eraser button or eraser menu item.
                             EditorLogic.editMode = EditMode.None;
                             EditorLogic.mainForm.CheckEraserControls(false);
+                            EditorLogic.mainForm.Cursor = Cursors.Default;
                         }
                         else
                         {
@@ -544,6 +545,7 @@ namespace PLeD
                             EditorLogic.selectedBrick = -1;
                             EditorLogic.mainForm.ClearListViewSelection();
                             EditorLogic.mainForm.CheckEraserControls(true);
+                            EditorLogic.mainForm.Cursor = new Cursor(EditorLogic.mainForm.GetType(), "Eraser.cur");
                         }
 
                         break;
@@ -668,6 +670,7 @@ namespace PLeD
                 EditorLogic.editMode = EditMode.Brush;
                 EditorLogic.selectedBrick = listView.Items.IndexOf(listView.SelectedItems[0]);
                 EditorLogic.mainForm.CheckEraserControls(false);
+                EditorLogic.mainForm.Cursor = Cursors.Default;
             }
             else
             {
