@@ -20,7 +20,7 @@
 #include "video.h"
 
 ///<summary>
-/// Represents a single particle (pixel in reality) used in particle effects.
+/// Represents a square of 4 pixels used in particle effects.
 ///</summary>
 public ref class Particle
 {
@@ -47,6 +47,15 @@ private:
 			}
 		}
 	}
+
+	bool IsOffScreen(int x, int y)
+	{
+		bool expr1 = x >= Video::Width || Position.X < 0;
+		bool expr2 = y >= Video::Height || Position.Y < 0;
+
+		return expr1 || expr2;
+	}
+
 public:
 	Vector2 Velocity;
 
@@ -104,15 +113,19 @@ public:
 	}
 
 	///<summary>
-	/// Returns true if the pixel is off screen, else returns false.
+	/// Returns true if the particle is off screen, else returns false.
 	///</summary>
 	bool IsOffScreen()
 	{
 		bool expr1 = Position.X >= Video::Width || Position.X < 0;
 		bool expr2 = Position.Y >= Video::Height || Position.Y < 0;
+		bool expr3 = Position.X + 1 >= Video::Width || Position.X + 1 < 0;
+		bool expr4 = Position.Y + 1 >= Video::Height || Position.Y + 1 < 0;
 
-		return expr1 || expr2;
+		return expr1 && expr2 && expr3 && expr4;
 	}
+
+	
 
 	///<summary>
 	/// Updates the particles position and colour.
@@ -130,13 +143,23 @@ public:
 	}
 
 	///<summary>
-	/// Renders the pixel to the screen. 
+	/// Renders the pixels to the screen. 
 	/// LOCK THE SCREEN before using.
 	///</summary>
 	void Render()
 	{
 		// it's asssumed the surface is being locked elsewhere, since doing it 
 		// here would be dumb.
-		Video::DrawPixel(Position.X, Position.Y, Colour);
+		//Video::DrawPixel(Position.X, Position.Y, Colour);
+		for(int i = Position.X; i < Position.X + 2; i++)
+		{
+			for(int j = Position.Y; j < Position.Y + 2; j++)
+			{
+				if(!IsOffScreen(i, j))
+				{
+					Video::DrawPixel(i, j, Colour);
+				}
+			}
+		}
 	}
 };
