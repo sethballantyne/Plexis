@@ -91,7 +91,7 @@ namespace PLeD
         // the absolute path of the level that's currently being edited.
         static string currentLevelFilename;
 
-        // absolute path of the levels file.
+        // absolute path of levels.xml
         static string levelsPath;
 
         // levels read from levels.xml
@@ -1067,10 +1067,15 @@ namespace PLeD
                     filename = System.IO.Path.GetFileNameWithoutExtension(currentLevelFilename);
                 }
 
-                levelOrderFrm.FileName = filename; // filename for the XML file containing the list of levels
-                levelOrderFrm.LevelsPath = paths.levelsPath.ResourcePath;
-                levelOrderFrm.RotationLevels = levels.ToArray();
+                if(currentLevelFilename == null)
+                {
+                    MessageBox.Show("Note: if you're currently working on a level, it won't be visible in the next dialog until it's saved.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 
+                levelOrderFrm.FileName = filename; // filename for the XML file containing the list of levels
+                levelOrderFrm.LevelsPath = gameDirectory + paths.levelsPath.ResourcePath;
+                levelOrderFrm.RotationLevels = levels.ToArray();
+      
                 if(levelOrderFrm.ShowDialog() == DialogResult.OK)
                 {
                     levels.Clear();

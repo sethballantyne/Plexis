@@ -156,61 +156,62 @@ namespace PLeD
             }
         }
 
-        private string TrimExtension(string file)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            for(int i = 0; i < file.Length && file[i] != '.'; i++)
-            {
-                sb.Append(file[i]);
-            }
-
-            return sb.ToString();
-        }
-
         private string[] EnumerateLevels(string path)
         {
-            string levelsPath = AppDomain.CurrentDomain.BaseDirectory + path;
-            List<string> levels = new List<string>(Directory.GetFiles(levelsPath));
-        
-            for(int i = levels.Count - 1; i >= 0; i--)
+            try
             {
-                FileInfo fi = new FileInfo(levels[i]);
-                
-                if(fi.Extension.ToLower() == ".xml")
-                {
-                    levels[i] = TrimExtension(fi.Name);
-                }
-                else
-                {
-                    levels.RemoveAt(i);
-                }
-            }
+                List<string> levels = new List<string>(Directory.GetFiles(path));
 
-            return levels.ToArray();
+                for (int i = levels.Count - 1; i >= 0; i--)
+                {
+                    FileInfo fi = new FileInfo(levels[i]);
+
+                    if (fi.Extension.ToLower() == ".xml")
+                    {
+                        levels[i] = System.IO.Path.GetFileNameWithoutExtension(levels[i]);
+                    }
+                    else
+                    {
+                        levels.RemoveAt(i);
+                    }
+                }
+
+                return levels.ToArray();
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         private void LevelOrder_Shown(object sender, EventArgs e)
         {
-            string[] allLevels = EnumerateLevels(levelsPath);
-
-            rotationListListBox.Items.Clear();
-            availableLevelsListBox.Items.Clear();
-
-            // filter levels out of allLevels if they're in the rotation list
-            for(int i = 0; i < allLevels.Length; i++)
+            try
             {
-                for(int j = 0; j < rotationLevels.Length; j++)
+                string[] allLevels = EnumerateLevels(levelsPath);
+
+                rotationListListBox.Items.Clear();
+                availableLevelsListBox.Items.Clear();
+
+                // filter levels out of allLevels if they're in the rotation list
+                for (int i = 0; i < allLevels.Length; i++)
                 {
-                    if(allLevels[i] == rotationLevels[j])
+                    for (int j = 0; j < rotationLevels.Length; j++)
                     {
-                        allLevels[i] = null;
+                        if (allLevels[i] == rotationLevels[j])
+                        {
+                            allLevels[i] = null;
+                        }
                     }
                 }
-            }
 
-            PopulateListBox(rotationListListBox, rotationLevels);
-            PopulateListBox(availableLevelsListBox, allLevels);
+                PopulateListBox(rotationListListBox, rotationLevels);
+                PopulateListBox(availableLevelsListBox, allLevels);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         private void PopulateListBox(ListBox listBox, string[] levels)
