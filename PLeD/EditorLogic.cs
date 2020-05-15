@@ -364,7 +364,7 @@ namespace PLeD
             EditorLogic.mainForm.SetGUIState(GUIState.Editing);
 
             // remove the filename from the titlebar 
-            EditorLogic.mainForm.Text = Application.ProductName;
+            EditorLogic.mainForm.Text = Application.ProductName + " - unsaved level"; 
 
             // don't prompt to save if the user quits the program|opens|creates a level.
             EditorLogic.workSaved = true;
@@ -790,7 +790,7 @@ namespace PLeD
             ResetState();
 
             EditorLogic.currentLevel = new Level(EditorLogic.levelWidth, EditorLogic.levelHeight);
-
+        
             editorGrid.Render(EditorLogic.bufferBitmapGraphics);
             renderControl.Refresh();
         }
