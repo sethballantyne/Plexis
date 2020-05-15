@@ -477,7 +477,6 @@ namespace PLeD
         {
             try
             {
-                string[] test = { "1", "2", "3", "4" };
                 EditorLogic.ShowLevelOrderDialog();
             }
             catch

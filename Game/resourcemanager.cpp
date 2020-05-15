@@ -134,7 +134,7 @@ void ResourceManager::Initialise(String ^pathsFile)
             {
                 ParsePaths(resourceElement, audioPaths);
             }
-            else if("xml" == type)
+            else if("xml" == type || "levels" == type)
             {
                 ParsePaths(resourceElement, xmlPaths);
             }
@@ -284,6 +284,7 @@ void ResourceManager::ReloadSurfaces()
     {
         for each(KeyValuePair<String ^, Surface ^> ^keyValuePair in surfaces)
         {
+            //surfaces[keyValuePair->Key]->Data->Release();
             keyValuePair->Value->Release();
 
             // when calling Surface::Release(), it frees the underlying DirectDraw surface but the

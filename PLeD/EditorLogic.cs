@@ -623,6 +623,9 @@ namespace PLeD
                 EditorLogic.editorGrid.CellWidth = bricks[0].FrameWidth;
 
                 AddBricksToListView();
+
+                saveFileDialog.InitialDirectory = paths.levelsPath.ResourcePath;
+                openFileDialog.InitialDirectory = paths.levelsPath.ResourcePath;
             }
             catch
             {
@@ -904,7 +907,7 @@ namespace PLeD
 
                 return dr;
                 // no need to update currentLevelFilename here because that's
-                // handled by SaveLevel() on a successfull save.
+                // handled by SaveLevel() on a successful save.
             }
             catch
             {
@@ -1064,12 +1067,14 @@ namespace PLeD
                     filename = System.IO.Path.GetFileNameWithoutExtension(currentLevelFilename);
                 }
 
-                levelOrderFrm.FileName = filename;
-                levelOrderFrm.Levels = levels.ToArray();
+                levelOrderFrm.FileName = filename; // filename for the XML file containing the list of levels
+                levelOrderFrm.LevelsPath = paths.levelsPath.ResourcePath;
+                levelOrderFrm.RotationLevels = levels.ToArray();
+
                 if(levelOrderFrm.ShowDialog() == DialogResult.OK)
                 {
                     levels.Clear();
-                    levels.AddRange(levelOrderFrm.Levels);
+                    levels.AddRange(levelOrderFrm.RotationLevels);
                     XML.WriteLevelsFile(levelsPath, levels.ToArray());
                 }
                 
