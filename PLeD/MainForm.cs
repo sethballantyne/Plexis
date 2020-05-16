@@ -30,7 +30,7 @@ namespace PLeD
     {
         LevelOrder levelOrder = new LevelOrder();
         AboutBox aboutBox = new AboutBox();
-
+        
         public MainForm()
         {
             InitializeComponent();
@@ -58,6 +58,8 @@ namespace PLeD
             {
                 DisplayErrorMessage(ex.Message);
             }
+
+           
         }
 
         /// <summary>
@@ -475,7 +477,6 @@ namespace PLeD
         {
             try
             {
-                string[] test = { "1", "2", "3", "4" };
                 EditorLogic.ShowLevelOrderDialog();
             }
             catch

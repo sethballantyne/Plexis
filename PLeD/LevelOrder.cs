@@ -25,12 +25,15 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
 
 namespace PLeD
 {
     public partial class LevelOrder : Form
     {
         string filename;
+        string levelsPath;
+        string[] rotationLevels;
 
         public LevelOrder()
         {
@@ -39,13 +42,13 @@ namespace PLeD
 
         private void listbox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(listbox.SelectedIndex >= 0)
+            if(rotationListListBox.SelectedIndex >= 0)
             {
-                deleteButton.Enabled = moveDownButton.Enabled = moveUpButton.Enabled = true;
+                rotationListDeleteButton.Enabled = rotationListMoveDownButton.Enabled = rotationListMoveUpButton.Enabled = true;
             }
             else
             {
-                deleteButton.Enabled = moveDownButton.Enabled = moveUpButton.Enabled = false;
+                rotationListDeleteButton.Enabled = rotationListMoveDownButton.Enabled = rotationListMoveUpButton.Enabled = false;
             }
         }
 
@@ -55,14 +58,14 @@ namespace PLeD
         }
         
         /// <summary>
-        /// Gets the levels 
+        /// Gets or sets the levels that populate the rotation list.
         /// </summary>
-        public string[] Levels
+        public string[] RotationLevels
         {
             get 
             {
                 List<string> levels = new List<string>();
-                foreach(string s in listbox.Items)
+                foreach (string s in rotationListListBox.Items)
                 {
                     levels.Add(s);
                 }
@@ -71,48 +74,43 @@ namespace PLeD
             }
             set
             {
-                listbox.Items.Clear();
-                foreach (string s in value)
-                {
-                    listbox.Items.Add(s);
-                }
-
+                rotationLevels = value; 
             }
         }
 
         private void moveUpButton_Click(object sender, EventArgs e)
         {
-            if(listbox.SelectedIndex > 0)
+            if(rotationListListBox.SelectedIndex > 0)
             {
-                Swap(listbox.SelectedIndex, listbox.SelectedIndex - 1);
+                Swap(rotationListListBox.SelectedIndex, rotationListListBox.SelectedIndex - 1);
                 okayButton.Enabled = true;
             }
         }
 
         private void moveDownButton_Click(object sender, EventArgs e)
         {
-            if (listbox.SelectedIndex != listbox.Items.Count - 1)
+            if (rotationListListBox.SelectedIndex != rotationListListBox.Items.Count - 1)
             {
-                Swap(listbox.SelectedIndex, listbox.SelectedIndex + 1);
+                Swap(rotationListListBox.SelectedIndex, rotationListListBox.SelectedIndex + 1);
                 okayButton.Enabled = true;
             }
         }
 
         void Swap(int selectedItem, int destination)
         {
-            string item = listbox.Items[selectedItem] as string;
-            string item2 = listbox.Items[destination] as string;
+            string item = rotationListListBox.Items[selectedItem] as string;
+            string item2 = rotationListListBox.Items[destination] as string;
 
-            listbox.Items[selectedItem] = item2;
-            listbox.Items[destination] = item;
+            rotationListListBox.Items[selectedItem] = item2;
+            rotationListListBox.Items[destination] = item;
 
             if(selectedItem < destination)
             {
-                listbox.SelectedIndex++;
+                rotationListListBox.SelectedIndex++;
             }
             else
             {
-                listbox.SelectedIndex--;
+                rotationListListBox.SelectedIndex--;
             }
         }
 
@@ -122,18 +120,24 @@ namespace PLeD
             set { filename = value; }
         }
 
+        public string LevelsPath
+        {
+            get { return LevelsPath; }
+            set { levelsPath = value; }
+        }
+
         private void okayButton_VisibleChanged(object sender, EventArgs e)
         {
             if(Visible)
             {
-                if (listbox.Items.Count > 0 && filename != null)
+                if (rotationListListBox.Items.Count > 0 && filename != null)
                 {
-                    for (int i = 0; i < listbox.Items.Count; i++)
+                    for (int i = 0; i < rotationListListBox.Items.Count; i++)
                     {
-                        string item = listbox.Items[i] as string;
+                        string item = rotationListListBox.Items[i] as string;
                         if (item == filename)
                         {
-                            listbox.SelectedIndex = i;
+                            rotationListListBox.SelectedIndex = i;
                         }
                     }
                 }
@@ -142,15 +146,106 @@ namespace PLeD
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            if(listbox.SelectedIndex >= 0)
+            int index = rotationListListBox.SelectedIndex;
+
+            if(index >= 0)
             {
-                DialogResult dr = MessageBox.Show("Are you sure you want to delete this level from the list? Note that this only removes the level from the list, it doesn't delete the file from your hard disk.",
-                    "Conformation Needed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if(dr == DialogResult.Yes)
+                availableLevelsListBox.Items.Add(rotationListListBox.Items[index]);
+                rotationListListBox.Items.RemoveAt(index);
+                okayButton.Enabled = true;
+            }
+        }
+
+        private string[] EnumerateLevels(string path)
+        {
+            try
+            {
+                List<string> levels = new List<string>(Directory.GetFiles(path));
+
+                for (int i = levels.Count - 1; i >= 0; i--)
                 {
-                    listbox.Items.RemoveAt(listbox.SelectedIndex);
-                    okayButton.Enabled = true;
+                    FileInfo fi = new FileInfo(levels[i]);
+
+                    if (fi.Extension.ToLower() == ".xml")
+                    {
+                        levels[i] = System.IO.Path.GetFileNameWithoutExtension(levels[i]);
+                    }
+                    else
+                    {
+                        levels.RemoveAt(i);
+                    }
                 }
+
+                return levels.ToArray();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private void LevelOrder_Shown(object sender, EventArgs e)
+        {
+            try
+            {
+                string[] allLevels = EnumerateLevels(levelsPath);
+
+                rotationListListBox.Items.Clear();
+                availableLevelsListBox.Items.Clear();
+
+                // filter levels out of allLevels if they're in the rotation list
+                for (int i = 0; i < allLevels.Length; i++)
+                {
+                    for (int j = 0; j < rotationLevels.Length; j++)
+                    {
+                        if (allLevels[i] == rotationLevels[j])
+                        {
+                            allLevels[i] = null;
+                        }
+                    }
+                }
+
+                PopulateListBox(rotationListListBox, rotationLevels);
+                PopulateListBox(availableLevelsListBox, allLevels);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private void PopulateListBox(ListBox listBox, string[] levels)
+        {
+            foreach (string s in levels)
+            {
+                if(s != null)
+                {
+                    listBox.Items.Add(s);
+                }
+            }
+        }
+
+        private void availableLevelsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (availableLevelsListBox.SelectedIndex >= 0)
+            {
+                availableLevelsAddButton.Enabled = true;
+            }
+            else
+            {
+                availableLevelsAddButton.Enabled = false;
+            }
+        }
+
+        private void availableLevelsAddButton_Click(object sender, EventArgs e)
+        {
+            int index = availableLevelsListBox.SelectedIndex;
+
+            if (index >= 0)
+            {
+                rotationListListBox.Items.Add(availableLevelsListBox.Items[index]);
+                availableLevelsListBox.Items.RemoveAt(index);
+                okayButton.Enabled = true;
             }
         }
     }

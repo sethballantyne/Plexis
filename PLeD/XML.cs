@@ -227,6 +227,7 @@ namespace PLeD
             {
                 List<Path> xmlPaths = new List<Path>();
                 List<Path> bitmapPaths = new List<Path>();
+                Path levelPath = new Path();
 
                 XElement xmlFile = XElement.Load(path);
 
@@ -235,30 +236,44 @@ namespace PLeD
                 {
                     // read the type attribute of each <resource> element.
                     XAttribute typeAttribute = node.Attribute("type");
-                    if (typeAttribute != null && (typeAttribute.Value == "xml" || typeAttribute.Value == "bitmaps"))
+                    if (typeAttribute != null && (typeAttribute.Value == "levels" || typeAttribute.Value == "xml" || typeAttribute.Value == "bitmaps"))
                     {
                         IEnumerable<XElement> desiredPathData = node.Descendants();
 
                         Path[] paths;
+                        
 
-                        // if we're parsing a xml or bitmap resource element, read the 
+                        // if we're parsing an xml, level or bitmap resource element, read the 
                         // child elements. 
-                        // <path includeSubDirectories="false">/data</path> etc 
-                        if (typeAttribute.Value == "xml")
+                        // <path includeSubDirectories="false">/data</path> etc
+                        switch(typeAttribute.Value)
                         {
-                            paths = LoadPaths("xml", desiredPathData);
-                            if (paths != null)
-                            {
-                                xmlPaths.AddRange(paths);
-                            }
-                        }
-                        else
-                        {
-                            paths = LoadPaths("bitmaps", desiredPathData);
-                            if (paths != null)
-                            {
-                                bitmapPaths.AddRange(paths);
-                            }
+                            case "xml":
+                                 paths = LoadPaths("xml", desiredPathData);
+                                 if (paths != null)
+                                 {
+                                     xmlPaths.AddRange(paths);
+                                 }
+                            break;
+
+                            case "levels":
+                                paths = LoadPaths("levels", desiredPathData);
+                                if(paths != null)
+                                {
+                                    // only one path is used for levels, hence why
+                                    // we're not bothering with a List<>.
+                                    levelPath = paths[0];
+                                }
+                                break;
+                            case "bitmaps":
+                                 paths = LoadPaths("bitmaps", desiredPathData);
+                                 if (paths != null)
+                                 {
+                                     bitmapPaths.AddRange(paths);
+                                 }
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
@@ -266,6 +281,7 @@ namespace PLeD
                 Paths parsedPaths = new Paths();
                 parsedPaths.XMLPaths = xmlPaths.ToArray();
                 parsedPaths.BitmapPaths = bitmapPaths.ToArray();
+                parsedPaths.levelsPath = levelPath;
                 return parsedPaths;
             }
             catch

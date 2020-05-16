@@ -91,7 +91,7 @@ namespace PLeD
         // the absolute path of the level that's currently being edited.
         static string currentLevelFilename;
 
-        // absolute path of the levels file.
+        // absolute path of levels.xml
         static string levelsPath;
 
         // levels read from levels.xml
@@ -364,7 +364,7 @@ namespace PLeD
             EditorLogic.mainForm.SetGUIState(GUIState.Editing);
 
             // remove the filename from the titlebar 
-            EditorLogic.mainForm.Text = Application.ProductName;
+            EditorLogic.mainForm.Text = Application.ProductName + " - unsaved level"; 
 
             // don't prompt to save if the user quits the program|opens|creates a level.
             EditorLogic.workSaved = true;
@@ -533,9 +533,10 @@ namespace PLeD
                     case EditMode.Eraser:
                         if (EditorLogic.editMode == EditMode.Eraser)
                         {
-                            // user has unchecked the eraser button or menu item.
+                            // user has unchecked the eraser button or eraser menu item.
                             EditorLogic.editMode = EditMode.None;
                             EditorLogic.mainForm.CheckEraserControls(false);
+                            EditorLogic.mainForm.Cursor = Cursors.Default;
                         }
                         else
                         {
@@ -544,6 +545,7 @@ namespace PLeD
                             EditorLogic.selectedBrick = -1;
                             EditorLogic.mainForm.ClearListViewSelection();
                             EditorLogic.mainForm.CheckEraserControls(true);
+                            EditorLogic.mainForm.Cursor = new Cursor(EditorLogic.mainForm.GetType(), "Eraser.cur");
                         }
 
                         break;
@@ -621,6 +623,9 @@ namespace PLeD
                 EditorLogic.editorGrid.CellWidth = bricks[0].FrameWidth;
 
                 AddBricksToListView();
+
+                saveFileDialog.InitialDirectory = paths.levelsPath.ResourcePath;
+                openFileDialog.InitialDirectory = paths.levelsPath.ResourcePath;
             }
             catch
             {
@@ -668,6 +673,7 @@ namespace PLeD
                 EditorLogic.editMode = EditMode.Brush;
                 EditorLogic.selectedBrick = listView.Items.IndexOf(listView.SelectedItems[0]);
                 EditorLogic.mainForm.CheckEraserControls(false);
+                EditorLogic.mainForm.Cursor = Cursors.Default;
             }
             else
             {
@@ -784,7 +790,7 @@ namespace PLeD
             ResetState();
 
             EditorLogic.currentLevel = new Level(EditorLogic.levelWidth, EditorLogic.levelHeight);
-
+        
             editorGrid.Render(EditorLogic.bufferBitmapGraphics);
             renderControl.Refresh();
         }
@@ -901,7 +907,7 @@ namespace PLeD
 
                 return dr;
                 // no need to update currentLevelFilename here because that's
-                // handled by SaveLevel() on a successfull save.
+                // handled by SaveLevel() on a successful save.
             }
             catch
             {
@@ -1061,12 +1067,19 @@ namespace PLeD
                     filename = System.IO.Path.GetFileNameWithoutExtension(currentLevelFilename);
                 }
 
-                levelOrderFrm.FileName = filename;
-                levelOrderFrm.Levels = levels.ToArray();
+                if(currentLevelFilename == null)
+                {
+                    MessageBox.Show("Note: if you're currently working on a level, it won't be visible in the next dialog until it's saved.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                levelOrderFrm.FileName = filename; // filename for the XML file containing the list of levels
+                levelOrderFrm.LevelsPath = gameDirectory + paths.levelsPath.ResourcePath;
+                levelOrderFrm.RotationLevels = levels.ToArray();
+      
                 if(levelOrderFrm.ShowDialog() == DialogResult.OK)
                 {
                     levels.Clear();
-                    levels.AddRange(levelOrderFrm.Levels);
+                    levels.AddRange(levelOrderFrm.RotationLevels);
                     XML.WriteLevelsFile(levelsPath, levels.ToArray());
                 }
                 

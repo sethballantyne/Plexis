@@ -29,6 +29,11 @@ namespace PLeD
     struct Paths
     {
         /// <summary>
+        /// path containing all the levels in the game.
+        /// </summary>
+        public Path levelsPath;
+
+        /// <summary>
         /// The directories containing bitmap resources.
         /// </summary>
         public Path[] BitmapPaths;
