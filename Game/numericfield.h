@@ -45,7 +45,7 @@ private:
 	unsigned int numberOfZeros;
 
 	// the maximum value the control can hold, based on the value of numberOfZeros.
-	unsigned int maxValue;
+	int maxValue;
 
 	int imageX;
 
