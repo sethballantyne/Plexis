@@ -48,22 +48,40 @@ public:
     /// specified by the levels <c>width</c> and <c>height</c> attributes.</exception>
     static Level ^GetNextLevel()
     {
-        if(currentLevel >= levels->Length)
-        {
-            currentLevel = 0;
-        }
+		try
+		{
+			// the number of times we've attempted to load a level
+			// before the function could return. If it evaluates to 
+			// levels->Length, ALL the levels are empty and we can bail.
+			// we're stuck in an inifinite loop otherwise, obviously I don't
+			// want that. 
+			int numTries = 0;
 
-        try
-        {
-            Level ^newLevel = ReadLevel(levels[currentLevel], false);
-			currentLevel++;
+			Level ^newLevel = nullptr;
+
+			while(nullptr == newLevel)
+			{
+				if(numTries == levels->Length)
+				{
+					throw gcnew Exception("All the levels are empty!");
+				}
+
+				if(currentLevel >= (unsigned int)levels->Length)
+				{
+					currentLevel = 0;
+				}
+
+				newLevel = ReadLevel(levels[currentLevel], false);
+				currentLevel++;
+				numTries++;
+			}
 
 			return newLevel;
-        }
-        catch(...)
-        {
-            throw;
-        }
+		}
+		catch(...)
+		{
+			throw;
+		}
     }
 
 	/// <summary>

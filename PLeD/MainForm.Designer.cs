@@ -66,6 +66,8 @@ namespace PLeD
             this.toggleGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eraserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.chaneLevelOrderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.gridColourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,9 +89,6 @@ namespace PLeD
             this.brickImageList = new System.Windows.Forms.ImageList(this.components);
             this.paletteToolStrip = new System.Windows.Forms.ToolStrip();
             this.eraserToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.brushToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
-            this.chaneLevelOrderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.splitContainer.Panel1.SuspendLayout();
@@ -267,6 +266,18 @@ namespace PLeD
             this.eraserToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.eraserToolStripMenuItem.Text = "&Eraser";
             this.eraserToolStripMenuItem.Click += new System.EventHandler(this.eraserToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(184, 6);
+            // 
+            // chaneLevelOrderToolStripMenuItem
+            // 
+            this.chaneLevelOrderToolStripMenuItem.Name = "chaneLevelOrderToolStripMenuItem";
+            this.chaneLevelOrderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.chaneLevelOrderToolStripMenuItem.Text = "&Change Level Order...";
+            this.chaneLevelOrderToolStripMenuItem.Click += new System.EventHandler(this.chaneLevelOrderToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
@@ -466,8 +477,7 @@ namespace PLeD
             // 
             this.paletteToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.paletteToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eraserToolStripButton,
-            this.brushToolStripButton});
+            this.eraserToolStripButton});
             this.paletteToolStrip.Location = new System.Drawing.Point(0, 0);
             this.paletteToolStrip.Name = "paletteToolStrip";
             this.paletteToolStrip.Size = new System.Drawing.Size(179, 25);
@@ -485,23 +495,6 @@ namespace PLeD
             this.eraserToolStripButton.Text = "Eraser";
             this.eraserToolStripButton.ToolTipText = "Eraser";
             this.eraserToolStripButton.Click += new System.EventHandler(this.eraserToolStripButton_Click);
-            // 
-            // brushToolStripButton
-            // 
-            this.brushToolStripButton.Name = "brushToolStripButton";
-            this.brushToolStripButton.Size = new System.Drawing.Size(23, 22);
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(184, 6);
-            // 
-            // chaneLevelOrderToolStripMenuItem
-            // 
-            this.chaneLevelOrderToolStripMenuItem.Name = "chaneLevelOrderToolStripMenuItem";
-            this.chaneLevelOrderToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.chaneLevelOrderToolStripMenuItem.Text = "&Change Level Order...";
-            this.chaneLevelOrderToolStripMenuItem.Click += new System.EventHandler(this.chaneLevelOrderToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -570,7 +563,6 @@ namespace PLeD
         private System.Windows.Forms.ImageList brickImageList;
         private System.Windows.Forms.ToolStrip paletteToolStrip;
         private System.Windows.Forms.ToolStripButton eraserToolStripButton;
-        private System.Windows.Forms.ToolStripButton brushToolStripButton;
         private System.Windows.Forms.ToolStripMenuItem eraserToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem gridColourToolStripMenuItem;

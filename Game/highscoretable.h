@@ -43,6 +43,9 @@ private:
 	
 	void PopulateTable();
 public:
+	// max number of digits the score can hold.
+    static unsigned int NumDigits = 6;
+
     /// <summary>
     /// Initialises a new instance of HighScoreTable with the specified fonts and X coordinates
     /// for each row member.
@@ -91,7 +94,7 @@ public:
     {
         StringBuilder ^sb = gcnew StringBuilder(Convert::ToString(score));
 
-        int numberOfSpacesToInsert = 5 - sb->Length;
+        int numberOfSpacesToInsert = NumDigits - sb->Length;
         sb->Insert(0, " ", numberOfSpacesToInsert);
         return sb->ToString();
     }

@@ -44,6 +44,9 @@ private:
 	// if the same values were used but numberAmount = 456, it would look like this: 00456.
 	unsigned int numberOfZeros;
 
+	// the maximum value the control can hold, based on the value of numberOfZeros.
+	int maxValue;
+
 	int imageX;
 
 	int imageY;
@@ -64,13 +67,27 @@ private:
 		textFormatter->Append(numberAmount.ToString());
 
 		// calculate the number of zeros needed to pad the numeric value with.
-		// the max is 5.
 		int numZeros = this->numberOfZeros - textFormatter->Length;
-
+		
 		// Pad the numeric value with the calculated amount of zeros.
 		textFormatter->Insert(0, "0", numZeros);
 
 		return textFormatter->ToString();
+	}
+
+	// calculates the maximum value possible that can be displayed
+	// by the control, based on the number of figures it can hold.
+	int MaxValue()
+	{
+		int f = 10;
+		for(int i = 1; i < numberOfZeros; i++)
+		{
+			f *= 10;
+		}
+
+		f -= 1;
+
+		return f;
 	}
 
 public:
@@ -95,6 +112,8 @@ public:
 
 		unsigned int numberPositionX = x + (this->captionText->LabelFont->GlyphWidth + 1) * this->captionText->Text->Length;
 		this->numberText = gcnew Label(numberPositionX, y, "white", Pad(paddingAmount));
+
+		maxValue = MaxValue();
 	}
 
 	/// <summary>
@@ -121,7 +140,7 @@ public:
 		unsigned int numberPositionX = x + image->Size->Width + (ResourceManager::GetFont("white")->GlyphWidth / 2);
 		this->numberText = gcnew Label(numberPositionX, y, "white", Pad(paddingAmount));
 
-		
+		maxValue = MaxValue();
 	}
 
 	/// <summary>
@@ -146,10 +165,18 @@ public:
 
 		void set(int value)
 		{
-			this->numberAmount = value;
+			if(value > maxValue)
+			{
+				this->numberAmount = maxValue;
+			}
+			else
+			{
+				this->numberAmount = value;
+			}
 
-			// update the numeric value on the screen.
 			numberText->Text = Pad(this->numberAmount);
 		}
 	}
+
+	
 };
