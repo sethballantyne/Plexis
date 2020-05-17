@@ -232,6 +232,21 @@ private:
 			SpawnPowerUp(640, 480);
 		}
 
+		if(keyboardState->KeyPressed(DIK_L))
+		{
+			SpawnLaserPowerUp(300, 300, 45);
+		}
+
+		if(keyboardState->KeyPressed(DIK_H))
+		{
+			lives->Value += 100;
+		}
+
+		if(keyboardState->KeyPressed(DIK_S))
+		{
+			score->Value += 100000;
+		}
+
 		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
 		{
 			if(nullptr != powerUpInEffect)

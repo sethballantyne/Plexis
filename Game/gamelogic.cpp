@@ -1,5 +1,6 @@
 #include "gamelogic.h"
 #include "scenemanager.h"
+#include "highscoretable.h"
 
 void GameLogic::DebugRemoveBrick()
 {
@@ -31,8 +32,8 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	Debug::Assert(this->ball != nullptr);
 
 	this->livesImage = ResourceManager::GetSurface("heart2");
-	this->lives = gcnew NumericField(200, 5, this->livesImage, 2, 2);
-	this->score = gcnew NumericField(5, 5, "SCORE", 0, 5);
+	this->lives = gcnew NumericField(218, 5, this->livesImage, 2, 2);
+	this->score = gcnew NumericField(5, 5, "SCORE", 0, HighScoreTable::NumDigits);
 	this->pauseImage = ResourceManager::GetSurface("paused2");
 	this->pauseX = (Video::Width / 2) - (this->pauseImage->Size->Width / 2);
 	this->pauseY = 564;
@@ -134,8 +135,6 @@ void GameLogic::HandleBallCollision()
 		correctedX = 0;
 	}
 
-	
-
 	if(ballY < 0)
 	{
 		ResourceManager::GetSoundBuffer("bounce")->Stop();
@@ -148,32 +147,14 @@ void GameLogic::HandleBallCollision()
 
 	if(ballY >= Video::Height && !player->IsDead)
 	{
-		/*ball->Velocity.Y = -ball->Velocity.Y;
-		correctedY = (Video::Height - ball->BoundingBox.Height) - 1;*/
-
 		// Player died.
 		ExplodePaddle();
 		
 		ball->Velocity = Vector2::Zero;
-		/*lives->Value--;
-		if(lives->Value != -1)
-		{
-			ball->Velocity = Vector2::Zero;
-			this->gameState = GameState::PlayerReset;
-			playerResetTimer->Start();
-		}
-		else
-		{
-			this->GameOverTransition();
-			return;
-		}*/
 	}
 
 	if(ball->BoundingBox.IntersectsWith(player->BoundingBox) && !player->IsDead)
 	{
-		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
-		ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
-
 		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		ball->Velocity.Y *= -1;
