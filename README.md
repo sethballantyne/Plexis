@@ -10,7 +10,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 * A warning now appears when attempting to save blank levels in the editor.
 * The editor no longer allows previewing of blank levels.
 * Removed a blank button from the editor toolstrip that wasn't supposed to be there.
-* the default player name has changed from "DEFAULT" to "EMPTY" when the game writes out a fresh high score file.
+* The default player name has changed from "DEFAULT" to "EMPTY" when the game writes out a fresh high score file.
 
 ## Changes in 0.8.1
 * The size of the particles emitted by explosions has changed from 1 pixel to a block of 4. 
