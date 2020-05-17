@@ -89,7 +89,6 @@ namespace PLeD
             this.brickImageList = new System.Windows.Forms.ImageList(this.components);
             this.paletteToolStrip = new System.Windows.Forms.ToolStrip();
             this.eraserToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.brushToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.mainMenuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.splitContainer.Panel1.SuspendLayout();
@@ -478,8 +477,7 @@ namespace PLeD
             // 
             this.paletteToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.paletteToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eraserToolStripButton,
-            this.brushToolStripButton});
+            this.eraserToolStripButton});
             this.paletteToolStrip.Location = new System.Drawing.Point(0, 0);
             this.paletteToolStrip.Name = "paletteToolStrip";
             this.paletteToolStrip.Size = new System.Drawing.Size(179, 25);
@@ -497,11 +495,6 @@ namespace PLeD
             this.eraserToolStripButton.Text = "Eraser";
             this.eraserToolStripButton.ToolTipText = "Eraser";
             this.eraserToolStripButton.Click += new System.EventHandler(this.eraserToolStripButton_Click);
-            // 
-            // brushToolStripButton
-            // 
-            this.brushToolStripButton.Name = "brushToolStripButton";
-            this.brushToolStripButton.Size = new System.Drawing.Size(23, 22);
             // 
             // MainForm
             // 
@@ -570,7 +563,6 @@ namespace PLeD
         private System.Windows.Forms.ImageList brickImageList;
         private System.Windows.Forms.ToolStrip paletteToolStrip;
         private System.Windows.Forms.ToolStripButton eraserToolStripButton;
-        private System.Windows.Forms.ToolStripButton brushToolStripButton;
         private System.Windows.Forms.ToolStripMenuItem eraserToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem gridColourToolStripMenuItem;
