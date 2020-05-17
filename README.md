@@ -9,6 +9,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 * Blank levels will no longer be loaded by the game.
 * A warning now appears when attempting to save blank levels in the editor.
 * The editor no longer allows previewing of blank levels.
+* Removed a blank button from the editor toolstrip that wasn't supposed to be there.
 
 ## Changes in 0.8.1
 * The size of the particles emitted by explosions has changed from 1 pixel to a block of 4. 
