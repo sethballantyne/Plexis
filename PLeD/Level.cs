@@ -35,6 +35,8 @@ namespace PLeD
         uint width;
         uint height;
 
+        uint numBricks = 0;
+
         /// <summary>
         /// Initialises a new instance of Level of the specified dimension in bricks.
         /// </summary>
@@ -80,6 +82,17 @@ namespace PLeD
             }
             set
             {
+                // erasing a brick
+                if(value == -1 && levelData[x, y] != -1)
+                {
+                    numBricks--;
+                }
+                else if(value != -1 && levelData[x,y] == -1)
+                {
+                    // painting a brick in a black cell
+                    numBricks++;
+                }
+
                 this.levelData[x, y] = value;
             }
         }
@@ -146,6 +159,18 @@ namespace PLeD
             set
             {
                 this.width = value;
+            }
+        }
+
+        public uint NumBricks
+        {
+            get
+            {
+                return this.numBricks;
+            }
+            set
+            {
+                this.numBricks = value;
             }
         }
     }

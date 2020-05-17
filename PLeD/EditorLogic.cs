@@ -49,6 +49,8 @@ namespace PLeD
         const uint levelWidth = 25;
         const uint levelHeight = 23;
 
+        const int blankBrush = -1;
+        
         // the editors GUI.
         static MainForm mainForm;
 
@@ -370,6 +372,8 @@ namespace PLeD
             EditorLogic.workSaved = true;
             EditorLogic.currentLevelFilename = null;
 
+           
+
             // it'll be null if no other levels have been created/opened
             // during this instance. 
             if(EditorLogic.currentLevel != null)
@@ -474,6 +478,7 @@ namespace PLeD
                             EditorLogic.currentLevel[tileCoordX, tileCoordY] = EditorLogic.selectedBrick;
 
                             EditorLogic.PaintBrick(screenX, screenY, selectedBrick, true);
+
                             if(workSaved)
                             {
                                 // changes have been made that need to be saved, indicate
@@ -542,7 +547,7 @@ namespace PLeD
                         {
                             //EditorLogic.mainForm.Cursor = mainForm.EraserCursor();
                             EditorLogic.editMode = editMode;
-                            EditorLogic.selectedBrick = -1;
+                            EditorLogic.selectedBrick = blankBrush;
                             EditorLogic.mainForm.ClearListViewSelection();
                             EditorLogic.mainForm.CheckEraserControls(true);
                             EditorLogic.mainForm.Cursor = new Cursor(EditorLogic.mainForm.GetType(), "Eraser.cur");
@@ -624,8 +629,14 @@ namespace PLeD
 
                 AddBricksToListView();
 
-                saveFileDialog.InitialDirectory = paths.levelsPath.ResourcePath;
-                openFileDialog.InitialDirectory = paths.levelsPath.ResourcePath;
+                saveFileDialog.InitialDirectory = gameDirectory + paths.levelsPath.ResourcePath;
+
+                // the open file dialog is overly pendantic and cares whether you're using
+                // / or \ as dir seperators. If you don't use \ in paths.levelPath.ResouecePath,
+                // it'll ignore it and just point to gameDirectory. Probably applies to the saveFileDialog
+                // too. Might need a function that sanitizes the input from paths.xml, ResourcePath
+                // always contains the acceptable directory seperators.
+                openFileDialog.InitialDirectory = gameDirectory + paths.levelsPath.ResourcePath;
             }
             catch
             {
@@ -741,18 +752,27 @@ namespace PLeD
         {
             try
             {
-                string tempPath = System.IO.Path.GetTempFileName();
-              
-                XML.WriteLevel(tempPath, currentLevel, bricks);
-                Process gameProcess = new Process();
+                if(currentLevel.NumBricks != 0)
+                {
+                    string tempPath = System.IO.Path.GetTempFileName();
+
+                    XML.WriteLevel(tempPath, currentLevel, bricks);
+                    Process gameProcess = new Process();
 #if DEBUG
-                gameProcess.StartInfo.FileName = "game_debug.exe";
+                    gameProcess.StartInfo.FileName = "game_debug.exe";
 #else
-                gameProcess.StartInfo.FileName = "game_release.exe";
+                    gameProcess.StartInfo.FileName = "game_release.exe";
 #endif
-                gameProcess.StartInfo.Arguments = String.Format("/map {0}", tempPath);
-                gameProcess.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
-                gameProcess.Start();
+                    gameProcess.StartInfo.Arguments = String.Format("/map {0}", tempPath);
+                    gameProcess.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+                    gameProcess.Start();
+
+                }
+                else
+                {
+                    MessageBox.Show("Unable to preview blank levels. Add some bricks!", "Nope.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+             
             }
             catch
             {
@@ -925,6 +945,16 @@ namespace PLeD
         {
             DialogResult dialogResult = DialogResult.Cancel;
 
+            if(currentLevel.NumBricks == 0)
+            {
+                DialogResult dr = MessageBox.Show("Blank levels are ignored by the game. Save anyway?", 
+                    "Confirmation Needed", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if(dr != DialogResult.Yes)
+                {
+                    return dialogResult;
+                }
+            }
             try
             {
                 // determine whether the save file dialog needs to be displayed

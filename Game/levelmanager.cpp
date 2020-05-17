@@ -58,7 +58,10 @@ Level ^LevelManager::ReadLevel(String ^levelFile, bool testLevel)
         System::Collections::Generic::IEnumerable<XElement ^> ^brickQuery = levelXml->Elements((String ^)"brick");
         if(0 == XmlHelper::Count(brickQuery))
         {
-            throw gcnew XmlException(String::Format("no <brick> tags found in the level {0}'s xml.", levelFile));
+			// returning nullptr instead of throwing an exception because I don't want the game to end just
+			// because the level is devoid of bricks; better to ignore the level, which is what nullptr indicates.
+            LogManager::WriteLine(LogType::Debug, "no <brick> tags found in the level {0}'s xml.", levelFile);
+			return nullptr;
         }
 
         // read each different brick type within the level
