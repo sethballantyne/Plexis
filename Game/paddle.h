@@ -29,7 +29,7 @@ public:
 
 	Paddle(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
 	{
-
+		
 	}
 
 	void AttachBall(Ball ^ball)

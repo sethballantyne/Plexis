@@ -36,20 +36,30 @@ public:
 	// the velocity of each laser beam shot by the paddle.
 	property int LaserVelocity;
 
+	// the amount of ammo the player starts out with when the game starts.
+	static property unsigned int InitialAmmo;
+
+	// the amount of ammo awarded to the player when the power up is caught.
+	property unsigned int PickupAmmo;
+
 	///<summary>
 	/// <param name="powerupSprite">The sprite instance containing the graphic that'll be rendered
 	/// to the screen when the powerup is drawn.</param>
 	/// <param name="duration"> how long the powerup's effect lasts for when caught by the player.</param>
 	/// <param name="laserVelocity">the velocity of the laser as it fires from the paddle</param>
 	/// <param name="laserDamage">the amount of damage the laser does when it hits a brick.</param>
+	/// <param name="initalAmmo">the amount of ammo the player starts out with when the game starts</param>
+	/// <param name="pickupAmmo">the amount of ammo awarded to the player when the player catches the powerup.</param>
 	/// <param name="name">the entities name as specified in its xml "name" attribute.</param>
 	///</summary>
 	LaserPowerUp(::Sprite ^powerupSprite, unsigned int duration, int laserVelocity, 
-				 unsigned int laserDamage, System::String ^name) : PowerUp(powerupSprite, Vector2::Zero, name)
+				 unsigned int laserDamage, unsigned int initialAmmo, unsigned int pickupAmmo, System::String ^name) : PowerUp(powerupSprite, Vector2::Zero, name)
 	{
 		Duration = duration;
 		LaserDamage = laserDamage;
 		LaserVelocity = laserVelocity;
+		InitialAmmo = initialAmmo;
+		PickupAmmo = pickupAmmo;
 	}
 
 	///<summary>
@@ -62,6 +72,6 @@ public:
 			this->Sprite->Position.Y,
 			this->Sprite->GetFrames(), this->Sprite->Surface);
 
-		return gcnew LaserPowerUp(sprite, Duration, LaserVelocity, LaserDamage, this->Name);
+		return gcnew LaserPowerUp(sprite, Duration, LaserVelocity, LaserDamage, InitialAmmo, PickupAmmo, this->Name);
 	}
 };

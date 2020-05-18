@@ -79,6 +79,8 @@ private:
 	// number of seconds remaining when the laser power up is in use.
 	NumericField ^powerUpTimerValue;
 
+	NumericField ^ammoCount;
+
 	// the delay that's present when transitioning between levels.
 	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
 
@@ -122,6 +124,9 @@ private:
 	String ^testLevel = nullptr;
 
 	Random ^randomNumberGen = gcnew Random();
+
+	LaserPowerUp ^laser = nullptr;
+
 	// keys read from options.xml
 	int pauseKey;
 	int playerFireKey;
@@ -138,6 +143,9 @@ private:
 
 	// the number of bricks the user has to hit in order to complete the level
 	int numberOfBricksRemaining;
+
+	/*const int initialAmmo = 90;
+	const int ammoPacks = initialAmmo / 3;*/
 
 	bool debugKeysEnabled = false;
 
@@ -249,13 +257,15 @@ private:
 
 		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
 		{
-			if(nullptr != powerUpInEffect)
-			{
-				powerUpInEffect->Fired();
-			}
-			else
+			if(ball->Attached)
 			{
 				player->FirePressed();
+			}
+			
+			else if(ammoCount->Value > 0)
+			{
+				laser->Fired();
+				ammoCount->Value--;
 			}
 		}
 	}
@@ -741,18 +751,19 @@ public:
 	void OnCollisionWithPaddle_LaserPowerUp(Object ^sender, EventArgs ^e)
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
-		powerUpInEffect = safe_cast<PowerUp ^>(sender);
+		//powerUpInEffect = safe_cast<PowerUp ^>(sender);
+		ammoCount->Value += safe_cast<LaserPowerUp ^>(sender)->PickupAmmo;
 
 		// when the laser powerup is caught, the timer is reset is if the power-up
 		// is already active.
-		if(laserActiveTimer->Enabled)
+		/*if(laserActiveTimer->Enabled)
 		{
 			powerUpTimerValue->Value = 30;
 		}
 		else
 		{
 			laserActiveTimer->Start();
-		}
+		}*/
 	}
 
 	// Handles firing the lasers when the laser powerup is active and the
@@ -765,7 +776,7 @@ public:
 		int spawnX = player->Sprite->Position.X + 8;
 		int spawnY = (player->BoundingBox.Y - leftLaser->BoundingBox.Height) - 1;
 		leftLaser->SetPosition(spawnX, spawnY);
-		leftLaser->Velocity = safe_cast<LaserPowerUp ^>(powerUpInEffect)->LaserVelocity;
+		leftLaser->Velocity = this->laser->LaserVelocity;
 		laserList->Add(leftLaser);
 
 

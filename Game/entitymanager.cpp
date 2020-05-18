@@ -137,11 +137,13 @@ void EntityManager::ParseLaserPowerUp(XElement ^powerupElement, String ^name)
 		unsigned int duration = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "duration");
 		int laserVelocity = XmlHelper::GetAttributeValueAsInt32(powerupElement, "laserVelocity");
 		unsigned int laserDamage = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "laserDamage");
+		unsigned int initialAmmo = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "initialammo");
+		unsigned int pickupAmmo = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "pickupammo");
 
 		array<Frame ^, 1>^ frames = ParseFrames(powerupElement);
 
 		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
-		LaserPowerUp ^laserPowerUp = gcnew LaserPowerUp(powerupSprite, duration, laserVelocity, laserDamage, name);
+		LaserPowerUp ^laserPowerUp = gcnew LaserPowerUp(powerupSprite, duration, laserVelocity, laserDamage, initialAmmo, pickupAmmo, name);
 
 		parsedEntities[name] = laserPowerUp;
 	}

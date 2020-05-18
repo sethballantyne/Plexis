@@ -38,6 +38,9 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->pauseX = (Video::Width / 2) - (this->pauseImage->Size->Width / 2);
 	this->pauseY = 564;
 
+	Surface^ laserGUIImage = ResourceManager::GetSurface("laser_gui");
+	this->ammoCount = gcnew NumericField(295, 5, laserGUIImage, LaserPowerUp::InitialAmmo, 3);
+
 	this->levelCompleteImage = ResourceManager::GetSurface("level_complete");
 	this->levelCompleteX = (Video::Width / 2) - (this->levelCompleteImage->Size->Width / 2);
 	this->levelCompleteY = (Video::Height / 2) - (this->levelCompleteImage->Size->Height / 2);
@@ -58,7 +61,11 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
 	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
 	this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
-	
+
+	/*powerUpInEffect = safe_cast<PowerUp ^>(sender);
+	powerUpInEffect = */
+	this->laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
+	this->laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
 }
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
@@ -360,6 +367,8 @@ void GameLogic::Render()
 
 				// don't show -1 when the player loses his/her last life.
 				lives->Render();
+
+				ammoCount->Render();
 
 				switch(this->gameState)
 				{
