@@ -53,14 +53,14 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->playerResetTimer->Enabled = false;
 	this->playerResetTimer->AutoReset = true;
 
-	this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
+	/*this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
 	this->laserActiveTimer->Enabled = false;
-	this->laserActiveTimer->AutoReset = true;
+	this->laserActiveTimer->AutoReset = true;*/
 
-	this->timerImage = ResourceManager::GetSurface("timer");
-	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
-	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
-	this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
+	//this->timerImage = ResourceManager::GetSurface("timer");
+	//int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
+	//int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
+	//this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
 
 	/*powerUpInEffect = safe_cast<PowerUp ^>(sender);
 	powerUpInEffect = */
@@ -300,7 +300,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				gameState = GameState::LevelComplete;
 				this->levelLoadDelayTimer->Start();
 
-				laserActiveTimer->Stop();
+				/*laserActiveTimer->Stop();*/
 			}
 		break;
 

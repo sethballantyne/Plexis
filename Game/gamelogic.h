@@ -77,7 +77,7 @@ private:
 	NumericField ^lives;
 
 	// number of seconds remaining when the laser power up is in use.
-	NumericField ^powerUpTimerValue;
+	/*NumericField ^powerUpTimerValue;*/
 
 	NumericField ^ammoCount;
 
@@ -86,7 +86,7 @@ private:
 
 	// timer used to countdown the number of seconds remaining
 	// while the laser powerup is in use.
-	Timer ^laserActiveTimer = gcnew Timer(1000);
+	//Timer ^laserActiveTimer = gcnew Timer(1000);
 
 	// used for the delay when the ball goes off the screen
 	Timer ^playerResetTimer = gcnew Timer(2000);
@@ -165,8 +165,8 @@ private:
 	void DisablePowerUps(bool clearLists)
 	{
 		powerUpInEffect = nullptr;
-		powerUpTimerValue->Value = 30;
-		laserActiveTimer->Enabled = false;
+		/*powerUpTimerValue->Value = 30;*/
+		//laserActiveTimer->Enabled = false;
 
 		if(clearLists)
 		{
@@ -448,7 +448,7 @@ public:
 		}*/
 
 		playerResetTimer->Start();
-		laserActiveTimer->Stop();
+		/*laserActiveTimer->Stop();*/
 
 	}
 
@@ -603,10 +603,10 @@ public:
 		}
 
 		// timer shit
-		if(laserActiveTimer->Enabled)
+		/*if(laserActiveTimer->Enabled)
 		{
 			powerUpTimerValue->Render();
-		}
+		}*/
 	}
 
 	///<summar>
@@ -734,19 +734,19 @@ public:
 	//------------------------------------------------------
 
 	//// LASER ////////////////////////////////////////////////
-	void OnLaserTimerEvent(Object ^source, ElapsedEventArgs ^e)
-	{
-		if(powerUpTimerValue->Value != 0)
-		{
-			powerUpTimerValue->Value--;
-		}
-		else
-		{
-			// no more time left on the clock for this powerup.
-			// remove the power up effects and reset the timer.
-			DisablePowerUps(false);
-		}
-	}
+	//void OnLaserTimerEvent(Object ^source, ElapsedEventArgs ^e)
+	//{
+	//	if(powerUpTimerValue->Value != 0)
+	//	{
+	//		powerUpTimerValue->Value--;
+	//	}
+	//	else
+	//	{
+	//		// no more time left on the clock for this powerup.
+	//		// remove the power up effects and reset the timer.
+	//		DisablePowerUps(false);
+	//	}
+	//}
 
 	// Event handlder for when the laser powerup collides with the players paddle.
 	void OnCollisionWithPaddle_LaserPowerUp(Object ^sender, EventArgs ^e)
