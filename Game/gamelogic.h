@@ -359,6 +359,7 @@ public:
 		this->score->Value = 0;
 		this->lives->Value = DEFAULT_NUMBER_OF_LIVES;
 		gameOverScreen->Visible = false;
+		this->ammoCount->Value = LaserPowerUp::InitialAmmo;
 
 		LevelManager::ResetLevelCounter();
 	}
