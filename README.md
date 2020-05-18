@@ -4,6 +4,9 @@ Plexis a breakout clone I wrote in C++/CLI because I wanted to play around with 
 
 The latest build of the game is in the _build_ directory. All the source code is released under the MIT license. 
 
+## Changes in 0.9
+* The player now has a permanent laser, with an initial ammo count of 90. Laser powerups now act as ammo packs when caught, awarding 30 ammo. Both the initial value and the amount of ammo awarded when a powerup is caught are specified in the lasers initialammo and pickupammo XML attributes.
+
 ## Changes in 0.8.2
 * Scores are capped at 999,999. Previously it was 99,999. This also fixes the bug mentioned in issue 120.
 * Blank levels will no longer be loaded by the game.
