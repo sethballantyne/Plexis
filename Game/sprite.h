@@ -139,7 +139,7 @@ public:
         }
 		void set(unsigned int value)
 		{
-			System::Diagnostics::Debug::Assert(value < frames->Length);
+			System::Diagnostics::Debug::Assert(value < (unsigned int) frames->Length);
 			currentFrameIndex = value;
 		}
     }
@@ -181,4 +181,24 @@ public:
             return this->position;
         }
     }
+
+	///<summary>
+	///Gets the center of the current frame in screen coordinates.
+	///</summary>
+	System::Drawing::Point GetCenter(unsigned int frame)
+	{
+		if(frame < this->GetFrames()->Length)
+		{
+			System::Drawing::Point p;
+
+			p.X = this->Position.X + (this->GetFrames()[frame]->BoundingBox.Width / 2);
+			p.Y = this->Position.Y + (this->GetFrames()[frame]->BoundingBox.Height / 2);
+
+			return p;
+		}
+		else
+		{
+			throw gcnew Exception("Sprite::GetCenter: frame is out of bounds.");
+		}
+	}
 };

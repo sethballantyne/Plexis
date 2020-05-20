@@ -416,7 +416,7 @@ public:
 
 		int x = randomNumberGen->Next(10, 25);
 		int y = randomNumberGen->Next(10, 25);
-		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 35, x, y, R, G, B));
+		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 40, x, y, R, G, B));
 
 		ResourceManager::GetSoundBuffer("explosion")->Stop();
 		ResourceManager::GetSoundBuffer("explosion")->Play();
@@ -705,6 +705,30 @@ public:
 			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
 			ExplodeBrick(destroyedBrick, 255, 215, 0);
 			ExplodeSurroundingBricks(e->TileCoordinates);
+		}
+		else if(destroyedBrick->Name == "bonus_life")
+		{
+			System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
+			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+			ExplodeBrick(destroyedBrick, 249, 74, 75);
+			SpawnExtraLifePowerUp(p.X, p.Y, angle);
+		}
+		else if(destroyedBrick->Name == "bonus_ammo")
+		{
+			System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
+			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+			ExplodeBrick(destroyedBrick, 0, 255, 0);
+			SpawnLaserPowerUp(p.X, p.Y, angle);
+		}
+		else if(destroyedBrick->Name == "instadeath_brick")
+		{
+			System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
+			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+			ExplodeBrick(destroyedBrick, 225, 224, 223);
+			SpawnInstaDeathPowerUp(p.X, p.Y, angle);
 		}
 		else if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
 		{
