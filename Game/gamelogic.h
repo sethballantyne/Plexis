@@ -688,49 +688,60 @@ public:
 		}
 	}
 
+	void ExplosiveBrick_CustomBehaviour(Object ^sender, BrickHitEventArgs% e)
+	{
+		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
+		ExplodeBrick(destroyedBrick, 255, 215, 0);
+		ExplodeSurroundingBricks(e.TileCoordinates);
+	}
+
+	Tuple<System::Drawing::Point, float>^ PowerUpBrickCommonBehaviour(Object^ sender, BrickHitEventArgs% e, unsigned r, unsigned g, unsigned b)
+	{
+		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
+		System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
+		float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+		ExplodeBrick(destroyedBrick, r, g, b);
+
+		if(BRICK_EXPLODE == (e.Flags & BRICK_EXPLODE))
+		{
+			// don't generate another explosion in the OnDeath event handler
+			e.Flags &= ~BRICK_EXPLODE;
+		}
+
+		return gcnew Tuple<System::Drawing::Point, float>(p, angle);
+	}
+
+	void BonusLifeBrick_CustomBehaviour(Object ^sender, BrickHitEventArgs %e)
+	{
+		Tuple<System::Drawing::Point, float>^ result = PowerUpBrickCommonBehaviour(sender, e, 249, 74, 75);
+		SpawnExtraLifePowerUp(result->Item1.X, result->Item1.Y, result->Item2);
+	}
+	
+	void AmmoBrick_CustomBehaviour(Object^ sender, BrickHitEventArgs %e)
+	{
+		Tuple<System::Drawing::Point, float>^ result = PowerUpBrickCommonBehaviour(sender, e, 0, 255, 0);
+		SpawnLaserPowerUp(result->Item1.X, result->Item1.Y, result->Item2);
+	}
+
+	void InstaDeathBrick_CustomBehaviour(Object^ sender, BrickHitEventArgs %e)
+	{
+		Tuple<System::Drawing::Point, float>^ result = PowerUpBrickCommonBehaviour(sender, e, 225, 224, 223);
+		SpawnInstaDeathPowerUp(result->Item1.X, result->Item1.Y, result->Item2);
+	}
+
 	/// <summary>
 	/// describes what should happen when a brick is destroyed.
 	/// </summary>
 	void Brick_OnDeath(Object ^sender, BrickHitEventArgs ^e)
 	{
-		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
-		ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
-
 		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
-
+		
 		this->score->Value += destroyedBrick->PointValue;
-		if(destroyedBrick->Name == "explosiveBrick")
-		{
-			// make the exploding brick look like it's exploding.
-			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
-			ExplodeBrick(destroyedBrick, 255, 215, 0);
-			ExplodeSurroundingBricks(e->TileCoordinates);
-		}
-		else if(destroyedBrick->Name == "bonus_life")
-		{
-			System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
-			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
-
-			ExplodeBrick(destroyedBrick, 249, 74, 75);
-			SpawnExtraLifePowerUp(p.X, p.Y, angle);
-		}
-		else if(destroyedBrick->Name == "bonus_ammo")
-		{
-			System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
-			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
-
-			ExplodeBrick(destroyedBrick, 0, 255, 0);
-			SpawnLaserPowerUp(p.X, p.Y, angle);
-		}
-		else if(destroyedBrick->Name == "instadeath_brick")
-		{
-			System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
-			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
-
-			ExplodeBrick(destroyedBrick, 225, 224, 223);
-			SpawnInstaDeathPowerUp(p.X, p.Y, angle);
-		}
-		else if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
+		
+		destroyedBrick->Behaviour(*e);
+		
+		if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
 		{
 			ExplodeBrick(destroyedBrick, 255, 215, 0);
 			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
@@ -747,9 +758,6 @@ public:
 		{
 			this->currentLevel->BrickCount--;
 		}
-	
-		//LogManager::WriteLine(LogType::Debug, "{0}", this->currentLevel->BrickCount);
-		//Debug::Assert(this->currentLevel->BrickCount >= 0);
 	}
 
 	void OnLevelTransitionTimerEvent(Object ^source, ElapsedEventArgs ^e)

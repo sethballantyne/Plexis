@@ -67,6 +67,7 @@ public:
 	property unsigned int Flags
 	{
 		unsigned int get() { return flags; }
+		void set(unsigned int value) { flags = value; }
 	}
 	/// <summary>
 	/// Gets the name of the brick

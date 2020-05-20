@@ -276,7 +276,28 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				{
 					if(nullptr != this->currentLevel[i, j])
 					{
+						this->currentLevel[i, j]->CustomBehaviour += nullptr;
+
+						if(this->currentLevel[i, j]->Name == "explosiveBrick")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::ExplosiveBrick_CustomBehaviour);
+						}
+						else if(this->currentLevel[i, j]->Name == "bonus_ammo")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::AmmoBrick_CustomBehaviour);
+						}
+						else if(this->currentLevel[i, j]->Name == "instadeath_brick")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::InstaDeathBrick_CustomBehaviour);
+						}
+						else if(this->currentLevel[i, j]->Name == "bonus_life")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::BonusLifeBrick_CustomBehaviour);
+						}
+					
 						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
+						
+						
 					}
 				}
 			}

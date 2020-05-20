@@ -23,6 +23,8 @@
 #define BRICK_HIT_BY_BALL  2
 #define BRICK_EXPLODE      4
 
+ref class Brick;
+delegate void CustomBehaviourEventHandler(Object ^sender, BrickHitEventArgs %args);
 delegate void BrickDeathEventHandler(Object ^sender, BrickHitEventArgs ^args);
 
 /// <summary>
@@ -194,10 +196,15 @@ public:
 		Death(this, hitEventArgs);
 	}
 
+	virtual void Behaviour(BrickHitEventArgs% hitEventArgs)
+	{
+		CustomBehaviour(this, hitEventArgs);
+	}
+
 	/// <summary>
 	/// event that's fired when the brick is "killed" (its health equates to 0).
 	/// </summary>
 	event BrickDeathEventHandler^ Death;
-
+	event CustomBehaviourEventHandler^ CustomBehaviour;
 };
 
