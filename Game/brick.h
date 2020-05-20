@@ -46,6 +46,10 @@ private:
 
 	// determines whethert the brick should be rendered or not.
 	bool visible = true;
+
+	// If false, the brick won't one of the bricks
+	// counted to determine whether it's time to transition to the next level.
+	bool tally = true;
 public:
     /// <summary>
     /// Initialises a new instance of <see cref="Brick"/>.
@@ -58,11 +62,12 @@ public:
     /// This is a percentage between 1 and 100.</param>
     /// <param name="pointsAwarded">the number of added to the players score when this brick is destroyed.</param>
     Brick(::Sprite ^sprite, unsigned int health, unsigned int chanceOfPowerUpSpawning, 
-        unsigned int pointsAwarded, String ^name) : Entity(sprite, Vector2(0), name)
+        unsigned int pointsAwarded, bool tally, String ^name) : Entity(sprite, Vector2(0), name)
     {
         this->health = health;
         this->chanceOfPowerUpSpawning = chanceOfPowerUpSpawning;
         pointsAwardedOnDeath = pointsAwarded;
+		this->tally = tally;
     }
 
     /// <summary>
@@ -76,7 +81,7 @@ public:
             this->Sprite->Position.Y, 
             this->Sprite->GetFrames(), this->Sprite->Surface);
 
-        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath, this->Name);
+        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath, this->tally, this->Name);
     }
 
     /// <summary>
@@ -138,6 +143,22 @@ public:
 		void set(bool value)
 		{
 			visible = value;
+		}
+	}
+
+	/// <summary>
+	/// True if the brick needs to be destroyed before the player can 
+	/// transition to the next level, otherwise false.
+	/// </summary>
+	property bool Tally
+	{
+		bool get()
+		{
+			return tally;
+		}
+		void set(bool value)
+		{
+			tally = value;
 		}
 	}
 

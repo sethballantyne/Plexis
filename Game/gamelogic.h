@@ -743,8 +743,13 @@ public:
 			SpawnPowerUp(e->ScreenCoordinates.X, e->ScreenCoordinates.Y);
 		}
 
-		this->currentLevel->BrickCount--;
-		Debug::Assert(this->currentLevel->BrickCount >= 0);
+		if(destroyedBrick->Tally)
+		{
+			this->currentLevel->BrickCount--;
+		}
+	
+		//LogManager::WriteLine(LogType::Debug, "{0}", this->currentLevel->BrickCount);
+		//Debug::Assert(this->currentLevel->BrickCount >= 0);
 	}
 
 	void OnLevelTransitionTimerEvent(Object ^source, ElapsedEventArgs ^e)

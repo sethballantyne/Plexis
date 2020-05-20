@@ -116,10 +116,12 @@ void EntityManager::ParseBrick(XElement ^brickElement)
         unsigned int hitCount = XmlHelper::GetAttributeValueAsUInt32(brickElement, "hitCount");
         unsigned int chanceOfPowerUp = XmlHelper::GetAttributeValueAsUInt32(brickElement, "chanceOfPowerUp");
         unsigned int points = XmlHelper::GetAttributeValueAsUInt32(brickElement, "points");
+		bool tally = XmlHelper::GetAttributeValueAsBoolean(brickElement, "tally");
+
 		array<Frame ^, 1>^ frames = ParseFrames(brickElement);
 
         Sprite ^brickSprite = gcnew Sprite(0, 0, frames, image);
-        Brick ^brick = gcnew Brick(brickSprite, hitCount, chanceOfPowerUp, points, name);
+        Brick ^brick = gcnew Brick(brickSprite, hitCount, chanceOfPowerUp, points, tally, name);
 
         parsedEntities[name] = brick;
     }

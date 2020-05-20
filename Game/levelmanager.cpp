@@ -91,7 +91,12 @@ Level ^LevelManager::ReadLevel(String ^levelFile, bool testLevel)
                 
                 // put a new instance of this brick at the specified coordinates.
                 newLevel->PutBrickAt(x, y, name);
-				newLevel->BrickCount++;
+
+				Brick ^brick = EntityManager::GetEntity<Brick^>(name);
+				if(brick->Tally)
+				{
+					newLevel->BrickCount++;
+				}
             }
         }
 
