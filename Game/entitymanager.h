@@ -156,4 +156,21 @@ public:
             return T();
         }
     }
+
+	/// <summary>
+	/// Returns a shallow copy of the specified entity, or <b>nullptr</b> if the 
+	/// entity doesn't exist.
+	///</summary>
+	generic <class T> where T : ref class T static GetShallowEntity(String ^name)
+	{
+		try
+		{
+			return safe_cast<T>(parsedEntities[name]);
+		}
+		catch(...)
+		{
+			// returning nullptr if it doesn't exist
+			return T();
+		}
+	}
 };
