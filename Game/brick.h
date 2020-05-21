@@ -52,6 +52,8 @@ private:
 	// If false, the brick won't one of the bricks
 	// counted to determine whether it's time to transition to the next level.
 	bool tally = true;
+
+	bool indestructible = false;
 public:
     /// <summary>
     /// Initialises a new instance of <see cref="Brick"/>.
@@ -64,12 +66,13 @@ public:
     /// This is a percentage between 1 and 100.</param>
     /// <param name="pointsAwarded">the number of added to the players score when this brick is destroyed.</param>
     Brick(::Sprite ^sprite, unsigned int health, unsigned int chanceOfPowerUpSpawning, 
-        unsigned int pointsAwarded, bool tally, String ^name) : Entity(sprite, Vector2(0), name)
+        unsigned int pointsAwarded, bool tally, bool indestructible, String ^name) : Entity(sprite, Vector2(0), name)
     {
         this->health = health;
         this->chanceOfPowerUpSpawning = chanceOfPowerUpSpawning;
         pointsAwardedOnDeath = pointsAwarded;
 		this->tally = tally;
+		this->indestructible = indestructible;
     }
 
     /// <summary>
@@ -83,7 +86,7 @@ public:
             this->Sprite->Position.Y, 
             this->Sprite->GetFrames(), this->Sprite->Surface);
 
-        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath, this->tally, this->Name);
+        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath, this->tally, this->indestructible, this->Name);
     }
 
     /// <summary>
@@ -164,24 +167,40 @@ public:
 		}
 	}
 
+	property bool Indestructible
+	{
+		bool get()
+		{
+			return indestructible;
+		}
+
+		void set(bool value)
+		{
+			indestructible = value;
+		}
+	}
+
 	/// <summary>
 	/// Describes what should happen when the ball hits this brick.
 	/// </summary>
 	virtual void Hit(int x, int y, unsigned int flags)
 	{
-		health--;
-		if(health != 0)
+		if(!indestructible)
 		{
-			this->Sprite->CurrentFrameIndex++;
-		}
-		else
-		{
-			if(BRICK_HIT_BY_LASER == (flags & BRICK_HIT_BY_LASER))
+			health--;
+			if(health != 0)
 			{
-				flags |= BRICK_EXPLODE;
+				this->Sprite->CurrentFrameIndex++;
 			}
+			else
+			{
+				if(BRICK_HIT_BY_LASER == (flags & BRICK_HIT_BY_LASER))
+				{
+					flags |= BRICK_EXPLODE;
+				}
 
-			Die(x, y, flags);
+				Die(x, y, flags);
+			}
 		}
 	}
 
@@ -190,10 +209,13 @@ public:
 	/// </summary>
 	virtual void Die(int x, int y, unsigned int flags)
 	{
-		visible = false;
-		
-		BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), this->Sprite->Position, flags);
-		Death(this, hitEventArgs);
+		if(!indestructible)
+		{
+			visible = false;
+
+			BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), this->Sprite->Position, flags);
+			Death(this, hitEventArgs);
+		}
 	}
 
 	virtual void Behaviour(BrickHitEventArgs% hitEventArgs)
