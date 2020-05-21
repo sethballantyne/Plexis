@@ -463,7 +463,14 @@ public:
 		switch(value)
 		{
 			case 0:
-				SpawnLaserPowerUp(x, y, angle);
+				if(ammoCount->Value < 15)
+				{
+					SpawnLaserPowerUp(x, y, angle);
+				}
+				else
+				{
+					SpawnExtraLifePowerUp(x, y, angle);
+				}
 				break;
 
 			case 1:
@@ -475,7 +482,7 @@ public:
 				break;
 
 			case 3:
-				SpawnBonusPointPowerUp("bp100_powerup", x, y, angle);
+				SpawnLaserPowerUp(x, y, angle);
 				break;
 
 			case 4:
@@ -487,7 +494,7 @@ public:
 				break;
 
 			case 6:
-				SpawnExtraLifePowerUp(x, y, angle);
+				SpawnBonusPointPowerUp("bp100_powerup", x, y, angle);
 			break;
 		}
 	}
