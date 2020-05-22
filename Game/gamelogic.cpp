@@ -163,10 +163,10 @@ void GameLogic::HandleBallCollision()
 		ball->Velocity.Y *= -1;
 		ball->Velocity.X = ball->Velocity.X + (0.4f * player->Velocity.X);
 
-		if(ball->Velocity.X > 10)
+		/*if(ball->Velocity.X > 10)
 		{
-			ball->Velocity.X = 10;
-		}
+			ball->Velocity.X = 2;
+		}*/
 
 		// bottom of the ball has intersected with the paddle
 		if(ball->BoundingBox.Y <= player->BoundingBox.Y)
@@ -190,6 +190,11 @@ void GameLogic::HandleBallCollision()
 		{
 			correctedX = player->BoundingBox.X - ball->BoundingBox.Width - 1;
 		}
+	}
+
+	if(ball->Velocity.X > 18)
+	{
+		ball->Velocity.X = 18;
 	}
 
 	ball->SetPosition(correctedX, correctedY);
