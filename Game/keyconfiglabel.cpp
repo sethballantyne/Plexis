@@ -154,7 +154,7 @@ void KeyConfigLabel::Update(Keys ^keyboardState, Mouse ^mouseState)
 		}
 		else
 		{
-			unsigned char pressedKey = keyboardState->PressedKey;
+			int pressedKey = keyboardState->PressedKey;
 			// in the off chance that the user presses keys and mouse buttons(s) at the same time,
 			// the keyboard takes precendence.
 			if(pressedKey != -1) // -1 means a key hasn't been pressed.
