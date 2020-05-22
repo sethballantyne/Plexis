@@ -13,6 +13,7 @@ The latest build of the game is in the _build_ directory. All the source code is
   to the next level.
 * Added the ability for players to purchase ammo packs at the cost of 1 life during gameplay. This is bound to the
   `L` key by default. The ammo packs are generated as powerups in the center of the screen and have to be caught.
+* Fixed a bug where the error sound was looping whenever the player attempted to change a key binding. 
 
 ## Changes in 0.8.2
 * Scores are capped at 999,999. Previously it was 99,999. This also fixes the bug mentioned in issue 120.
