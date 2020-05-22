@@ -38,6 +38,9 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->pauseX = (Video::Width / 2) - (this->pauseImage->Size->Width / 2);
 	this->pauseY = 564;
 
+	Surface^ laserGUIImage = ResourceManager::GetSurface("laser_gui");
+	this->ammoCount = gcnew NumericField(295, 5, laserGUIImage, LaserPowerUp::InitialAmmo, 3);
+
 	this->levelCompleteImage = ResourceManager::GetSurface("level_complete");
 	this->levelCompleteX = (Video::Width / 2) - (this->levelCompleteImage->Size->Width / 2);
 	this->levelCompleteY = (Video::Height / 2) - (this->levelCompleteImage->Size->Height / 2);
@@ -50,21 +53,25 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->playerResetTimer->Enabled = false;
 	this->playerResetTimer->AutoReset = true;
 
-	this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
+	/*this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
 	this->laserActiveTimer->Enabled = false;
-	this->laserActiveTimer->AutoReset = true;
+	this->laserActiveTimer->AutoReset = true;*/
 
-	this->timerImage = ResourceManager::GetSurface("timer");
-	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
-	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
-	this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
-	
+	//this->timerImage = ResourceManager::GetSurface("timer");
+	//int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
+	//int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
+	//this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
+
+	/*powerUpInEffect = safe_cast<PowerUp ^>(sender);
+	powerUpInEffect = */
+	this->laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
+	this->laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
 }
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 {
 	Debug::Assert(keyboardState != nullptr && mouseState != nullptr);
-
+	
 	if(gameState == GameState::Playing || gameState == GameState::Paused)
 	{
 		if(this->debugKeysEnabled)
@@ -79,10 +86,6 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 				//this->GameOverTransition();
 				gameState = GameState::GameOver;
 				this->gameOverScreen->Show(score->Value);
-			}
-			else if(keyboardState->KeyPressed(DIKEYBOARD_1))
-			{
-				score->Value += 500;
 			}
 		}
 
@@ -269,7 +272,28 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				{
 					if(nullptr != this->currentLevel[i, j])
 					{
+						this->currentLevel[i, j]->CustomBehaviour += nullptr;
+
+						if(this->currentLevel[i, j]->Name == "explosiveBrick")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::ExplosiveBrick_CustomBehaviour);
+						}
+						else if(this->currentLevel[i, j]->Name == "bonus_ammo")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::AmmoBrick_CustomBehaviour);
+						}
+						else if(this->currentLevel[i, j]->Name == "instadeath_brick")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::InstaDeathBrick_CustomBehaviour);
+						}
+						else if(this->currentLevel[i, j]->Name == "bonus_life")
+						{
+							this->currentLevel[i, j]->CustomBehaviour += gcnew CustomBehaviourEventHandler(this, &GameLogic::BonusLifeBrick_CustomBehaviour);
+						}
+					
 						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
+						
+						
 					}
 				}
 			}
@@ -293,7 +317,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				gameState = GameState::LevelComplete;
 				this->levelLoadDelayTimer->Start();
 
-				laserActiveTimer->Stop();
+				/*laserActiveTimer->Stop();*/
 			}
 		break;
 
@@ -360,6 +384,8 @@ void GameLogic::Render()
 
 				// don't show -1 when the player loses his/her last life.
 				lives->Render();
+
+				ammoCount->Render();
 
 				switch(this->gameState)
 				{

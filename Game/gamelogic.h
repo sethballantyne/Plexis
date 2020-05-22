@@ -77,14 +77,16 @@ private:
 	NumericField ^lives;
 
 	// number of seconds remaining when the laser power up is in use.
-	NumericField ^powerUpTimerValue;
+	/*NumericField ^powerUpTimerValue;*/
+
+	NumericField ^ammoCount;
 
 	// the delay that's present when transitioning between levels.
 	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
 
 	// timer used to countdown the number of seconds remaining
 	// while the laser powerup is in use.
-	Timer ^laserActiveTimer = gcnew Timer(1000);
+	//Timer ^laserActiveTimer = gcnew Timer(1000);
 
 	// used for the delay when the ball goes off the screen
 	Timer ^playerResetTimer = gcnew Timer(2000);
@@ -122,9 +124,13 @@ private:
 	String ^testLevel = nullptr;
 
 	Random ^randomNumberGen = gcnew Random();
+
+	LaserPowerUp ^laser = nullptr;
+
 	// keys read from options.xml
 	int pauseKey;
 	int playerFireKey;
+	int purchaseAmmoKey;
 
 	// x and y positions for the image that's displayed when the player
 	// presses pause.
@@ -138,6 +144,9 @@ private:
 
 	// the number of bricks the user has to hit in order to complete the level
 	int numberOfBricksRemaining;
+
+	/*const int initialAmmo = 90;
+	const int ammoPacks = initialAmmo / 3;*/
 
 	bool debugKeysEnabled = false;
 
@@ -157,8 +166,8 @@ private:
 	void DisablePowerUps(bool clearLists)
 	{
 		powerUpInEffect = nullptr;
-		powerUpTimerValue->Value = 30;
-		laserActiveTimer->Enabled = false;
+		/*powerUpTimerValue->Value = 30;*/
+		//laserActiveTimer->Enabled = false;
 
 		if(clearLists)
 		{
@@ -226,16 +235,7 @@ private:
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		player->Velocity.X = mouseState->X;
-		if(keyboardState->KeyPressed(DIK_SPACE))
-		{
-			// test shit here
-			SpawnPowerUp(640, 480);
-		}
-
-		if(keyboardState->KeyPressed(DIK_L))
-		{
-			SpawnLaserPowerUp(300, 300, 45);
-		}
+		
 
 		if(keyboardState->KeyPressed(DIK_H))
 		{
@@ -247,15 +247,22 @@ private:
 			score->Value += 100000;
 		}
 
+		if(keyboardState->KeyPressed(purchaseAmmoKey))
+		{
+			PurchaseAmmo();
+		}
+
 		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
 		{
-			if(nullptr != powerUpInEffect)
-			{
-				powerUpInEffect->Fired();
-			}
-			else
+			if(ball->Attached)
 			{
 				player->FirePressed();
+			}
+			
+			else if(ammoCount->Value > 0)
+			{
+				laser->Fired();
+				ammoCount->Value--;
 			}
 		}
 	}
@@ -318,6 +325,7 @@ public:
 		// options screen; but again, shouldn't happen.
 		this->playerFireKey = GameOptions::GetValue("fireKey", 0);
 		this->pauseKey = GameOptions::GetValue("pauseKey", DIK_P);
+		this->purchaseAmmoKey = GameOptions::GetValue("purchaseAmmoKey", DIK_L);
 	}
 
 	///<summary>
@@ -335,6 +343,20 @@ public:
 		}
 	}
 
+	void PurchaseAmmo()
+	{
+		if(lives->Value > 0)
+		{
+			lives->Value--;
+			int x = Video::Width / 2;
+			int y = Video::Height / 2;
+			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+			particleEffectsList->Add(gcnew ExplosionParticleEffect(x, y, 40, 10, 10, 0, 255, 0));
+			SpawnLaserPowerUp(x, y, angle);
+		}
+	}
+
 	/// <summary>
 	/// Renders the gameplay to the screen
 	/// </summary>
@@ -349,6 +371,7 @@ public:
 		this->score->Value = 0;
 		this->lives->Value = DEFAULT_NUMBER_OF_LIVES;
 		gameOverScreen->Visible = false;
+		this->ammoCount->Value = LaserPowerUp::InitialAmmo;
 
 		LevelManager::ResetLevelCounter();
 	}
@@ -405,7 +428,7 @@ public:
 
 		int x = randomNumberGen->Next(10, 25);
 		int y = randomNumberGen->Next(10, 25);
-		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 35, x, y, R, G, B));
+		particleEffectsList->Add(gcnew ExplosionParticleEffect(explosionX, explosionY, 40, x, y, R, G, B));
 
 		ResourceManager::GetSoundBuffer("explosion")->Stop();
 		ResourceManager::GetSoundBuffer("explosion")->Play();
@@ -437,7 +460,7 @@ public:
 		}*/
 
 		playerResetTimer->Start();
-		laserActiveTimer->Stop();
+		/*laserActiveTimer->Stop();*/
 
 	}
 
@@ -452,7 +475,14 @@ public:
 		switch(value)
 		{
 			case 0:
-				SpawnLaserPowerUp(x, y, angle);
+				if(ammoCount->Value < 10)
+				{
+					SpawnLaserPowerUp(x, y, angle);
+				}
+				else
+				{
+					SpawnExtraLifePowerUp(x, y, angle);
+				}
 				break;
 
 			case 1:
@@ -476,7 +506,7 @@ public:
 				break;
 
 			case 6:
-				SpawnExtraLifePowerUp(x, y, angle);
+				SpawnLaserPowerUp(x, y, angle);
 			break;
 		}
 	}
@@ -592,10 +622,10 @@ public:
 		}
 
 		// timer shit
-		if(laserActiveTimer->Enabled)
+		/*if(laserActiveTimer->Enabled)
 		{
 			powerUpTimerValue->Render();
-		}
+		}*/
 	}
 
 	///<summar>
@@ -677,25 +707,60 @@ public:
 		}
 	}
 
+	void ExplosiveBrick_CustomBehaviour(Object ^sender, BrickHitEventArgs% e)
+	{
+		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
+		ExplodeBrick(destroyedBrick, 255, 215, 0);
+		ExplodeSurroundingBricks(e.TileCoordinates);
+	}
+
+	Tuple<System::Drawing::Point, float>^ PowerUpBrickCommonBehaviour(Object^ sender, BrickHitEventArgs% e, unsigned r, unsigned g, unsigned b)
+	{
+		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
+		System::Drawing::Point p = destroyedBrick->Sprite->GetCenter(0);
+		float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+		ExplodeBrick(destroyedBrick, r, g, b);
+
+		if(BRICK_EXPLODE == (e.Flags & BRICK_EXPLODE))
+		{
+			// don't generate another explosion in the OnDeath event handler
+			e.Flags &= ~BRICK_EXPLODE;
+		}
+
+		return gcnew Tuple<System::Drawing::Point, float>(p, angle);
+	}
+
+	void BonusLifeBrick_CustomBehaviour(Object ^sender, BrickHitEventArgs %e)
+	{
+		Tuple<System::Drawing::Point, float>^ result = PowerUpBrickCommonBehaviour(sender, e, 249, 74, 75);
+		SpawnExtraLifePowerUp(result->Item1.X, result->Item1.Y, result->Item2);
+	}
+	
+	void AmmoBrick_CustomBehaviour(Object^ sender, BrickHitEventArgs %e)
+	{
+		Tuple<System::Drawing::Point, float>^ result = PowerUpBrickCommonBehaviour(sender, e, 0, 255, 0);
+		SpawnLaserPowerUp(result->Item1.X, result->Item1.Y, result->Item2);
+	}
+
+	void InstaDeathBrick_CustomBehaviour(Object^ sender, BrickHitEventArgs %e)
+	{
+		Tuple<System::Drawing::Point, float>^ result = PowerUpBrickCommonBehaviour(sender, e, 225, 224, 223);
+		SpawnInstaDeathPowerUp(result->Item1.X, result->Item1.Y, result->Item2);
+	}
+
 	/// <summary>
 	/// describes what should happen when a brick is destroyed.
 	/// </summary>
 	void Brick_OnDeath(Object ^sender, BrickHitEventArgs ^e)
 	{
-		/*if(!ResourceManager::GetSoundBuffer("volume_conf")->IsPlaying)
-		ResourceManager::GetSoundBuffer("volume_conf")->Play();*/
-
 		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
-
+		
 		this->score->Value += destroyedBrick->PointValue;
-		if(destroyedBrick->Name == "explosiveBrick")
-		{
-			// make the exploding brick look like it's exploding.
-			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
-			ExplodeBrick(destroyedBrick, 255, 215, 0);
-			ExplodeSurroundingBricks(e->TileCoordinates);
-		}
-		else if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
+		
+		destroyedBrick->Behaviour(*e);
+		
+		if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
 		{
 			ExplodeBrick(destroyedBrick, 255, 215, 0);
 			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
@@ -708,8 +773,10 @@ public:
 			SpawnPowerUp(e->ScreenCoordinates.X, e->ScreenCoordinates.Y);
 		}
 
-		this->currentLevel->BrickCount--;
-		Debug::Assert(this->currentLevel->BrickCount >= 0);
+		if(destroyedBrick->Tally)
+		{
+			this->currentLevel->BrickCount--;
+		}
 	}
 
 	void OnLevelTransitionTimerEvent(Object ^source, ElapsedEventArgs ^e)
@@ -723,36 +790,37 @@ public:
 	//------------------------------------------------------
 
 	//// LASER ////////////////////////////////////////////////
-	void OnLaserTimerEvent(Object ^source, ElapsedEventArgs ^e)
-	{
-		if(powerUpTimerValue->Value != 0)
-		{
-			powerUpTimerValue->Value--;
-		}
-		else
-		{
-			// no more time left on the clock for this powerup.
-			// remove the power up effects and reset the timer.
-			DisablePowerUps(false);
-		}
-	}
+	//void OnLaserTimerEvent(Object ^source, ElapsedEventArgs ^e)
+	//{
+	//	if(powerUpTimerValue->Value != 0)
+	//	{
+	//		powerUpTimerValue->Value--;
+	//	}
+	//	else
+	//	{
+	//		// no more time left on the clock for this powerup.
+	//		// remove the power up effects and reset the timer.
+	//		DisablePowerUps(false);
+	//	}
+	//}
 
 	// Event handlder for when the laser powerup collides with the players paddle.
 	void OnCollisionWithPaddle_LaserPowerUp(Object ^sender, EventArgs ^e)
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
-		powerUpInEffect = safe_cast<PowerUp ^>(sender);
+		//powerUpInEffect = safe_cast<PowerUp ^>(sender);
+		ammoCount->Value += safe_cast<LaserPowerUp ^>(sender)->PickupAmmo;
 
 		// when the laser powerup is caught, the timer is reset is if the power-up
 		// is already active.
-		if(laserActiveTimer->Enabled)
+		/*if(laserActiveTimer->Enabled)
 		{
 			powerUpTimerValue->Value = 30;
 		}
 		else
 		{
 			laserActiveTimer->Start();
-		}
+		}*/
 	}
 
 	// Handles firing the lasers when the laser powerup is active and the
@@ -765,7 +833,7 @@ public:
 		int spawnX = player->Sprite->Position.X + 8;
 		int spawnY = (player->BoundingBox.Y - leftLaser->BoundingBox.Height) - 1;
 		leftLaser->SetPosition(spawnX, spawnY);
-		leftLaser->Velocity = safe_cast<LaserPowerUp ^>(powerUpInEffect)->LaserVelocity;
+		leftLaser->Velocity = this->laser->LaserVelocity;
 		laserList->Add(leftLaser);
 
 

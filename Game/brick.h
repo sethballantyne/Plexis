@@ -23,6 +23,8 @@
 #define BRICK_HIT_BY_BALL  2
 #define BRICK_EXPLODE      4
 
+ref class Brick;
+delegate void CustomBehaviourEventHandler(Object ^sender, BrickHitEventArgs %args);
 delegate void BrickDeathEventHandler(Object ^sender, BrickHitEventArgs ^args);
 
 /// <summary>
@@ -46,6 +48,12 @@ private:
 
 	// determines whethert the brick should be rendered or not.
 	bool visible = true;
+
+	// If false, the brick won't one of the bricks
+	// counted to determine whether it's time to transition to the next level.
+	bool tally = true;
+
+	bool indestructible = false;
 public:
     /// <summary>
     /// Initialises a new instance of <see cref="Brick"/>.
@@ -58,11 +66,13 @@ public:
     /// This is a percentage between 1 and 100.</param>
     /// <param name="pointsAwarded">the number of added to the players score when this brick is destroyed.</param>
     Brick(::Sprite ^sprite, unsigned int health, unsigned int chanceOfPowerUpSpawning, 
-        unsigned int pointsAwarded, String ^name) : Entity(sprite, Vector2(0), name)
+        unsigned int pointsAwarded, bool tally, bool indestructible, String ^name) : Entity(sprite, Vector2(0), name)
     {
         this->health = health;
         this->chanceOfPowerUpSpawning = chanceOfPowerUpSpawning;
         pointsAwardedOnDeath = pointsAwarded;
+		this->tally = tally;
+		this->indestructible = indestructible;
     }
 
     /// <summary>
@@ -76,7 +86,7 @@ public:
             this->Sprite->Position.Y, 
             this->Sprite->GetFrames(), this->Sprite->Surface);
 
-        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath, this->Name);
+        return gcnew Brick(sprite, this->health, this->chanceOfPowerUpSpawning, this->pointsAwardedOnDeath, this->tally, this->indestructible, this->Name);
     }
 
     /// <summary>
@@ -142,23 +152,55 @@ public:
 	}
 
 	/// <summary>
+	/// True if the brick needs to be destroyed before the player can 
+	/// transition to the next level, otherwise false.
+	/// </summary>
+	property bool Tally
+	{
+		bool get()
+		{
+			return tally;
+		}
+		void set(bool value)
+		{
+			tally = value;
+		}
+	}
+
+	property bool Indestructible
+	{
+		bool get()
+		{
+			return indestructible;
+		}
+
+		void set(bool value)
+		{
+			indestructible = value;
+		}
+	}
+
+	/// <summary>
 	/// Describes what should happen when the ball hits this brick.
 	/// </summary>
 	virtual void Hit(int x, int y, unsigned int flags)
 	{
-		health--;
-		if(health != 0)
+		if(!indestructible)
 		{
-			this->Sprite->CurrentFrameIndex++;
-		}
-		else
-		{
-			if(BRICK_HIT_BY_LASER == (flags & BRICK_HIT_BY_LASER))
+			health--;
+			if(health != 0)
 			{
-				flags |= BRICK_EXPLODE;
+				this->Sprite->CurrentFrameIndex++;
 			}
+			else
+			{
+				if(BRICK_HIT_BY_LASER == (flags & BRICK_HIT_BY_LASER))
+				{
+					flags |= BRICK_EXPLODE;
+				}
 
-			Die(x, y, flags);
+				Die(x, y, flags);
+			}
 		}
 	}
 
@@ -167,16 +209,24 @@ public:
 	/// </summary>
 	virtual void Die(int x, int y, unsigned int flags)
 	{
-		visible = false;
-		
-		BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), this->Sprite->Position, flags);
-		Death(this, hitEventArgs);
+		if(!indestructible)
+		{
+			visible = false;
+
+			BrickHitEventArgs ^hitEventArgs = gcnew BrickHitEventArgs(System::Drawing::Point(x, y), this->Sprite->Position, flags);
+			Death(this, hitEventArgs);
+		}
+	}
+
+	virtual void Behaviour(BrickHitEventArgs% hitEventArgs)
+	{
+		CustomBehaviour(this, hitEventArgs);
 	}
 
 	/// <summary>
 	/// event that's fired when the brick is "killed" (its health equates to 0).
 	/// </summary>
 	event BrickDeathEventHandler^ Death;
-
+	event CustomBehaviourEventHandler^ CustomBehaviour;
 };
 
