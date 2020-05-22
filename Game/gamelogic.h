@@ -130,6 +130,7 @@ private:
 	// keys read from options.xml
 	int pauseKey;
 	int playerFireKey;
+	int purchaseAmmoKey;
 
 	// x and y positions for the image that's displayed when the player
 	// presses pause.
@@ -234,16 +235,7 @@ private:
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		player->Velocity.X = mouseState->X;
-		if(keyboardState->KeyPressed(DIK_SPACE))
-		{
-			// test shit here
-			SpawnPowerUp(640, 480);
-		}
-
-		if(keyboardState->KeyPressed(DIK_L))
-		{
-			SpawnLaserPowerUp(300, 300, 45);
-		}
+		
 
 		if(keyboardState->KeyPressed(DIK_H))
 		{
@@ -253,6 +245,11 @@ private:
 		if(keyboardState->KeyPressed(DIK_S))
 		{
 			score->Value += 100000;
+		}
+
+		if(keyboardState->KeyPressed(purchaseAmmoKey))
+		{
+			PurchaseAmmo();
 		}
 
 		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
@@ -328,6 +325,7 @@ public:
 		// options screen; but again, shouldn't happen.
 		this->playerFireKey = GameOptions::GetValue("fireKey", 0);
 		this->pauseKey = GameOptions::GetValue("pauseKey", DIK_P);
+		this->purchaseAmmoKey = GameOptions::GetValue("purchaseAmmoKey", DIK_L);
 	}
 
 	///<summary>
@@ -342,6 +340,20 @@ public:
 			{
 				particleEffectsList->RemoveAt(i);
 			}
+		}
+	}
+
+	void PurchaseAmmo()
+	{
+		if(lives->Value > 0)
+		{
+			lives->Value--;
+			int x = Video::Width / 2;
+			int y = Video::Height / 2;
+			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
+
+			particleEffectsList->Add(gcnew ExplosionParticleEffect(x, y, 40, 10, 10, 0, 255, 0));
+			SpawnLaserPowerUp(x, y, angle);
 		}
 	}
 
@@ -463,7 +475,7 @@ public:
 		switch(value)
 		{
 			case 0:
-				if(ammoCount->Value < 15)
+				if(ammoCount->Value < 10)
 				{
 					SpawnLaserPowerUp(x, y, angle);
 				}
@@ -482,7 +494,7 @@ public:
 				break;
 
 			case 3:
-				SpawnLaserPowerUp(x, y, angle);
+				SpawnBonusPointPowerUp("bp100_powerup", x, y, angle);
 				break;
 
 			case 4:
@@ -494,7 +506,7 @@ public:
 				break;
 
 			case 6:
-				SpawnBonusPointPowerUp("bp100_powerup", x, y, angle);
+				SpawnLaserPowerUp(x, y, angle);
 			break;
 		}
 	}

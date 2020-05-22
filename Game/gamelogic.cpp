@@ -71,7 +71,7 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 {
 	Debug::Assert(keyboardState != nullptr && mouseState != nullptr);
-
+	
 	if(gameState == GameState::Playing || gameState == GameState::Paused)
 	{
 		if(this->debugKeysEnabled)
@@ -86,10 +86,6 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 				//this->GameOverTransition();
 				gameState = GameState::GameOver;
 				this->gameOverScreen->Show(score->Value);
-			}
-			else if(keyboardState->KeyPressed(DIKEYBOARD_1))
-			{
-				score->Value += 500;
 			}
 		}
 

@@ -11,6 +11,8 @@ The latest build of the game is in the _build_ directory. All the source code is
 * Each brick type in `entities.xml` can now specify whether they should be counted in the total number of bricks when 
   a level is loaded. This allows for bricks that don't need to be destroyed in order for the player to transition
   to the next level.
+* Added the ability for players to purchase ammo packs at the cost of 1 life during gameplay. This is bound to the
+  `L` key by default. The ammo packs are generated as powerups in the center of the screen and have to be caught.
 
 ## Changes in 0.8.2
 * Scores are capped at 999,999. Previously it was 99,999. This also fixes the bug mentioned in issue 120.
