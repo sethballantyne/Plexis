@@ -12,6 +12,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 * Capped the ball speed so it can't pass through bricks or the paddle due to high speed.
 * PLeD now informs users when it can't load brick sprites.
 * Invisible bricks no longer need to be destroyed before the player can transition to the next level.
+* Added a sound effect that plays when the player purchases ammo.
 
 ## Changes in 0.9
 * The player now has a permanent laser, with an initial ammo count of 90. Laser powerups now act as ammo packs when caught, awarding 30 ammo. Both the initial value and the amount of ammo awarded when a powerup is caught are specified in the lasers `initialammo` and `pickupammo` XML attributes.
