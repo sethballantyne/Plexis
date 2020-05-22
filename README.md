@@ -9,6 +9,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 ## Changes in 0.9.1
 * Fixed a bug where the error sound was looping whenever the player attempted to change a key binding.
 * When a ball collides with two bricks at the same time, the game will now treat both bricks as being hit.
+* Capped ball speed so it can't pass through bricks or the paddle due to high speed.
  
 ## Changes in 0.9
 * The player now has a permanent laser, with an initial ammo count of 90. Laser powerups now act as ammo packs when caught, awarding 30 ammo. Both the initial value and the amount of ammo awarded when a powerup is caught are specified in the lasers `initialammo` and `pickupammo` XML attributes.
