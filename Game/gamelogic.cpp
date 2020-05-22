@@ -163,10 +163,10 @@ void GameLogic::HandleBallCollision()
 		ball->Velocity.Y *= -1;
 		ball->Velocity.X = ball->Velocity.X + (0.4f * player->Velocity.X);
 
-		if(ball->Velocity.X > 10)
+		/*if(ball->Velocity.X > 10)
 		{
-			ball->Velocity.X = 10;
-		}
+			ball->Velocity.X = 2;
+		}*/
 
 		// bottom of the ball has intersected with the paddle
 		if(ball->BoundingBox.Y <= player->BoundingBox.Y)
@@ -190,6 +190,11 @@ void GameLogic::HandleBallCollision()
 		{
 			correctedX = player->BoundingBox.X - ball->BoundingBox.Width - 1;
 		}
+	}
+
+	if(ball->Velocity.X > 18)
+	{
+		ball->Velocity.X = 18;
 	}
 
 	ball->SetPosition(correctedX, correctedY);
@@ -219,10 +224,40 @@ void GameLogic::HandleBrickCollisions()
 					}
 				
 					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+					
+					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(i, j);
+
 					/*ball->Velocity.X = -ball->Velocity.X;
 					ball->Velocity.Y = -ball->Velocity.Y;*/
 
 					return;
+				}
+			}
+		}
+	}
+}
+
+// Checks to see if any neighbouring bricks of the brick hit in CheckBrickCollisions() 
+// were also hit by the ball. This would happen when the ball hits a join, causing the balls bounding
+// box intersects the bounding box of both bricks.
+void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(int x, int y)
+{
+	const int initialX = (x - 1 < 0) ? x : x - 1;
+	const int initialY = (y - 1 < 0) ? y : y - 1;
+	const int maxX = (x + 1 >= currentLevel->Width) ? x : x + 1;
+	const int maxY = (y + 1 >= currentLevel->Height) ? y : y + 1;
+
+	for(int i = initialX; i <= maxX; i++)
+	{
+		for(int j = initialY; j <= maxY; j++)
+		{
+			// not comparing x & y because that's the brick that was hit in HandleBrickCollisions()
+			if(!(j == y && i == x)) 
+			{
+				if((nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible) &&
+				   ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
+				{
+					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
 				}
 			}
 		}

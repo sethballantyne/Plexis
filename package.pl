@@ -14,4 +14,4 @@ $zip->addFile('options.xml');
 $zip->addFile('PLeD_options.xml');
 $zip->addFile('paths.xml');
 
-$zip->writeToFileNamed("plexis.0.8.zip");
+$zip->writeToFileNamed("plexis.0.9.1.zip");

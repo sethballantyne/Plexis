@@ -48,7 +48,7 @@ public:
 	}
 
 	/// <summary>
-	/// Updates the bricks state.
+	/// Updates the balls state.
 	/// </summary>
 	void Update() override
 	{

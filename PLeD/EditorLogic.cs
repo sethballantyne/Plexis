@@ -142,6 +142,10 @@ namespace PLeD
                             ListViewItem newItem = new ListViewItem(bricks[i].Name, bricks[i].Name);
                             listView.Items.Add(newItem);
                         }
+                        else
+                        {
+                            throw new Exception(String.Format("Unable to load the sprite {0} for the brick {1}.", bricks[i].ImageName, bricks[i].Name));
+                        }
                     }
                 }
             }
