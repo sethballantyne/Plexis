@@ -6,6 +6,9 @@ Plexis a breakout clone I wrote in C++/CLI because I wanted to play around with 
 
 The latest build of the game is in the _build_ directory. All the source code is released under the MIT license. 
 
+## Changes in 0.10
+* Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 
+
 ## Changes in 0.9.1
 * Fixed a bug where the error sound was looping whenever the player attempted to change a key binding.
 * When a ball collides with two bricks at the same time, the game will now treat both bricks as being hit.
