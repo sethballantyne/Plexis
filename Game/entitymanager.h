@@ -88,13 +88,15 @@ private:
 	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
 	static void ParseLaserPowerUp(XElement ^powerupElement, String ^name);
 
+	static void ParsePowerUp(XElement ^powerupElement, String^ name);
+
 	/// <summary>
 	/// Parses all the powerups within the entities file.
 	/// </summary>
 	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
 	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
 	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
-	static void ParsePowerup(XElement ^brickElement);
+	static void ReadPowerup(XElement ^brickElement);
 
 	/// <summary>
 	/// Parses the XML that describes instadeath power up that isn't really a power up, I just didn't know what to call it. 
@@ -124,7 +126,6 @@ private:
 
 	/// <summary>
 	/// Parses the XML that describes a timed powerup.
-	/// The Jumbo power up uses this rather than having its own parser.
 	///</summary>
 	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
 	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>

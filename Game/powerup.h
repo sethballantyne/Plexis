@@ -146,6 +146,16 @@ public:
 		HandleEdgeCollisions(x, y, width, height);
 	}
 
+	Object ^Clone() override
+	{
+		::Sprite ^sprite = gcnew ::Sprite(
+			this->Sprite->Position.X,
+			this->Sprite->Position.Y,
+			this->Sprite->GetFrames(), this->Sprite->Surface);
+
+		return gcnew PowerUp(sprite, Vector2::Zero, this->Name);
+	}
+
 	// triggers when PlayerCollision() is called.
 	// represents when the powerup is collected by the paddle.
 	event PowerUpEffectHandler^ CollisionWithPaddle;

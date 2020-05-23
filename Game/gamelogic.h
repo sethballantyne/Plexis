@@ -248,7 +248,7 @@ private:
 
 		if(keyboardState->KeyPressed(DIK_J))
 		{
-			SpawnJumboPowerUp(400, 400, 90);
+			SpawnShrinkPowerUp(400, 400, 90);
 		}
 
 		if(keyboardState->KeyPressed(DIK_S))
@@ -525,6 +525,10 @@ public:
 				SpawnJumboPowerUp(x, y, angle);
 			break;
 
+			case 8:
+				SpawnShrinkPowerUp(x, y, angle);
+			break;
+
 			default:
 				break;
 		}
@@ -593,13 +597,22 @@ public:
 
 	void SpawnJumboPowerUp(int x, int y, float angle)
 	{
-		TimedPowerUp^ jumboPowerUp = EntityManager::GetEntity<TimedPowerUp ^>("jumbo_powerup");
+		PowerUp^ jumboPowerUp = EntityManager::GetEntity<PowerUp ^>("jumbo_powerup");
 		
 		jumboPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_JumboPowerUp);
 		jumboPowerUp->Spawn(x, y, angle);
 
-		powerUpList->Add(safe_cast<PowerUp ^>(jumboPowerUp));
+		powerUpList->Add(jumboPowerUp);
+	}
 
+	void SpawnShrinkPowerUp(int x, int y, float angle)
+	{
+		PowerUp^ shrinkPowerUp = EntityManager::GetEntity<PowerUp ^>("shrink_powerup");
+
+		shrinkPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_ShrinkPowerUp);
+		shrinkPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(shrinkPowerUp);
 	}
 
 	///<summary>
@@ -905,19 +918,16 @@ public:
 
 	void OnCollisionWithPaddle_JumboPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
-		TimedPowerUp ^temp = safe_cast<TimedPowerUp ^>(sender);
-
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 
 		player->SetFrame(1);
-		/*if(powerUpTimer->Enabled)
-		{
-			powerUpTimerValue->Value = 30;
-		}
-		else
-		{
-			laserActiveTimer->Start();
-		}*/
+	}
+
+	void OnCollisionWithPaddle_ShrinkPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
+		player->SetFrame(2);
 	}
 
 };

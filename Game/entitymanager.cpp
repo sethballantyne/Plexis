@@ -236,7 +236,26 @@ void EntityManager::ParseTimedPowerUp(XElement^ powerupElement, String^ name)
 	}
 }
 
-void EntityManager::ParsePowerup(XElement ^powerupElement)
+void EntityManager::ParsePowerUp(XElement ^powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		PowerUp ^powerUp = gcnew PowerUp(powerupSprite, Vector2::Zero, name);
+
+		parsedEntities[name] = powerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ReadPowerup(XElement ^powerupElement)
 {
 	try
 	{
@@ -266,9 +285,9 @@ void EntityManager::ParsePowerup(XElement ^powerupElement)
 			ParseExtraLifePowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
-		else if("jumbo_powerup" == lowercasename)
+		else if("jumbo_powerup" == lowercasename || "shrink_powerup" == lowercasename)
 		{
-			ParseTimedPowerUp(powerupElement, lowercasename);
+			ParsePowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
 	}
@@ -356,7 +375,7 @@ void EntityManager::Initialise(XElement ^entitiesFile)
 			}
 			else if("powerup" == entityType)
 			{
-				ParsePowerup(entityElement);
+				ReadPowerup(entityElement);
 			}
 			else if("powerup_asset" == entityType)
 			{
