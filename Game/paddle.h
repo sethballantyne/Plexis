@@ -39,7 +39,9 @@ public:
 
 		// ballX and ballY are local coordinates (coordinates on the paddle), not screen coordinates.
 		int ballX = middleOfPaddle - (ballWidth / 2);
-		int ballY = this->Sprite->CurrentFrame->Coordinates.Y - ball->BoundingBox.Height;
+
+		// attach to the top of the paddle
+		int ballY = 0 - ball->BoundingBox.Height;
 
 		this->Attach(ball, ballX, ballY);
 	}
