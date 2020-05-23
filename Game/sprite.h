@@ -136,6 +136,7 @@ public:
         unsigned int get()
         {
             return currentFrameIndex;
+			
         }
 		void set(unsigned int value)
 		{

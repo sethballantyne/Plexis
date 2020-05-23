@@ -33,6 +33,7 @@
 #include "instadeath_powerup.h"
 #include "bonuspoints_powerup.h"
 #include "extralife_powerup.h"
+#include "timed_powerup.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
@@ -179,13 +180,14 @@ private:
 	/// <summary>
 	/// Resets the paddle and ball to their default positions.
 	/// </summary>
-	void ResetPlayerAndBall()
+	/*void ResetPlayerAndBall()
 	{
+		player->SetFrame(0);
 		player->ResetPosition();
 		this->player->RemoveAttachments();
 		this->player->AttachBall(ball);
 		this->player->IsDead = false;
-	}
+	}*/
 
 	/// <summary>
 	/// Handles mouse and keyboard input during gameplay
@@ -244,6 +246,11 @@ private:
 			lives->Value += 100;
 		}
 
+		if(keyboardState->KeyPressed(DIK_J))
+		{
+			SpawnJumboPowerUp(400, 400, 90);
+		}
+
 		if(keyboardState->KeyPressed(DIK_S))
 		{
 			score->Value += 100000;
@@ -297,6 +304,7 @@ private:
 	///</summary>
 	void SpawnPlayer()
 	{
+		player->SetFrame(0);
 		player->ResetPosition();
 		this->player->RemoveAttachments(); // this was supposed to be used when the player
 		// had a laser gun attached to the paddle or there
@@ -354,6 +362,8 @@ public:
 			int y = Video::Height / 2;
 			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
 
+			ResourceManager::GetSoundBuffer("purchase_ammo")->Stop();
+			ResourceManager::GetSoundBuffer("purchase_ammo")->Play();
 			particleEffectsList->Add(gcnew ExplosionParticleEffect(x, y, 40, 10, 10, 0, 255, 0));
 			SpawnLaserPowerUp(x, y, angle);
 		}
@@ -510,6 +520,13 @@ public:
 			case 6:
 				SpawnLaserPowerUp(x, y, angle);
 			break;
+
+			case 7:
+				SpawnJumboPowerUp(x, y, angle);
+			break;
+
+			default:
+				break;
 		}
 	}
 
@@ -572,6 +589,17 @@ public:
 		extraLifePowerUp->Spawn(x, y, angle);
 
 		powerUpList->Add(safe_cast<PowerUp ^>(extraLifePowerUp));
+	}
+
+	void SpawnJumboPowerUp(int x, int y, float angle)
+	{
+		TimedPowerUp^ jumboPowerUp = EntityManager::GetEntity<TimedPowerUp ^>("jumbo_powerup");
+		
+		jumboPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_JumboPowerUp);
+		jumboPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(safe_cast<PowerUp ^>(jumboPowerUp));
+
 	}
 
 	///<summary>
@@ -703,7 +731,7 @@ public:
 		}
 		else
 		{
-			this->ResetPlayerAndBall();
+			this->SpawnPlayer();
 			DisablePowerUps(true);
 			this->gameState = GameState::Playing;
 		}
@@ -873,6 +901,23 @@ public:
 		lives->Value += temp->LivesAwarded;
 
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
+	}
+
+	void OnCollisionWithPaddle_JumboPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		TimedPowerUp ^temp = safe_cast<TimedPowerUp ^>(sender);
+
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
+		player->SetFrame(1);
+		/*if(powerUpTimer->Enabled)
+		{
+			powerUpTimerValue->Value = 30;
+		}
+		else
+		{
+			laserActiveTimer->Start();
+		}*/
 	}
 
 };

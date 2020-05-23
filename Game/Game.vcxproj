@@ -92,6 +92,7 @@
     <ClInclude Include="gameview.h" />
     <ClInclude Include="imagecontrol.h" />
     <ClInclude Include="instadeath_powerup.h" />
+    <ClInclude Include="timed_powerup.h" />
     <ClInclude Include="laser.h" />
     <ClInclude Include="laser_powerup.h" />
     <ClInclude Include="level.h" />

@@ -237,6 +237,9 @@
     <ClInclude Include="laser_powerup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="timed_powerup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

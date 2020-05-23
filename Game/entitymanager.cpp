@@ -23,6 +23,7 @@
 #include "instadeath_powerup.h"
 #include "bonuspoints_powerup.h"
 #include "extralife_powerup.h"
+#include "timed_powerup.h"
 
 using namespace System::Xml;
 
@@ -215,6 +216,26 @@ void EntityManager::ParseExtraLifePowerUp(XElement ^powerupElement, String ^name
 	}
 }
 
+void EntityManager::ParseTimedPowerUp(XElement^ powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		unsigned int duration = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "duration");
+
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		TimedPowerUp ^timedPowerUp = gcnew TimedPowerUp(powerupSprite, duration, name);
+
+		parsedEntities[name] = timedPowerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
 void EntityManager::ParsePowerup(XElement ^powerupElement)
 {
 	try
@@ -243,6 +264,11 @@ void EntityManager::ParsePowerup(XElement ^powerupElement)
 		else if("extralife_powerup" == lowercasename)
 		{
 			ParseExtraLifePowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("jumbo_powerup" == lowercasename)
+		{
+			ParseTimedPowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
 	}

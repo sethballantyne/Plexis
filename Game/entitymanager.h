@@ -122,6 +122,15 @@ private:
 	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
 	static void ParseExtraLifePowerUp(XElement ^powerupElement, String ^name);
 
+	/// <summary>
+	/// Parses the XML that describes a timed powerup.
+	/// The Jumbo power up uses this rather than having its own parser.
+	///</summary>
+	/// <exception cref="System::FormatException">one of the elements attributes contains an invalid value.</exception>
+	/// <exception cref="System::OverflowException">an attribute that contains a numeric value is outside its range.</exception>
+	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
+	static void ParseTimedPowerUp(XElement^ powerupElement, String^ name);
+
 public:
 	/// <summary>
 	/// The number of different powerups within the game.
