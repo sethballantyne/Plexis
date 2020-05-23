@@ -8,6 +8,8 @@ The latest build of the game is in the _build_ directory. All the source code is
 
 ## Changes in 0.10
 * Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 
+* Added the Jumbo Paddle power up, which increases the size of the paddle when caught. The paddle is restored to its default
+  size when the player dies or the player starts a new game from the main menu.
 
 ## Changes in 0.9.1
 * Fixed a bug where the error sound was looping whenever the player attempted to change a key binding.
