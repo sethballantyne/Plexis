@@ -24,6 +24,7 @@
 #include "bonuspoints_powerup.h"
 #include "extralife_powerup.h"
 #include "timed_powerup.h"
+#include "wall.h"
 
 using namespace System::Xml;
 
@@ -285,7 +286,8 @@ void EntityManager::ReadPowerup(XElement ^powerupElement)
 			ParseExtraLifePowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
-		else if("jumbo_powerup" == lowercasename || "shrink_powerup" == lowercasename)
+		else if("jumbo_powerup" == lowercasename || "shrink_powerup" == lowercasename ||
+				"wall_powerup" == lowercasename)
 		{
 			ParsePowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
@@ -337,9 +339,18 @@ void EntityManager::ParsePowerUpAsset(XElement ^entityElement)
 		array<Frame ^, 1>^ frames = ParseFrames(entityElement);
 
 		Sprite ^laserSprite = gcnew Sprite(0, 0, frames, image);
-		Laser ^laser = gcnew Laser(laserSprite, name);
 
-		parsedEntities[name] = laser;
+		Entity^ f;
+		if(name == "laser")
+		{
+			f = gcnew Laser(laserSprite, name);
+		}
+		else if(name == "wall")
+		{
+			f = gcnew Wall(laserSprite, name);
+		}
+
+		parsedEntities[name] = f;
 	}
 	catch(...)
 	{

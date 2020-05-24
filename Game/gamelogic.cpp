@@ -20,9 +20,10 @@ void GameLogic::DebugRemoveBrick()
 
 GameLogic::GameLogic(String ^gameInProgressMenu)
 {
+	this->debugKeysEnabled = GameOptions::GetValue("debugKeys", 0);
+
 	this->gameInProgressMainMenu = gameInProgressMenu;
 	//this->highScorePrompt = highScorePrompt;
-	this->debugKeysEnabled = (bool) GameOptions::GetValue("debugKeys", false);
 
 	this->player = EntityManager::GetEntity<Paddle ^>("player");
 	Debug::Assert(this->player != nullptr);
@@ -53,19 +54,24 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->playerResetTimer->Enabled = false;
 	this->playerResetTimer->AutoReset = true;
 
-	/*this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
-	this->laserActiveTimer->Enabled = false;
-	this->laserActiveTimer->AutoReset = true;*/
+	//this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
+	//this->laserActiveTimer->Enabled = false;
+	this->wallPowerUpTimer->AutoReset = true;
+	this->wallPowerUpTimer->Elapsed += gcnew System::Timers::ElapsedEventHandler(this, &GameLogic::OnWallTimerTickEvent);
+	this->wallPowerUpTimer->Enabled = false;
 
-	//this->timerImage = ResourceManager::GetSurface("timer");
-	//int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
-	//int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
-	//this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
+	this->timerImage = ResourceManager::GetSurface("timer");
+	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
+	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
+	this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
 
 	/*powerUpInEffect = safe_cast<PowerUp ^>(sender);
 	powerUpInEffect = */
 	this->laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
 	this->laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
+
+	this->wall = EntityManager::GetEntity<Wall ^>("wall");
+	this->wall->SetPosition(0, 736);
 }
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
@@ -83,10 +89,15 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 
 			else if(keyboardState->KeyPressed(DIK_D))
 			{
-				//this->GameOverTransition();
 				gameState = GameState::GameOver;
 				this->gameOverScreen->Show(score->Value);
 			}
+
+			else if(keyboardState->KeyPressed(DIK_1))
+			{
+				SpawnWallPowerUp(400, 400, 45);
+			}
+
 		}
 
 		if(keyboardState->KeyPressed(DIK_ESCAPE))
@@ -150,9 +161,8 @@ void GameLogic::HandleBallCollision()
 
 	if(ballY >= Video::Height && !player->IsDead)
 	{
-		// Player died.
-		ExplodePaddle();
-		
+		KillPlayer();
+
 		ball->Velocity = Vector2::Zero;
 	}
 
@@ -189,6 +199,42 @@ void GameLogic::HandleBallCollision()
 		else if(ball->BoundingBox.X <= player->BoundingBox.X)
 		{
 			correctedX = player->BoundingBox.X - ball->BoundingBox.Width - 1;
+		}
+	}
+
+	else if(ball->BoundingBox.IntersectsWith(wall->BoundingBox) && wall->Visible)
+	{
+		ResourceManager::GetSoundBuffer("bounce")->Play();
+
+		ball->Velocity.Y *= -1;
+		ball->Velocity.X = ball->Velocity.X + (0.4f * player->Velocity.X);
+
+		/*if(ball->Velocity.X > 10)
+		{
+		ball->Velocity.X = 2;
+		}*/
+
+		// bottom of the ball has intersected with the paddle
+		if(ball->BoundingBox.Y <= wall->BoundingBox.Y)
+		{
+			correctedY = wall->BoundingBox.Y - ball->BoundingBox.Height - 1;
+		}
+		// top of the ball has intersected with the paddle
+		else if(ball->BoundingBox.Y > wall->BoundingBox.Y)
+		{
+			correctedY = wall->BoundingBox.Bottom + 1;
+		}
+
+		// left of the ball has intersected with the paddle
+		if(ball->BoundingBox.Right >= wall->BoundingBox.Right)
+		{
+			correctedX = wall->BoundingBox.Right + 1;
+		}
+
+		// right side of the ball has intersected with the paddle
+		else if(ball->BoundingBox.X <= wall->BoundingBox.X)
+		{
+			correctedX = wall->BoundingBox.X - ball->BoundingBox.Width - 1;
 		}
 	}
 
@@ -352,6 +398,10 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				gameState = GameState::LevelComplete;
 				this->levelLoadDelayTimer->Start();
 
+				if(activePowerUpTimer != nullptr && activePowerUpTimer->Enabled)
+				{
+					activePowerUpTimer->Stop();
+				}
 				/*laserActiveTimer->Stop();*/
 			}
 		break;
@@ -401,6 +451,12 @@ void GameLogic::Render()
 				}
 
 				ball->Sprite->Render();
+
+				if(wall->Visible)
+				{
+					wall->Sprite->Render();
+				}
+
 				RenderPowerUps();
 
 				if(explosionList->Count > 0)
@@ -422,6 +478,11 @@ void GameLogic::Render()
 
 				ammoCount->Render();
 
+				if(activePowerUpTimer != nullptr)
+				{
+					powerUpTimerValue->Render();
+				}
+
 				switch(this->gameState)
 				{
 					case GameState::Paused:
@@ -434,6 +495,8 @@ void GameLogic::Render()
 					default:
 						break;
 				}
+
+				
 
 				RenderParticleEffects();
 			}

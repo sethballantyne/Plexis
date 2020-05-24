@@ -80,6 +80,7 @@ public:
 
 	property float Angle;
 
+
 	PowerUp(::Sprite ^powerupSprite, Vector2 velocity, System::String ^name) : Entity(powerupSprite, Vector2::Zero, name)
 	{
 		Gravity = 0.1f;

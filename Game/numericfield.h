@@ -91,6 +91,8 @@ private:
 	}
 
 public:
+
+	property bool Enabled;
 	/// <summary>
 	/// 
 	/// </summary>
@@ -114,6 +116,7 @@ public:
 		this->numberText = gcnew Label(numberPositionX, y, "white", Pad(paddingAmount));
 
 		maxValue = MaxValue();
+		Enabled = true;
 	}
 
 	/// <summary>

@@ -148,6 +148,7 @@
     <ClInclude Include="version.h" />
     <ClInclude Include="video.h" />
     <ClInclude Include="vsoutputlogger.h" />
+    <ClInclude Include="wall.h" />
     <ClInclude Include="xmlhelper.h" />
   </ItemGroup>
   <ItemGroup>

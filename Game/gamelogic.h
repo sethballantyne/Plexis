@@ -34,6 +34,7 @@
 #include "bonuspoints_powerup.h"
 #include "extralife_powerup.h"
 #include "timed_powerup.h"
+#include "wall.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
@@ -78,16 +79,18 @@ private:
 	NumericField ^lives;
 
 	// number of seconds remaining when the laser power up is in use.
-	/*NumericField ^powerUpTimerValue;*/
+	NumericField ^powerUpTimerValue;
 
 	NumericField ^ammoCount;
 
 	// the delay that's present when transitioning between levels.
 	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
 
-	// timer used to countdown the number of seconds remaining
-	// while the laser powerup is in use.
-	//Timer ^laserActiveTimer = gcnew Timer(1000);
+	// timers for powerups that require them.
+	// currently only used by the wall.
+	Timer^ wallPowerUpTimer = gcnew Timer(1000);
+
+	Timer^ activePowerUpTimer = nullptr;
 
 	// used for the delay when the ball goes off the screen
 	Timer ^playerResetTimer = gcnew Timer(2000);
@@ -118,8 +121,8 @@ private:
 	List<ExplosionParticleEffect ^> ^particleEffectsList = gcnew List<ExplosionParticleEffect ^>();
 
 	// used for powerups that are caught by the play and have an effect for a specific
-	// duration. Insta-death, the bonus points powerups and extra life powerup don't use this.
-	PowerUp ^powerUpInEffect = nullptr;
+	// duration. Used only by the wall at the moment.
+	//PowerUp ^activePowerUp = nullptr;
 
 	// the name of the level if /map was passed via command line.
 	String ^testLevel = nullptr;
@@ -127,6 +130,8 @@ private:
 	Random ^randomNumberGen = gcnew Random();
 
 	LaserPowerUp ^laser = nullptr;
+
+	Wall^ wall = nullptr;
 
 	// keys read from options.xml
 	int pauseKey;
@@ -153,7 +158,7 @@ private:
 
 	bool gameOverScreenVisible = false;
 
-	//bool powerUpInEffect = false;
+	bool renderWall = false;
 
 	/// <summary>
 	/// Removes a brick from the game, as if it were hit by the ball.
@@ -166,14 +171,18 @@ private:
 	///</summary>
 	void DisablePowerUps(bool clearLists)
 	{
-		powerUpInEffect = nullptr;
+		//activePowerUp = nullptr;
 		/*powerUpTimerValue->Value = 30;*/
 		//laserActiveTimer->Enabled = false;
+		//activePowerUpTimer = nullptr;
+		wall->Visible = false;
 
 		if(clearLists)
 		{
 			powerUpList->Clear();
 			laserList->Clear();
+
+			activePowerUpTimer = nullptr;
 		}
 	}
 
@@ -182,11 +191,11 @@ private:
 	/// </summary>
 	/*void ResetPlayerAndBall()
 	{
-		player->SetFrame(0);
-		player->ResetPosition();
-		this->player->RemoveAttachments();
-		this->player->AttachBall(ball);
-		this->player->IsDead = false;
+	player->SetFrame(0);
+	player->ResetPosition();
+	this->player->RemoveAttachments();
+	this->player->AttachBall(ball);
+	this->player->IsDead = false;
 	}*/
 
 	/// <summary>
@@ -239,7 +248,7 @@ private:
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		player->Velocity.X = mouseState->X;
-		
+
 
 		if(keyboardState->KeyPressed(DIK_H))
 		{
@@ -267,7 +276,7 @@ private:
 			{
 				player->FirePressed();
 			}
-			
+
 			else if(ammoCount->Value > 0)
 			{
 				laser->Fired();
@@ -379,12 +388,12 @@ public:
 	/// </summary>
 	void NewGame()
 	{
+		this->activePowerUpTimer = nullptr;
 		this->gameState = GameState::NewLevel;
 		this->score->Value = 0;
 		this->lives->Value = DEFAULT_NUMBER_OF_LIVES;
 		gameOverScreen->Visible = false;
 		this->ammoCount->Value = LaserPowerUp::InitialAmmo;
-
 		LevelManager::ResetLevelCounter();
 	}
 
@@ -519,15 +528,19 @@ public:
 
 			case 6:
 				SpawnLaserPowerUp(x, y, angle);
-			break;
+				break;
 
 			case 7:
 				SpawnJumboPowerUp(x, y, angle);
-			break;
+				break;
 
 			case 8:
 				SpawnShrinkPowerUp(x, y, angle);
-			break;
+				break;
+
+			case 9:
+				SpawnWallPowerUp(x, y, angle);
+				break;
 
 			default:
 				break;
@@ -598,7 +611,7 @@ public:
 	void SpawnJumboPowerUp(int x, int y, float angle)
 	{
 		PowerUp^ jumboPowerUp = EntityManager::GetEntity<PowerUp ^>("jumbo_powerup");
-		
+
 		jumboPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_JumboPowerUp);
 		jumboPowerUp->Spawn(x, y, angle);
 
@@ -613,6 +626,16 @@ public:
 		shrinkPowerUp->Spawn(x, y, angle);
 
 		powerUpList->Add(shrinkPowerUp);
+	}
+
+	void SpawnWallPowerUp(int x, int y, float angle)
+	{
+		PowerUp^ wallPowerUp = EntityManager::GetEntity<PowerUp ^>("wall_powerup");
+
+		wallPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_WallPowerUp);
+		wallPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(wallPowerUp);
 	}
 
 	///<summary>
@@ -792,6 +815,21 @@ public:
 		SpawnInstaDeathPowerUp(result->Item1.X, result->Item1.Y, result->Item2);
 	}
 
+	void KillPlayer()
+	{
+		ExplodePaddle();
+
+		if(activePowerUpTimer != nullptr && activePowerUpTimer->Enabled)
+		{
+			activePowerUpTimer->Stop();
+		}
+
+		/*if(activePowerUp != nullptr && activePowerUp->Enabled)
+		{
+			activePowerUp = nullptr;
+		}*/
+	}
+
 	/// <summary>
 	/// describes what should happen when a brick is destroyed.
 	/// </summary>
@@ -879,7 +917,6 @@ public:
 		leftLaser->Velocity = this->laser->LaserVelocity;
 		laserList->Add(leftLaser);
 
-
 		spawnX = player->BoundingBox.Right - 8;
 		rightLaser->SetPosition(spawnX, spawnY);
 		rightLaser->Velocity = leftLaser->Velocity;
@@ -897,7 +934,7 @@ public:
 		//player->IsDead = true;
 
 		// generate the explosion in the middle of the paddle
-		ExplodePaddle();
+		KillPlayer();
 	}
 
 	void OnCollisionWithPaddle_BonusPointsPowerUp(System::Object ^sender, System::EventArgs ^args)
@@ -930,4 +967,40 @@ public:
 		player->SetFrame(2);
 	}
 
+	void OnCollisionWithPaddle_WallPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+		activePowerUpTimer = wallPowerUpTimer;
+		powerUpTimerValue->Value = 30;
+
+		if(!wall->Visible)
+		{
+			activePowerUpTimer->Start();
+			powerUpTimerValue->Enabled = true;
+		}
+		/*else
+		{
+			activePowerUpTimer->Stop();
+			
+			activePowerUpTimer->Start();
+		}*/
+
+		wall->Visible = true;
+	}
+
+	void OnWallTimerTickEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		powerUpTimerValue->Value--;
+
+		if(powerUpTimerValue->Value == 0)
+		{
+			activePowerUpTimer->Stop();
+			activePowerUpTimer = nullptr;
+			//wallPowerUpTimer->Elapsed -=  gcnew System::Timers::ElapsedEventHandler(this, &GameLogic::OnWallTimerTickEvent);
+
+			wall->Visible = false;
+			powerUpTimerValue->Enabled = false;
+			//powerUpTimerValue->Value = 30;
+		}
+	}
 };
