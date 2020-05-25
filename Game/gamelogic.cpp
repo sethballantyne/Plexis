@@ -71,7 +71,6 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
 
 	this->wall = EntityManager::GetEntity<Wall ^>("wall");
-	this->wall->SetPosition(0, 736);
 }
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
@@ -373,8 +372,6 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 						}
 					
 						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
-						
-						
 					}
 				}
 			}

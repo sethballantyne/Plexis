@@ -286,10 +286,14 @@ void EntityManager::ReadPowerup(XElement ^powerupElement)
 			ParseExtraLifePowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
-		else if("jumbo_powerup" == lowercasename || "shrink_powerup" == lowercasename ||
-				"wall_powerup" == lowercasename)
+		else if("jumbo_powerup" == lowercasename || "shrink_powerup" == lowercasename)
 		{
 			ParsePowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("wall_powerup" == lowercasename)
+		{
+			ParseTimedPowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
 	}

@@ -20,12 +20,15 @@
 
 #include "entity.h"
 
-public ref class Wall : public Entity
+public ref class Wall :public Entity
 {
 public:
-	property bool Visible;
+	// true if the wall should be moving off the screen
+	bool retreat = false;
 
-	Wall(::Sprite ^sprite, System::String ^name) : Entity(sprite, Vector2::Zero, name) 
+	bool visible = false;
+
+	Wall(::Sprite ^sprite, System::String ^name) : Entity(sprite, Vector2::Zero, name)
 	{
 		Visible = false;
 	}
@@ -40,8 +43,61 @@ public:
 		return gcnew Wall(sprite, this->Name);
 	}
 
+	property bool Visible
+	{
+		bool get()
+		{
+			return visible;
+		}
+
+		void set(bool value)
+		{
+			visible = value;
+			if(!visible)
+			{
+				ResetPosition();
+			}
+		}
+	}
+
+	property bool Retreat
+	{
+		bool get()
+		{
+			return retreat;
+		}
+
+		void set(bool value)
+		{
+			retreat = value;
+		}
+	}
+
+
 	void Update() override
 	{
-	
+		bool haventReachedfinalRestingPosition = this->Sprite->Position.Y != (Video::Height - this->Sprite->Surface->Size->Height);
+
+		if(!retreat && Visible && haventReachedfinalRestingPosition)
+		{
+			this->SetPosition(0, this->Sprite->Position.Y - 1);
+		}
+		else if(retreat && (this->Sprite->Position.Y != Video::Height))
+		{
+			// sliding off the screen
+			this->SetPosition(0, this->Sprite->Position.Y + 1);
+		}
+		else if(retreat && (this->Sprite->Position.Y == Video::Height))
+		{
+			// the wall has slid off the screen
+			// use the property because we also need to reset the bounding box.
+			Visible = false;
+		}
+	}
+
+	void ResetPosition()
+	{
+		this->SetPosition(0, Video::Height);
+		retreat = false;
 	}
 };

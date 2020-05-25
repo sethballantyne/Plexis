@@ -630,7 +630,7 @@ public:
 
 	void SpawnWallPowerUp(int x, int y, float angle)
 	{
-		PowerUp^ wallPowerUp = EntityManager::GetEntity<PowerUp ^>("wall_powerup");
+		TimedPowerUp^ wallPowerUp = EntityManager::GetEntity<TimedPowerUp ^>("wall_powerup");
 
 		wallPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_WallPowerUp);
 		wallPowerUp->Spawn(x, y, angle);
@@ -731,6 +731,11 @@ public:
 			{
 				HandleLaserBrickCollisions(laserList[i]);
 			}
+		}
+
+		if(wall->Visible)
+		{
+			wall->Update();
 		}
 	}
 
@@ -971,19 +976,13 @@ public:
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 		activePowerUpTimer = wallPowerUpTimer;
-		powerUpTimerValue->Value = 30;
+		powerUpTimerValue->Value = EntityManager::GetShallowEntity<TimedPowerUp^>("wall_powerup")->Duration;
 
 		if(!wall->Visible)
 		{
 			activePowerUpTimer->Start();
 			powerUpTimerValue->Enabled = true;
 		}
-		/*else
-		{
-			activePowerUpTimer->Stop();
-			
-			activePowerUpTimer->Start();
-		}*/
 
 		wall->Visible = true;
 	}
@@ -996,11 +995,10 @@ public:
 		{
 			activePowerUpTimer->Stop();
 			activePowerUpTimer = nullptr;
-			//wallPowerUpTimer->Elapsed -=  gcnew System::Timers::ElapsedEventHandler(this, &GameLogic::OnWallTimerTickEvent);
 
-			wall->Visible = false;
+			//wall->Visible = false;
+			wall->Retreat = true;
 			powerUpTimerValue->Enabled = false;
-			//powerUpTimerValue->Value = 30;
 		}
 	}
 };
