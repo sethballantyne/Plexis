@@ -247,12 +247,12 @@ private:
 
 		do
 		{
-			b->Velocity.X = balls[0]->Velocity.X + randomNumberGen->Next(3);
+			b->Velocity.X = balls[0]->Velocity.X + 1 + randomNumberGen->Next(3);
 		} while(b->Velocity.X == xVelocity);
 
 		do
 		{
-			b->Velocity.Y = balls[0]->Velocity.Y + randomNumberGen->Next(3);
+			b->Velocity.Y = balls[0]->Velocity.Y + 1 + randomNumberGen->Next(3);
 		} while(yVelocity == b->Velocity.Y);
 
 		b->SetPosition(balls[0]->Sprite->Position.X, balls[0]->Sprite->Position.Y);
@@ -293,6 +293,11 @@ private:
 		if(keyboardState->KeyPressed(DIK_H))
 		{
 			lives->Value += 100;
+		}
+
+		if(keyboardState->KeyPressed(DIK_D))
+		{
+
 		}
 
 		if(keyboardState->KeyPressed(DIK_J))
@@ -1159,6 +1164,21 @@ public:
 			SetFirstBallType(BallType::Default);
 
 			powerUpTimerValue->Enabled = false;
+		}
+	}
+
+	void WriteDebugBallInfo()
+	{
+		LogManager::WriteLine(LogType::Debug, "{0}", fireBallActive);
+
+		for(int i = 0; i < balls->Count; i++)
+		{
+			if(balls[i]->Name == "fireball")
+			{
+				LogManager::Write(LogType::Debug, "FIREBALL. ");
+			}
+
+			LogManager::WriteLine(LogType::Debug, "Ball {0}: Velocity.X = {1}, Velocity.Y = {2}. Position.X = {3}, Position.Y = {4}", i, balls[i]->Velocity.X, balls[i]->Velocity.Y, balls[i]->Sprite->Position.X, balls[i]->Sprite->Position.Y);
 		}
 	}
 };

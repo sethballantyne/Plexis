@@ -92,8 +92,9 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 
 			else if(keyboardState->KeyPressed(DIK_D))
 			{
-				gameState = GameState::GameOver;
-				this->gameOverScreen->Show(score->Value);
+				/*gameState = GameState::GameOver;
+				this->gameOverScreen->Show(score->Value);*/
+				WriteDebugBallInfo();
 			}
 
 			else if(keyboardState->KeyPressed(DIK_1))
@@ -177,6 +178,7 @@ void GameLogic::HandleBallCollisions(Ball^ ball)
 			activePowerUpTimer->Stop();
 			activePowerUpTimer = nullptr;
 			powerUpTimerValue->Enabled = false;
+			fireBallActive = false;
 		}
 
 		if(balls->Count > 1)
