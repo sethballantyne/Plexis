@@ -8,8 +8,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 
 ## Changes in 0.10
 * Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 
-* Added the Jumbo, Shrink and Wall power ups.
-  
+* Added the Jumbo, Shrink, Wall and Multi-ball power ups.
 
 
 ## Changes in 0.9.1
