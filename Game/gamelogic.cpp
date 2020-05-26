@@ -282,7 +282,7 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 					if("fireball" == ball->Name && !b->Indestructible)
 					{
 						b->Die(i, j, BRICK_HIT_BY_BALL);
-						ExplodeBrick(b, 255, 0, 0);
+						ExplodeBrick(b, 255, 215, 0);
 						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
 					}
 					else
@@ -333,7 +333,7 @@ void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^
 				{
 					if(explode)
 					{
-						ExplodeBrick(currentLevel[i, j], 255, 0, 0);
+						ExplodeBrick(currentLevel[i, j], 255, 215, 0);
 					}
 					else
 					{
