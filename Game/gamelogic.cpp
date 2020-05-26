@@ -29,8 +29,8 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	Debug::Assert(this->player != nullptr);
 	this->player->SetPosition(player->Sprite->Position.X, 700);
 
-	this->ball = EntityManager::GetEntity<Ball ^>("defaultBall");
-	Debug::Assert(this->ball != nullptr);
+	this->balls->Add(EntityManager::GetEntity<Ball ^>("defaultBall"));
+	Debug::Assert(this->balls[0] != nullptr);
 
 	this->livesImage = ResourceManager::GetSurface("heart2");
 	this->lives = gcnew NumericField(218, 5, this->livesImage, 2, 2);
@@ -121,7 +121,15 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 	
 }
 
-void GameLogic::HandleBallCollision()
+void GameLogic::HandleBallCollisions()
+{
+	for(int i = 0; i < balls->Count; i++)
+	{
+		HandleBallCollisions(balls[i]);
+	}
+}
+
+void GameLogic::HandleBallCollisions(Ball^ ball)
 {
 	int ballX = ball->BoundingBox.X + ball->Velocity.X;
 	int ballY = ball->BoundingBox.Y + ball->Velocity.Y;
@@ -160,9 +168,16 @@ void GameLogic::HandleBallCollision()
 
 	if(ballY >= Video::Height && !player->IsDead)
 	{
-		KillPlayer();
+		if(balls->Count > 1)
+		{
+			balls->Remove(ball);
+		}
+		else
+		{
+			KillPlayer();
 
-		ball->Velocity = Vector2::Zero;
+			ball->Velocity = Vector2::Zero;
+		}
 	}
 
 	if(ball->BoundingBox.IntersectsWith(player->BoundingBox) && !player->IsDead)
@@ -243,10 +258,11 @@ void GameLogic::HandleBallCollision()
 	}
 
 	ball->SetPosition(correctedX, correctedY);
+
+	HandleBrickCollisions(ball);
 }
 
-
-void GameLogic::HandleBrickCollisions()
+void GameLogic::HandleBrickCollisions(Ball^ ball)
 {
 	for(int i = 0; i < currentLevel->Width; i++)
 	{
@@ -270,7 +286,7 @@ void GameLogic::HandleBrickCollisions()
 				
 					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
 					
-					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(i, j);
+					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j);
 
 					/*ball->Velocity.X = -ball->Velocity.X;
 					ball->Velocity.Y = -ball->Velocity.Y;*/
@@ -284,8 +300,8 @@ void GameLogic::HandleBrickCollisions()
 
 // Checks to see if any neighbouring bricks of the brick hit in CheckBrickCollisions() 
 // were also hit by the ball. This would happen when the ball hits a join, causing the balls bounding
-// box intersects the bounding box of both bricks.
-void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(int x, int y)
+// box to intersect the bounding box of both bricks.
+void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y)
 {
 	const int initialX = (x - 1 < 0) ? x : x - 1;
 	const int initialY = (y - 1 < 0) ? y : y - 1;
@@ -377,6 +393,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 			}
 
 			SpawnPlayer();
+			ResetBallList();
 			this->gameState = GameState::Playing;
 		break;
 
@@ -447,7 +464,10 @@ void GameLogic::Render()
 					player->Sprite->Render();
 				}
 
-				ball->Sprite->Render();
+				for each(Ball^ b in balls)
+				{
+					b->Sprite->Render();
+				}
 
 				if(wall->Visible)
 				{
@@ -503,6 +523,4 @@ void GameLogic::Render()
 	{
 		throw;
 	}
-
-	
 }

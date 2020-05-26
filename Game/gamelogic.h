@@ -35,6 +35,8 @@
 #include "extralife_powerup.h"
 #include "timed_powerup.h"
 #include "wall.h"
+#include "fireball_powerup.h"
+#include "extraball_powerup.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
@@ -57,8 +59,8 @@ private:
 	Paddle ^player;
 
 	// The ball the player beats about the screen
-	Ball ^ball;
-
+	//Ball ^ball;
+	System::Collections::Generic::List<Ball ^>^ balls = gcnew System::Collections::Generic::List<Ball ^>();
 	// the image that's displayed when the user presses the pause key during gameplay.
 	Surface ^pauseImage = nullptr;
 
@@ -208,21 +210,43 @@ private:
 	/// <summary>
 	/// Ball collision detection with walls and the player
 	/// </summary>
-	void HandleBallCollision();
+	void HandleBallCollisions();
+	void HandleBallCollisions(Ball ^ball);
+
+	/// <summary>
+	/// Ball collision detection with bricks
+	/// </summary>
+	void HandleBrickCollisions(Ball^ ball);
 
 	/// <summary>
 	/// Player collision detection
 	/// </summary>
 	void HandlePlayerWallCollision();
 
-	/// <summary>
-	/// Ball collision detection with bricks
-	/// </summary>
-	void HandleBrickCollisions();
 
-	void Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(int x, int y);
+	void Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y);
 
+	void CloneBall()
+	{
+		Ball ^b = EntityManager::GetEntity<Ball ^>("defaultBall");
 
+		int xVelocity = b->Velocity.X;
+		int yVelocity = b->Velocity.Y;
+
+		do
+		{
+			b->Velocity.X = balls[0]->Velocity.X + randomNumberGen->Next(3);
+		} while(b->Velocity.X == xVelocity);
+
+		do
+		{
+			b->Velocity.Y = balls[0]->Velocity.Y + randomNumberGen->Next(3);
+		} while(yVelocity == b->Velocity.Y);
+
+		b->SetPosition(balls[0]->Sprite->Position.X, balls[0]->Sprite->Position.Y);
+
+		balls->Add(b);
+	}
 	/// <summary>
 	/// Handles all the collision detection within the game
 	/// </summary>
@@ -235,8 +259,8 @@ private:
 		// the delay that's present before the paddle and ball are reset.
 		if(this->gameState != GameState::PlayerReset)
 		{
-			HandleBallCollision();
-			HandleBrickCollisions();
+			HandleBallCollisions();
+			//HandleBrickCollisions();
 		}
 	}
 
@@ -249,6 +273,10 @@ private:
 	{
 		player->Velocity.X = mouseState->X;
 
+		if(keyboardState->KeyPressed(DIK_A))
+		{
+			CloneBall();
+		}
 
 		if(keyboardState->KeyPressed(DIK_H))
 		{
@@ -257,7 +285,7 @@ private:
 
 		if(keyboardState->KeyPressed(DIK_J))
 		{
-			SpawnShrinkPowerUp(400, 400, 90);
+			SpawnFireBallPowerUp(400, 400, 90);
 		}
 
 		if(keyboardState->KeyPressed(DIK_S))
@@ -272,7 +300,7 @@ private:
 
 		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
 		{
-			if(ball->Attached)
+			if(balls[0]->Attached)
 			{
 				player->FirePressed();
 			}
@@ -319,9 +347,11 @@ private:
 		// had a laser gun attached to the paddle or there
 		// was a powerup active that caused the ball(s) to stick
 		// (FEAR MY STICKY BALLS!!!) to the paddle. Probably redundant now.
-		this->player->AttachBall(ball);
+
+		this->player->AttachBall(balls[0]);
 
 		this->player->IsDead = false;
+		 ResetBallList();
 
 		// disable any powerups currently in use.
 		DisablePowerUps(true);
@@ -395,6 +425,7 @@ public:
 		gameOverScreen->Visible = false;
 		this->ammoCount->Value = LaserPowerUp::InitialAmmo;
 		LevelManager::ResetLevelCounter();
+		ResetBallList();
 	}
 
 	/// <summary>
@@ -542,6 +573,14 @@ public:
 				SpawnWallPowerUp(x, y, angle);
 				break;
 
+			case 10:
+				SpawnFireBallPowerUp(x, y, angle);
+				break;
+
+			case 11:
+				SpawnExtraBallPowerUp(x, y, angle);
+				break;
+
 			default:
 				break;
 		}
@@ -608,6 +647,16 @@ public:
 		powerUpList->Add(safe_cast<PowerUp ^>(extraLifePowerUp));
 	}
 
+	void SpawnFireBallPowerUp(int x, int y, float angle)
+	{
+		FireBallPowerUp ^fireBallPowerUp = EntityManager::GetEntity<FireBallPowerUp ^>("fireball_powerup");
+
+		fireBallPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_FireBallPowerUp);
+		fireBallPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(safe_cast<PowerUp ^>(fireBallPowerUp));
+	}
+
 	void SpawnJumboPowerUp(int x, int y, float angle)
 	{
 		PowerUp^ jumboPowerUp = EntityManager::GetEntity<PowerUp ^>("jumbo_powerup");
@@ -636,6 +685,16 @@ public:
 		wallPowerUp->Spawn(x, y, angle);
 
 		powerUpList->Add(wallPowerUp);
+	}
+
+	void SpawnExtraBallPowerUp(int x, int y, float angle)
+	{
+		ExtraBallPowerUp^ powerUp = EntityManager::GetEntity<ExtraBallPowerUp ^>("extraball_powerup");
+
+		powerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_ExtraBallPowerUp);
+		powerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(powerUp);
 	}
 
 	///<summary>
@@ -690,8 +749,18 @@ public:
 		// timer shit
 		/*if(laserActiveTimer->Enabled)
 		{
-			powerUpTimerValue->Render();
+		powerUpTimerValue->Render();
 		}*/
+	}
+
+	void ResetBallList()
+	{
+		if(balls->Count >= 1)
+		{
+			Ball ^b = balls[0];
+			balls->Clear();
+			balls->Add(b);
+		}
 	}
 
 	///<summar>
@@ -828,6 +897,8 @@ public:
 		{
 			activePowerUpTimer->Stop();
 		}
+
+		//ResetBallList();
 
 		/*if(activePowerUp != nullptr && activePowerUp->Enabled)
 		{
@@ -1000,5 +1071,14 @@ public:
 			wall->Retreat = true;
 			powerUpTimerValue->Enabled = false;
 		}
+	}
+
+	void OnCollisionWithPaddle_FireBallPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+	}
+
+	void OnCollisionWithPaddle_ExtraBallPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		CloneBall();
 	}
 };

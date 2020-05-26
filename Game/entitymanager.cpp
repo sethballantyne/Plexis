@@ -25,6 +25,8 @@
 #include "extralife_powerup.h"
 #include "timed_powerup.h"
 #include "wall.h"
+#include "fireball_powerup.h"
+#include "extraball_powerup.h"
 
 using namespace System::Xml;
 
@@ -256,6 +258,26 @@ void EntityManager::ParsePowerUp(XElement ^powerupElement, String^ name)
 	}
 }
 
+void EntityManager::ParseExtraBallPowerUp(XElement ^powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		unsigned int numBalls = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "ballCount");
+
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		ExtraBallPowerUp ^powerUp = gcnew ExtraBallPowerUp(powerupSprite, numBalls, name);
+
+		parsedEntities[name] = powerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
 void EntityManager::ReadPowerup(XElement ^powerupElement)
 {
 	try
@@ -294,6 +316,16 @@ void EntityManager::ReadPowerup(XElement ^powerupElement)
 		else if("wall_powerup" == lowercasename)
 		{
 			ParseTimedPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("fireball_powerup" == lowercasename)
+		{
+			ParseFireBallPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("extraball_powerup" == lowercasename)
+		{
+			ParseExtraBallPowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
 	}
@@ -355,6 +387,30 @@ void EntityManager::ParsePowerUpAsset(XElement ^entityElement)
 		}
 
 		parsedEntities[name] = f;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ParseFireBallPowerUp(XElement^ powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		unsigned int damage = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "ballDamage");
+		unsigned int duration = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "duration");
+
+		//---------------------------------------------------------------------------------------------
+		// load the child <frame> elements; this will also load the bounding box data
+		//---------------------------------------------------------------------------------------------
+		array<Frame ^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		FireBallPowerUp ^fireball = gcnew FireBallPowerUp(powerupSprite, duration, damage, name);
+
+		parsedEntities[name] = fireball;
 	}
 	catch(...)
 	{

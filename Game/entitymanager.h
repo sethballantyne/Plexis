@@ -132,6 +132,10 @@ private:
 	/// <exception cref="System::Xml::XmlException">A required attribute is missing from the element, or the value of the element evaluates to String::Empty.</exception>
 	static void ParseTimedPowerUp(XElement^ powerupElement, String^ name);
 
+	static void ParseFireBallPowerUp(XElement^ powerupElement, String^ name);
+
+	static void ParseExtraBallPowerUp(XElement^ powerupElement, String^ name);
+
 public:
 	/// <summary>
 	/// The number of different powerups within the game.
