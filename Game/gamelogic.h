@@ -43,8 +43,16 @@ using namespace System::Timers;
 
 // 0 based
 #define DEFAULT_NUMBER_OF_LIVES 2
+#define BALL_TYPE_DEFAULT 0
+#define BALL_TYPE_FIREBALL 1
 
 const float PI_RADIANS = 3.1459 / 180.0f;
+
+public enum class BallType
+{
+	Default,
+	Fireball
+};
 
 /// <summary>
 /// Game play logic.
@@ -86,7 +94,7 @@ private:
 	NumericField ^ammoCount;
 
 	// the delay that's present when transitioning between levels.
-	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
+	Timer^ levelLoadDelayTimer = gcnew Timer(5000);
 
 	// timers for powerups that require them.
 	// currently only used by the wall.
@@ -95,7 +103,9 @@ private:
 	Timer^ activePowerUpTimer = nullptr;
 
 	// used for the delay when the ball goes off the screen
-	Timer ^playerResetTimer = gcnew Timer(2000);
+	Timer^ playerResetTimer = gcnew Timer(2000);
+
+	Timer^ fireBallTimer = gcnew Timer(1000);
 
 	// the scene that should be displayed when the user hits escape during gameplay.
 	String ^gameInProgressMainMenu;
@@ -162,6 +172,8 @@ private:
 
 	bool renderWall = false;
 
+	bool fireBallActive = false;
+
 	/// <summary>
 	/// Removes a brick from the game, as if it were hit by the ball.
 	/// </summary>
@@ -178,7 +190,7 @@ private:
 		//laserActiveTimer->Enabled = false;
 		//activePowerUpTimer = nullptr;
 		wall->Visible = false;
-
+		
 		if(clearLists)
 		{
 			powerUpList->Clear();
@@ -224,7 +236,7 @@ private:
 	void HandlePlayerWallCollision();
 
 
-	void Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y);
+	void Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y, bool explode);
 
 	void CloneBall()
 	{
@@ -341,6 +353,8 @@ private:
 	///</summary>
 	void SpawnPlayer()
 	{
+		ResetBallList();
+
 		player->SetFrame(0);
 		player->ResetPosition();
 		this->player->RemoveAttachments(); // this was supposed to be used when the player
@@ -351,7 +365,7 @@ private:
 		this->player->AttachBall(balls[0]);
 
 		this->player->IsDead = false;
-		 ResetBallList();
+		
 
 		// disable any powerups currently in use.
 		DisablePowerUps(true);
@@ -484,6 +498,8 @@ public:
 
 		ResourceManager::GetSoundBuffer("explosion")->Stop();
 		ResourceManager::GetSoundBuffer("explosion")->Play();
+
+		b->Visible = false;
 	}
 
 	///<summary>
@@ -617,6 +633,25 @@ public:
 		powerUpList->Add(safe_cast<PowerUp ^>(instaDeath));
 	}
 
+	void SetFirstBallType(BallType ballType)
+	{
+		Ball^ b;
+
+		if(BallType::Default == ballType)
+		{
+			b = EntityManager::GetEntity<Ball ^>("defaultBall");
+			fireBallActive = false;
+		}
+		else
+		{
+			b = EntityManager::GetEntity<Ball ^>("fireball");
+			fireBallActive = true; 
+		}
+
+		b->Velocity = balls[0]->Velocity;
+		b->SetPosition(balls[0]->Sprite->Position.X, balls[0]->Sprite->Position.Y);
+		balls[0] = b;
+	}
 	///<summary>
 	/// Creates a bonus point powerup at the specified screen coordinates. 
 	/// The angle determines the angle of the powerups projection as it flies upwards before
@@ -757,6 +792,11 @@ public:
 	{
 		if(balls->Count >= 1)
 		{
+			if(balls[0]->Name == "fireball")
+			{
+				SetFirstBallType(BallType::Default);
+			}
+
 			Ball ^b = balls[0];
 			balls->Clear();
 			balls->Add(b);
@@ -1046,11 +1086,17 @@ public:
 	void OnCollisionWithPaddle_WallPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
-		activePowerUpTimer = wallPowerUpTimer;
-		powerUpTimerValue->Value = EntityManager::GetShallowEntity<TimedPowerUp^>("wall_powerup")->Duration;
 
 		if(!wall->Visible)
 		{
+			if(fireBallActive)
+			{
+				SetFirstBallType(BallType::Default);
+				activePowerUpTimer->Stop();
+			}
+
+			activePowerUpTimer = wallPowerUpTimer;
+			powerUpTimerValue->Value = EntityManager::GetShallowEntity<TimedPowerUp^>("wall_powerup")->Duration;
 			activePowerUpTimer->Start();
 			powerUpTimerValue->Enabled = true;
 		}
@@ -1075,10 +1121,45 @@ public:
 
 	void OnCollisionWithPaddle_FireBallPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
+
+		if(balls->Count > 0)
+		{
+			// only one timed power up can be active.
+			if(wall->Visible)
+			{
+				wall->Retreat = true; 
+				activePowerUpTimer->Stop();
+				activePowerUpTimer = nullptr;
+				//powerUpTimerValue->Enabled = false;
+			}
+
+			SetFirstBallType(BallType::Fireball);
+
+			activePowerUpTimer = fireBallTimer;
+			powerUpTimerValue->Value = EntityManager::GetShallowEntity<FireBallPowerUp^>("fireball_powerup")->Duration;
+			activePowerUpTimer->Start();
+		}
 	}
 
 	void OnCollisionWithPaddle_ExtraBallPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
 		CloneBall();
+	}
+
+	void OnFireBallTimerTickEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		powerUpTimerValue->Value--;
+
+		if(powerUpTimerValue->Value == 0)
+		{
+			activePowerUpTimer->Stop();
+			activePowerUpTimer = nullptr;
+
+			SetFirstBallType(BallType::Default);
+
+			powerUpTimerValue->Enabled = false;
+		}
 	}
 };

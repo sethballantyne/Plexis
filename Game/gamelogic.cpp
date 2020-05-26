@@ -60,6 +60,10 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->wallPowerUpTimer->Elapsed += gcnew System::Timers::ElapsedEventHandler(this, &GameLogic::OnWallTimerTickEvent);
 	this->wallPowerUpTimer->Enabled = false;
 
+	this->fireBallTimer->AutoReset = true;
+	this->fireBallTimer->Elapsed += gcnew System::Timers::ElapsedEventHandler(this, &GameLogic::OnFireBallTimerTickEvent);
+	this->fireBallTimer->Enabled = false;
+
 	this->timerImage = ResourceManager::GetSurface("timer");
 	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
 	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
@@ -166,8 +170,15 @@ void GameLogic::HandleBallCollisions(Ball^ ball)
 		correctedY = 0;
 	}
 
-	if(ballY >= Video::Height && !player->IsDead)
+	if(ballY >= Video::Height && !player->IsDead) // ball has gone off the screen
 	{
+		if(ball->Name == "fireball")
+		{
+			activePowerUpTimer->Stop();
+			activePowerUpTimer = nullptr;
+			powerUpTimerValue->Enabled = false;
+		}
+
 		if(balls->Count > 1)
 		{
 			balls->Remove(ball);
@@ -223,11 +234,6 @@ void GameLogic::HandleBallCollisions(Ball^ ball)
 		ball->Velocity.Y *= -1;
 		ball->Velocity.X = ball->Velocity.X + (0.4f * player->Velocity.X);
 
-		/*if(ball->Velocity.X > 10)
-		{
-		ball->Velocity.X = 2;
-		}*/
-
 		// bottom of the ball has intersected with the paddle
 		if(ball->BoundingBox.Y <= wall->BoundingBox.Y)
 		{
@@ -268,28 +274,35 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 	{
 		for(int j = 0; j < currentLevel->Height; j++)
 		{
-			if(nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible)
+			Brick ^b = currentLevel[i, j];
+			if(nullptr != b && b->Visible)
 			{
-				if(ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
+				if(ball->BoundingBox.IntersectsWith(b->BoundingBox))
 				{
-					if (ball->BoundingBox.Y <= player->BoundingBox.Y ||
-						ball->BoundingBox.Y >= player->BoundingBox.Y)
+					if("fireball" == ball->Name && !b->Indestructible)
 					{
-						ball->Velocity.Y = -ball->Velocity.Y;
+						b->Die(i, j, BRICK_HIT_BY_BALL);
+						ExplodeBrick(b, 255, 0, 0);
+						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
 					}
-					
-					if (ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right || 
-						ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
-					{  
-						ball->Velocity.X = -ball->Velocity.X;
-					}
-				
-					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
-					
-					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j);
+					else
+					{
+						if(ball->BoundingBox.Y <= player->BoundingBox.Y ||
+						   ball->BoundingBox.Y >= player->BoundingBox.Y)
+						{
+							ball->Velocity.Y = -ball->Velocity.Y;
+						}
 
-					/*ball->Velocity.X = -ball->Velocity.X;
-					ball->Velocity.Y = -ball->Velocity.Y;*/
+						if(ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right ||
+						   ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
+						{
+							ball->Velocity.X = -ball->Velocity.X;
+						}
+
+						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+
+						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
+					}
 
 					return;
 				}
@@ -301,7 +314,7 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 // Checks to see if any neighbouring bricks of the brick hit in CheckBrickCollisions() 
 // were also hit by the ball. This would happen when the ball hits a join, causing the balls bounding
 // box to intersect the bounding box of both bricks.
-void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y)
+void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y, bool explode)
 {
 	const int initialX = (x - 1 < 0) ? x : x - 1;
 	const int initialY = (y - 1 < 0) ? y : y - 1;
@@ -318,7 +331,14 @@ void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^
 				if((nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible) &&
 				   ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 				{
-					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+					if(explode)
+					{
+						ExplodeBrick(currentLevel[i, j], 255, 0, 0);
+					}
+					else
+					{
+						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+					}
 				}
 			}
 		}
@@ -393,7 +413,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 			}
 
 			SpawnPlayer();
-			ResetBallList();
+			
 			this->gameState = GameState::Playing;
 		break;
 
