@@ -281,8 +281,8 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 				{
 					if("fireball" == ball->Name && !b->Indestructible)
 					{
-						b->Die(i, j, BRICK_HIT_BY_BALL);
-						ExplodeBrick(b, 255, 215, 0);
+						b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
+						//ExplodeBrick(b, 255, 215, 0);
 						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
 					}
 					else
@@ -326,14 +326,14 @@ void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^
 		for(int j = initialY; j <= maxY; j++)
 		{
 			// not comparing x & y because that's the brick that was hit in HandleBrickCollisions()
-			if(!(j == y && i == x)) 
+			if(!(j == y && i == x) && nullptr != currentLevel[i, j] && !currentLevel[i, j]->Indestructible) 
 			{
-				if((nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible) &&
-				   ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
+				if(currentLevel[i, j]->Visible && ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 				{
 					if(explode)
 					{
-						ExplodeBrick(currentLevel[i, j], 255, 215, 0);
+						currentLevel[i, j]->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
+						//ExplodeBrick(currentLevel[i, j], 255, 215, 0);
 					}
 					else
 					{

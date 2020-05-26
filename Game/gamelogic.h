@@ -960,7 +960,6 @@ public:
 		if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
 		{
 			ExplodeBrick(destroyedBrick, 255, 215, 0);
-			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
 		}
 
 		// decide whether a powerup should be spawned
