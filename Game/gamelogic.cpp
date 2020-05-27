@@ -101,6 +101,10 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 			{
 				SpawnWallPowerUp(400, 400, 45);
 			}
+			else if(keyboardState->KeyPressed(DIK_2))
+			{
+				SpawnFireBallPowerUp(400, 400, 45);
+			}
 
 		}
 
@@ -464,6 +468,7 @@ void GameLogic::Render()
 {
 	try
 	{
+		Video::Blit(0, 0, ResourceManager::GetSurface("bg"));
 		if(nullptr != currentLevel)
 		{
 			// stops the current level from being rendered before rendering the first level
