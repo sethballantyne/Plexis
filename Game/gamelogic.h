@@ -174,6 +174,8 @@ private:
 
 	bool fireBallActive = false;
 
+	bool seeAll = false;
+
 	/// <summary>
 	/// Removes a brick from the game, as if it were hit by the ball.
 	/// </summary>
@@ -287,7 +289,7 @@ private:
 
 		if(keyboardState->KeyPressed(DIK_A))
 		{
-			CloneBall();
+			SpawnSeeAllPowerUp(400, 400, 45);
 		}
 
 		if(keyboardState->KeyPressed(DIK_H))
@@ -602,6 +604,9 @@ public:
 				SpawnExtraBallPowerUp(x, y, angle);
 				break;
 
+			case 12:
+				SpawnSeeAllPowerUp(x, y, angle);
+				break;
 			default:
 				break;
 		}
@@ -705,6 +710,16 @@ public:
 		jumboPowerUp->Spawn(x, y, angle);
 
 		powerUpList->Add(jumboPowerUp);
+	}
+
+	void SpawnSeeAllPowerUp(int x, int y, float angle)
+	{
+		PowerUp^ seeAllPowerUp = EntityManager::GetEntity<PowerUp ^>("seeall_powerup");
+
+		seeAllPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_SeeAllPowerUp);
+		seeAllPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(seeAllPowerUp);
 	}
 
 	void SpawnShrinkPowerUp(int x, int y, float angle)
@@ -1165,6 +1180,27 @@ public:
 
 			powerUpTimerValue->Enabled = false;
 		}
+	}
+
+	void OnCollisionWithPaddle_SeeAllPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		if(!seeAll)
+		{
+			seeAll = true;
+			
+			for(int i = 0; i < currentLevel->Width; i++)
+			{
+				for(int j = 0; j < currentLevel->Height; j++)
+				{
+					Brick ^b = currentLevel[i, j];
+					if(nullptr != b && b->Name == "invisibleBrick" && b->Visible)
+					{
+						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+					}
+				}
+			}
+		}
+	
 	}
 
 	void WriteDebugBallInfo()

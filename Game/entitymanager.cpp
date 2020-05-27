@@ -328,6 +328,11 @@ void EntityManager::ReadPowerup(XElement ^powerupElement)
 			ParseExtraBallPowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
+		else if("seeall_powerup" == lowercasename)
+		{
+			ParsePowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
 	}
 	catch(...)
 	{
@@ -341,6 +346,7 @@ void EntityManager::ParsePaddle(XElement ^paddleElement)
 	{
 		String ^name = XmlHelper::GetAttributeValue(paddleElement, "name");
 		String ^image = XmlHelper::GetAttributeValue(paddleElement, "image");
+
 		if (parsedEntities.ContainsKey(name))
 		{
 			LogManager::WriteLine(LogType::Debug, "A paddle with the name {0} already exists in the entities collection; skipping.", name);

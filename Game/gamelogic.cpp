@@ -415,7 +415,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 			}
 
 			SpawnPlayer();
-			
+			seeAll = false;
 			this->gameState = GameState::Playing;
 		break;
 
