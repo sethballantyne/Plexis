@@ -33,14 +33,26 @@
 #include "instadeath_powerup.h"
 #include "bonuspoints_powerup.h"
 #include "extralife_powerup.h"
+#include "timed_powerup.h"
+#include "wall.h"
+#include "fireball_powerup.h"
+#include "extraball_powerup.h"
 
 using namespace System::Diagnostics;
 using namespace System::Timers;
 
 // 0 based
 #define DEFAULT_NUMBER_OF_LIVES 2
+#define BALL_TYPE_DEFAULT 0
+#define BALL_TYPE_FIREBALL 1
 
 const float PI_RADIANS = 3.1459 / 180.0f;
+
+public enum class BallType
+{
+	Default,
+	Fireball
+};
 
 /// <summary>
 /// Game play logic.
@@ -55,8 +67,8 @@ private:
 	Paddle ^player;
 
 	// The ball the player beats about the screen
-	Ball ^ball;
-
+	//Ball ^ball;
+	System::Collections::Generic::List<Ball ^>^ balls = gcnew System::Collections::Generic::List<Ball ^>();
 	// the image that's displayed when the user presses the pause key during gameplay.
 	Surface ^pauseImage = nullptr;
 
@@ -77,19 +89,23 @@ private:
 	NumericField ^lives;
 
 	// number of seconds remaining when the laser power up is in use.
-	/*NumericField ^powerUpTimerValue;*/
+	NumericField ^powerUpTimerValue;
 
 	NumericField ^ammoCount;
 
 	// the delay that's present when transitioning between levels.
-	Timer ^levelLoadDelayTimer = gcnew Timer(5000);
+	Timer^ levelLoadDelayTimer = gcnew Timer(5000);
 
-	// timer used to countdown the number of seconds remaining
-	// while the laser powerup is in use.
-	//Timer ^laserActiveTimer = gcnew Timer(1000);
+	// timers for powerups that require them.
+	// currently only used by the wall.
+	Timer^ wallPowerUpTimer = gcnew Timer(1000);
+
+	Timer^ activePowerUpTimer = nullptr;
 
 	// used for the delay when the ball goes off the screen
-	Timer ^playerResetTimer = gcnew Timer(2000);
+	Timer^ playerResetTimer = gcnew Timer(2000);
+
+	Timer^ fireBallTimer = gcnew Timer(1000);
 
 	// the scene that should be displayed when the user hits escape during gameplay.
 	String ^gameInProgressMainMenu;
@@ -117,8 +133,8 @@ private:
 	List<ExplosionParticleEffect ^> ^particleEffectsList = gcnew List<ExplosionParticleEffect ^>();
 
 	// used for powerups that are caught by the play and have an effect for a specific
-	// duration. Insta-death, the bonus points powerups and extra life powerup don't use this.
-	PowerUp ^powerUpInEffect = nullptr;
+	// duration. Used only by the wall at the moment.
+	//PowerUp ^activePowerUp = nullptr;
 
 	// the name of the level if /map was passed via command line.
 	String ^testLevel = nullptr;
@@ -126,6 +142,8 @@ private:
 	Random ^randomNumberGen = gcnew Random();
 
 	LaserPowerUp ^laser = nullptr;
+
+	Wall^ wall = nullptr;
 
 	// keys read from options.xml
 	int pauseKey;
@@ -152,7 +170,11 @@ private:
 
 	bool gameOverScreenVisible = false;
 
-	//bool powerUpInEffect = false;
+	bool renderWall = false;
+
+	bool fireBallActive = false;
+
+	bool seeAll = false;
 
 	/// <summary>
 	/// Removes a brick from the game, as if it were hit by the ball.
@@ -165,27 +187,32 @@ private:
 	///</summary>
 	void DisablePowerUps(bool clearLists)
 	{
-		powerUpInEffect = nullptr;
+		//activePowerUp = nullptr;
 		/*powerUpTimerValue->Value = 30;*/
 		//laserActiveTimer->Enabled = false;
-
+		//activePowerUpTimer = nullptr;
+		wall->Visible = false;
+		
 		if(clearLists)
 		{
 			powerUpList->Clear();
 			laserList->Clear();
+
+			activePowerUpTimer = nullptr;
 		}
 	}
 
 	/// <summary>
 	/// Resets the paddle and ball to their default positions.
 	/// </summary>
-	void ResetPlayerAndBall()
+	/*void ResetPlayerAndBall()
 	{
-		player->ResetPosition();
-		this->player->RemoveAttachments();
-		this->player->AttachBall(ball);
-		this->player->IsDead = false;
-	}
+	player->SetFrame(0);
+	player->ResetPosition();
+	this->player->RemoveAttachments();
+	this->player->AttachBall(ball);
+	this->player->IsDead = false;
+	}*/
 
 	/// <summary>
 	/// Handles mouse and keyboard input during gameplay
@@ -197,21 +224,43 @@ private:
 	/// <summary>
 	/// Ball collision detection with walls and the player
 	/// </summary>
-	void HandleBallCollision();
+	void HandleBallCollisions();
+	void HandleBallCollisions(Ball ^ball);
+
+	/// <summary>
+	/// Ball collision detection with bricks
+	/// </summary>
+	void HandleBrickCollisions(Ball^ ball);
 
 	/// <summary>
 	/// Player collision detection
 	/// </summary>
 	void HandlePlayerWallCollision();
 
-	/// <summary>
-	/// Ball collision detection with bricks
-	/// </summary>
-	void HandleBrickCollisions();
 
-	void Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(int x, int y);
+	void Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y, bool explode);
 
+	void CloneBall()
+	{
+		Ball ^b = EntityManager::GetEntity<Ball ^>("defaultBall");
 
+		int xVelocity = b->Velocity.X;
+		int yVelocity = b->Velocity.Y;
+
+		do
+		{
+			b->Velocity.X = balls[0]->Velocity.X + 1 + randomNumberGen->Next(3);
+		} while(b->Velocity.X == xVelocity);
+
+		do
+		{
+			b->Velocity.Y = balls[0]->Velocity.Y + 1 + randomNumberGen->Next(3);
+		} while(yVelocity == b->Velocity.Y);
+
+		b->SetPosition(balls[0]->Sprite->Position.X, balls[0]->Sprite->Position.Y);
+
+		balls->Add(b);
+	}
 	/// <summary>
 	/// Handles all the collision detection within the game
 	/// </summary>
@@ -224,8 +273,8 @@ private:
 		// the delay that's present before the paddle and ball are reset.
 		if(this->gameState != GameState::PlayerReset)
 		{
-			HandleBallCollision();
-			HandleBrickCollisions();
+			HandleBallCollisions();
+			//HandleBrickCollisions();
 		}
 	}
 
@@ -237,11 +286,25 @@ private:
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
 		player->Velocity.X = mouseState->X;
-		
+
+		if(keyboardState->KeyPressed(DIK_A))
+		{
+			SpawnSeeAllPowerUp(400, 400, 45);
+		}
 
 		if(keyboardState->KeyPressed(DIK_H))
 		{
 			lives->Value += 100;
+		}
+
+		if(keyboardState->KeyPressed(DIK_D))
+		{
+
+		}
+
+		if(keyboardState->KeyPressed(DIK_J))
+		{
+			SpawnFireBallPowerUp(400, 400, 90);
 		}
 
 		if(keyboardState->KeyPressed(DIK_S))
@@ -256,11 +319,11 @@ private:
 
 		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
 		{
-			if(ball->Attached)
+			if(balls[0]->Attached)
 			{
 				player->FirePressed();
 			}
-			
+
 			else if(ammoCount->Value > 0)
 			{
 				laser->Fired();
@@ -297,14 +360,19 @@ private:
 	///</summary>
 	void SpawnPlayer()
 	{
+		ResetBallList();
+
+		player->SetFrame(0);
 		player->ResetPosition();
 		this->player->RemoveAttachments(); // this was supposed to be used when the player
 		// had a laser gun attached to the paddle or there
 		// was a powerup active that caused the ball(s) to stick
 		// (FEAR MY STICKY BALLS!!!) to the paddle. Probably redundant now.
-		this->player->AttachBall(ball);
+
+		this->player->AttachBall(balls[0]);
 
 		this->player->IsDead = false;
+		
 
 		// disable any powerups currently in use.
 		DisablePowerUps(true);
@@ -354,6 +422,8 @@ public:
 			int y = Video::Height / 2;
 			float angle = randomNumberGen->Next(220, 340) * PI_RADIANS;
 
+			ResourceManager::GetSoundBuffer("purchase_ammo")->Stop();
+			ResourceManager::GetSoundBuffer("purchase_ammo")->Play();
 			particleEffectsList->Add(gcnew ExplosionParticleEffect(x, y, 40, 10, 10, 0, 255, 0));
 			SpawnLaserPowerUp(x, y, angle);
 		}
@@ -369,13 +439,14 @@ public:
 	/// </summary>
 	void NewGame()
 	{
+		this->activePowerUpTimer = nullptr;
 		this->gameState = GameState::NewLevel;
 		this->score->Value = 0;
 		this->lives->Value = DEFAULT_NUMBER_OF_LIVES;
 		gameOverScreen->Visible = false;
 		this->ammoCount->Value = LaserPowerUp::InitialAmmo;
-
 		LevelManager::ResetLevelCounter();
+		ResetBallList();
 	}
 
 	/// <summary>
@@ -434,6 +505,8 @@ public:
 
 		ResourceManager::GetSoundBuffer("explosion")->Stop();
 		ResourceManager::GetSoundBuffer("explosion")->Play();
+
+		b->Visible = false;
 	}
 
 	///<summary>
@@ -509,7 +582,33 @@ public:
 
 			case 6:
 				SpawnLaserPowerUp(x, y, angle);
-			break;
+				break;
+
+			case 7:
+				SpawnJumboPowerUp(x, y, angle);
+				break;
+
+			case 8:
+				SpawnShrinkPowerUp(x, y, angle);
+				break;
+
+			case 9:
+				SpawnWallPowerUp(x, y, angle);
+				break;
+
+			case 10:
+				SpawnFireBallPowerUp(x, y, angle);
+				break;
+
+			case 11:
+				SpawnExtraBallPowerUp(x, y, angle);
+				break;
+
+			case 12:
+				SpawnSeeAllPowerUp(x, y, angle);
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -544,6 +643,25 @@ public:
 		powerUpList->Add(safe_cast<PowerUp ^>(instaDeath));
 	}
 
+	void SetFirstBallType(BallType ballType)
+	{
+		Ball^ b;
+
+		if(BallType::Default == ballType)
+		{
+			b = EntityManager::GetEntity<Ball ^>("defaultBall");
+			fireBallActive = false;
+		}
+		else
+		{
+			b = EntityManager::GetEntity<Ball ^>("fireball");
+			fireBallActive = true; 
+		}
+
+		b->Velocity = balls[0]->Velocity;
+		b->SetPosition(balls[0]->Sprite->Position.X, balls[0]->Sprite->Position.Y);
+		balls[0] = b;
+	}
 	///<summary>
 	/// Creates a bonus point powerup at the specified screen coordinates. 
 	/// The angle determines the angle of the powerups projection as it flies upwards before
@@ -572,6 +690,66 @@ public:
 		extraLifePowerUp->Spawn(x, y, angle);
 
 		powerUpList->Add(safe_cast<PowerUp ^>(extraLifePowerUp));
+	}
+
+	void SpawnFireBallPowerUp(int x, int y, float angle)
+	{
+		FireBallPowerUp ^fireBallPowerUp = EntityManager::GetEntity<FireBallPowerUp ^>("fireball_powerup");
+
+		fireBallPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_FireBallPowerUp);
+		fireBallPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(safe_cast<PowerUp ^>(fireBallPowerUp));
+	}
+
+	void SpawnJumboPowerUp(int x, int y, float angle)
+	{
+		PowerUp^ jumboPowerUp = EntityManager::GetEntity<PowerUp ^>("jumbo_powerup");
+
+		jumboPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_JumboPowerUp);
+		jumboPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(jumboPowerUp);
+	}
+
+	void SpawnSeeAllPowerUp(int x, int y, float angle)
+	{
+		PowerUp^ seeAllPowerUp = EntityManager::GetEntity<PowerUp ^>("seeall_powerup");
+
+		seeAllPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_SeeAllPowerUp);
+		seeAllPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(seeAllPowerUp);
+	}
+
+	void SpawnShrinkPowerUp(int x, int y, float angle)
+	{
+		PowerUp^ shrinkPowerUp = EntityManager::GetEntity<PowerUp ^>("shrink_powerup");
+
+		shrinkPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_ShrinkPowerUp);
+		shrinkPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(shrinkPowerUp);
+	}
+
+	void SpawnWallPowerUp(int x, int y, float angle)
+	{
+		TimedPowerUp^ wallPowerUp = EntityManager::GetEntity<TimedPowerUp ^>("wall_powerup");
+
+		wallPowerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_WallPowerUp);
+		wallPowerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(wallPowerUp);
+	}
+
+	void SpawnExtraBallPowerUp(int x, int y, float angle)
+	{
+		ExtraBallPowerUp^ powerUp = EntityManager::GetEntity<ExtraBallPowerUp ^>("extraball_powerup");
+
+		powerUp->CollisionWithPaddle += gcnew PowerUpEffectHandler(this, &GameLogic::OnCollisionWithPaddle_ExtraBallPowerUp);
+		powerUp->Spawn(x, y, angle);
+
+		powerUpList->Add(powerUp);
 	}
 
 	///<summary>
@@ -626,8 +804,23 @@ public:
 		// timer shit
 		/*if(laserActiveTimer->Enabled)
 		{
-			powerUpTimerValue->Render();
+		powerUpTimerValue->Render();
 		}*/
+	}
+
+	void ResetBallList()
+	{
+		if(balls->Count >= 1)
+		{
+			if(balls[0]->Name == "fireball")
+			{
+				SetFirstBallType(BallType::Default);
+			}
+
+			Ball ^b = balls[0];
+			balls->Clear();
+			balls->Add(b);
+		}
 	}
 
 	///<summar>
@@ -668,6 +861,11 @@ public:
 				HandleLaserBrickCollisions(laserList[i]);
 			}
 		}
+
+		if(wall->Visible)
+		{
+			wall->Update();
+		}
 	}
 
 	/// <summary>
@@ -703,7 +901,7 @@ public:
 		}
 		else
 		{
-			this->ResetPlayerAndBall();
+			this->SpawnPlayer();
 			DisablePowerUps(true);
 			this->gameState = GameState::Playing;
 		}
@@ -751,6 +949,23 @@ public:
 		SpawnInstaDeathPowerUp(result->Item1.X, result->Item1.Y, result->Item2);
 	}
 
+	void KillPlayer()
+	{
+		ExplodePaddle();
+
+		if(activePowerUpTimer != nullptr && activePowerUpTimer->Enabled)
+		{
+			activePowerUpTimer->Stop();
+		}
+
+		//ResetBallList();
+
+		/*if(activePowerUp != nullptr && activePowerUp->Enabled)
+		{
+			activePowerUp = nullptr;
+		}*/
+	}
+
 	/// <summary>
 	/// describes what should happen when a brick is destroyed.
 	/// </summary>
@@ -765,7 +980,6 @@ public:
 		if(BRICK_EXPLODE == (e->Flags & BRICK_EXPLODE)) // test to see if we've been told to explode.
 		{
 			ExplodeBrick(destroyedBrick, 255, 215, 0);
-			//CreateExplosion(e->TileCoordinates.X, e->TileCoordinates.Y);
 		}
 
 		// decide whether a powerup should be spawned
@@ -838,7 +1052,6 @@ public:
 		leftLaser->Velocity = this->laser->LaserVelocity;
 		laserList->Add(leftLaser);
 
-
 		spawnX = player->BoundingBox.Right - 8;
 		rightLaser->SetPosition(spawnX, spawnY);
 		rightLaser->Velocity = leftLaser->Velocity;
@@ -856,7 +1069,7 @@ public:
 		//player->IsDead = true;
 
 		// generate the explosion in the middle of the paddle
-		ExplodePaddle();
+		KillPlayer();
 	}
 
 	void OnCollisionWithPaddle_BonusPointsPowerUp(System::Object ^sender, System::EventArgs ^args)
@@ -875,4 +1088,137 @@ public:
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 	}
 
+	void OnCollisionWithPaddle_JumboPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
+		player->SetFrame(1);
+	}
+
+	void OnCollisionWithPaddle_ShrinkPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
+		player->SetFrame(2);
+	}
+
+	void OnCollisionWithPaddle_WallPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
+		if(fireBallActive)
+		{
+			SetFirstBallType(BallType::Default);
+		}
+
+		if(activePowerUpTimer != nullptr)
+		{
+			activePowerUpTimer->Stop();
+		}
+
+		activePowerUpTimer = wallPowerUpTimer;
+		powerUpTimerValue->Value = EntityManager::GetShallowEntity<TimedPowerUp^>("wall_powerup")->Duration;
+		activePowerUpTimer->Start();
+		powerUpTimerValue->Enabled = true;
+
+		wall->Visible = true;
+	}
+
+	void OnWallTimerTickEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		powerUpTimerValue->Value--;
+
+		if(powerUpTimerValue->Value == 0)
+		{
+			activePowerUpTimer->Stop();
+			activePowerUpTimer = nullptr;
+
+			//wall->Visible = false;
+			wall->Retreat = true;
+			powerUpTimerValue->Enabled = false;
+		}
+	}
+
+	void OnCollisionWithPaddle_FireBallPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
+
+		if(balls->Count > 0)
+		{
+			// only one timed power up can be active.
+			if(wall->Visible)
+			{
+				wall->Retreat = true; 
+				//powerUpTimerValue->Enabled = false;
+			}
+
+			if(activePowerUpTimer != nullptr)
+			{
+				activePowerUpTimer->Stop();
+			}
+
+			SetFirstBallType(BallType::Fireball);
+
+			activePowerUpTimer = fireBallTimer;
+			powerUpTimerValue->Value = EntityManager::GetShallowEntity<FireBallPowerUp^>("fireball_powerup")->Duration;
+			activePowerUpTimer->Start();
+		}
+	}
+
+	void OnCollisionWithPaddle_ExtraBallPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		CloneBall();
+	}
+
+	void OnFireBallTimerTickEvent(Object ^source, ElapsedEventArgs ^e)
+	{
+		powerUpTimerValue->Value--;
+
+		if(powerUpTimerValue->Value == 0)
+		{
+			activePowerUpTimer->Stop();
+			activePowerUpTimer = nullptr;
+
+			SetFirstBallType(BallType::Default);
+
+			powerUpTimerValue->Enabled = false;
+		}
+	}
+
+	void OnCollisionWithPaddle_SeeAllPowerUp(System::Object^ sender, System::EventArgs^ args)
+	{
+		if(!seeAll)
+		{
+			seeAll = true;
+			
+			for(int i = 0; i < currentLevel->Width; i++)
+			{
+				for(int j = 0; j < currentLevel->Height; j++)
+				{
+					Brick ^b = currentLevel[i, j];
+					if(nullptr != b && b->Name == "invisibleBrick" && b->Visible)
+					{
+						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+					}
+				}
+			}
+		}
+	
+	}
+
+	void WriteDebugBallInfo()
+	{
+		LogManager::WriteLine(LogType::Debug, "{0}", fireBallActive);
+
+		for(int i = 0; i < balls->Count; i++)
+		{
+			if(balls[i]->Name == "fireball")
+			{
+				LogManager::Write(LogType::Debug, "FIREBALL. ");
+			}
+
+			LogManager::WriteLine(LogType::Debug, "Ball {0}: Velocity.X = {1}, Velocity.Y = {2}. Position.X = {3}, Position.Y = {4}", i, balls[i]->Velocity.X, balls[i]->Velocity.Y, balls[i]->Sprite->Position.X, balls[i]->Sprite->Position.Y);
+		}
+	}
 };

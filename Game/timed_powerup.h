@@ -15,41 +15,24 @@
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-
 #pragma once
-#include "sprite.h"
-#include "entity.h"
-#include "vector2.h"
-#include "ball.h"
 
-public ref class Paddle : public Entity
+#include "powerup.h"
+
+public ref class TimedPowerUp : public PowerUp
 {
 public:
-	property bool IsDead;
+	// how long the powerup lasts for when caught by the player.
+	property unsigned int Duration;
 
-	Paddle(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
+	TimedPowerUp(::Sprite ^powerupSprite, unsigned int duration, System::String ^name) : PowerUp(powerupSprite, Vector2::Zero, name)
 	{
-		
+		Duration = duration;
 	}
 
-	void AttachBall(Ball ^ball)
-	{
-		int ballWidth = ball->Sprite->CurrentFrame->Coordinates.Width;
-		int middleOfPaddle = this->Sprite->CurrentFrame->Coordinates.Width / 2;
-
-		// ballX and ballY are local coordinates (coordinates on the paddle), not screen coordinates.
-		int ballX = middleOfPaddle - (ballWidth / 2);
-
-		// attach to the top of the paddle
-		int ballY = 0 - ball->BoundingBox.Height;
-
-		this->Attach(ball, ballX, ballY);
-	}
-
-	/// <summary>
-	/// Creates a deep copy of this <see cref="Paddle"/> instance.
-	/// </summary>
-	/// <returns></returns>
+	///<summary>
+	/// Creates a deep copy of the object.
+	///</summary>
 	Object ^Clone() override
 	{
 		::Sprite ^sprite = gcnew ::Sprite(
@@ -57,29 +40,6 @@ public:
 			this->Sprite->Position.Y,
 			this->Sprite->GetFrames(), this->Sprite->Surface);
 
-		return gcnew Paddle(sprite, this->Name);
-	}
-
-	/// <summary>
-	/// Puts the paddle in the middle of the screens X axis.
-	/// </summary>
-	inline void ResetPosition()
-	{
-		int x = (Video::Width / 2) - (this->Sprite->CurrentFrame->Coordinates.Width / 2);
-		this->SetPosition(x);
-	}
-
-	inline void SetPosition(int x)
-	{
-		this->SetPosition(x, this->Sprite->Position.Y);
-	}
-
-	void FirePressed();
-
-	/// <summary>
-	/// Updates the bricks state.
-	/// </summary>
-	void Update() override
-	{
+		return gcnew TimedPowerUp(sprite, Duration,  this->Name);
 	}
 };

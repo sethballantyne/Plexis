@@ -20,21 +20,22 @@ void GameLogic::DebugRemoveBrick()
 
 GameLogic::GameLogic(String ^gameInProgressMenu)
 {
+	this->debugKeysEnabled = GameOptions::GetValue("debugKeys", 0);
+
 	this->gameInProgressMainMenu = gameInProgressMenu;
 	//this->highScorePrompt = highScorePrompt;
-	this->debugKeysEnabled = (bool) GameOptions::GetValue("debugKeys", false);
 
 	this->player = EntityManager::GetEntity<Paddle ^>("player");
 	Debug::Assert(this->player != nullptr);
 	this->player->SetPosition(player->Sprite->Position.X, 700);
 
-	this->ball = EntityManager::GetEntity<Ball ^>("defaultBall");
-	Debug::Assert(this->ball != nullptr);
+	this->balls->Add(EntityManager::GetEntity<Ball ^>("defaultBall"));
+	Debug::Assert(this->balls[0] != nullptr);
 
-	this->livesImage = ResourceManager::GetSurface("heart2");
+	this->livesImage = ResourceManager::GetSurface("heart");
 	this->lives = gcnew NumericField(218, 5, this->livesImage, 2, 2);
 	this->score = gcnew NumericField(5, 5, "SCORE", 0, HighScoreTable::NumDigits);
-	this->pauseImage = ResourceManager::GetSurface("paused2");
+	this->pauseImage = ResourceManager::GetSurface("paused");
 	this->pauseX = (Video::Width / 2) - (this->pauseImage->Size->Width / 2);
 	this->pauseY = 564;
 
@@ -53,19 +54,27 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->playerResetTimer->Enabled = false;
 	this->playerResetTimer->AutoReset = true;
 
-	/*this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
-	this->laserActiveTimer->Enabled = false;
-	this->laserActiveTimer->AutoReset = true;*/
+	//this->laserActiveTimer->Elapsed += gcnew ElapsedEventHandler(this, &GameLogic::OnLaserTimerEvent);
+	//this->laserActiveTimer->Enabled = false;
+	this->wallPowerUpTimer->AutoReset = true;
+	this->wallPowerUpTimer->Elapsed += gcnew System::Timers::ElapsedEventHandler(this, &GameLogic::OnWallTimerTickEvent);
+	this->wallPowerUpTimer->Enabled = false;
 
-	//this->timerImage = ResourceManager::GetSurface("timer");
-	//int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
-	//int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
-	//this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
+	this->fireBallTimer->AutoReset = true;
+	this->fireBallTimer->Elapsed += gcnew System::Timers::ElapsedEventHandler(this, &GameLogic::OnFireBallTimerTickEvent);
+	this->fireBallTimer->Enabled = false;
+
+	this->timerImage = ResourceManager::GetSurface("timer");
+	int fontWidth = ResourceManager::GetFont("white")->GlyphWidth; 
+	int timerValueXPos = (Video::Width - (fontWidth * 2)) - 34; // 7: 7 pixels in from the left.
+	this->powerUpTimerValue = gcnew NumericField(timerValueXPos, 5, this->timerImage, 30, 2);
 
 	/*powerUpInEffect = safe_cast<PowerUp ^>(sender);
 	powerUpInEffect = */
 	this->laser = EntityManager::GetEntity<LaserPowerUp ^>("laser_powerup");
 	this->laser->FirePressed += gcnew PowerUpEffectHandler(this, &GameLogic::OnFirePressed_LaserPowerUp);
+
+	this->wall = EntityManager::GetEntity<Wall ^>("wall");
 }
 
 void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
@@ -83,10 +92,20 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 
 			else if(keyboardState->KeyPressed(DIK_D))
 			{
-				//this->GameOverTransition();
-				gameState = GameState::GameOver;
-				this->gameOverScreen->Show(score->Value);
+				/*gameState = GameState::GameOver;
+				this->gameOverScreen->Show(score->Value);*/
+				WriteDebugBallInfo();
 			}
+
+			else if(keyboardState->KeyPressed(DIK_1))
+			{
+				SpawnWallPowerUp(400, 400, 45);
+			}
+			else if(keyboardState->KeyPressed(DIK_2))
+			{
+				SpawnFireBallPowerUp(400, 400, 45);
+			}
+
 		}
 
 		if(keyboardState->KeyPressed(DIK_ESCAPE))
@@ -111,7 +130,15 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 	
 }
 
-void GameLogic::HandleBallCollision()
+void GameLogic::HandleBallCollisions()
+{
+	for(int i = 0; i < balls->Count; i++)
+	{
+		HandleBallCollisions(balls[i]);
+	}
+}
+
+void GameLogic::HandleBallCollisions(Ball^ ball)
 {
 	int ballX = ball->BoundingBox.X + ball->Velocity.X;
 	int ballY = ball->BoundingBox.Y + ball->Velocity.Y;
@@ -148,12 +175,26 @@ void GameLogic::HandleBallCollision()
 		correctedY = 0;
 	}
 
-	if(ballY >= Video::Height && !player->IsDead)
+	if(ballY >= Video::Height && !player->IsDead) // ball has gone off the screen
 	{
-		// Player died.
-		ExplodePaddle();
-		
-		ball->Velocity = Vector2::Zero;
+		if(ball->Name == "fireball")
+		{
+			activePowerUpTimer->Stop();
+			activePowerUpTimer = nullptr;
+			powerUpTimerValue->Enabled = false;
+			fireBallActive = false;
+		}
+
+		if(balls->Count > 1)
+		{
+			balls->Remove(ball);
+		}
+		else
+		{
+			KillPlayer();
+
+			ball->Velocity = Vector2::Zero;
+		}
 	}
 
 	if(ball->BoundingBox.IntersectsWith(player->BoundingBox) && !player->IsDead)
@@ -192,43 +233,82 @@ void GameLogic::HandleBallCollision()
 		}
 	}
 
+	else if(ball->BoundingBox.IntersectsWith(wall->BoundingBox) && wall->Visible)
+	{
+		ResourceManager::GetSoundBuffer("bounce")->Play();
+
+		ball->Velocity.Y *= -1;
+		ball->Velocity.X = ball->Velocity.X + (0.4f * player->Velocity.X);
+
+		// bottom of the ball has intersected with the paddle
+		if(ball->BoundingBox.Y <= wall->BoundingBox.Y)
+		{
+			correctedY = wall->BoundingBox.Y - ball->BoundingBox.Height - 1;
+		}
+		// top of the ball has intersected with the paddle
+		else if(ball->BoundingBox.Y > wall->BoundingBox.Y)
+		{
+			correctedY = wall->BoundingBox.Bottom + 1;
+		}
+
+		// left of the ball has intersected with the paddle
+		if(ball->BoundingBox.Right >= wall->BoundingBox.Right)
+		{
+			correctedX = wall->BoundingBox.Right + 1;
+		}
+
+		// right side of the ball has intersected with the paddle
+		else if(ball->BoundingBox.X <= wall->BoundingBox.X)
+		{
+			correctedX = wall->BoundingBox.X - ball->BoundingBox.Width - 1;
+		}
+	}
+
 	if(ball->Velocity.X > 18)
 	{
 		ball->Velocity.X = 18;
 	}
 
 	ball->SetPosition(correctedX, correctedY);
+
+	HandleBrickCollisions(ball);
 }
 
-
-void GameLogic::HandleBrickCollisions()
+void GameLogic::HandleBrickCollisions(Ball^ ball)
 {
 	for(int i = 0; i < currentLevel->Width; i++)
 	{
 		for(int j = 0; j < currentLevel->Height; j++)
 		{
-			if(nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible)
+			Brick ^b = currentLevel[i, j];
+			if(nullptr != b && b->Visible)
 			{
-				if(ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
+				if(ball->BoundingBox.IntersectsWith(b->BoundingBox))
 				{
-					if (ball->BoundingBox.Y <= player->BoundingBox.Y ||
-						ball->BoundingBox.Y >= player->BoundingBox.Y)
+					if("fireball" == ball->Name && !b->Indestructible)
 					{
-						ball->Velocity.Y = -ball->Velocity.Y;
+						b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
+						//ExplodeBrick(b, 255, 215, 0);
+						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
 					}
-					
-					if (ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right || 
-						ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
-					{  
-						ball->Velocity.X = -ball->Velocity.X;
-					}
-				
-					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
-					
-					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(i, j);
+					else
+					{
+						if(ball->BoundingBox.Y <= player->BoundingBox.Y ||
+						   ball->BoundingBox.Y >= player->BoundingBox.Y)
+						{
+							ball->Velocity.Y = -ball->Velocity.Y;
+						}
 
-					/*ball->Velocity.X = -ball->Velocity.X;
-					ball->Velocity.Y = -ball->Velocity.Y;*/
+						if(ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right ||
+						   ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
+						{
+							ball->Velocity.X = -ball->Velocity.X;
+						}
+
+						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+
+						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
+					}
 
 					return;
 				}
@@ -239,8 +319,8 @@ void GameLogic::HandleBrickCollisions()
 
 // Checks to see if any neighbouring bricks of the brick hit in CheckBrickCollisions() 
 // were also hit by the ball. This would happen when the ball hits a join, causing the balls bounding
-// box intersects the bounding box of both bricks.
-void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(int x, int y)
+// box to intersect the bounding box of both bricks.
+void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^ ball, int x, int y, bool explode)
 {
 	const int initialX = (x - 1 < 0) ? x : x - 1;
 	const int initialY = (y - 1 < 0) ? y : y - 1;
@@ -252,12 +332,19 @@ void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(int x
 		for(int j = initialY; j <= maxY; j++)
 		{
 			// not comparing x & y because that's the brick that was hit in HandleBrickCollisions()
-			if(!(j == y && i == x)) 
+			if(!(j == y && i == x) && nullptr != currentLevel[i, j] && !currentLevel[i, j]->Indestructible) 
 			{
-				if((nullptr != currentLevel[i, j] && currentLevel[i, j]->Visible) &&
-				   ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
+				if(currentLevel[i, j]->Visible && ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 				{
-					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+					if(explode)
+					{
+						currentLevel[i, j]->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
+						//ExplodeBrick(currentLevel[i, j], 255, 215, 0);
+					}
+					else
+					{
+						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+					}
 				}
 			}
 		}
@@ -327,13 +414,12 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 						}
 					
 						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
-						
-						
 					}
 				}
 			}
 
 			SpawnPlayer();
+			seeAll = false;
 			this->gameState = GameState::Playing;
 		break;
 
@@ -352,6 +438,10 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 				gameState = GameState::LevelComplete;
 				this->levelLoadDelayTimer->Start();
 
+				if(activePowerUpTimer != nullptr && activePowerUpTimer->Enabled)
+				{
+					activePowerUpTimer->Stop();
+				}
 				/*laserActiveTimer->Stop();*/
 			}
 		break;
@@ -378,6 +468,7 @@ void GameLogic::Render()
 {
 	try
 	{
+		Video::Blit(0, 0, ResourceManager::GetSurface("bg"));
 		if(nullptr != currentLevel)
 		{
 			// stops the current level from being rendered before rendering the first level
@@ -400,7 +491,16 @@ void GameLogic::Render()
 					player->Sprite->Render();
 				}
 
-				ball->Sprite->Render();
+				for each(Ball^ b in balls)
+				{
+					b->Sprite->Render();
+				}
+
+				if(wall->Visible)
+				{
+					wall->Sprite->Render();
+				}
+
 				RenderPowerUps();
 
 				if(explosionList->Count > 0)
@@ -422,6 +522,11 @@ void GameLogic::Render()
 
 				ammoCount->Render();
 
+				if(activePowerUpTimer != nullptr)
+				{
+					powerUpTimerValue->Render();
+				}
+
 				switch(this->gameState)
 				{
 					case GameState::Paused:
@@ -435,6 +540,8 @@ void GameLogic::Render()
 						break;
 				}
 
+				
+
 				RenderParticleEffects();
 			}
 		}
@@ -443,6 +550,4 @@ void GameLogic::Render()
 	{
 		throw;
 	}
-
-	
 }

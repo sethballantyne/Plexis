@@ -17,39 +17,22 @@
 // DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#include "sprite.h"
-#include "entity.h"
-#include "vector2.h"
-#include "ball.h"
 
-public ref class Paddle : public Entity
+#include "entity.h"
+
+public ref class Wall :public Entity
 {
 public:
-	property bool IsDead;
+	// true if the wall should be moving off the screen
+	bool retreat = false;
 
-	Paddle(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
+	bool visible = false;
+
+	Wall(::Sprite ^sprite, System::String ^name) : Entity(sprite, Vector2::Zero, name)
 	{
-		
+		Visible = false;
 	}
 
-	void AttachBall(Ball ^ball)
-	{
-		int ballWidth = ball->Sprite->CurrentFrame->Coordinates.Width;
-		int middleOfPaddle = this->Sprite->CurrentFrame->Coordinates.Width / 2;
-
-		// ballX and ballY are local coordinates (coordinates on the paddle), not screen coordinates.
-		int ballX = middleOfPaddle - (ballWidth / 2);
-
-		// attach to the top of the paddle
-		int ballY = 0 - ball->BoundingBox.Height;
-
-		this->Attach(ball, ballX, ballY);
-	}
-
-	/// <summary>
-	/// Creates a deep copy of this <see cref="Paddle"/> instance.
-	/// </summary>
-	/// <returns></returns>
 	Object ^Clone() override
 	{
 		::Sprite ^sprite = gcnew ::Sprite(
@@ -57,29 +40,64 @@ public:
 			this->Sprite->Position.Y,
 			this->Sprite->GetFrames(), this->Sprite->Surface);
 
-		return gcnew Paddle(sprite, this->Name);
+		return gcnew Wall(sprite, this->Name);
 	}
 
-	/// <summary>
-	/// Puts the paddle in the middle of the screens X axis.
-	/// </summary>
-	inline void ResetPosition()
+	property bool Visible
 	{
-		int x = (Video::Width / 2) - (this->Sprite->CurrentFrame->Coordinates.Width / 2);
-		this->SetPosition(x);
+		bool get()
+		{
+			return visible;
+		}
+
+		void set(bool value)
+		{
+			visible = value;
+			if(!visible)
+			{
+				ResetPosition();
+			}
+		}
 	}
 
-	inline void SetPosition(int x)
+	property bool Retreat
 	{
-		this->SetPosition(x, this->Sprite->Position.Y);
+		bool get()
+		{
+			return retreat;
+		}
+
+		void set(bool value)
+		{
+			retreat = value;
+		}
 	}
 
-	void FirePressed();
 
-	/// <summary>
-	/// Updates the bricks state.
-	/// </summary>
 	void Update() override
 	{
+		bool haventReachedfinalRestingPosition = this->Sprite->Position.Y != (Video::Height - this->Sprite->Surface->Size->Height);
+
+		if(!retreat && Visible && haventReachedfinalRestingPosition)
+		{
+			this->SetPosition(0, this->Sprite->Position.Y - 1);
+		}
+		else if(retreat && (this->Sprite->Position.Y != Video::Height))
+		{
+			// sliding off the screen
+			this->SetPosition(0, this->Sprite->Position.Y + 1);
+		}
+		else if(retreat && (this->Sprite->Position.Y == Video::Height))
+		{
+			// the wall has slid off the screen
+			// use the property because we also need to reset the bounding box.
+			Visible = false;
+		}
+	}
+
+	void ResetPosition()
+	{
+		this->SetPosition(0, Video::Height);
+		retreat = false;
 	}
 };

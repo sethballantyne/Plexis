@@ -23,6 +23,10 @@
 #include "instadeath_powerup.h"
 #include "bonuspoints_powerup.h"
 #include "extralife_powerup.h"
+#include "timed_powerup.h"
+#include "wall.h"
+#include "fireball_powerup.h"
+#include "extraball_powerup.h"
 
 using namespace System::Xml;
 
@@ -215,7 +219,66 @@ void EntityManager::ParseExtraLifePowerUp(XElement ^powerupElement, String ^name
 	}
 }
 
-void EntityManager::ParsePowerup(XElement ^powerupElement)
+void EntityManager::ParseTimedPowerUp(XElement^ powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		unsigned int duration = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "duration");
+
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		TimedPowerUp ^timedPowerUp = gcnew TimedPowerUp(powerupSprite, duration, name);
+
+		parsedEntities[name] = timedPowerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ParsePowerUp(XElement ^powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		PowerUp ^powerUp = gcnew PowerUp(powerupSprite, Vector2::Zero, name);
+
+		parsedEntities[name] = powerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ParseExtraBallPowerUp(XElement ^powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		unsigned int numBalls = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "ballCount");
+
+		array<Frame^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		ExtraBallPowerUp ^powerUp = gcnew ExtraBallPowerUp(powerupSprite, numBalls, name);
+
+		parsedEntities[name] = powerUp;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ReadPowerup(XElement ^powerupElement)
 {
 	try
 	{
@@ -245,6 +308,31 @@ void EntityManager::ParsePowerup(XElement ^powerupElement)
 			ParseExtraLifePowerUp(powerupElement, lowercasename);
 			NumberOfPowerUps++;
 		}
+		else if("jumbo_powerup" == lowercasename || "shrink_powerup" == lowercasename)
+		{
+			ParsePowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("wall_powerup" == lowercasename)
+		{
+			ParseTimedPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("fireball_powerup" == lowercasename)
+		{
+			ParseFireBallPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("extraball_powerup" == lowercasename)
+		{
+			ParseExtraBallPowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
+		else if("seeall_powerup" == lowercasename)
+		{
+			ParsePowerUp(powerupElement, lowercasename);
+			NumberOfPowerUps++;
+		}
 	}
 	catch(...)
 	{
@@ -258,6 +346,7 @@ void EntityManager::ParsePaddle(XElement ^paddleElement)
 	{
 		String ^name = XmlHelper::GetAttributeValue(paddleElement, "name");
 		String ^image = XmlHelper::GetAttributeValue(paddleElement, "image");
+
 		if (parsedEntities.ContainsKey(name))
 		{
 			LogManager::WriteLine(LogType::Debug, "A paddle with the name {0} already exists in the entities collection; skipping.", name);
@@ -292,9 +381,42 @@ void EntityManager::ParsePowerUpAsset(XElement ^entityElement)
 		array<Frame ^, 1>^ frames = ParseFrames(entityElement);
 
 		Sprite ^laserSprite = gcnew Sprite(0, 0, frames, image);
-		Laser ^laser = gcnew Laser(laserSprite, name);
 
-		parsedEntities[name] = laser;
+		Entity^ f;
+		if(name == "laser")
+		{
+			f = gcnew Laser(laserSprite, name);
+		}
+		else if(name == "wall")
+		{
+			f = gcnew Wall(laserSprite, name);
+		}
+
+		parsedEntities[name] = f;
+	}
+	catch(...)
+	{
+		throw;
+	}
+}
+
+void EntityManager::ParseFireBallPowerUp(XElement^ powerupElement, String^ name)
+{
+	try
+	{
+		String ^image = XmlHelper::GetAttributeValue(powerupElement, "image");
+		unsigned int damage = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "ballDamage");
+		unsigned int duration = XmlHelper::GetAttributeValueAsUInt32(powerupElement, "duration");
+
+		//---------------------------------------------------------------------------------------------
+		// load the child <frame> elements; this will also load the bounding box data
+		//---------------------------------------------------------------------------------------------
+		array<Frame ^, 1>^ frames = ParseFrames(powerupElement);
+
+		Sprite ^powerupSprite = gcnew Sprite(0, 0, frames, image);
+		FireBallPowerUp ^fireball = gcnew FireBallPowerUp(powerupSprite, duration, damage, name);
+
+		parsedEntities[name] = fireball;
 	}
 	catch(...)
 	{
@@ -330,7 +452,7 @@ void EntityManager::Initialise(XElement ^entitiesFile)
 			}
 			else if("powerup" == entityType)
 			{
-				ParsePowerup(entityElement);
+				ReadPowerup(entityElement);
 			}
 			else if("powerup_asset" == entityType)
 			{

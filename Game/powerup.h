@@ -80,6 +80,7 @@ public:
 
 	property float Angle;
 
+
 	PowerUp(::Sprite ^powerupSprite, Vector2 velocity, System::String ^name) : Entity(powerupSprite, Vector2::Zero, name)
 	{
 		Gravity = 0.1f;
@@ -144,6 +145,16 @@ public:
 		SetPosition(xPos, yPos);
 
 		HandleEdgeCollisions(x, y, width, height);
+	}
+
+	Object ^Clone() override
+	{
+		::Sprite ^sprite = gcnew ::Sprite(
+			this->Sprite->Position.X,
+			this->Sprite->Position.Y,
+			this->Sprite->GetFrames(), this->Sprite->Surface);
+
+		return gcnew PowerUp(sprite, Vector2::Zero, this->Name);
 	}
 
 	// triggers when PlayerCollision() is called.

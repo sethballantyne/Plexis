@@ -84,7 +84,9 @@
     <ClInclude Include="entitymanager.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="explosion_particle_effect.h" />
+    <ClInclude Include="extraball_powerup.h" />
     <ClInclude Include="extralife_powerup.h" />
+    <ClInclude Include="fireball_powerup.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="gamelogic.h" />
     <ClInclude Include="gameover.h" />
@@ -92,6 +94,7 @@
     <ClInclude Include="gameview.h" />
     <ClInclude Include="imagecontrol.h" />
     <ClInclude Include="instadeath_powerup.h" />
+    <ClInclude Include="timed_powerup.h" />
     <ClInclude Include="laser.h" />
     <ClInclude Include="laser_powerup.h" />
     <ClInclude Include="level.h" />
@@ -147,6 +150,7 @@
     <ClInclude Include="version.h" />
     <ClInclude Include="video.h" />
     <ClInclude Include="vsoutputlogger.h" />
+    <ClInclude Include="wall.h" />
     <ClInclude Include="xmlhelper.h" />
   </ItemGroup>
   <ItemGroup>

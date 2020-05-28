@@ -17,39 +17,23 @@
 // DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#include "sprite.h"
-#include "entity.h"
-#include "vector2.h"
-#include "ball.h"
 
-public ref class Paddle : public Entity
+#include "timed_powerup.h"
+
+public ref class FireBallPowerUp : public TimedPowerUp
 {
 public:
-	property bool IsDead;
+	property bool BallDamage;
 
-	Paddle(::Sprite ^sprite, String ^name) : Entity(sprite, Vector2::Zero, name)
+	FireBallPowerUp(::Sprite ^powerupSprite, unsigned int duration, unsigned int ballDamage, System::String ^name) : TimedPowerUp(powerupSprite, duration, name)
 	{
-		
+		Duration = duration;
+		BallDamage = ballDamage;
 	}
 
-	void AttachBall(Ball ^ball)
-	{
-		int ballWidth = ball->Sprite->CurrentFrame->Coordinates.Width;
-		int middleOfPaddle = this->Sprite->CurrentFrame->Coordinates.Width / 2;
-
-		// ballX and ballY are local coordinates (coordinates on the paddle), not screen coordinates.
-		int ballX = middleOfPaddle - (ballWidth / 2);
-
-		// attach to the top of the paddle
-		int ballY = 0 - ball->BoundingBox.Height;
-
-		this->Attach(ball, ballX, ballY);
-	}
-
-	/// <summary>
-	/// Creates a deep copy of this <see cref="Paddle"/> instance.
-	/// </summary>
-	/// <returns></returns>
+	///<summary>
+	/// Creates a deep copy of this instance.
+	///</summary>
 	Object ^Clone() override
 	{
 		::Sprite ^sprite = gcnew ::Sprite(
@@ -57,29 +41,6 @@ public:
 			this->Sprite->Position.Y,
 			this->Sprite->GetFrames(), this->Sprite->Surface);
 
-		return gcnew Paddle(sprite, this->Name);
-	}
-
-	/// <summary>
-	/// Puts the paddle in the middle of the screens X axis.
-	/// </summary>
-	inline void ResetPosition()
-	{
-		int x = (Video::Width / 2) - (this->Sprite->CurrentFrame->Coordinates.Width / 2);
-		this->SetPosition(x);
-	}
-
-	inline void SetPosition(int x)
-	{
-		this->SetPosition(x, this->Sprite->Position.Y);
-	}
-
-	void FirePressed();
-
-	/// <summary>
-	/// Updates the bricks state.
-	/// </summary>
-	void Update() override
-	{
+		return gcnew FireBallPowerUp(sprite, Duration, BallDamage, Name);
 	}
 };

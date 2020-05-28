@@ -142,6 +142,23 @@ public:
         return this->sprite->GetFrames();
     }
 
+	/// <summary>
+	/// Sets the Entity's frame to the specified frame and updates its boundingbox.
+	/// </summary>
+	void SetFrame(unsigned int frame)
+	{
+		if(frame >= this->sprite->GetFrames()->Length || frame < 0)
+		{
+			return;
+		}
+
+		this->sprite->CurrentFrameIndex = frame;
+		this->boundingBox.X = sprite->Position.X + sprite->CurrentFrame->BoundingBox.X;
+		this->boundingBox.Y = sprite->Position.Y + sprite->CurrentFrame->BoundingBox.Y;
+		this->boundingBox.Width = sprite->CurrentFrame->BoundingBox.Width;
+		this->boundingBox.Height = sprite->CurrentFrame->BoundingBox.Height;
+	}
+
     /// <summary>
     /// Creates a deep copy of the current object.
     /// </summary>
