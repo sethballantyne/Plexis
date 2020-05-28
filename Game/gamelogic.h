@@ -285,7 +285,13 @@ private:
 	/// <param name="mouseState"></param>
 	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
-		player->Velocity.X = mouseState->X;
+		// bug fix. Reading the mouse while waiting for the player
+		// to respawn can result in the ball not being centered on the paddle
+		// when the player spawns.
+		if(gameState == GameState::Playing)
+		{
+			player->Velocity.X = mouseState->X;
+		}
 
 		if(keyboardState->KeyPressed(DIK_A))
 		{
