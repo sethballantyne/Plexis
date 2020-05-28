@@ -1150,9 +1150,12 @@ public:
 			if(wall->Visible)
 			{
 				wall->Retreat = true; 
-				activePowerUpTimer->Stop();
-				activePowerUpTimer = nullptr;
 				//powerUpTimerValue->Enabled = false;
+			}
+
+			if(activePowerUpTimer != nullptr)
+			{
+				activePowerUpTimer->Stop();
 			}
 
 			SetFirstBallType(BallType::Fireball);
