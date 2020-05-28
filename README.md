@@ -9,7 +9,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 ## Changes in 0.10
 * Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 
 * Added the Jumbo, Shrink, Wall, Multi-ball, Fireball and See All power ups.
-* The game now uses a background during gameplay.
+* The game now uses a background image during gameplay.
 
 ## Changes in 0.9.1
 * Fixed a bug where the error sound was looping whenever the player attempted to change a key binding.
