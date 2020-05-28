@@ -1106,19 +1106,20 @@ public:
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 
-		if(!wall->Visible)
+		if(fireBallActive)
 		{
-			if(fireBallActive)
-			{
-				SetFirstBallType(BallType::Default);
-				activePowerUpTimer->Stop();
-			}
-
-			activePowerUpTimer = wallPowerUpTimer;
-			powerUpTimerValue->Value = EntityManager::GetShallowEntity<TimedPowerUp^>("wall_powerup")->Duration;
-			activePowerUpTimer->Start();
-			powerUpTimerValue->Enabled = true;
+			SetFirstBallType(BallType::Default);
 		}
+
+		if(activePowerUpTimer != nullptr)
+		{
+			activePowerUpTimer->Stop();
+		}
+
+		activePowerUpTimer = wallPowerUpTimer;
+		powerUpTimerValue->Value = EntityManager::GetShallowEntity<TimedPowerUp^>("wall_powerup")->Duration;
+		activePowerUpTimer->Start();
+		powerUpTimerValue->Enabled = true;
 
 		wall->Visible = true;
 	}

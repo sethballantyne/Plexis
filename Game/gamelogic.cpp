@@ -32,10 +32,10 @@ GameLogic::GameLogic(String ^gameInProgressMenu)
 	this->balls->Add(EntityManager::GetEntity<Ball ^>("defaultBall"));
 	Debug::Assert(this->balls[0] != nullptr);
 
-	this->livesImage = ResourceManager::GetSurface("heart2");
+	this->livesImage = ResourceManager::GetSurface("heart");
 	this->lives = gcnew NumericField(218, 5, this->livesImage, 2, 2);
 	this->score = gcnew NumericField(5, 5, "SCORE", 0, HighScoreTable::NumDigits);
-	this->pauseImage = ResourceManager::GetSurface("paused2");
+	this->pauseImage = ResourceManager::GetSurface("paused");
 	this->pauseX = (Video::Width / 2) - (this->pauseImage->Size->Width / 2);
 	this->pauseY = 564;
 
