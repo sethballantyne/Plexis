@@ -11,6 +11,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 * Fixed a bug where the ball was getting stuck in indestructible bricks.
 * Changed how the ball moves. In rare instances, it was possible for the ball to bounce back and forth in a loop, never moving
 * down towards the paddle.
+* Tweaked the indestructible, insta-death and invisible brick art work.
 
 ## Changes in 0.10
 * Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 
