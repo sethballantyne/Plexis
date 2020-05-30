@@ -288,8 +288,8 @@ void GameLogic::HandleBallCollisions(Ball^ ball)
 
 void GameLogic::HandleBrickCollisions(Ball^ ball)
 {
-	Line^ trajectory = gcnew Line(ball->Sprite->Position.X, ball->Sprite->Position.Y, 
-								  ball->Sprite->Position.X + ball->Velocity.X, 
+	Line^ trajectory = gcnew Line(ball->Sprite->Position.X, ball->Sprite->Position.Y,
+								  ball->Sprite->Position.X + ball->Velocity.X,
 								  ball->Sprite->Position.Y + ball->Velocity.Y);
 
 	array<Point, 1>^ points = CalculatePath(trajectory);
@@ -322,18 +322,21 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 
 						else
 						{
-							if(ball->BoundingBox.Y <= b->BoundingBox.Y ||
-								ball->BoundingBox.Y >= b->BoundingBox.Y)
+							/*if(ball->BoundingBox.Y <= b->BoundingBox.Y ||
+							   ball->BoundingBox.Y >= b->BoundingBox.Y)
 							{
 								ball->Velocity.Y = -ball->Velocity.Y;
-							}
+							}*/
 
-							if(ball->BoundingBox.Right >= b->BoundingBox.Right ||
-								ball->BoundingBox.X <= b->BoundingBox.X)
+							/*else if(ball->BoundingBox.Right >= b->BoundingBox.Right ||
+									ball->BoundingBox.X <= b->BoundingBox.X)
 							{
 								ball->Velocity.X = -ball->Velocity.X;
 								ball->Velocity.Y = -ball->Velocity.Y;
-							}
+							}*/
+
+							ball->Velocity.X = -ball->Velocity.X;
+							ball->Velocity.Y = -ball->Velocity.Y;
 
 							currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
 
@@ -346,48 +349,49 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 			}
 		}
 	}
-
-	////////////////////////////////////////////////////////
-	//for(int i = 0; i < currentLevel->Width; i++)
-	//{
-	//	for(int j = 0; j < currentLevel->Height; j++)
-	//	{
-	//		Brick ^b = currentLevel[i, j];
-	//		if(nullptr != b && b->Visible)
-	//		{
-	//			if(ball->BoundingBox.IntersectsWith(b->BoundingBox))
-	//			{
-	//				if("fireball" == ball->Name && !b->Indestructible)
-	//				{
-	//					b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
-	//					//ExplodeBrick(b, 255, 215, 0);
-	//					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
-	//				}
-	//				else
-	//				{
-	//					if(ball->BoundingBox.Y <= player->BoundingBox.Y ||
-	//					   ball->BoundingBox.Y >= player->BoundingBox.Y)
-	//					{
-	//						ball->Velocity.Y = -ball->Velocity.Y;
-	//					}
-
-	//					if(ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right ||
-	//					   ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
-	//					{
-	//						ball->Velocity.X = -ball->Velocity.X;
-	//					}
-
-	//					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
-
-	//					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
-	//				}
-
-	//				return;
-	//			}
-	//		}
-	//	}
-	//}
 }
+
+	//////////////////////////////////////////////////////
+//	for(int i = 0; i < currentLevel->Width; i++)
+//	{
+//		for(int j = 0; j < currentLevel->Height; j++)
+//		{
+//			Brick ^b = currentLevel[i, j];
+//			if(nullptr != b && b->Visible)
+//			{
+//				if(ball->BoundingBox.IntersectsWith(b->BoundingBox))
+//				{
+//					if("fireball" == ball->Name && !b->Indestructible)
+//					{
+//						b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
+//						ExplodeBrick(b, 255, 215, 0);
+//						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
+//					}
+//					else
+//					{
+//						if(ball->BoundingBox.Y <= b->BoundingBox.Y ||
+//						   ball->BoundingBox.Y >= b->BoundingBox.Y)
+//						{
+//							ball->Velocity.Y = -ball->Velocity.Y;
+//						}
+//
+//						/*if(ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right ||
+//						   ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
+//						{
+//							ball->Velocity.X = -ball->Velocity.X;
+//						}*/
+//
+//						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+//
+//						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
+//					}
+//
+//					return;
+//				}
+//			}
+//		}
+//	}
+//}
 
 // Checks to see if any neighbouring bricks of the brick hit in CheckBrickCollisions() 
 // were also hit by the ball. This would happen when the ball hits a join, causing the balls bounding
