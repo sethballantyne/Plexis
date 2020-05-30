@@ -72,6 +72,13 @@ public:
         this->colour = colour;
     }
 
+	Line(int fromX, int fromY, int toX, int toY)
+	{
+		this->from = gcnew System::Drawing::Point(fromX, fromY);
+		this->to = gcnew System::Drawing::Point(toX, toY);
+		//this->colour = colour;
+	}
+
     /// <summary>
     /// Gets or sets the lines colour.
     /// </summary>

@@ -176,6 +176,8 @@ private:
 
 	bool seeAll = false;
 
+	array<System::Drawing::Point, 1>^ CalculatePath(Line ^line);
+
 	/// <summary>
 	/// Removes a brick from the game, as if it were hit by the ball.
 	/// </summary>

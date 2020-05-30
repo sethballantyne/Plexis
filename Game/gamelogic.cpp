@@ -17,7 +17,6 @@ void GameLogic::DebugRemoveBrick()
 	}
 }
 
-
 GameLogic::GameLogic(String ^gameInProgressMenu)
 {
 	this->debugKeysEnabled = GameOptions::GetValue("debugKeys", 0);
@@ -268,6 +267,19 @@ void GameLogic::HandleBallCollisions(Ball^ ball)
 	{
 		ball->Velocity.X = 18;
 	}
+	else if(ball->Velocity.X < -18)
+	{
+		ball->Velocity.X = -18;
+	}
+
+	if(ball->Velocity.Y > 18)
+	{
+		ball->Velocity.Y = 18;
+	}
+	else if(ball->Velocity.Y < -18)
+	{
+		ball->Velocity.Y = -18;
+	}
 
 	ball->SetPosition(correctedX, correctedY);
 
@@ -276,45 +288,105 @@ void GameLogic::HandleBallCollisions(Ball^ ball)
 
 void GameLogic::HandleBrickCollisions(Ball^ ball)
 {
-	for(int i = 0; i < currentLevel->Width; i++)
+	Line^ trajectory = gcnew Line(ball->Sprite->Position.X, ball->Sprite->Position.Y, 
+								  ball->Sprite->Position.X + ball->Velocity.X, 
+								  ball->Sprite->Position.Y + ball->Velocity.Y);
+
+	array<Point, 1>^ points = CalculatePath(trajectory);
+	System::Drawing::Rectangle ballRect;
+	ballRect.Width = ball->Sprite->Surface->Size->Width;
+	ballRect.Height = ball->Sprite->Surface->Size->Height;
+
+	if(points->Length > 0)
 	{
-		for(int j = 0; j < currentLevel->Height; j++)
+		for each(Point p in points)
 		{
-			Brick ^b = currentLevel[i, j];
-			if(nullptr != b && b->Visible)
+			ballRect.X = p.X;
+			ballRect.Y = p.Y;
+
+			for(int i = 0; i < currentLevel->Width; i++)
 			{
-				if(ball->BoundingBox.IntersectsWith(b->BoundingBox))
+				for(int j = 0; j < currentLevel->Height; j++)
 				{
-					if("fireball" == ball->Name && !b->Indestructible)
+					Brick^ b = currentLevel[i, j];
+					if(nullptr != b && b->Visible && ballRect.IntersectsWith(b->BoundingBox))
 					{
-						b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
-						//ExplodeBrick(b, 255, 215, 0);
-						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
-					}
-					else
-					{
-						if(ball->BoundingBox.Y <= player->BoundingBox.Y ||
-						   ball->BoundingBox.Y >= player->BoundingBox.Y)
+						ball->SetPosition(p.X, p.Y);
+
+						if("fireball" == ball->Name && !b->Indestructible)
 						{
-							ball->Velocity.Y = -ball->Velocity.Y;
+							b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
+							//ExplodeBrick(b, 255, 215, 0);
+							Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
 						}
 
-						if(ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right ||
-						   ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
+						else
 						{
-							ball->Velocity.X = -ball->Velocity.X;
+							if(ball->BoundingBox.Y <= b->BoundingBox.Y ||
+								ball->BoundingBox.Y >= b->BoundingBox.Y)
+							{
+								ball->Velocity.Y = -ball->Velocity.Y;
+							}
+
+							if(ball->BoundingBox.Right >= b->BoundingBox.Right ||
+								ball->BoundingBox.X <= b->BoundingBox.X)
+							{
+								ball->Velocity.X = -ball->Velocity.X;
+								ball->Velocity.Y = -ball->Velocity.Y;
+							}
+
+							currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+
+							Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
 						}
 
-						currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
-
-						Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
+						return;
 					}
-
-					return;
 				}
 			}
 		}
 	}
+
+	////////////////////////////////////////////////////////
+	//for(int i = 0; i < currentLevel->Width; i++)
+	//{
+	//	for(int j = 0; j < currentLevel->Height; j++)
+	//	{
+	//		Brick ^b = currentLevel[i, j];
+	//		if(nullptr != b && b->Visible)
+	//		{
+	//			if(ball->BoundingBox.IntersectsWith(b->BoundingBox))
+	//			{
+	//				if("fireball" == ball->Name && !b->Indestructible)
+	//				{
+	//					b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
+	//					//ExplodeBrick(b, 255, 215, 0);
+	//					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
+	//				}
+	//				else
+	//				{
+	//					if(ball->BoundingBox.Y <= player->BoundingBox.Y ||
+	//					   ball->BoundingBox.Y >= player->BoundingBox.Y)
+	//					{
+	//						ball->Velocity.Y = -ball->Velocity.Y;
+	//					}
+
+	//					if(ball->BoundingBox.Right >= currentLevel[i, j]->BoundingBox.Right ||
+	//					   ball->BoundingBox.X <= currentLevel[i, j]->BoundingBox.X)
+	//					{
+	//						ball->Velocity.X = -ball->Velocity.X;
+	//					}
+
+	//					currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
+
+	//					Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
+	//				}
+
+	//				return;
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 // Checks to see if any neighbouring bricks of the brick hit in CheckBrickCollisions() 
@@ -550,4 +622,100 @@ void GameLogic::Render()
 	{
 		throw;
 	}
+}
+
+array<System::Drawing::Point, 1>^ GameLogic::CalculatePath(Line ^line)
+{
+	// difference between both points on the X axis
+	int deltaX;
+
+	// difference between both points on the Y axis.
+	int deltaY;
+
+	// the number of pixels to move along the X axis when drawing
+	int xIncrementAmount;
+
+	// the number of pixels to move along the Y axis when drawing
+	int yIncrementAmount;
+
+	List<Point>^ points = gcnew List<Point>();
+
+	//-------------------------------------------------------------------------
+	// determine the angle of the lines slope.
+	// ------------------------------------------------------------------------
+	deltaX = line->To->X - line->From->X;
+	deltaY = line->To->Y - line->From->Y;
+
+	if(deltaX >= 0)
+	{
+		// slope is to the right
+		xIncrementAmount = 1;
+	}
+	else
+	{
+		// sloping to the left
+		xIncrementAmount = -1;
+		deltaX = -deltaX;
+	}
+
+	if(deltaY >= 0)
+	{
+		// sloping downwards.
+		yIncrementAmount = 1;
+	}
+	else
+	{
+		// sloping upwards.
+		yIncrementAmount = -1;
+		deltaY = -deltaY;
+	}
+
+	int dx2 = deltaX << 1;
+	int dy2 = deltaY << 1;
+
+	int xCoordinate = line->From->X;
+	int yCoordinate = line->From->Y;
+
+	int error;
+
+	//unsigned int colour = ARGBTo32Bit(0, line->Colour.R, line->Colour.G, line->Colour.B);
+	if(deltaX > deltaY)
+	{
+		error = dy2 - deltaX;
+
+		for(int i = 0; i < deltaX; i++)
+		{
+			// draw the pixel
+			//videoBuffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] = colour;
+			points->Add(Point(xCoordinate, yCoordinate));
+			if(error >= 0)
+			{
+				error -= dx2;
+				yCoordinate += yIncrementAmount;
+			}
+
+			error += dy2;
+			xCoordinate += xIncrementAmount;
+		}
+	}
+	else
+	{
+		error = dx2 - deltaY;
+
+		for(int i = 0; i < deltaY; i++)
+		{
+			points->Add(Point(xCoordinate, yCoordinate));
+			//videoBuffer[xCoordinate + yCoordinate * surfaceDescription->dwWidth] = colour;
+			if(error >= 0)
+			{
+				error -= dy2;
+				xCoordinate += xIncrementAmount;
+			}
+
+			error += dx2;
+			yCoordinate += yIncrementAmount;
+		}
+	}
+
+	return points->ToArray();
 }

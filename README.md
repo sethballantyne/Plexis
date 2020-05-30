@@ -8,6 +8,9 @@ The latest build of the game is in the _build_ directory. All the source code is
 
 ## Changes in 0.10.1
 * Fixed a bug where moving the mouse while waiting to respawn could result in the ball not being centered on the paddle.
+* Fixed a bug where the ball was getting stuck in indestructible bricks.
+* Changed how the ball moves. In rare instances, it was possible for the ball to bounce back and forth in a loop, never moving
+* down towards the paddle.
 
 ## Changes in 0.10
 * Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 
