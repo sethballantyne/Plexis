@@ -290,10 +290,10 @@ private:
 		// bug fix. Reading the mouse while waiting for the player
 		// to respawn can result in the ball not being centered on the paddle
 		// when the player spawns.
-		if(gameState == GameState::Playing)
+		/*if(gameState == GameState::Playing)
 		{
 			player->Velocity.X = mouseState->X;
-		}
+		}*/
 
 		if(keyboardState->KeyPressed(DIK_A))
 		{
@@ -303,11 +303,6 @@ private:
 		if(keyboardState->KeyPressed(DIK_H))
 		{
 			lives->Value += 100;
-		}
-
-		if(keyboardState->KeyPressed(DIK_D))
-		{
-
 		}
 
 		if(keyboardState->KeyPressed(DIK_J))
@@ -376,6 +371,11 @@ private:
 		// had a laser gun attached to the paddle or there
 		// was a powerup active that caused the ball(s) to stick
 		// (FEAR MY STICKY BALLS!!!) to the paddle. Probably redundant now.
+
+		// bug fix for when the ball doesn't always center on the paddle if the
+		// mouse is moving while spawning.
+		this->player->Velocity.X = 0;
+		this->player->Velocity.Y = 0;
 
 		this->player->AttachBall(balls[0]);
 

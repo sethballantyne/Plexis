@@ -82,6 +82,11 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 	
 	if(gameState == GameState::Playing || gameState == GameState::Paused)
 	{
+		if(gameState == GameState::Playing)
+		{
+			player->Velocity.X = mouseState->X;
+		}
+
 		if(this->debugKeysEnabled)
 		{
 			if(keyboardState->KeyPressed(DIK_SUBTRACT))
