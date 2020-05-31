@@ -7,13 +7,16 @@ Plexis a breakout clone I wrote in C++/CLI because I wanted to play around with 
 The latest build of the game is in the _build_ directory. All the source code is released under the MIT license. 
 
 ## Changes in 0.10.1
-### Game Changes
+### Game
 * Fixed a bug where moving the mouse while waiting to respawn could result in the ball not being centered on the paddle.
 * Fixed a bug where the ball was getting stuck in indestructible bricks.
 * Changed how the ball moves. In rare instances, it was possible for the ball to bounce back and forth in a loop, never moving
 * down towards the paddle.
 * Tweaked the indestructible, insta-death and invisible brick art work.
 * Changed the prompt when the player finishes the game with a new high score.
+### Editor
+* Maps can be assigned in the _Change Order_ dialog by double clicking on them.
+* The editors name is now visible on the titlebar at start up.
 
 ## Changes in 0.10
 * Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 
