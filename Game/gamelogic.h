@@ -285,55 +285,14 @@ private:
 	/// </summary>
 	/// <param name="keyboardState"></param>
 	/// <param name="mouseState"></param>
-	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
+	/*void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
-		// bug fix. Reading the mouse while waiting for the player
-		// to respawn can result in the ball not being centered on the paddle
-		// when the player spawns.
-		/*if(gameState == GameState::Playing)
-		{
-			player->Velocity.X = mouseState->X;
-		}*/
+		
 
-		if(keyboardState->KeyPressed(DIK_A))
-		{
-			SpawnSeeAllPowerUp(400, 400, 45);
-		}
+		
 
-		if(keyboardState->KeyPressed(DIK_H))
-		{
-			lives->Value += 100;
-		}
-
-		if(keyboardState->KeyPressed(DIK_J))
-		{
-			SpawnFireBallPowerUp(400, 400, 90);
-		}
-
-		if(keyboardState->KeyPressed(DIK_S))
-		{
-			score->Value += 100000;
-		}
-
-		if(keyboardState->KeyPressed(purchaseAmmoKey))
-		{
-			PurchaseAmmo();
-		}
-
-		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
-		{
-			if(balls[0]->Attached)
-			{
-				player->FirePressed();
-			}
-
-			else if(ammoCount->Value > 0)
-			{
-				laser->Fired();
-				ammoCount->Value--;
-			}
-		}
-	}
+		
+	}*/
 
 	///<summary>
 	/// Collision detection for when lasers hit bricks.

@@ -85,6 +85,25 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 		if(gameState == GameState::Playing)
 		{
 			player->Velocity.X = mouseState->X;
+
+			if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
+			{
+				if(balls[0]->Attached)
+				{
+					player->FirePressed();
+				}
+
+				else if(ammoCount->Value > 0)
+				{
+					laser->Fired();
+					ammoCount->Value--;
+				}
+			}
+
+			if(keyboardState->KeyPressed(purchaseAmmoKey))
+			{
+				PurchaseAmmo();
+			}
 		}
 
 		if(this->debugKeysEnabled)
@@ -108,6 +127,26 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 			else if(keyboardState->KeyPressed(DIK_2))
 			{
 				SpawnFireBallPowerUp(400, 400, 45);
+			}
+
+			if(keyboardState->KeyPressed(DIK_A))
+			{
+				SpawnSeeAllPowerUp(400, 400, 45);
+			}
+
+			if(keyboardState->KeyPressed(DIK_H))
+			{
+				lives->Value += 100;
+			}
+
+			if(keyboardState->KeyPressed(DIK_J))
+			{
+				SpawnFireBallPowerUp(400, 400, 90);
+			}
+
+			if(keyboardState->KeyPressed(DIK_S))
+			{
+				score->Value += 100000;
 			}
 
 		}
@@ -520,10 +559,10 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 		break;
 
 		case GameState::Playing:
-			if(!player->IsDead)
+			/*if(!player->IsDead)
 			{
 				HandleGameInput(keyboardState, mouseState);
-			}
+			}*/
 			UpdatePowerUps();
 			HandleCollisions();
 
