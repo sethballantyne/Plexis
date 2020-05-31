@@ -256,7 +256,5 @@ namespace PLeD
         {
             AddSelectedItem(rotationListListBox, availableLevelsListBox);
         }
-
-
     }
 }
