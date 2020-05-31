@@ -320,23 +320,38 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 							Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
 						}
 
+						
 						else
 						{
-							/*if(ball->BoundingBox.Y <= b->BoundingBox.Y ||
-							   ball->BoundingBox.Y >= b->BoundingBox.Y)
+							bool collisionOnTopOfBrick = ball->BoundingBox.Left >= b->BoundingBox.Left && // top
+								                         ball->BoundingBox.Top > b->BoundingBox.Top &&
+								                         ball->BoundingBox.Right <= b->BoundingBox.Right;
+
+							bool collisionOnBottomOfBrick = ball->BoundingBox.Left >= b->BoundingBox.Left && // bottom
+														    ball->BoundingBox.Top > b->BoundingBox.Bottom &&
+								                            ball->BoundingBox.Right <= b->BoundingBox.Right;
+
+							bool collisionOnBricksRightSide = ball->BoundingBox.Left <= b->BoundingBox.Right &&
+								                              ball->BoundingBox.Top >= b->BoundingBox.Top;
+							
+							bool collisionOnBricksLeftSide = ball->BoundingBox.Right >= b->BoundingBox.Left &&
+															 ball->BoundingBox.Top >= b->BoundingBox.Top;
+							
+							
+							if(collisionOnTopOfBrick || collisionOnBottomOfBrick)
 							{
 								ball->Velocity.Y = -ball->Velocity.Y;
-							}*/
-
-							/*else if(ball->BoundingBox.Right >= b->BoundingBox.Right ||
-									ball->BoundingBox.X <= b->BoundingBox.X)
+							}
+							else if(collisionOnBricksRightSide || collisionOnBricksLeftSide)
+							{
+								ball->Velocity.X = -ball->Velocity.X;
+							}
+						
+							else // in case I fucked up somewhere :P
 							{
 								ball->Velocity.X = -ball->Velocity.X;
 								ball->Velocity.Y = -ball->Velocity.Y;
-							}*/
-
-							ball->Velocity.X = -ball->Velocity.X;
-							ball->Velocity.Y = -ball->Velocity.Y;
+							}
 
 							currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
 
