@@ -234,6 +234,7 @@ private:
 	/// </summary>
 	void HandleBrickCollisions(Ball^ ball);
 
+	Brick^ GetBrick(int i, int j);
 	/// <summary>
 	/// Player collision detection
 	/// </summary>
@@ -322,6 +323,8 @@ private:
 	///</summary>
 	void SpawnPlayer()
 	{
+		LogManager::WriteLine(LogType::Debug, "Spawning Player");
+
 		ResetBallList();
 
 		player->SetFrame(0);

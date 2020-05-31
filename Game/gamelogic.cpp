@@ -149,6 +149,11 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 				score->Value += 100000;
 			}
 
+			if(keyboardState->KeyPressed(DIK_C))
+			{
+				CloneBall();
+			}
+
 		}
 
 		if(keyboardState->KeyPressed(DIK_ESCAPE))
@@ -242,6 +247,7 @@ void GameLogic::HandleBallCollisions(Ball^ ball)
 
 	if(ball->BoundingBox.IntersectsWith(player->BoundingBox) && !player->IsDead)
 	{
+		//LogManager::WriteLine(LogType::Debug, "************ HIT PADDLE **************");
 		ResourceManager::GetSoundBuffer("bounce")->Play();
 
 		ball->Velocity.Y *= -1;
@@ -340,6 +346,11 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 	System::Drawing::Rectangle ballRect;
 	ballRect.Width = ball->Sprite->Surface->Size->Width;
 	ballRect.Height = ball->Sprite->Surface->Size->Height;
+	
+	const int NORTH = 1;
+	const int SOUTH = 2;
+	const int WEST = 4;
+	const int EAST = 8;
 
 	if(points->Length > 0)
 	{
@@ -359,6 +370,7 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 
 						if("fireball" == ball->Name && !b->Indestructible)
 						{
+							LogManager::WriteLine(LogType::Debug, "FireBall");
 							b->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
 							//ExplodeBrick(b, 255, 215, 0);
 							Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, true);
@@ -367,32 +379,180 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 						
 						else
 						{
-							bool collisionOnTopOfBrick = ball->BoundingBox.Left >= b->BoundingBox.Left && // top
-								                         ball->BoundingBox.Top > b->BoundingBox.Top &&
-								                         ball->BoundingBox.Right <= b->BoundingBox.Right;
-
-							bool collisionOnBottomOfBrick = ball->BoundingBox.Left >= b->BoundingBox.Left && // bottom
-														    ball->BoundingBox.Top > b->BoundingBox.Bottom &&
-								                            ball->BoundingBox.Right <= b->BoundingBox.Right;
-
-							bool collisionOnBricksRightSide = ball->BoundingBox.Left <= b->BoundingBox.Right &&
-								                              ball->BoundingBox.Top >= b->BoundingBox.Top;
-							
-							bool collisionOnBricksLeftSide = ball->BoundingBox.Right >= b->BoundingBox.Left &&
-															 ball->BoundingBox.Top >= b->BoundingBox.Top;
-							
-							
-							if(collisionOnTopOfBrick || collisionOnBottomOfBrick)
+							int direction = 0;
+							// determine the direction the ball is moving
+							if(ball->Velocity.Y < 0)
 							{
+								direction = NORTH;
+							}
+							else if(ball->Velocity.Y > 0)
+							{
+								direction = SOUTH;
+							}
+
+							if(ball->Velocity.X < 0)
+							{
+								direction |= WEST;
+							}
+							else if(ball->Velocity.X > 0)
+							{
+								direction |= EAST;
+							}
+
+							bool b1 = ball->BoundingBox.Left >= b->BoundingBox.Left;
+							bool b2 = ball->BoundingBox.Top <= b->BoundingBox.Top;
+							bool b3 = ball->BoundingBox.Right <= b->BoundingBox.Right;
+
+							//LogManager::WriteLine(LogType::Debug, "CollisionOnTopOfBrick {0},{1},{2}", b1, b2, b3);
+
+							bool collisionOnTopOfBrick = b1 && // top
+								                         b2 &&
+								                         b3;
+
+							b1 = ball->BoundingBox.Right >= b->BoundingBox.Left;
+							b2 = ball->BoundingBox.Top <= b->BoundingBox.Bottom;
+							b3 = ball->BoundingBox.Left <= b->BoundingBox.Right;
+
+							//LogManager::WriteLine(LogType::Debug, "CollisionOnBottomOfBrick {0},{1},{2}", b1, b2, b3);
+
+							bool collisionOnBottomOfBrick = b1 && // bottom
+														    //ball->BoundingBox.Top >= b->BoundingBox.Bottom &&
+															b2 &&
+								                            b3;
+
+							b1 = ball->BoundingBox.Right >= b->BoundingBox.Right;
+							b2 = ball->BoundingBox.Top >= b->BoundingBox.Top;
+							//b3 = (collisionOnBottomOfBrick || collisionOnTopOfBrick) == false;
+
+							//LogManager::WriteLine(LogType::Debug, "collisionOnBricksRightSide {0},{1}", b1, b2);
+							bool collisionOnBricksRightSide = b1 &&
+								                              b2;
+							
+							b1 = ball->BoundingBox.Right < b->BoundingBox.Right;
+							//b2 = ball->BoundingBox.Top >= b->BoundingBox.Top || ball->BoundingBox->Bottom < ball->BoundingBox
+							b3 = ball->BoundingBox.X < b->BoundingBox.X;
+
+							//LogManager::WriteLine(LogType::Debug, "collisionOnBricksLeftSide {0},{1}", b1, b3);
+
+							bool collisionOnBricksLeftSide = b1 && b3;
+															
+							//LogManager::WriteLine(LogType::Debug, "Direction: {0}", direction);
+							//LogManager::WriteLine(LogType::Debug, "Collision at {0},{1}", ball->Sprite->Position.X, ball->Sprite->Position.Y);
+
+							if(collisionOnBottomOfBrick && collisionOnBricksLeftSide)
+							{
+								//LogManager::WriteLine(LogType::Debug, "collision: collisionOnBottomOfBrick && collisionOnBricksLeftSide");
+								
+								switch(direction)
+								{
+									case NORTH:
+									case NORTH | WEST:
+										ball->Velocity.Y = -ball->Velocity.Y;
+									break;
+					
+									case NORTH | EAST:
+									case SOUTH | EAST:
+									case EAST:
+										ball->Velocity.X = -ball->Velocity.X;
+									break;
+
+									default:
+										LogManager::WriteLine(LogType::Debug, "Unhandled case in collisionOnBottomOfBrick && collisionOnBricksLeftSide. Direction: {0}", direction);
+									break;
+								}
+							}
+							
+							else if(collisionOnBottomOfBrick && collisionOnBricksRightSide)
+							{
+								Brick^ temp;
+								//LogManager::WriteLine(LogType::Debug, "collision: collisionOnBottomOfBrick && collisionOnBricksRightSide");
+								switch(direction)
+								{
+									case NORTH:
+									case NORTH | EAST:
+										ball->Velocity.Y = -ball->Velocity.Y;
+									break;
+
+									case WEST:
+									case NORTH | WEST:
+										temp = GetBrick(i, j);
+										if(nullptr != temp)
+										{
+											// there's a brick next to this one, so we didn't hit from the side.
+											ball->Velocity.Y = -ball->Velocity.Y;
+										}
+										else
+										{
+											ball->Velocity.X = -ball->Velocity.X;
+										}
+									case SOUTH | WEST:
+										ball->Velocity.X = -ball->Velocity.X;
+									break;
+									default:
+										LogManager::WriteLine(LogType::Debug, "Unhandled case in collisionOnBottomOfBrick && collisionOnBricksRightSide. Direction: {0}", direction);
+									break;
+								}
+							}
+
+							else if(collisionOnTopOfBrick && collisionOnBricksLeftSide)
+							{
+								//LogManager::WriteLine(LogType::Debug, "collision: collisionOnTopOfBrick && collisionOnBricksLeftSide");
+								switch(direction)
+								{
+									case SOUTH:
+									case SOUTH | EAST:
+									case SOUTH | WEST:
+										ball->Velocity.Y = -ball->Velocity.Y;
+									break;
+
+									case EAST:
+										ball->Velocity.X = -ball->Velocity.X;
+									break;
+									case NORTH | EAST:
+											ball->Velocity.X = -ball->Velocity.X;
+									break;
+
+									default:
+										LogManager::WriteLine(LogType::Debug, "Unhandled direction in collisionOnTopOfBrick && collisionOnBricksLeftSide. Direction {0}", direction);
+									break;
+								}
+							}
+
+							else if(collisionOnTopOfBrick && collisionOnBricksRightSide)
+							{
+								//LogManager::WriteLine(LogType::Debug, "collision: collisionOnTopOfBrick && collisionOnBricksRightSide");
+								switch(direction)
+								{
+									case SOUTH:
+									case SOUTH | WEST:
+									case SOUTH | EAST:
+										ball->Velocity.Y = -ball->Velocity.Y;
+									break;
+
+									case WEST:
+									case NORTH | WEST:
+										ball->Velocity.X = -ball->Velocity.X;
+									break;
+
+									default:
+										LogManager::WriteLine(LogType::Debug, "Unhandled direction in collisionOnTopOfBrick && collisionOnBricksRightSide. Direction {0}", direction);
+									break;
+								}
+							}
+
+							else if(collisionOnBottomOfBrick || collisionOnTopOfBrick)
+							{
+								//LogManager::WriteLine(LogType::Debug, "collisionOnBottomOfBrick || collisionOnTopOfBrick");
 								ball->Velocity.Y = -ball->Velocity.Y;
 							}
 							else if(collisionOnBricksRightSide || collisionOnBricksLeftSide)
 							{
+								//LogManager::WriteLine(LogType::Debug, "collisionOnBricksRightSide || collisionOnBricksLeftSide");
 								ball->Velocity.X = -ball->Velocity.X;
 							}
-						
-							else // in case I fucked up somewhere :P
+							else
 							{
+								//LogManager::WriteLine(LogType::Debug, "Unhandled brick collision.");
 								ball->Velocity.X = -ball->Velocity.X;
 								ball->Velocity.Y = -ball->Velocity.Y;
 							}
@@ -410,6 +570,15 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 	}
 }
 
+Brick^ GameLogic::GetBrick(int i, int j)
+{
+	if(i >= currentLevel->Width || j >= currentLevel->Height || i < 0 || j < 0)
+	{
+		return nullptr;
+	}
+
+	return currentLevel[i, j];
+}
 	//////////////////////////////////////////////////////
 //	for(int i = 0; i < currentLevel->Width; i++)
 //	{
@@ -471,6 +640,7 @@ void GameLogic::Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(Ball^
 			{
 				if(currentLevel[i, j]->Visible && ball->BoundingBox.IntersectsWith(currentLevel[i, j]->BoundingBox))
 				{
+					LogManager::WriteLine(LogType::Debug, "Hit in Check neighbour");
 					if(explode)
 					{
 						currentLevel[i, j]->Die(i, j, BRICK_HIT_BY_BALL | BRICK_EXPLODE);
