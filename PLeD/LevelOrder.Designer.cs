@@ -129,6 +129,7 @@ namespace PLeD
             this.rotationListListBox.Size = new System.Drawing.Size(208, 186);
             this.rotationListListBox.TabIndex = 4;
             this.rotationListListBox.SelectedIndexChanged += new System.EventHandler(this.listbox_SelectedIndexChanged);
+            this.rotationListListBox.DoubleClick += new System.EventHandler(this.rotationListListBox_DoubleClick);
             // 
             // rotationListMoveUpButton
             // 
@@ -187,6 +188,7 @@ namespace PLeD
             this.availableLevelsListBox.Size = new System.Drawing.Size(209, 186);
             this.availableLevelsListBox.TabIndex = 4;
             this.availableLevelsListBox.SelectedIndexChanged += new System.EventHandler(this.availableLevelsListBox_SelectedIndexChanged);
+            this.availableLevelsListBox.DoubleClick += new System.EventHandler(this.availableLevelsListBox_DoubleClick);
             // 
             // LevelOrder
             // 
