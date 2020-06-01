@@ -15,6 +15,7 @@ The latest build of the game is in the _build_ directory. All the source code is
 * Tweaked the indestructible, insta-death and invisible brick art work.
 * Changed the prompt when the player finishes the game with a new high score.
 * Fixed a bug where the player could shoot lasers even after the paddle had exploded.
+* Fixed a bug where the wall would continue to descend when the player caught a wall power up while the wall was descending.
 ### Editor
 * Maps can be assigned in the _Change Order_ dialog by double clicking on them.
 * The editors name is now visible on the titlebar at start up.
