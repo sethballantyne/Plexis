@@ -1,10 +1,24 @@
 # Plexis
 
-**CURRENT VERSION: [0.9.1](https://github.com/sethballantyne/Plexis/blob/master/build/plexis.0.9.1.zip)**
+**CURRENT VERSION: [0.10.1](https://github.com/sethballantyne/Plexis/blob/master/build/plexis.0.10.1.zip)**
 
 Plexis a breakout clone I wrote in C++/CLI because I wanted to play around with DirectX and experiment with an idea I had revolving creating GUIs using XML. It's built on top of a simple engine I wrote that makes use of DirectDraw 7 for graphics, DirectSound 8 for audio and DirectInput 8 for input. The level editor is written in C#, using WinForms; you'll need the .NET Framework 4.5 or later to run both the game and the editor. All the levels currently included are just debug levels; the emphasis is on gameplay at the moment. 
 
 The latest build of the game is in the _build_ directory. All the source code is released under the MIT license. 
+
+## Changes in 0.10.1
+### Game
+* Fixed a bug where moving the mouse while waiting to respawn could result in the ball not being centered on the paddle.
+* Fixed a bug where the ball was getting stuck in indestructible bricks.
+* Changed how the ball moves. In rare instances, it was possible for the ball to bounce back and forth in a loop, never moving
+* down towards the paddle.
+* Tweaked the indestructible, insta-death and invisible brick art work.
+* Changed the prompt when the player finishes the game with a new high score.
+* Fixed a bug where the player could shoot lasers even after the paddle had exploded.
+* Fixed a bug where the wall would continue to descend when the player caught a wall power up while the wall was descending.
+### Editor
+* Maps can be assigned in the _Change Order_ dialog by double clicking on them.
+* The editors name is now visible on the titlebar at start up.
 
 ## Changes in 0.10
 * Fixed a bug where the ball was being attached to the bottom of the paddle if the paddle's frame changed. 

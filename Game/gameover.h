@@ -44,7 +44,7 @@ private:
 
 	//the prompt that appears when the player has achieved a new highscore.
 	// x value changes in the GameOver constructor
-	EditableLabel ^namePrompt = gcnew EditableLabel(431, 400, "green", 12, true);
+	EditableLabel ^namePrompt = gcnew EditableLabel(503, 400, "green", 12, true);
 
 	// x value changes in the GameOver constructor
 	Label ^pressAnyKeyToContinuePrompt = gcnew Label(0, 500, "white", "PRESS ANY KEY TO CONTINUE");
@@ -106,7 +106,7 @@ public:
 		gameOverPrinterTimer->Enabled = false;
 		gameOverPrinterTimer->AutoReset = true;
 
-		String ^newHighScoreText = "BITCHIN'! NEW HIGHSCORE! ENTER YOUR NAME, ROCKIN' DUDE!";
+		String ^newHighScoreText = "NEW HIGH SCORE! ENTER YOUR NAME.";
 		int videoWidthDiv2 = Video::Width / 2;
 
 		// safe to use the finalScoreFont because it's exactly the same font as this label uses.

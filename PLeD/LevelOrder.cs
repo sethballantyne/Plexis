@@ -146,14 +146,7 @@ namespace PLeD
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            int index = rotationListListBox.SelectedIndex;
-
-            if(index >= 0)
-            {
-                availableLevelsListBox.Items.Add(rotationListListBox.Items[index]);
-                rotationListListBox.Items.RemoveAt(index);
-                okayButton.Enabled = true;
-            }
+            AddSelectedItem(rotationListListBox, availableLevelsListBox);
         }
 
         private string[] EnumerateLevels(string path)
@@ -239,14 +232,29 @@ namespace PLeD
 
         private void availableLevelsAddButton_Click(object sender, EventArgs e)
         {
-            int index = availableLevelsListBox.SelectedIndex;
+            AddSelectedItem(availableLevelsListBox, rotationListListBox);
+        }
+
+        private void availableLevelsListBox_DoubleClick(object sender, EventArgs e)
+        {
+            AddSelectedItem(availableLevelsListBox, rotationListListBox);
+        }
+
+        private void AddSelectedItem(ListBox sourceListBox, ListBox targetListBox)
+        {
+            int index = sourceListBox.SelectedIndex;
 
             if (index >= 0)
             {
-                rotationListListBox.Items.Add(availableLevelsListBox.Items[index]);
-                availableLevelsListBox.Items.RemoveAt(index);
+                targetListBox.Items.Add(sourceListBox.Items[index]);
+                sourceListBox.Items.RemoveAt(index);
                 okayButton.Enabled = true;
             }
+        }
+
+        private void rotationListListBox_DoubleClick(object sender, EventArgs e)
+        {
+            AddSelectedItem(rotationListListBox, availableLevelsListBox);
         }
     }
 }

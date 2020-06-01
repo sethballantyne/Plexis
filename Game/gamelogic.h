@@ -176,6 +176,8 @@ private:
 
 	bool seeAll = false;
 
+	array<System::Drawing::Point, 1>^ CalculatePath(Line ^line);
+
 	/// <summary>
 	/// Removes a brick from the game, as if it were hit by the ball.
 	/// </summary>
@@ -232,6 +234,7 @@ private:
 	/// </summary>
 	void HandleBrickCollisions(Ball^ ball);
 
+	Brick^ GetBrick(int i, int j);
 	/// <summary>
 	/// Player collision detection
 	/// </summary>
@@ -283,54 +286,14 @@ private:
 	/// </summary>
 	/// <param name="keyboardState"></param>
 	/// <param name="mouseState"></param>
-	void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
+	/*void HandleGameInput(Keys ^keyboardState, Mouse ^mouseState)
 	{
-		player->Velocity.X = mouseState->X;
+		
 
-		if(keyboardState->KeyPressed(DIK_A))
-		{
-			SpawnSeeAllPowerUp(400, 400, 45);
-		}
+		
 
-		if(keyboardState->KeyPressed(DIK_H))
-		{
-			lives->Value += 100;
-		}
-
-		if(keyboardState->KeyPressed(DIK_D))
-		{
-
-		}
-
-		if(keyboardState->KeyPressed(DIK_J))
-		{
-			SpawnFireBallPowerUp(400, 400, 90);
-		}
-
-		if(keyboardState->KeyPressed(DIK_S))
-		{
-			score->Value += 100000;
-		}
-
-		if(keyboardState->KeyPressed(purchaseAmmoKey))
-		{
-			PurchaseAmmo();
-		}
-
-		if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
-		{
-			if(balls[0]->Attached)
-			{
-				player->FirePressed();
-			}
-
-			else if(ammoCount->Value > 0)
-			{
-				laser->Fired();
-				ammoCount->Value--;
-			}
-		}
-	}
+		
+	}*/
 
 	///<summary>
 	/// Collision detection for when lasers hit bricks.
@@ -360,6 +323,8 @@ private:
 	///</summary>
 	void SpawnPlayer()
 	{
+		LogManager::WriteLine(LogType::Debug, "Spawning Player");
+
 		ResetBallList();
 
 		player->SetFrame(0);
@@ -369,6 +334,9 @@ private:
 		// was a powerup active that caused the ball(s) to stick
 		// (FEAR MY STICKY BALLS!!!) to the paddle. Probably redundant now.
 
+		// bug fix for when the ball doesn't always center on the paddle if the
+		// mouse is moving while spawning.
+	
 		this->player->AttachBall(balls[0]);
 
 		this->player->IsDead = false;
@@ -1120,6 +1088,10 @@ public:
 		powerUpTimerValue->Value = EntityManager::GetShallowEntity<TimedPowerUp^>("wall_powerup")->Duration;
 		activePowerUpTimer->Start();
 		powerUpTimerValue->Enabled = true;
+
+		// Bug fix: stop the wall from descending if it is; timer resets but the wall doesn't appear if
+		// you don't do this.
+		wall->Retreat = false; 
 
 		wall->Visible = true;
 	}
