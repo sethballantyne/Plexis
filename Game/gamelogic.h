@@ -336,9 +336,7 @@ private:
 
 		// bug fix for when the ball doesn't always center on the paddle if the
 		// mouse is moving while spawning.
-		this->player->Velocity.X = 0;
-		this->player->Velocity.Y = 0;
-
+	
 		this->player->AttachBall(balls[0]);
 
 		this->player->IsDead = false;

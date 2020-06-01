@@ -186,7 +186,7 @@ public:
 	virtual void Hit(int x, int y, unsigned int flags)
 	{
 		if(!indestructible)
-		{
+			{
 			health--;
 			if(health != 0)
 			{
