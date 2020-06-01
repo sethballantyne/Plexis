@@ -1089,6 +1089,10 @@ public:
 		activePowerUpTimer->Start();
 		powerUpTimerValue->Enabled = true;
 
+		// Bug fix: stop the wall from descending if it is; timer resets but the wall doesn't appear if
+		// you don't do this.
+		wall->Retreat = false; 
+
 		wall->Visible = true;
 	}
 
