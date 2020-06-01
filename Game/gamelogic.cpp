@@ -88,8 +88,6 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 
 			if(mouseState->ButtonPressed(playerFireKey) || keyboardState->KeyPressed(playerFireKey))
 			{
-				wall->Visible = true;
-			
 				if(balls[0]->Attached)
 				{
 					player->FirePressed();
@@ -388,35 +386,55 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 						
 						else
 						{
+							const int SOUTH = 1;
+							const int NORTH = 2;
+							const int EAST = 4;
+							const int WEST = 8;
+							int direction = 0;
+							if(ball->Velocity.Y > 0)
+							{
+								direction = SOUTH;
+							}
+							else if(ball->Velocity.Y < 0)
+							{
+								direction = NORTH;
+							}
+
+							if(ball->Velocity.X > 0)
+							{
+								direction |= EAST;
+							}
+							else if(ball->Velocity.X < 0)
+							{
+								direction |= WEST;
+							}
+
 							int halfOfBallWidth = ball->Sprite->Surface->Size->Width / 2;
 							int halfOfBrickHeight = b->Sprite->Surface->Size->Height / 2;
-							bool hitHorizontal = false;
+							
 
 							// hitting bottom of brick
-							if((ball->BoundingBox.Y - b->BoundingBox.Y >= halfOfBrickHeight))
-							   
-							{
-								
-								ball->Velocity.Y = -ball->Velocity.Y;
-								hitHorizontal = true;
-							
-							}
-							else if((b->BoundingBox.Bottom - ball->BoundingBox.Y >= halfOfBrickHeight))
+							if((ball->BoundingBox.Y - b->BoundingBox.Y >= halfOfBrickHeight) ||
+							   (b->BoundingBox.Bottom - ball->BoundingBox.Y >= halfOfBrickHeight))
 							{
 								ball->Velocity.Y = -ball->Velocity.Y;
-								hitHorizontal = true;
 							}
-							
+						
 							if((b->BoundingBox.X - ball->BoundingBox.X >= halfOfBallWidth) ||
 							   (ball->BoundingBox.Right - b->BoundingBox.Right >= halfOfBallWidth))
 							{
-								
 								ball->Velocity.X = -ball->Velocity.X;
 								
-								if(!hitHorizontal)
+								// ball gets sucked in through the join if its moving south
+								// or north.
+								if(direction != SOUTH && direction != NORTH)
 								{
 									ball->Velocity.Y = -ball->Velocity.Y;
 								}
+								/*if(!hitHorizontal)
+								{
+									ball->Velocity.Y = -ball->Velocity.Y;
+								}*/
 
 							}
 							
