@@ -96,7 +96,7 @@ void GameLogic::HandleGameStateInput(Keys ^keyboardState, Mouse ^mouseState)
 					balls[0]->Velocity.Y = 1;*/
 				}
 
-				else if(ammoCount->Value > 0)
+				else if(ammoCount->Value > 0 && !player->IsDead)
 				{
 					laser->Fired();
 					ammoCount->Value--;
