@@ -22,6 +22,10 @@
 #include "vector2.h"
 #include "ball.h"
 
+#define PADDLE_FRAME_DEFAULT 0
+#define PADDLE_FRAME_JUMBO   1
+#define PADDLE_FRAME_SHRUNK  2
+
 public ref class Paddle : public Entity
 {
 public:

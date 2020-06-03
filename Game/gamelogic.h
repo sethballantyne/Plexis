@@ -1060,14 +1060,40 @@ public:
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 
-		player->SetFrame(1);
+		int currentFrame = player->Sprite->CurrentFrameIndex;
+		switch(currentFrame)
+		{
+			case PADDLE_FRAME_DEFAULT: 
+				player->SetFrame(PADDLE_FRAME_JUMBO);
+				break;
+
+			case PADDLE_FRAME_SHRUNK: 
+				player->SetFrame(PADDLE_FRAME_DEFAULT);
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	void OnCollisionWithPaddle_ShrinkPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 
-		player->SetFrame(2);
+		int currentFrame = player->Sprite->CurrentFrameIndex;
+		switch(currentFrame)
+		{
+			case PADDLE_FRAME_DEFAULT: // default paddle
+				player->SetFrame(PADDLE_FRAME_SHRUNK);
+			break;
+
+			case PADDLE_FRAME_JUMBO: // jumbo paddle
+				player->SetFrame(PADDLE_FRAME_DEFAULT);
+			break;
+
+			default:
+				break;
+		}
 	}
 
 	void OnCollisionWithPaddle_WallPowerUp(System::Object^ sender, System::EventArgs^ args)
