@@ -12,7 +12,9 @@ The latest build of the game is in the _build_ directory. All the source code is
 * Changed how the Jumbo and Shrink power ups work. Catching either power up now results in an incremental change to the paddle.
   If the player catches the Jumbo power up while the paddle has been shrunk, it'll return to the paddle to its default size.
   Catching it again will result in a jumbo-sized paddle. The opposite is true for the Shrink power up.
-  
+### Editor
+* Changed the size of the eraser cursor.
+
 ## Changes in 0.10.1
 ### Game
 * Fixed a bug where moving the mouse while waiting to respawn could result in the ball not being centered on the paddle.
