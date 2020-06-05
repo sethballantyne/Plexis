@@ -576,6 +576,8 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 	switch(this->gameState)
 	{
 		case GameState::NewLevel:
+			this->brickRenderList->Clear();
+
 			if (!testLevel)
 			{
 				this->currentLevel = LevelManager::GetNextLevel();
@@ -612,6 +614,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 						}
 					
 						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
+						brickRenderList->Add(this->currentLevel[i, j]);
 					}
 				}
 			}
@@ -674,7 +677,11 @@ void GameLogic::Render()
 			// The current level will briefly appear before reverting to the first level, otherwise.
 			if(GameState::NewLevel != gameState && !gameOverScreen->Visible)
 			{
-				currentLevel->Render();
+				//currentLevel->Render();
+				for each(Brick^ b in brickRenderList)
+				{
+					b->Sprite->Render();
+				}
 			}
 
 			if(GameState::GameOver == gameState && gameOverScreen->Visible)

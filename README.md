@@ -12,6 +12,9 @@ The latest build of the game is in the _build_ directory. All the source code is
 * Changed how the Jumbo and Shrink power ups work. Catching either power up now results in an incremental change to the paddle.
   If the player catches the Jumbo power up while the paddle has been shrunk, it'll return to the paddle to its default size.
   Catching it again will result in a jumbo-sized paddle. The opposite is true for the Shrink power up.
+* Added a sound effect to the See All power up.
+* Minor optimization in how each level is rendered; there was too much flickering when recording videos of the game.
+
 ### Editor
 * Changed the size of the eraser cursor.
 
