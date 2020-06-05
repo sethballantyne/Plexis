@@ -14,7 +14,7 @@ The latest build of the game is in the _build_ directory. All the source code is
   Catching it again will result in a jumbo-sized paddle. The opposite is true for the Shrink power up.
 * Added a sound effect to the See All power up.
 * Minor optimization in how each level is rendered; there was too much flickering when recording videos of the game.
-
+* Added the missing sound effect the extra ball power up.
 ### Editor
 * Changed the size of the eraser cursor.
 

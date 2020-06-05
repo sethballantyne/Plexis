@@ -1170,6 +1170,9 @@ public:
 
 	void OnCollisionWithPaddle_ExtraBallPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
+		ResourceManager::GetSoundBuffer("powerup2")->Stop();
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
 		CloneBall();
 	}
 
