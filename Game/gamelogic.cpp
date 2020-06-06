@@ -391,6 +391,7 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 							const int EAST = 4;
 							const int WEST = 8;
 							int direction = 0;
+
 							if(ball->Velocity.Y > 0)
 							{
 								direction = SOUTH;
@@ -411,13 +412,30 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 
 							int halfOfBallWidth = ball->Sprite->Surface->Size->Width / 2;
 							int halfOfBrickHeight = b->Sprite->Surface->Size->Height / 2;
-							
 
+							bool justInvertTheXPlease = false;
 							// hitting bottom of brick
-							if((ball->BoundingBox.Y - b->BoundingBox.Y >= halfOfBrickHeight) ||
-							   (b->BoundingBox.Bottom - ball->BoundingBox.Y >= halfOfBrickHeight))
+							if(ball->BoundingBox.Y - b->BoundingBox.Y >= halfOfBrickHeight)
 							{
-								ball->Velocity.Y = -ball->Velocity.Y;
+								if(direction != (SOUTH | WEST) && direction != (SOUTH | EAST))
+								{
+									ball->Velocity.Y = -ball->Velocity.Y;
+								}
+								else
+								{
+									justInvertTheXPlease = true;
+								}
+							}
+							else if(b->BoundingBox.Bottom - ball->BoundingBox.Y >= halfOfBrickHeight)
+							{
+								if(direction != (NORTH | WEST) && direction != (NORTH | EAST))
+								{
+									ball->Velocity.Y = -ball->Velocity.Y;
+								}
+								else
+								{
+									justInvertTheXPlease = true;
+								}
 							}
 						
 							if((b->BoundingBox.X - ball->BoundingBox.X >= halfOfBallWidth) ||
@@ -427,20 +445,13 @@ void GameLogic::HandleBrickCollisions(Ball^ ball)
 								
 								// ball gets sucked in through the join if its moving south
 								// or north.
-								if(direction != SOUTH && direction != NORTH)
+								if(direction != SOUTH && direction != NORTH && justInvertTheXPlease != true)
 								{
 									ball->Velocity.Y = -ball->Velocity.Y;
 								}
-								/*if(!hitHorizontal)
-								{
-									ball->Velocity.Y = -ball->Velocity.Y;
-								}*/
-
 							}
 							
-							
 							currentLevel[i, j]->Hit(i, j, BRICK_HIT_BY_BALL);
-
 							Check_if_Any_Neighbours_Were_Hit_And_Fuck_Them_Up_Too_Okay(ball, i, j, false);
 						}
 
@@ -565,6 +576,8 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 	switch(this->gameState)
 	{
 		case GameState::NewLevel:
+			this->brickRenderList->Clear();
+
 			if (!testLevel)
 			{
 				this->currentLevel = LevelManager::GetNextLevel();
@@ -601,6 +614,7 @@ void GameLogic::Update(Keys ^keyboardState, Mouse ^mouseState)
 						}
 					
 						this->currentLevel[i, j]->Death += gcnew BrickDeathEventHandler(this, &GameLogic::Brick_OnDeath);
+						brickRenderList->Add(this->currentLevel[i, j]);
 					}
 				}
 			}
@@ -663,7 +677,11 @@ void GameLogic::Render()
 			// The current level will briefly appear before reverting to the first level, otherwise.
 			if(GameState::NewLevel != gameState && !gameOverScreen->Visible)
 			{
-				currentLevel->Render();
+				//currentLevel->Render();
+				for each(Brick^ b in brickRenderList)
+				{
+					b->Sprite->Render();
+				}
 			}
 
 			if(GameState::GameOver == gameState && gameOverScreen->Visible)

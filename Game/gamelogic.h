@@ -129,6 +129,8 @@ private:
 	// lasers fired when the user has the laser powerup
 	List<Laser ^> ^laserList = gcnew List<Laser ^>();
 
+	List<Brick^>^ brickRenderList = gcnew List<Brick^>();
+
 	// particle effects created by powerups
 	List<ExplosionParticleEffect ^> ^particleEffectsList = gcnew List<ExplosionParticleEffect ^>();
 
@@ -940,7 +942,9 @@ public:
 	void Brick_OnDeath(Object ^sender, BrickHitEventArgs ^e)
 	{
 		Brick ^destroyedBrick = safe_cast<Brick ^>(sender);
-		
+
+	    brickRenderList->Remove(destroyedBrick);
+
 		this->score->Value += destroyedBrick->PointValue;
 		
 		destroyedBrick->Behaviour(*e);
@@ -1060,14 +1064,40 @@ public:
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
 
-		player->SetFrame(1);
+		int currentFrame = player->Sprite->CurrentFrameIndex;
+		switch(currentFrame)
+		{
+			case PADDLE_FRAME_DEFAULT: 
+				player->SetFrame(PADDLE_FRAME_JUMBO);
+				break;
+
+			case PADDLE_FRAME_SHRUNK: 
+				player->SetFrame(PADDLE_FRAME_DEFAULT);
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	void OnCollisionWithPaddle_ShrinkPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
 		ResourceManager::GetSoundBuffer("powerup2")->Play();
+		
+		int currentFrame = player->Sprite->CurrentFrameIndex;
+		switch(currentFrame)
+		{
+			case PADDLE_FRAME_DEFAULT: // default paddle
+				player->SetFrame(PADDLE_FRAME_SHRUNK);
+			break;
 
-		player->SetFrame(2);
+			case PADDLE_FRAME_JUMBO: // jumbo paddle
+				player->SetFrame(PADDLE_FRAME_DEFAULT);
+			break;
+
+			default:
+				break;
+		}
 	}
 
 	void OnCollisionWithPaddle_WallPowerUp(System::Object^ sender, System::EventArgs^ args)
@@ -1140,6 +1170,9 @@ public:
 
 	void OnCollisionWithPaddle_ExtraBallPowerUp(System::Object^ sender, System::EventArgs^ args)
 	{
+		ResourceManager::GetSoundBuffer("powerup2")->Stop();
+		ResourceManager::GetSoundBuffer("powerup2")->Play();
+
 		CloneBall();
 	}
 
@@ -1163,7 +1196,9 @@ public:
 		if(!seeAll)
 		{
 			seeAll = true;
-			
+			ResourceManager::GetSoundBuffer("invisible2")->Stop();
+			ResourceManager::GetSoundBuffer("invisible2")->Play();
+
 			for(int i = 0; i < currentLevel->Width; i++)
 			{
 				for(int j = 0; j < currentLevel->Height; j++)
